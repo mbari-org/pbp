@@ -1,0 +1,5 @@
+dataclasses-json==0.5.7
+json-lines==0.5.0
+marshmallow==3.19.0
+pytest==7.0.1
+
