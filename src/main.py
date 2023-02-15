@@ -1,16 +1,16 @@
-import json_lines
-
 from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json, config
 
 from datetime import datetime
+
+import json_lines
+from dataclasses_json import config, dataclass_json
 from marshmallow import fields
 
 datetime_field = field(
     metadata=config(
         encoder=datetime.isoformat,
         decoder=datetime.fromisoformat,
-        mm_field=fields.DateTime(format='iso')
+        mm_field=fields.DateTime(format="iso"),
     )
 )
 
@@ -27,7 +27,7 @@ class TenMinEntry:
 
 
 def main():
-    with open('jsons/20220902.json') as f:
+    with open("../jsons/20220902.json", "r", encoding="UTF-8") as f:
         for item in json_lines.reader(f):
             de = TenMinEntry.from_dict(item)
             print(de)

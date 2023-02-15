@@ -1,5 +1,9 @@
 dataclasses-json==0.5.7
 json-lines==0.5.0
 marshmallow==3.19.0
-pytest==7.0.1
-
+# lifewatch-pypam  # when published
+mypy==1.0.0
+ruff
+ufmt==2.0.1
+pylint==2.16.2
+pytest==7.2.1
