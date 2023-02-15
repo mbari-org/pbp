@@ -2,6 +2,9 @@ dataclasses-json==0.5.7
 json-lines==0.5.0
 marshmallow==3.19.0
 # lifewatch-pypam  # when published
+soundfile==0.11.0
+
+## dev dependencies
 mypy==1.0.0
 ruff
 ufmt==2.0.1

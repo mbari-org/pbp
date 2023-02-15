@@ -27,7 +27,7 @@ class TenMinEntry:
 
 
 def main():
-    with open("../jsons/20220902.json", "r", encoding="UTF-8") as f:
+    with open("jsons/20220902.json", "r", encoding="UTF-8") as f:
         for item in json_lines.reader(f):
             de = TenMinEntry.from_dict(item)
             print(de)
