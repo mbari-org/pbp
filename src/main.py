@@ -20,17 +20,17 @@ datetime_field = field(
 class TenMinEntry:
     path: str
     duration_secs: float
-    channels: int
-    jitter: float
     start: datetime = datetime_field
     end: datetime = datetime_field
+    channels: int = 1
+    jitter: float = 0
 
 
 def main():
     with open("jsons/20220902.json", "r", encoding="UTF-8") as f:
         for item in json_lines.reader(f):
-            de = TenMinEntry.from_dict(item)
-            print(de)
+            tme = TenMinEntry.from_dict(item)
+            print(tme)
 
 
 if __name__ == "__main__":
