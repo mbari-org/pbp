@@ -2,9 +2,10 @@ WIP: Preparations for pypam-based data processing ...
 
 Roughly:
 
-- [ ] parse json files
+- [x] parse json files
 - [ ] process associated audio files
     - [ ] initially minute by minute to invoke pypam
+- [ ] cloud processing
 - [ ] ...
 
 

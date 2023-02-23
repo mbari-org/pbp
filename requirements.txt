@@ -10,3 +10,4 @@ ruff==0.0.252
 ufmt==2.0.1
 pylint==2.16.2
 pytest==7.2.1
+syrupy==4.0.1
