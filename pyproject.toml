@@ -24,8 +24,11 @@ python = ">=3.8.1,<=3.10"
 dataclasses-json = '0.5.7'
 json-lines = "0.5.0"
 marshmallow = "3.19.0"
-lifewatch-pypam = "*"
-soundfile = "0.12.1"
+
+# Note: commenting out the following as `poetry install` fails with:
+#  "Unable to find installation candidates for cffi (1.15.1)"
+#lifewatch-pypam = "*"
+#soundfile = "0.12.1"
 
 [tool.poetry.dev-dependencies]
 mypy = "1.0.1"
