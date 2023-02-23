@@ -36,4 +36,4 @@ jobs:
       # locally seeing issues with poetry install, but let's see how it goes on CI
       - uses: snok/install-poetry@v1
       - run: poetry install
-      - run: poetry run pytest
+      - run: PYTHONPATH=. poetry run pytest
