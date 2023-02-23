@@ -2,9 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [ main, release ]
   pull_request:
-    branches: [ main, release ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -14,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-versions: [ 3.8, 3.9 ]
+        python-versions: [ 3.8, 3.9, 3.10 ]
         os: [ ubuntu-20.04 ]
     runs-on: ${{ matrix.os }}
 
@@ -24,12 +22,18 @@ jobs:
         with:
           python-version: ${{ matrix.python-versions }}
 
+    # TODO remove these steps if/when poetry is able to complete the install
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           python -m pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam
-
       - name: test
         run:
           python -m pytest
+    # ---------------
+
+      # locally seeing issues with poetry install, but let's see how it goes on CI
+      - uses: snok/install-poetry@v1
+      - run: poetry install
+      - run: poetry run pytest
