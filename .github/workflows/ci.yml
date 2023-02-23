@@ -35,5 +35,6 @@ jobs:
 
       # locally seeing issues with poetry install, but let's see how it goes on CI
       - uses: snok/install-poetry@v1
+      - run: sudo apt-get install -y libsndfile1-dev
       - run: poetry install
       - run: PYTHONPATH=. poetry run pytest
