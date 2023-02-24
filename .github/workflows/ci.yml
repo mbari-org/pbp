@@ -2,9 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [ main, release ]
   pull_request:
-    branches: [ main, release ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -14,8 +12,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-versions: [ 3.8, 3.9 ]
-        os: [ ubuntu-20.04 ]
+        # python-versions: [ "3.8", "3.9", "3.10" ]
+        python-versions: [ "3.9" ]
+        os: [ ubuntu-latest ]
     runs-on: ${{ matrix.os }}
 
     steps:
