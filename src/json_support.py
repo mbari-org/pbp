@@ -33,4 +33,4 @@ class TenMinEntry:
 def parse_json_lines_file(filename: str) -> Generator[TenMinEntry, None, None]:
     with open(filename, "r", encoding="UTF-8") as f:
         for item in json_lines.reader(f):
-            yield TenMinEntry.from_dict(item)
+            yield TenMinEntry.from_dict(item)  # type: ignore [attr-defined]
