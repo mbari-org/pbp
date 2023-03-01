@@ -3,7 +3,7 @@ from src.file_helper import FileHelper
 
 def main():
     json_base_dir = "tests/jsons"
-    audio_base_dir = None
+    audio_base_dir = "tests/wavs"
 
     file_helper = FileHelper(json_base_dir, audio_base_dir)
 
