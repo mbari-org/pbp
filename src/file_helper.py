@@ -1,6 +1,6 @@
 import os
 from math import ceil, floor
-from typing import Generator, List, Optional
+from typing import List, Optional
 
 import numpy as np
 import soundfile as sf
@@ -11,7 +11,6 @@ from src.json_support import (
     TME,
     TMEIntersection,
 )
-from src.misc_helper import gen_hour_minute_times
 
 
 class FileHelper:
@@ -30,9 +29,10 @@ class FileHelper:
         :param json_base_dir:
           Directory containing the YYYYMMDD.json json-lines files
         :param audio_base_dir:
-          If given, this will be the base directory to use when the JSON `path` attribute is relative
-          (not starting with a slash).
+          If given, it will be used as base directory for any relative (not starting with a slash)
+          `path` attribute in the json entries.
         :param segment_size_in_mins:
+            The size of each audio segment to extract, in minutes. By default, 1.
         """
         self.json_base_dir = json_base_dir
         self.audio_base_dir = audio_base_dir
@@ -47,7 +47,11 @@ class FileHelper:
 
     def select_day(self, year: int, month: int, day: int) -> bool:
         """
-        Select the given day for subsequent processing of relevant audio segments.
+        Selects the given day for subsequent processing of relevant audio segments.
+
+        :param year:
+        :param month:
+        :param day:
         :return:  True only if selection was successful
         """
 
@@ -64,26 +68,10 @@ class FileHelper:
         print(f"day selected: {year:04}{month:02}{day:02}")
         return True
 
-    def gen_audio_segments(self) -> Generator[np.ndarray, None, None]:
+    def extract_audio_segment(self, at_hour: int, at_minute: int) -> Optional[np.ndarray]:
         """
-        Return audio segments of the given size for the selected day.
-        """
-        assert self.json_entries is not None
-
-        print(f"gen_audio_segments: segment_size_in_mins={self.segment_size_in_mins}")
-
-        for at_hour, at_minute in gen_hour_minute_times(self.segment_size_in_mins):
-            segment = self.load_audio_segment(at_hour, at_minute)
-            if segment is not None:
-                yield segment
-            else:
-                print(f"ERROR: cannot get audio segment at {at_hour:02}:{at_minute:02}")
-                return
-
-    def load_audio_segment(self, at_hour: int, at_minute: int) -> Optional[np.ndarray]:
-        """
-        Returns the next audio segment at the given time by loading and intersecting the relevant
-        audio files.
+        Extracts the audio segment at the given start time.
+        For this it loads and aggregates the relevant audio segments.
         """
 
         intersections: List[TMEIntersection] = get_intersecting_entries(
@@ -96,19 +84,21 @@ class FileHelper:
             at_minute,
         )
 
-        aggregated_segment: np.ndarray = np.ndarray([])
+        aggregated_segment: Optional[np.ndarray] = None
 
         segment_size_in_secs = self.segment_size_in_mins * 60
 
         for intersection in intersections:
-            ad_hoc_prefix = ""  # "/Volumes"
+            ad_hoc_prefix = (
+                ""  # like "/Volumes", for some preliminary testing -- TODO remove
+            )
             wav_filename = (
                 f"{ad_hoc_prefix}{intersection.tme.path}"
                 if intersection.tme.path.startswith("/")
                 else f"{self.audio_base_dir}/{intersection.tme.path}"
             )
             print(f"{wav_filename}:")
-            sample_rate = get_sample_rate(wav_filename)
+            sample_rate = _get_sample_rate(wav_filename)
 
             with sf.SoundFile(wav_filename) as f:
                 start_sample = floor(intersection.start_secs * sample_rate)
@@ -116,14 +106,24 @@ class FileHelper:
 
                 print(f"  loading {num_samples:,} samples starting at {start_sample:,}")
 
-                f.seek(start_sample)
-                audio_segment = f.read(num_samples)
-                aggregated_segment = np.concatenate((aggregated_segment, audio_segment))
+                try:
+                    f.seek(start_sample)
+                    audio_segment = f.read(num_samples)
+                except sf.LibsndfileError as e:
+                    print(f"ERROR: {e}")
+                    return None
+
+                if aggregated_segment is None:
+                    aggregated_segment = audio_segment
+                else:
+                    aggregated_segment = np.concatenate(
+                        (aggregated_segment, audio_segment)
+                    )
 
         return aggregated_segment
 
 
-def get_sample_rate(wav_filename: str) -> Optional[int]:
+def _get_sample_rate(wav_filename: str) -> Optional[int]:
     """
     Returns the sample rate of the given WAV file.
     """

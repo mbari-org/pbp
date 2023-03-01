@@ -6,6 +6,8 @@ import json_lines
 from dataclasses_json import config, dataclass_json
 from marshmallow import fields
 
+from src import PBPException
+
 metadata = config(
     encoder=datetime.isoformat,
     decoder=datetime.fromisoformat,
@@ -59,7 +61,7 @@ def get_intersecting_entries(
     day_start_in_secs: int = int(dt.timestamp())
     day_end_in_secs: int = day_start_in_secs + segment_size_in_mins * 60
 
-    result: List[TMEIntersection] = []
+    intersecting_entries: List[TMEIntersection] = []
     tot_duration_secs = 0
     for tme in json_entries:
         tme_start_in_secs: int = int(tme.start.timestamp())
@@ -68,8 +70,23 @@ def get_intersecting_entries(
             start_secs = max(tme_start_in_secs, day_start_in_secs) - tme_start_in_secs
             end_secs = min(tme_end_in_secs, day_end_in_secs) - tme_start_in_secs
             duration_secs = end_secs - start_secs
-            result.append(TMEIntersection(tme, start_secs, duration_secs))
+            intersecting_entries.append(TMEIntersection(tme, start_secs, duration_secs))
             tot_duration_secs += duration_secs
 
-    assert tot_duration_secs == segment_size_in_mins * 60
-    return result
+    # verify expected duration:
+    segment_size_in_secs = segment_size_in_mins * 60
+    if tot_duration_secs != segment_size_in_secs:
+        print(
+            f"ERROR: tot_duration_secs={tot_duration_secs} but expected to be {segment_size_in_secs}"
+        )
+        print(
+            f"   year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
+        )
+        print("   intersecting_entries=")
+        for i in intersecting_entries:
+            print(f"    {i}")
+        raise PBPException(
+            f"tot_duration_secs={tot_duration_secs} != {segment_size_in_secs}=segment_size_in_secs"
+        )
+
+    return intersecting_entries
