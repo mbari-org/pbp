@@ -1,6 +1,6 @@
 #
-# Some development recipes
-# Use `just` - https://github.com/casey/just.
+# Some development recipes.
+# Run them using `just` - https://github.com/casey/just.
 #
 
 # List recipes
@@ -16,6 +16,7 @@ all: dev pylint
 # Install dependencies
 setup:
     pip3 install -r requirements.txt
+    pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam
     mypy --install-types
 
 # Do static type checking (not very strict)
