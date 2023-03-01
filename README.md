@@ -5,6 +5,7 @@ Roughly:
 - [x] parse json files
 - [ ] process associated audio files
     - [x] iteration segment by segment
+    - [x] concatenate segments for timekeeping
     - [ ] invoke pypam per segment
     - [ ] aggregate results
 - [ ] cloud processing
