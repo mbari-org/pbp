@@ -41,10 +41,11 @@ tests/test_misc.py .                                                            
 ============================================== 3 passed in 0.12s ==============================================
 ```
 
-as well as others includingg:
+as well as others including:
 ```shell
 just pylint
 just dev
+just to-gizo
 ```
 
 **NOTE**: Before committing/pushing any changes, I make sure to run:

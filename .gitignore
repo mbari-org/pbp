@@ -1,2 +1,4 @@
 virtenv/
 __pycache__
+HASH
+*.tgz
