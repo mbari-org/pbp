@@ -65,7 +65,7 @@ class FileHelper:
         self.day = day
         self.json_filename = json_filename
         self.json_entries = list(parse_json_lines_file(self.json_filename))
-        print(f"day selected: {year:04}{month:02}{day:02}")
+        print(f"Day selected: {year:04}{month:02}{day:02}")
         return True
 
     def extract_audio_segment(self, at_hour: int, at_minute: int) -> Optional[np.ndarray]:
@@ -90,21 +90,21 @@ class FileHelper:
 
         for intersection in intersections:
             ad_hoc_prefix = (
-                ""  # like "/Volumes", for some preliminary testing -- TODO remove
+                "/Volumes"  # like "/Volumes", for some preliminary testing -- TODO remove
             )
             wav_filename = (
                 f"{ad_hoc_prefix}{intersection.tme.path}"
                 if intersection.tme.path.startswith("/")
                 else f"{self.audio_base_dir}/{intersection.tme.path}"
             )
-            print(f"{wav_filename}:")
+            print(f"  from {wav_filename}:")
             sample_rate = _get_sample_rate(wav_filename)
 
             with sf.SoundFile(wav_filename) as f:
                 start_sample = floor(intersection.start_secs * sample_rate)
                 num_samples = ceil(segment_size_in_secs * sample_rate)
 
-                print(f"  loading {num_samples:,} samples starting at {start_sample:,}")
+                # print(f"  loading {num_samples:,} samples starting at {start_sample:,}")
 
                 try:
                     f.seek(start_sample)
