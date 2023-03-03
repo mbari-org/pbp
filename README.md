@@ -14,16 +14,15 @@ Roughly:
 
 ## Development
 
+I usually capture and use command recipes in a [`justfile`](justfile).
+
 ### Setup
 
 ```shell
 python3 -m venv virtenv
 source virtenv/bin/activate
-pip3 install -r requirements.txt
-pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam
+just setup
 ```
-
-I usually capture development command recipes in a [`justfile`](justfile).
 
 At this point I typically run the unit tests while putting together the code:
 
@@ -50,6 +49,7 @@ just to-gizo
 
 **NOTE**: Before committing/pushing any changes, I make sure to run:
 
-    just all
-
+```shell
+just all
+```
 which includes testing, formatting, and pylint.

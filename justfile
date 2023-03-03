@@ -70,6 +70,10 @@ ruff:
 pylint:
     python -m pylint src
 
+# Run main
+main:
+    PYTHONPATH=. python src/main.py
+
 # With prior running of:
 #   python -m pip install --upgrade build
 # Create dist

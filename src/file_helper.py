@@ -1,6 +1,6 @@
 import os
 from math import ceil, floor
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import numpy as np
 import soundfile as sf
@@ -68,10 +68,14 @@ class FileHelper:
         print(f"Day selected: {year:04}{month:02}{day:02}")
         return True
 
-    def extract_audio_segment(self, at_hour: int, at_minute: int) -> Optional[np.ndarray]:
+    def extract_audio_segment(
+        self, at_hour: int, at_minute: int
+    ) -> Optional[Tuple[int, np.ndarray]]:
         """
         Extracts the audio segment at the given start time.
         For this it loads and aggregates the relevant audio segments.
+
+        :return:  A tuple (sample_rate, audio_segment) or None
         """
 
         intersections: List[TMEIntersection] = get_intersecting_entries(
@@ -84,21 +88,27 @@ class FileHelper:
             at_minute,
         )
 
+        sample_rate: Optional[int] = None
+
         aggregated_segment: Optional[np.ndarray] = None
 
         segment_size_in_secs = self.segment_size_in_mins * 60
 
         for intersection in intersections:
-            ad_hoc_prefix = (
-                "/Volumes"  # like "/Volumes", for some preliminary testing -- TODO remove
-            )
+            # like "/Volumes" on my mac, for some preliminary testing -- TODO remove
+            ad_hoc_prefix = ""  # "/Volumes"
             wav_filename = (
                 f"{ad_hoc_prefix}{intersection.tme.path}"
                 if intersection.tme.path.startswith("/")
                 else f"{self.audio_base_dir}/{intersection.tme.path}"
             )
-            print(f"  from {wav_filename}:")
-            sample_rate = _get_sample_rate(wav_filename)
+            print(f"    {intersection.duration_secs} secs from {wav_filename}")
+
+            sr = _get_sample_rate(wav_filename)
+            if sample_rate is not None and sample_rate != sr:
+                print(f"UNEXPECTED: sample rate mismatch: {sample_rate} vs {sr}")
+                return None
+            sample_rate = sr
 
             with sf.SoundFile(wav_filename) as f:
                 start_sample = floor(intersection.start_secs * sample_rate)
@@ -120,7 +130,7 @@ class FileHelper:
                         (aggregated_segment, audio_segment)
                     )
 
-        return aggregated_segment
+        return sample_rate, aggregated_segment if aggregated_segment is not None else None
 
 
 def _get_sample_rate(wav_filename: str) -> Optional[int]:
