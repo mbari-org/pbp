@@ -36,6 +36,10 @@ dev: test format
 # As the dev recipe plus pylint; good to run before committing changes
 all: dev pylint
 
+# Create virtual environment
+virtenv:
+    python3 -m venv virtenv
+
 # Install dependencies
 setup:
     pip3 install -r requirements.txt
