@@ -1,10 +1,10 @@
 import pytest
-from src.json_support import get_intersecting_entries, parse_json_lines_file
+from src.json_support import get_intersecting_entries, parse_json_file
 
 
 @pytest.fixture
 def json_entries():
-    return list(parse_json_lines_file("tests/json/20220902.json"))
+    return list(parse_json_file("tests/json/20220902.json"))
 
 
 def test_json_parsing(json_entries, snapshot):

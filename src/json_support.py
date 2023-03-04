@@ -1,9 +1,9 @@
+import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Generator, List
 from urllib.parse import urlparse
 
-import json_lines
 from dataclasses_json import config, dataclass_json
 from marshmallow import fields
 
@@ -20,7 +20,7 @@ metadata = config(
 @dataclass
 class TME:
     """
-    Captures each line in the given Json-Lines file.
+    Captures each object in the array contained in the given Json file.
     ("TME" for "ten-minute entry".)
     """
 
@@ -38,9 +38,9 @@ class TME:
         return urlparse(self.uri).path
 
 
-def parse_json_lines_file(filename: str) -> Generator[TME, None, None]:
+def parse_json_file(filename: str) -> Generator[TME, None, None]:
     with open(filename, "r", encoding="UTF-8") as f:
-        for item in json_lines.reader(f):
+        for item in json.load(f):
             yield TME.from_dict(item)  # type: ignore [attr-defined]
 
 

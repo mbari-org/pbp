@@ -1,1 +1,10 @@
-{"path":"test.wav","start":"2022-11-02T00:00:00","end":"2022-11-02T00:01:00","duration_secs":60.0,"channels":1,"jitter":0}
+[
+  {
+    "path": "file://test.wav",
+    "start": "2022-11-02T00:00:00",
+    "end": "2022-11-02T00:01:00",
+    "duration_secs": 60.0,
+    "channels": 1,
+    "jitter": 0
+  }
+]

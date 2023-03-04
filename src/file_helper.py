@@ -7,7 +7,7 @@ import soundfile as sf
 
 from src.json_support import (
     get_intersecting_entries,
-    parse_json_lines_file,
+    parse_json_file,
     TME,
     TMEIntersection,
 )
@@ -27,7 +27,7 @@ class FileHelper:
         """
 
         :param json_base_dir:
-          Directory containing the YYYYMMDD.json json-lines files
+          Directory containing the YYYYMMDD.json json files
         :param audio_base_dir:
           If given, it will be used as base directory for any relative (not starting with a slash)
           `path` attribute in the json entries.
@@ -64,7 +64,7 @@ class FileHelper:
         self.month = month
         self.day = day
         self.json_filename = json_filename
-        self.json_entries = list(parse_json_lines_file(self.json_filename))
+        self.json_entries = list(parse_json_file(self.json_filename))
         print(f"Day selected: {year:04}{month:02}{day:02}")
         return True
 
