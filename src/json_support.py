@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Generator, List
+from urllib.parse import urlparse
 
 import json_lines
 from dataclasses_json import config, dataclass_json
@@ -23,7 +24,7 @@ class TME:
     ("TME" for "ten-minute entry".)
     """
 
-    path: str
+    uri: str
     duration_secs: float
     start: datetime = field(metadata=metadata)
     end: datetime = field(metadata=metadata)
@@ -31,6 +32,10 @@ class TME:
     # add when needed:
     # channels: int = 1
     # jitter: float = 0
+
+    @property
+    def path(self) -> str:
+        return urlparse(self.uri).path
 
 
 def parse_json_lines_file(filename: str) -> Generator[TME, None, None]:

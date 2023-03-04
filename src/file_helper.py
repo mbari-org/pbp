@@ -95,8 +95,8 @@ class FileHelper:
         segment_size_in_secs = self.segment_size_in_mins * 60
 
         for intersection in intersections:
-            # like "/Volumes" on my mac, for some preliminary testing -- TODO remove
-            ad_hoc_prefix = ""  # "/Volumes"
+            # for preliminary testing -- TODO remove
+            ad_hoc_prefix = "/Volumes" if os.path.isdir("/Volumes") else ""
             wav_filename = (
                 f"{ad_hoc_prefix}{intersection.tme.path}"
                 if intersection.tme.path.startswith("/")
