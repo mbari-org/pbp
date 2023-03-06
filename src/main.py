@@ -1,7 +1,5 @@
 import pathlib
 
-import numpy as np
-
 from src.file_helper import FileHelper
 from src.misc_helper import gen_hour_minute_times
 from src.pypam_support import pypam_process
@@ -36,9 +34,6 @@ def process_day(
         # print(f"  √ segment loaded, len = {len(audio_segment):,}")
         print("  - processing ...")
         milli_psd = pypam_process(sample_rate, audio_segment)
-
-        milli_psd = 10 * np.log10(milli_psd) + 178  # convert to dB
-        # TODO this could actually be done via parameter to pypam
 
         # Note: preliminary naming for output, etc.
         netcdf_filename = f"{output_dir}/milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.nc"
