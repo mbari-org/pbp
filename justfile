@@ -31,7 +31,7 @@ tgz:
 # development:
 
 # A convenient recipe for development
-dev: test format
+dev: check test format
 
 # As the dev recipe plus pylint; good to run before committing changes
 all: dev pylint

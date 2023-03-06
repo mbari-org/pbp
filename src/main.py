@@ -1,12 +1,19 @@
 import pathlib
 
+import soundfile as sf
+
 from src.file_helper import FileHelper
 from src.misc_helper import gen_hour_minute_times
 from src.pypam_support import pypam_process
 
 
 def process_day(
-    file_helper: FileHelper, year: int, month: int, day: int, output_dir: str
+    file_helper: FileHelper,
+    year: int,
+    month: int,
+    day: int,
+    output_dir: str,
+    save_extracted_wav: bool = False,
 ):
     if not file_helper.select_day(year, month, day):
         return
@@ -27,13 +34,20 @@ def process_day(
             print(f"ERROR: cannot get audio segment at {at_hour:02}:{at_minute:02}")
             return
 
-        sample_rate, audio_segment = extraction
+        audio_info, audio_segment = extraction
+
+        if save_extracted_wav:
+            wav_filename = f"{output_dir}/extracted_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.wav"
+            sf.write(
+                wav_filename, audio_segment, audio_info.samplerate, audio_info.subtype
+            )
+            print(f"  √ saved extracted wav: {wav_filename} len={len(audio_segment):,}")
 
         audio_segment *= 3  # voltage multiplier
 
         # print(f"  √ segment loaded, len = {len(audio_segment):,}")
         print("  - processing ...")
-        milli_psd = pypam_process(sample_rate, audio_segment)
+        milli_psd = pypam_process(audio_info.samplerate, audio_segment)
 
         # Note: preliminary naming for output, etc.
         netcdf_filename = f"{output_dir}/milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.nc"
@@ -48,9 +62,10 @@ def main():
     audio_base_dir = "tests/wav"
     segment_size_in_mins: int = 1
     file_helper = FileHelper(json_base_dir, audio_base_dir, segment_size_in_mins)
-    output_dir = "/PAM_Analysis/pypam-space/test_output"
+    # output_dir = "/PAM_Analysis/pypam-space/test_output"
+    output_dir = "output"
     try:
-        process_day(file_helper, 2022, 9, 2, output_dir)
+        process_day(file_helper, 2022, 9, 2, output_dir, True)
     except KeyboardInterrupt:
         print("\nInterrupted")
 

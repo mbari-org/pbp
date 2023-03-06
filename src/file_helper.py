@@ -70,13 +70,18 @@ class FileHelper:
 
     def extract_audio_segment(
         self, at_hour: int, at_minute: int
-    ) -> Optional[Tuple[int, np.ndarray]]:
+    ) -> Optional[Tuple[sf._SoundFileInfo, np.ndarray]]:
         """
         Extracts the audio segment at the given start time.
         For this it loads and aggregates the relevant audio segments.
 
-        :return:  A tuple (sample_rate, audio_segment) or None
+        :return:  A tuple (audio_info, audio_segment) or None
         """
+
+        assert self.json_entries is not None
+        assert self.year is not None
+        assert self.month is not None
+        assert self.day is not None
 
         intersections: List[TMEIntersection] = get_intersecting_entries(
             self.json_entries,
@@ -88,11 +93,9 @@ class FileHelper:
             at_minute,
         )
 
-        sample_rate: Optional[int] = None
+        audio_info: Optional[sf._SoundFileInfo] = None
 
         aggregated_segment: Optional[np.ndarray] = None
-
-        segment_size_in_secs = self.segment_size_in_mins * 60
 
         for intersection in intersections:
             # for preliminary testing -- TODO remove
@@ -104,20 +107,28 @@ class FileHelper:
             )
             print(f"    {intersection.duration_secs} secs from {wav_filename}")
 
-            sr = _get_sample_rate(wav_filename)
-            if sample_rate is not None and sample_rate != sr:
-                print(f"UNEXPECTED: sample rate mismatch: {sample_rate} vs {sr}")
+            ai = _get_audio_info(wav_filename)
+            if (
+                ai is None
+                or audio_info is not None
+                and not _check_audio_info(audio_info, ai)
+            ):
                 return None
-            sample_rate = sr
+            audio_info = ai
+
+            start_sample = floor(intersection.start_secs * audio_info.samplerate)
+            num_samples = ceil(intersection.duration_secs * audio_info.samplerate)
 
             with sf.SoundFile(wav_filename) as f:
-                start_sample = floor(intersection.start_secs * sample_rate)
-                num_samples = ceil(segment_size_in_secs * sample_rate)
-
                 # print(f"  loading {num_samples:,} samples starting at {start_sample:,}")
 
                 try:
-                    f.seek(start_sample)
+                    new_pos = f.seek(start_sample)
+                    if new_pos != start_sample:
+                        print(
+                            f"ERROR: expected to seek to {start_sample:,} but got {new_pos:,}"
+                        )
+                        return None
                     audio_segment = f.read(num_samples)
                 except sf.LibsndfileError as e:
                     print(f"ERROR: {e}")
@@ -130,16 +141,27 @@ class FileHelper:
                         (aggregated_segment, audio_segment)
                     )
 
-        return sample_rate, aggregated_segment if aggregated_segment is not None else None
+        return (
+            (audio_info, aggregated_segment) if aggregated_segment is not None else None
+        )
 
 
-def _get_sample_rate(wav_filename: str) -> Optional[int]:
-    """
-    Returns the sample rate of the given WAV file.
-    """
+def _get_audio_info(wav_filename: str) -> Optional[sf._SoundFileInfo]:
     try:
-        _, sample_rate = sf.read(wav_filename, start=0, frames=0)
-        return sample_rate
+        return sf.info(wav_filename)
     except sf.LibsndfileError as e:
         print(f"ERROR: {e}")
         return None
+
+
+def _check_audio_info(ai1: sf._SoundFileInfo, ai2: sf._SoundFileInfo) -> bool:
+    if ai1.samplerate != ai2.samplerate:
+        print(f"UNEXPECTED: sample rate mismatch: {ai1.samplerate} vs {ai2.samplerate}")
+        return False
+    if ai1.channels != ai2.channels:
+        print(f"UNEXPECTED: channel count mismatch: {ai1.channels} vs {ai2.channels}")
+        return False
+    if ai1.subtype != ai2.subtype:
+        print(f"UNEXPECTED: subtype mismatch: {ai1.subtype} vs {ai2.subtype}")
+        return False
+    return True
