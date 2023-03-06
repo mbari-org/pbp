@@ -40,7 +40,8 @@ def pypam_process(fs: int, data: np.ndarray) -> xarray.DataArray:
 
     print(f"  bands_limits = {len(bands_limits)}")
     print(f"  bands_c = {len(bands_c)}")
-    print(f"  milli_psd = {milli_psd}")
+    milli_psd_str = f"{milli_psd}".replace("\n", "\n    ")
+    print(f"  milli_psd = {milli_psd_str}")
 
     # milli_psd.mean('id').plot()
     # plt.show()

@@ -26,6 +26,27 @@ tgz:
     HASH=$(git rev-parse --short HEAD)
     git archive main -o pypam-based-processing_${HASH}.tgz --prefix=pypam-based-processing_${HASH}/
 
+# Run main (on gizo)
+main-gizo:
+    PYTHONPATH=. python src/main.py \
+                 --json-base-dir=tests/json \
+                 --audio-base-dir=tests/wav \
+                 --year=2022 --month=9 --day=2 \
+                 --output-dir=/PAM_Analysis/pypam-space/test_output \
+                 --save-extracted-wav
+
+# Run main (on my mac)
+main-mac:
+    PYTHONPATH=. python src/main.py \
+                 --json-base-dir=tests/json \
+                 --audio-path-prefix=/Volumes \
+                 --year=2022 --month=9 --day=2 \
+                 --output-dir=output \
+                 --save-extracted-wav
+
+# Run main
+main *args="":
+    PYTHONPATH=. python src/main.py {{args}}
 
 ##############
 # development:
@@ -73,10 +94,6 @@ ruff:
 # Run pylint
 pylint:
     python -m pylint src
-
-# Run main
-main:
-    PYTHONPATH=. python src/main.py
 
 # With prior running of:
 #   python -m pip install --upgrade build

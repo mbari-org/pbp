@@ -22,20 +22,24 @@ class FileHelper:
         self,
         json_base_dir: str,
         audio_base_dir: Optional[str] = None,
+        audio_path_prefix: str = "",
         segment_size_in_mins: int = 1,
     ):
         """
 
         :param json_base_dir:
-          Directory containing the YYYYMMDD.json json files
+          Directory containing the `YYYYMMDD.json` json files
         :param audio_base_dir:
           If given, it will be used as base directory for any relative (not starting with a slash)
           `path` attribute in the json entries.
+        :param audio_path_prefix:
+          Ad hoc path prefix for wav locations, e.g. "/Volumes"
         :param segment_size_in_mins:
             The size of each audio segment to extract, in minutes. By default, 1.
         """
         self.json_base_dir = json_base_dir
         self.audio_base_dir = audio_base_dir
+        self.audio_path_prefix = audio_path_prefix
         self.segment_size_in_mins = segment_size_in_mins
 
         # the following set by select_day:
@@ -98,13 +102,10 @@ class FileHelper:
         aggregated_segment: Optional[np.ndarray] = None
 
         for intersection in intersections:
-            # for preliminary testing -- TODO remove
-            ad_hoc_prefix = "/Volumes" if os.path.isdir("/Volumes") else ""
-            wav_filename = (
-                f"{ad_hoc_prefix}{intersection.tme.path}"
-                if intersection.tme.path.startswith("/")
-                else f"{self.audio_base_dir}/{intersection.tme.path}"
-            )
+            if intersection.tme.path.startswith("/"):
+                wav_filename = f"{self.audio_path_prefix}{intersection.tme.path}"
+            else:
+                wav_filename = f"{self.audio_base_dir}/{intersection.tme.path}"
             print(f"    {intersection.duration_secs} secs from {wav_filename}")
 
             ai = _get_audio_info(wav_filename)
@@ -141,9 +142,9 @@ class FileHelper:
                         (aggregated_segment, audio_segment)
                     )
 
-        return (
-            (audio_info, aggregated_segment) if aggregated_segment is not None else None
-        )
+        if aggregated_segment is not None:
+            return audio_info, aggregated_segment
+        return None
 
 
 def _get_audio_info(wav_filename: str) -> Optional[sf._SoundFileInfo]:

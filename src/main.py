@@ -1,74 +1,91 @@
-import pathlib
+from argparse import ArgumentParser, RawTextHelpFormatter
 
-import soundfile as sf
+from src import processor
 
 from src.file_helper import FileHelper
-from src.misc_helper import gen_hour_minute_times
-from src.pypam_support import pypam_process
 
 
-def process_day(
-    file_helper: FileHelper,
-    year: int,
-    month: int,
-    day: int,
-    output_dir: str,
-    save_extracted_wav: bool = False,
-):
-    if not file_helper.select_day(year, month, day):
-        return
+def parse_arguments():
+    description = "Pypam based processing of a Pacific Sound data."
+    example = """
+Examples:
+    src/main.py  --json-base-dir=tests/json \\
+                 --audio-base-dir=tests/wav \\
+                 --year=2022 \\
+                 --month=9 \\
+                 --day=2 \\
+                 --output-dir=output
+    """
 
-    pathlib.Path(output_dir).mkdir(exist_ok=True)
+    parser = ArgumentParser(
+        description=description, epilog=example, formatter_class=RawTextHelpFormatter
+    )
 
-    # TODO capture info for "effort" variable, in particular,
-    #  the number of seconds of actual data per segment
+    parser.add_argument(
+        "--json-base-dir",
+        type=str,
+        metavar="dir",
+        required=True,
+        help="JSON base directory",
+    )
 
-    for at_hour, at_minute in gen_hour_minute_times(file_helper.segment_size_in_mins):
-        print(f"\nSegment at {at_hour:02}h:{at_minute:02}m ...")
-        print(f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:")
-        extraction = file_helper.extract_audio_segment(at_hour, at_minute)
-        # TODO properly consider the 3 possible cases for the segment:
-        #   whole data, partial data, no data
-        # for now, assuming whole minute segment
-        if extraction is None:
-            print(f"ERROR: cannot get audio segment at {at_hour:02}:{at_minute:02}")
-            return
+    parser.add_argument(
+        "--audio-base-dir",
+        type=str,
+        metavar="dir",
+        default=None,
+        help="Audio base directory. By default, none",
+    )
 
-        audio_info, audio_segment = extraction
+    parser.add_argument(
+        "--audio-path-prefix",
+        type=str,
+        metavar="dir",
+        default="",
+        help="Ad hoc path prefix for wav location, for example, /Volumes."
+        " By default, no prefix applied.",
+    )
 
-        if save_extracted_wav:
-            wav_filename = f"{output_dir}/extracted_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.wav"
-            sf.write(
-                wav_filename, audio_segment, audio_info.samplerate, audio_info.subtype
-            )
-            print(f"  √ saved extracted wav: {wav_filename} len={len(audio_segment):,}")
+    parser.add_argument("--year", type=int, metavar="YYYY", required=True, help="Year")
+    parser.add_argument("--month", type=int, metavar="M", required=True, help="Month")
+    parser.add_argument("--day", type=int, metavar="D", required=True, help="Day")
 
-        audio_segment *= 3  # voltage multiplier
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        metavar="dir",
+        required=True,
+        help="Output directory",
+    )
 
-        # print(f"  √ segment loaded, len = {len(audio_segment):,}")
-        print("  - processing ...")
-        milli_psd = pypam_process(audio_info.samplerate, audio_segment)
+    parser.add_argument(
+        "--save-extracted-wav",
+        default=False,
+        action="store_true",
+        help="Save each extracted segment",
+    )
 
-        # Note: preliminary naming for output, etc.
-        netcdf_filename = f"{output_dir}/milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.nc"
-        print(f"  - saving milli_psd result to {netcdf_filename}")
-        milli_psd.to_netcdf(netcdf_filename)
-        # on my Mac: format='NETCDF4_CLASSIC' triggers:
-        #    ValueError: invalid format for scipy.io.netcdf backend: 'NETCDF4_CLASSIC'
+    return parser.parse_args()
 
 
-def main():
-    json_base_dir = "tests/json"
-    audio_base_dir = "tests/wav"
-    segment_size_in_mins: int = 1
-    file_helper = FileHelper(json_base_dir, audio_base_dir, segment_size_in_mins)
-    # output_dir = "/PAM_Analysis/pypam-space/test_output"
-    output_dir = "output"
+def main(opts):
+    file_helper = FileHelper(
+        json_base_dir=opts.json_base_dir,
+        audio_base_dir=opts.audio_base_dir,
+        audio_path_prefix=opts.audio_path_prefix,
+    )
     try:
-        process_day(file_helper, 2022, 9, 2, output_dir, True)
+        processor.process_day(
+            file_helper,
+            year=opts.year,
+            month=opts.month,
+            day=opts.day,
+            output_dir=opts.output_dir,
+            save_extracted_wav=opts.save_extracted_wav,
+        )
     except KeyboardInterrupt:
         print("\nInterrupted")
 
 
 if __name__ == "__main__":
-    main()
+    main(parse_arguments())
