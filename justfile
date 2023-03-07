@@ -27,22 +27,24 @@ tgz:
     git archive main -o pypam-based-processing_${HASH}.tgz --prefix=pypam-based-processing/
 
 # Run main (on gizo)
-main-gizo:
+main-gizo *more_args="":
     PYTHONPATH=. python src/main.py \
                  --json-base-dir=tests/json \
                  --audio-base-dir=tests/wav \
                  --year=2022 --month=9 --day=2 \
                  --output-dir=/PAM_Analysis/pypam-space/test_output \
-                 --save-extracted-wav
+                 --save-extracted-wav \
+                 {{more_args}}
 
 # Run main (on my mac)
-main-mac:
+main-mac *more_args="":
     PYTHONPATH=. python src/main.py \
                  --json-base-dir=tests/json \
                  --audio-path-prefix=/Volumes \
                  --year=2022 --month=9 --day=2 \
                  --output-dir=output \
-                 --save-extracted-wav
+                 --save-extracted-wav \
+                 {{more_args}}
 
 # Run main
 main *args="":

@@ -1,8 +1,8 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from src.processor import Processor
-
 from src.file_helper import FileHelper
+
+from src.process_helper import ProcessHelper
 
 
 def parse_arguments():
@@ -68,9 +68,10 @@ Examples:
     parser.add_argument(
         "-j",
         "--cpus",
-        default=0,
+        type=int,
+        default=1,
         metavar="num",
-        help="Number of cpus to use. By default, os.cpu_count()",
+        help="Number of cpus to use. 0 will indicate all available cpus. By default, 1.",
     )
 
     return parser.parse_args()
@@ -83,15 +84,15 @@ def main(opts):
         audio_path_prefix=opts.audio_path_prefix,
     )
 
-    processor = Processor(
-            file_helper,
-            output_dir=opts.output_dir,
-            save_extracted_wav=opts.save_extracted_wav,
-            num_cpus=opts.cpus,
+    processor_helper = ProcessHelper(
+        file_helper,
+        output_dir=opts.output_dir,
+        save_extracted_wav=opts.save_extracted_wav,
+        num_cpus=opts.cpus,
     )
 
     try:
-        processor.process_day(
+        processor_helper.process_day(
             year=opts.year,
             month=opts.month,
             day=opts.day,

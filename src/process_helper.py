@@ -1,5 +1,7 @@
 import os
 import pathlib
+
+from multiprocessing import Pool
 from typing import List, Tuple
 
 import numpy as np
@@ -10,7 +12,7 @@ from src.misc_helper import gen_hour_minute_times
 from src.pypam_support import pypam_process
 
 
-class Processor:
+class ProcessHelper:
     def __init__(
         self,
         file_helper: FileHelper,
@@ -21,8 +23,7 @@ class Processor:
         self.file_helper = file_helper
         self.output_dir = output_dir
         self.save_extracted_wav = save_extracted_wav
-        self.num_cpus = os.cpu_count() if num_cpus == 0 else num_cpus
-        print(f"Processor: num_cpus={self.num_cpus}")
+        self.num_cpus = _get_cpus_to_use(num_cpus)
 
         pathlib.Path(output_dir).mkdir(exist_ok=True)
 
@@ -35,10 +36,14 @@ class Processor:
         )
 
         if self.num_cpus > 1:
-            chunks = np.array_split(at_hour_and_minutes, self.num_cpus)
-            print(f"Processing {len(at_hour_and_minutes)} segments in {len(chunks)} chunks")
-            for chunk in chunks:
-                self.process_hours_minutes(chunk)
+            splits = np.array_split(at_hour_and_minutes, self.num_cpus)
+            print(
+                f"Splitting {len(at_hour_and_minutes)} segments into {len(splits)} processes ..."
+            )
+            with Pool(self.num_cpus) as pool:
+                args = [(s,) for s in splits]
+                pool.starmap(self.process_hours_minutes, args)
+
         else:
             self.process_hours_minutes(at_hour_and_minutes)
 
@@ -84,3 +89,12 @@ class Processor:
         milli_psd.to_netcdf(netcdf_filename)
         # on my Mac: format='NETCDF4_CLASSIC' triggers:
         #    ValueError: invalid format for scipy.io.netcdf backend: 'NETCDF4_CLASSIC'
+
+
+def _get_cpus_to_use(num_cpus: int) -> int:
+    cpu_count = os.cpu_count()
+    if num_cpus <= 0 and cpu_count is not None:
+        num_cpus = cpu_count
+    if cpu_count is not None and num_cpus > cpu_count:
+        num_cpus = cpu_count
+    return num_cpus

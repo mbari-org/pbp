@@ -101,12 +101,13 @@ class FileHelper:
 
         aggregated_segment: Optional[np.ndarray] = None
 
+        prefix = f"({at_hour:02}h:{at_minute:02}m)"
         for intersection in intersections:
             if intersection.tme.path.startswith("/"):
                 wav_filename = f"{self.audio_path_prefix}{intersection.tme.path}"
             else:
                 wav_filename = f"{self.audio_base_dir}/{intersection.tme.path}"
-            print(f"    {intersection.duration_secs} secs from {wav_filename}")
+            print(f"    {prefix} {intersection.duration_secs} secs from {wav_filename}")
 
             ai = _get_audio_info(wav_filename)
             if (
