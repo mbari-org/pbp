@@ -7,6 +7,9 @@ from pypam import utils
 # Status: Preliminary
 # Initially based on pypam's signal_oriented.py example.
 
+# Approximate "flat" sensitivity of the hydrophone
+APPROX_FLAT_SENSITIVITY = 178
+
 
 def pypam_process(fs: int, data: np.ndarray) -> xarray.DataArray:
     print(f"  pypam_process: fs={fs} data.shape = {data.shape}")
@@ -14,14 +17,14 @@ def pypam_process(fs: int, data: np.ndarray) -> xarray.DataArray:
     # Set the nfft to 1 second
     nfft = fs
 
-    s = sig.Signal(data, fs=fs)
-    s.set_band(None)
-    fbands, spectra, _ = s.spectrum(
-        scaling="spectrum", nfft=nfft, db=False, overlap=0, force_calc=True
+    signal = sig.Signal(data, fs=fs)
+    signal.set_band(None)
+    fbands, spectra, _ = signal.spectrum(
+        scaling="density", nfft=nfft, db=False, overlap=0.5, force_calc=True
     )
     # NOTE: db=False above because True would make pypam use a fixed ref=1.0, which is not what we want.
     # Convert to dB:
-    spectra = 10 * np.log10(spectra) + 178
+    spectra = 10 * np.log10(spectra) + APPROX_FLAT_SENSITIVITY
 
     # Convert the spectra to a datarray
     psd_da = xarray.DataArray(

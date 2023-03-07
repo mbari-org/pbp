@@ -1,6 +1,6 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from src import processor
+from src.processor import Processor
 
 from src.file_helper import FileHelper
 
@@ -65,6 +65,14 @@ Examples:
         help="Save each extracted segment",
     )
 
+    parser.add_argument(
+        "-j",
+        "--cpus",
+        default=0,
+        metavar="num",
+        help="Number of cpus to use. By default, os.cpu_count()",
+    )
+
     return parser.parse_args()
 
 
@@ -74,14 +82,19 @@ def main(opts):
         audio_base_dir=opts.audio_base_dir,
         audio_path_prefix=opts.audio_path_prefix,
     )
+
+    processor = Processor(
+            file_helper,
+            output_dir=opts.output_dir,
+            save_extracted_wav=opts.save_extracted_wav,
+            num_cpus=opts.cpus,
+    )
+
     try:
         processor.process_day(
-            file_helper,
             year=opts.year,
             month=opts.month,
             day=opts.day,
-            output_dir=opts.output_dir,
-            save_extracted_wav=opts.save_extracted_wav,
         )
     except KeyboardInterrupt:
         print("\nInterrupted")

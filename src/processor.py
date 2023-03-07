@@ -1,5 +1,8 @@
+import os
 import pathlib
+from typing import List, Tuple
 
+import numpy as np
 import soundfile as sf
 
 from src.file_helper import FileHelper
@@ -7,23 +10,49 @@ from src.misc_helper import gen_hour_minute_times
 from src.pypam_support import pypam_process
 
 
-def process_day(
-    file_helper: FileHelper,
-    year: int,
-    month: int,
-    day: int,
-    output_dir: str,
-    save_extracted_wav: bool = False,
-):
-    if not file_helper.select_day(year, month, day):
-        return
+class Processor:
+    def __init__(
+        self,
+        file_helper: FileHelper,
+        output_dir: str,
+        save_extracted_wav: bool = False,
+        num_cpus: int = 0,
+    ):
+        self.file_helper = file_helper
+        self.output_dir = output_dir
+        self.save_extracted_wav = save_extracted_wav
+        self.num_cpus = os.cpu_count() if num_cpus == 0 else num_cpus
+        print(f"Processor: num_cpus={self.num_cpus}")
 
-    pathlib.Path(output_dir).mkdir(exist_ok=True)
+        pathlib.Path(output_dir).mkdir(exist_ok=True)
 
-    # TODO capture info for "effort" variable, in particular,
-    #  the number of seconds of actual data per segment
+    def process_day(self, year: int, month: int, day: int):
+        if not self.file_helper.select_day(year, month, day):
+            return
 
-    for at_hour, at_minute in gen_hour_minute_times(file_helper.segment_size_in_mins):
+        at_hour_and_minutes: List[Tuple[int, int]] = list(
+            gen_hour_minute_times(self.file_helper.segment_size_in_mins)
+        )
+
+        if self.num_cpus > 1:
+            chunks = np.array_split(at_hour_and_minutes, self.num_cpus)
+            print(f"Processing {len(at_hour_and_minutes)} segments in {len(chunks)} chunks")
+            for chunk in chunks:
+                self.process_hours_minutes(chunk)
+        else:
+            self.process_hours_minutes(at_hour_and_minutes)
+
+    def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
+        for at_hour, at_minute in hour_and_minutes:
+            self.process_hour_minute(at_hour, at_minute)
+
+    def process_hour_minute(self, at_hour: int, at_minute: int):
+        # TODO capture info for "effort" variable, in particular,
+        #  the number of seconds of actual data per segment
+
+        file_helper = self.file_helper
+        year, month, day = file_helper.year, file_helper.month, file_helper.day
+
         print(f"\nSegment at {at_hour:02}h:{at_minute:02}m ...")
         print(f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:")
         extraction = file_helper.extract_audio_segment(at_hour, at_minute)
@@ -36,8 +65,8 @@ def process_day(
 
         audio_info, audio_segment = extraction
 
-        if save_extracted_wav:
-            wav_filename = f"{output_dir}/extracted_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.wav"
+        if self.save_extracted_wav:
+            wav_filename = f"{self.output_dir}/extracted_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.wav"
             sf.write(
                 wav_filename, audio_segment, audio_info.samplerate, audio_info.subtype
             )
@@ -50,7 +79,7 @@ def process_day(
         milli_psd = pypam_process(audio_info.samplerate, audio_segment)
 
         # Note: preliminary naming for output, etc.
-        netcdf_filename = f"{output_dir}/milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.nc"
+        netcdf_filename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.nc"
         print(f"  - saving milli_psd result to {netcdf_filename}")
         milli_psd.to_netcdf(netcdf_filename)
         # on my Mac: format='NETCDF4_CLASSIC' triggers:
