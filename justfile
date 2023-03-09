@@ -66,7 +66,7 @@ virtenv:
 # Install dependencies
 setup:
     pip3 install -r requirements.txt
-    pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam
+    pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam==0.1.9b0
     mypy --install-types
 
 # Do static type checking (not very strict)

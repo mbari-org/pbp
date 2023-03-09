@@ -22,13 +22,10 @@ def pypam_process(fs: int, data: np.ndarray) -> xarray.DataArray:
     fbands, spectra, _ = signal.spectrum(
         scaling="density", nfft=nfft, db=False, overlap=0.5, force_calc=True
     )
-    # NOTE: db=False above because True would make pypam use a fixed ref=1.0, which is not what we want.
-    # Convert to dB:
-    spectra = 10 * np.log10(spectra) + APPROX_FLAT_SENSITIVITY
 
     # Convert the spectra to a datarray
     psd_da = xarray.DataArray(
-        [spectra],
+        data=[spectra],
         coords={"id": np.arange(1), "frequency": fbands},
         dims=["id", "frequency"],
     )
@@ -40,13 +37,6 @@ def pypam_process(fs: int, data: np.ndarray) -> xarray.DataArray:
     milli_psd = utils.spectra_ds_to_bands(
         psd_da, bands_limits, bands_c, fft_bin_width=fs / nfft, db=False
     )
-
-    print(f"  bands_limits = {len(bands_limits)}")
-    print(f"  bands_c = {len(bands_c)}")
-    milli_psd_str = f"{milli_psd}".replace("\n", "\n    ")
-    print(f"  milli_psd = {milli_psd_str}")
-
-    # milli_psd.mean('id').plot()
-    # plt.show()
+    milli_psd = 10 * np.log10(milli_psd) + APPROX_FLAT_SENSITIVITY
 
     return milli_psd
