@@ -42,7 +42,7 @@ main-mac *more_args="":
                  --json-base-dir=tests/json \
                  --audio-path-prefix=/Volumes \
                  --year=2022 --month=9 --day=2 \
-                 --output-dir=output \
+                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
                  --save-extracted-wav \
                  {{more_args}}
 
