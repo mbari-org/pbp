@@ -66,6 +66,13 @@ Examples:
     )
 
     parser.add_argument(
+        "--save-segment-result",
+        default=False,
+        action="store_true",
+        help="Save result for each extracted segment",
+    )
+
+    parser.add_argument(
         "-j",
         "--cpus",
         type=int,
@@ -87,6 +94,7 @@ def main(opts):
     processor_helper = ProcessHelper(
         file_helper,
         output_dir=opts.output_dir,
+        save_segment_result=opts.save_segment_result,
         save_extracted_wav=opts.save_extracted_wav,
         num_cpus=opts.cpus,
     )

@@ -33,8 +33,10 @@ main-gizo *more_args="":
                  --audio-base-dir=tests/wav \
                  --year=2022 --month=9 --day=2 \
                  --output-dir=/PAM_Analysis/pypam-space/test_output \
-                 --save-extracted-wav \
+                 --save-segment-result \
                  {{more_args}}
+
+#                 --save-extracted-wav \
 
 # Run main (on my mac)
 main-mac *more_args="":
@@ -42,9 +44,11 @@ main-mac *more_args="":
                  --json-base-dir=tests/json \
                  --audio-path-prefix=/Volumes \
                  --year=2022 --month=9 --day=2 \
-                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
-                 --save-extracted-wav \
+                 --output-dir=output \
+                 --save-segment-result \
                  {{more_args}}
+
+#                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
 # Run main
 main *args="":

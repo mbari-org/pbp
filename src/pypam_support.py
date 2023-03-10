@@ -4,9 +4,6 @@ import pypam.signal as sig
 import xarray
 from pypam import utils
 
-# Status: Preliminary
-# Initially based on pypam's signal_oriented.py example.
-
 # Approximate "flat" sensitivity of the hydrophone
 APPROX_FLAT_SENSITIVITY = 178
 

@@ -115,7 +115,8 @@ class FileHelper:
                 or audio_info is not None
                 and not _check_audio_info(audio_info, ai)
             ):
-                return None
+                return None  # error!
+
             audio_info = ai
 
             start_sample = floor(intersection.start_secs * audio_info.samplerate)
@@ -127,11 +128,14 @@ class FileHelper:
                 try:
                     new_pos = f.seek(start_sample)
                     if new_pos != start_sample:
-                        print(
-                            f"ERROR: expected to seek to {start_sample:,} but got {new_pos:,}"
-                        )
-                        return None
-                    audio_segment = f.read(num_samples)
+                        # no-data case, let's just read 0 samples to get an empty array:
+                        audio_segment = f.read(0)
+                    else:
+                        audio_segment = f.read(num_samples)
+                        if len(audio_segment) < num_samples:
+                            # partial-data case.
+                            print(f"!!! partial data: {len(audio_segment)} < {num_samples}")
+
                 except sf.LibsndfileError as e:
                     print(f"ERROR: {e}")
                     return None
