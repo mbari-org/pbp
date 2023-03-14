@@ -24,7 +24,7 @@ to-gizo user="carueda" server="gizo.shore.mbari.org": tgz
 tgz:
     #!/usr/bin/env bash
     HASH=$(git rev-parse --short HEAD)
-    git archive main -o pypam-based-processing_${HASH}.tgz --prefix=pypam-based-processing/
+    git archive ${HASH} -o pypam-based-processing_${HASH}.tgz --prefix=pypam-based-processing/
 
 # Run main (on gizo)
 main-gizo *more_args="":
