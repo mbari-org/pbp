@@ -47,7 +47,7 @@ class PypamSupport:
             db=False,
         )
         milli_psd = 10 * np.log10(milli_psd) + APPROX_FLAT_SENSITIVITY
-
+        milli_psd.name = "psd"
         return milli_psd
 
     def get_milli_psd(self, data: np.ndarray) -> xarray.DataArray:
@@ -74,5 +74,5 @@ class PypamSupport:
             db=False,
         )
         milli_psd = 10 * np.log10(milli_psd) + APPROX_FLAT_SENSITIVITY
-
+        milli_psd.name = "psd"
         return milli_psd

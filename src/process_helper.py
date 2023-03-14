@@ -64,10 +64,11 @@ class ProcessHelper:
 
         self.process_hours_minutes(at_hour_and_minutes)
         assert self.pypam_support is not None
+        print("\nAggregating results ...")
         aggregated_result = self.pypam_support.get_aggregated_milli_psd()
-        basename = f"milli_psd_{year:04}{month:02}{day:02}"
-        save_netcdf(aggregated_result, f"{self.output_dir}/{basename}.nc")
-        save_csv(aggregated_result, f"{self.output_dir}/{basename}.csv")
+        basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
+        save_netcdf(aggregated_result, f"{basename}.nc")
+        save_csv(aggregated_result, f"{basename}.csv")
 
     def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
         print(f"Processing {len(hour_and_minutes)} segments ...")

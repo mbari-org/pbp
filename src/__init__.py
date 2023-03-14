@@ -11,7 +11,7 @@ def save_netcdf(milli_psd: xr.DataArray, filename: str):
 
 
 def save_csv(milli_psd: xr.DataArray, filename: str):
-    print(f"  -    saving CSV: {filename}")
+    print(f"  - saving    CSV: {filename}")
     milli_psd.to_pandas().to_csv(filename, float_format="%.1f")
 
 
