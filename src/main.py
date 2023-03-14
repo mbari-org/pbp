@@ -73,6 +73,13 @@ Examples:
     )
 
     parser.add_argument(
+        "--max-segments",
+        type=int,
+        default=0,
+        help="Test convenience: limit number of segments to process. By default, 0 (no limit).",
+    )
+
+    parser.add_argument(
         "-j",
         "--cpus",
         type=int,
@@ -97,6 +104,7 @@ def main(opts):
         save_segment_result=opts.save_segment_result,
         save_extracted_wav=opts.save_extracted_wav,
         num_cpus=opts.cpus,
+        max_segments=opts.max_segments,
     )
 
     try:

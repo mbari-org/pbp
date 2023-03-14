@@ -33,9 +33,9 @@ main-gizo *more_args="":
                  --audio-base-dir=tests/wav \
                  --year=2022 --month=9 --day=2 \
                  --output-dir=/PAM_Analysis/pypam-space/test_output \
-                 --save-segment-result \
                  {{more_args}}
 
+#                 --save-segment-result \
 #                 --save-extracted-wav \
 
 # Run main (on my mac)
@@ -45,9 +45,10 @@ main-mac *more_args="":
                  --audio-path-prefix=/Volumes \
                  --year=2022 --month=9 --day=2 \
                  --output-dir=output \
-                 --save-segment-result \
                  {{more_args}}
 
+#                 --max-segments=5 \
+#                 --save-segment-result \
 #                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
 # Run main

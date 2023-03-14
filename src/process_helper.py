@@ -1,8 +1,9 @@
 import pathlib
-from multiprocessing import Pool
+
+# from multiprocessing import Pool
 from typing import List, Optional, Tuple
 
-import numpy as np
+# import numpy as np
 import soundfile as sf
 
 from src import get_cpus_to_use, save_csv, save_netcdf
@@ -23,12 +24,14 @@ class ProcessHelper:
         save_segment_result: bool = False,
         save_extracted_wav: bool = False,
         num_cpus: int = 0,
+        max_segments: int = 0,
     ):
         self.file_helper = file_helper
         self.output_dir = output_dir
         self.save_segment_result = save_segment_result
         self.save_extracted_wav = save_extracted_wav
         self.num_cpus = get_cpus_to_use(num_cpus)
+        self.max_segments = max_segments
 
         # obtained once upon first segment to be processed
         self.pypam_support: Optional[PypamSupport] = None
@@ -43,21 +46,33 @@ class ProcessHelper:
             gen_hour_minute_times(self.file_helper.segment_size_in_mins)
         )
 
-        if self.num_cpus > 1:
-            splits = np.array_split(at_hour_and_minutes, self.num_cpus)
-            print(
-                f"Splitting {len(at_hour_and_minutes)} segments into {len(splits)} processes ..."
-            )
-            with Pool(self.num_cpus) as pool:
-                args = [(s,) for s in splits]
-                pool.starmap(self.process_hours_minutes, args)
+        if self.max_segments > 0:
+            at_hour_and_minutes = at_hour_and_minutes[: self.max_segments]
+            print(f"NOTE: Limiting to {len(at_hour_and_minutes)} segments ...")
 
-        else:
-            self.process_hours_minutes(at_hour_and_minutes)
+        if self.num_cpus > 1:
+            # TODO appropriate dispatch to then aggregate results
+            print("NOTE: ignoring multiprocessing while completing aggregation of day")
+            # splits = np.array_split(at_hour_and_minutes, self.num_cpus)
+            # print(
+            #     f"Splitting {len(at_hour_and_minutes)} segments into {len(splits)} processes ..."
+            # )
+            # with Pool(self.num_cpus) as pool:
+            #     args = [(s,) for s in splits]
+            #     pool.starmap(self.process_hours_minutes, args)
+            # return
+
+        self.process_hours_minutes(at_hour_and_minutes)
+        assert self.pypam_support is not None
+        aggregated_result = self.pypam_support.get_aggregated_milli_psd()
+        save_netcdf(aggregated_result, f"{self.output_dir}/aggregated_result.nc")
+        save_csv(aggregated_result, f"{self.output_dir}/aggregated_result.csv")
 
     def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
+        print(f"Processing {len(hour_and_minutes)} segments ...")
         for at_hour, at_minute in hour_and_minutes:
             self.process_segment_at_hour_minute(at_hour, at_minute)
+            # TODO generate "effort" variable with number of seconds of actual data per segment
 
     def process_segment_at_hour_minute(self, at_hour: int, at_minute: int):
         file_helper = self.file_helper
@@ -93,9 +108,10 @@ class ProcessHelper:
 
         print("  - processing ...")
         audio_segment *= VOLTAGE_MULTIPLIER
-        milli_psd = self.pypam_support.pypam_process(audio_segment)
+        self.pypam_support.add_segment(audio_segment)
 
         if self.save_segment_result:
+            milli_psd = self.pypam_support.get_milli_psd(audio_segment)
             # Note: preliminary naming for output, etc.
             basename = (
                 f"milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00"
