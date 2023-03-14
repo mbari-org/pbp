@@ -26,13 +26,27 @@ tgz:
     HASH=$(git rev-parse --short HEAD)
     git archive ${HASH} -o pypam-based-processing_${HASH}.tgz --prefix=pypam-based-processing/
 
+# Run multiple days
+main-gizo-multiple-days from_day to_day:
+    #!/usr/bin/env bash
+    year="2022"
+    month="9"
+    output_dir="/PAM_Analysis/pypam-space/test_output/daily"
+    for day in $(seq {{from_day}} {{to_day}}); do
+      log=$(printf "%s/milli_psd_%04d%02d%02d.log" "$output_dir" "$year" "$month" "$day")
+      cmd="just main-gizo year=$year month=$month day=$day output_dir=$output_dir"
+      # echo "running $cmd > $log 2>&1"
+      "$cmd" > "$log" 2>&1 &
+    done
+    wait
+
 # Run main (on gizo)
-main-gizo day:
+main-gizo year="2022" month="9" day="2" output_dir="/PAM_Analysis/pypam-space/test_output/daily":
     PYTHONPATH=. python src/main.py \
                  --json-base-dir=json/2022 \
                  --audio-path-map-prefix="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
-                 --year=2022 --month=9 --day={{day}} \
-                 --output-dir=/PAM_Analysis/pypam-space/test_output/daily
+                 --year={{year}} --month={{month}} --day={{day}} \
+                 --output-dir={{output_dir}}
 
 # Run main (on gizo) with some initial test jsons
 main-gizo-test *more_args="":
