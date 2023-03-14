@@ -90,7 +90,10 @@ class ProcessHelper:
         audio_info, audio_segment = extraction
 
         if self.pypam_support is None:
-            self.pypam_support = PypamSupport(audio_info.samplerate)
+            # TODO capture subset_to and/or band from command line.
+            self.pypam_support = PypamSupport(
+                audio_info.samplerate, subset_to=(10, 100_000)
+            )
         elif self.pypam_support.fs != audio_info.samplerate:
             print(
                 f"ERROR: samplerate changed from {self.pypam_support.fs} to {audio_info.samplerate}"

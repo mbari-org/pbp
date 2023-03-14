@@ -2,7 +2,7 @@ from typing import Generator, Tuple
 
 
 def gen_hour_minute_times(
-        segment_size_in_mins: int = 1,
+    segment_size_in_mins: int = 1,
 ) -> Generator[Tuple[int, int], None, None]:
     """
     Generate a sequence of starting (hour, minute) tuples to cover a whole day.
@@ -29,5 +29,5 @@ def map_prefix(prefix_map: str, s: str) -> str:
     if "~" in prefix_map:
         old, new = prefix_map.split("~", 2)
         if s.startswith(old):
-            return new + s[len(old):]
+            return new + s[len(old) :]
     return s
