@@ -32,8 +32,7 @@ main-gizo day:
                  --json-base-dir=json/2022 \
                  --audio-path-map-prefix="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
                  --year=2022 --month=9 --day={{day}} \
-                 --output-dir=/PAM_Analysis/pypam-space/test_output/daily \
-                 {{more_args}}
+                 --output-dir=/PAM_Analysis/pypam-space/test_output/daily
 
 # Run main (on gizo) with some initial test jsons
 main-gizo-test *more_args="":
