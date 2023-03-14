@@ -113,10 +113,12 @@ class ProcessHelper:
 
         print("  - processing ...")
         audio_segment *= VOLTAGE_MULTIPLIER
-        self.pypam_support.add_segment(audio_segment)
+
+        iso_minute = f"{year:04}{month:02}{day:02}T{at_hour:02}{at_minute:02}00"
+        self.pypam_support.add_segment(audio_segment, iso_minute)
 
         if self.save_segment_result:
-            milli_psd = self.pypam_support.get_milli_psd(audio_segment)
+            milli_psd = self.pypam_support.get_milli_psd(audio_segment, iso_minute)
             # Note: preliminary naming for output, etc.
             basename = (
                 f"milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00"

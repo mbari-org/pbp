@@ -32,8 +32,9 @@ class PypamSupport:
 
         self.fbands: Optional[np.ndarray] = None
         self.spectra: List[np.ndarray] = []
+        self.iso_minutes: List[str] = []
 
-    def add_segment(self, data: np.ndarray):
+    def add_segment(self, data: np.ndarray, iso_minute: str):
         print(f"  add_segment: data.shape = {data.shape}")
 
         signal = sig.Signal(data, fs=self.fs)
@@ -42,20 +43,23 @@ class PypamSupport:
             scaling="density", nfft=self.nfft, db=False, overlap=0.5, force_calc=True
         )
         self.spectra.append(spectrum)
+        self.iso_minutes.append(iso_minute)
 
     def get_aggregated_milli_psd(self) -> xr.DataArray:
         # Convert the spectra to a datarray
         psd_da = xr.DataArray(
             data=self.spectra,
-            coords={"id": np.arange(len(self.spectra)), "frequency": self.fbands},
-            dims=["id", "frequency"],
+            coords={"iso_minute": self.iso_minutes, "frequency": self.fbands},
+            dims=["iso_minute", "frequency"],
         )
         milli_psd = self.subset_result(psd_da)
         milli_psd = cast(xr.DataArray, 10 * np.log10(milli_psd) + APPROX_FLAT_SENSITIVITY)
         milli_psd.name = "psd"
+
+        self.iso_minutes = []
         return milli_psd
 
-    def get_milli_psd(self, data: np.ndarray) -> xr.DataArray:
+    def get_milli_psd(self, data: np.ndarray, iso_minute: str) -> xr.DataArray:
         """
         Convenience to get the millidecade bands for a single segment of data
         """
@@ -67,8 +71,8 @@ class PypamSupport:
         # Convert the spectrum to a datarray
         psd_da = xr.DataArray(
             data=[spectrum],
-            coords={"id": np.arange(1), "frequency": fbands},
-            dims=["id", "frequency"],
+            coords={"iso_minute": [iso_minute], "frequency": fbands},
+            dims=["iso_minute", "frequency"],
         )
 
         milli_psd = self.subset_result(psd_da)
