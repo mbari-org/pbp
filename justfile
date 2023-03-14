@@ -27,13 +27,22 @@ tgz:
     git archive ${HASH} -o pypam-based-processing_${HASH}.tgz --prefix=pypam-based-processing/
 
 # Run main (on gizo)
-main-gizo *more_args="":
+main-gizo day:
+    PYTHONPATH=. python src/main.py \
+                 --json-base-dir=json/2022 \
+                 --audio-path-map-prefix="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
+                 --year=2022 --month=9 --day={{day}} \
+                 --output-dir=/PAM_Analysis/pypam-space/test_output/daily \
+                 {{more_args}}
+
+# Run main (on gizo) with some initial test jsons
+main-gizo-test *more_args="":
     PYTHONPATH=. python src/main.py \
                  --json-base-dir=tests/json \
                  --audio-base-dir=tests/wav \
                  --audio-path-map-prefix="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
                  --year=2022 --month=9 --day=2 \
-                 --output-dir=/PAM_Analysis/pypam-space/test_output \
+                 --output-dir=/PAM_Analysis/pypam-space/test_output/daily \
                  {{more_args}}
 
 #                 --save-segment-result \
