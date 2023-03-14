@@ -9,6 +9,8 @@ from marshmallow import fields
 
 from src import PBPException
 
+from src.misc_helper import error
+
 metadata = config(
     encoder=datetime.isoformat,
     decoder=datetime.fromisoformat,
@@ -81,15 +83,15 @@ def get_intersecting_entries(
     # verify expected duration:
     segment_size_in_secs = segment_size_in_mins * 60
     if tot_duration_secs != segment_size_in_secs:
-        print(
-            f"ERROR: tot_duration_secs={tot_duration_secs} but expected to be {segment_size_in_secs}"
+        error(
+            f"tot_duration_secs={tot_duration_secs} but expected to be {segment_size_in_secs}"
         )
-        print(
+        error(
             f"   year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
         )
-        print("   intersecting_entries=")
+        error("   intersecting_entries=")
         for i in intersecting_entries:
-            print(f"    {i}")
+            error(f"    {i}")
         raise PBPException(
             f"tot_duration_secs={tot_duration_secs} != {segment_size_in_secs}=segment_size_in_secs"
         )

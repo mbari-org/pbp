@@ -6,6 +6,8 @@ import pypam.signal as sig
 import xarray as xr
 from pypam import utils
 
+from src.misc_helper import info
+
 # Approximate "flat" sensitivity of the hydrophone
 APPROX_FLAT_SENSITIVITY = 178
 
@@ -24,7 +26,7 @@ class PypamSupport:
 
         self.subset_to = subset_to
         band = [0, self.fs / 2]  # for now.
-        print(f"PypamSupport: subset_to={subset_to}  band={band}")
+        info(f"PypamSupport: subset_to={subset_to}  band={band}")
 
         self.bands_limits, self.bands_c = utils.get_hybrid_millidecade_limits(
             band=band, nfft=self.nfft
@@ -35,7 +37,7 @@ class PypamSupport:
         self.iso_minutes: List[str] = []
 
     def add_segment(self, data: np.ndarray, iso_minute: str):
-        print(f"  add_segment: data.shape = {data.shape}")
+        info(f"  add_segment: data.shape = {data.shape}")
 
         signal = sig.Signal(data, fs=self.fs)
         signal.set_band(None)
@@ -84,7 +86,7 @@ class PypamSupport:
         if self.subset_to is None:
             return da
 
-        print(f"\nsubsetting to {self.subset_to}")
+        info(f"subsetting to {self.subset_to}")
         bands_c = self.bands_c
         bands_limits = self.bands_limits
 
@@ -100,7 +102,7 @@ class PypamSupport:
         bands_limits = bands_limits[start_index : start_index + new_bands_c_len + 1]
 
         def print_array(name: str, arr: np.ndarray):
-            print(f"{name} ({len(arr)}) = {arr[:3]} ... {arr[-5:]}")
+            info(f"{name} ({len(arr)}) = {arr[:3]} ... {arr[-5:]}")
 
         print_array("       bands_c", bands_c)
         print_array("  bands_limits", bands_limits)

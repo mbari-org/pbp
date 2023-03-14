@@ -2,16 +2,18 @@ import os
 
 import xarray as xr
 
+from src.misc_helper import info
+
 
 def save_netcdf(milli_psd: xr.DataArray, filename: str):
-    print(f"  - saving NetCDF: {filename}")
+    info(f"  - saving NetCDF: {filename}")
     milli_psd.to_netcdf(filename)
     # on my Mac: format='NETCDF4_CLASSIC' triggers:
     #    ValueError: invalid format for scipy.io.netcdf backend: 'NETCDF4_CLASSIC'
 
 
 def save_csv(milli_psd: xr.DataArray, filename: str):
-    print(f"  - saving    CSV: {filename}")
+    info(f"  - saving    CSV: {filename}")
     milli_psd.to_pandas().to_csv(filename, float_format="%.1f")
 
 

@@ -12,7 +12,7 @@ from src.json_support import (
     TME,
     TMEIntersection,
 )
-from src.misc_helper import map_prefix
+from src.misc_helper import error, info, map_prefix
 
 
 class FileHelper:
@@ -68,7 +68,7 @@ class FileHelper:
 
         json_filename = f"{self.json_base_dir}/{year:04}{month:02}{day:02}.json"
         if not os.path.isfile(json_filename):
-            print(f"ERROR: {self.json_filename}: file not found\n")
+            error(f"{self.json_filename}: file not found\n")
             return False
 
         self.year = year
@@ -76,7 +76,7 @@ class FileHelper:
         self.day = day
         self.json_filename = json_filename
         self.json_entries = list(parse_json_file(self.json_filename))
-        print(f"Day selected: {year:04}{month:02}{day:02}")
+        info(f"Day selected: {year:04}{month:02}{day:02}")
         return True
 
     def extract_audio_segment(
@@ -111,7 +111,7 @@ class FileHelper:
         prefix = f"({at_hour:02}h:{at_minute:02}m)"
         for intersection in intersections:
             wav_filename = self._get_wav_filename(intersection.tme.uri)
-            print(f"    {prefix} {intersection.duration_secs} secs from {wav_filename}")
+            info(f"    {prefix} {intersection.duration_secs} secs from {wav_filename}")
 
             ai = _get_audio_info(wav_filename)
             if (
@@ -127,7 +127,7 @@ class FileHelper:
             num_samples = ceil(intersection.duration_secs * audio_info.samplerate)
 
             with sf.SoundFile(wav_filename) as f:
-                # print(f"  loading {num_samples:,} samples starting at {start_sample:,}")
+                # info(f"  loading {num_samples:,} samples starting at {start_sample:,}")
 
                 try:
                     new_pos = f.seek(start_sample)
@@ -138,12 +138,12 @@ class FileHelper:
                         audio_segment = f.read(num_samples)
                         if len(audio_segment) < num_samples:
                             # partial-data case.
-                            print(
+                            info(
                                 f"!!! partial data: {len(audio_segment)} < {num_samples}"
                             )
 
                 except sf.LibsndfileError as e:
-                    print(f"ERROR: {e}")
+                    error(f"{e}")
                     return None
 
                 if aggregated_segment is None:
@@ -172,18 +172,18 @@ def _get_audio_info(wav_filename: str) -> Optional[sf._SoundFileInfo]:
     try:
         return sf.info(wav_filename)
     except sf.LibsndfileError as e:
-        print(f"ERROR: {e}")
+        error(f"{e}")
         return None
 
 
 def _check_audio_info(ai1: sf._SoundFileInfo, ai2: sf._SoundFileInfo) -> bool:
     if ai1.samplerate != ai2.samplerate:
-        print(f"UNEXPECTED: sample rate mismatch: {ai1.samplerate} vs {ai2.samplerate}")
+        error(f"UNEXPECTED: sample rate mismatch: {ai1.samplerate} vs {ai2.samplerate}")
         return False
     if ai1.channels != ai2.channels:
-        print(f"UNEXPECTED: channel count mismatch: {ai1.channels} vs {ai2.channels}")
+        error(f"UNEXPECTED: channel count mismatch: {ai1.channels} vs {ai2.channels}")
         return False
     if ai1.subtype != ai2.subtype:
-        print(f"UNEXPECTED: subtype mismatch: {ai1.subtype} vs {ai2.subtype}")
+        error(f"UNEXPECTED: subtype mismatch: {ai1.subtype} vs {ai2.subtype}")
         return False
     return True

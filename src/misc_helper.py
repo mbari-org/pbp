@@ -1,4 +1,30 @@
+import logging
 from typing import Generator, Tuple
+
+
+def set_logger(opts):
+    log_filename = (
+        f"{opts.output_dir}/milli_psd_{opts.year:04}{opts.month:02}{opts.day:02}.log"
+    )
+    logging.basicConfig(
+        filename=log_filename,
+        filemode="w",
+        level=logging.DEBUG,
+        format="%(asctime)s %(levelname)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+
+def info(s: str):
+    logging.info(s)
+
+
+def debug(s: str):
+    logging.debug(s)
+
+
+def error(s: str):
+    logging.error(s)
 
 
 def gen_hour_minute_times(

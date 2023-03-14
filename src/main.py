@@ -2,6 +2,8 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 
 from src.file_helper import FileHelper
 
+from src.misc_helper import info, set_logger
+
 from src.process_helper import ProcessHelper
 
 
@@ -101,6 +103,8 @@ Examples:
 
 
 def main(opts):
+    set_logger(opts)
+
     file_helper = FileHelper(
         json_base_dir=opts.json_base_dir,
         audio_base_dir=opts.audio_base_dir,
@@ -124,7 +128,7 @@ def main(opts):
             day=opts.day,
         )
     except KeyboardInterrupt:
-        print("\nInterrupted")
+        info("INTERRUPTED")
 
 
 if __name__ == "__main__":
