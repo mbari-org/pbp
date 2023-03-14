@@ -114,7 +114,7 @@ class ProcessHelper:
         print("  - processing ...")
         audio_segment *= VOLTAGE_MULTIPLIER
 
-        iso_minute = f"{year:04}{month:02}{day:02}T{at_hour:02}{at_minute:02}00"
+        iso_minute = f"{year:04}-{month:02}-{day:02}T{at_hour:02}:{at_minute:02}:00Z"
         self.pypam_support.add_segment(audio_segment, iso_minute)
 
         if self.save_segment_result:
