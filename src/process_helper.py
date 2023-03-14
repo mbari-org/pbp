@@ -1,16 +1,15 @@
-import os
 import pathlib
 from multiprocessing import Pool
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 import soundfile as sf
 
-import xarray as xr
+from src import get_cpus_to_use, save_csv, save_netcdf
 
 from src.file_helper import FileHelper
 from src.misc_helper import gen_hour_minute_times
-from src.pypam_support import pypam_process
+from src.pypam_support import PypamSupport
 
 
 VOLTAGE_MULTIPLIER = 3
@@ -29,7 +28,10 @@ class ProcessHelper:
         self.output_dir = output_dir
         self.save_segment_result = save_segment_result
         self.save_extracted_wav = save_extracted_wav
-        self.num_cpus = _get_cpus_to_use(num_cpus)
+        self.num_cpus = get_cpus_to_use(num_cpus)
+
+        # obtained once upon first segment to be processed
+        self.pypam_support: Optional[PypamSupport] = None
 
         pathlib.Path(output_dir).mkdir(exist_ok=True)
 
@@ -55,9 +57,9 @@ class ProcessHelper:
 
     def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
         for at_hour, at_minute in hour_and_minutes:
-            self.process_hour_minute(at_hour, at_minute)
+            self.process_segment_at_hour_minute(at_hour, at_minute)
 
-    def process_hour_minute(self, at_hour: int, at_minute: int):
+    def process_segment_at_hour_minute(self, at_hour: int, at_minute: int):
         file_helper = self.file_helper
         year, month, day = file_helper.year, file_helper.month, file_helper.day
 
@@ -70,6 +72,14 @@ class ProcessHelper:
 
         audio_info, audio_segment = extraction
 
+        if self.pypam_support is None:
+            self.pypam_support = PypamSupport(audio_info.samplerate)
+        elif self.pypam_support.fs != audio_info.samplerate:
+            print(
+                f"ERROR: samplerate changed from {self.pypam_support.fs} to {audio_info.samplerate}"
+            )
+            return
+
         if self.save_extracted_wav:
             wav_filename = f"{self.output_dir}/extracted_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.wav"
             sf.write(
@@ -81,38 +91,14 @@ class ProcessHelper:
 
         print(f"  √ segment loaded, extracted_num_secs = {extracted_num_secs:,}")
 
-        # TODO generate "effort" variable with number of seconds of actual data per segment
-        # ...
-
         print("  - processing ...")
         audio_segment *= VOLTAGE_MULTIPLIER
-        milli_psd = pypam_process(audio_info.samplerate, audio_segment)
+        milli_psd = self.pypam_support.pypam_process(audio_segment)
 
         if self.save_segment_result:
             # Note: preliminary naming for output, etc.
             basename = (
                 f"milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00"
             )
-            _save_netcdf(milli_psd, f"{self.output_dir}/{basename}.nc")
-            _save_csv(milli_psd, f"{self.output_dir}/{basename}.csv")
-
-
-def _save_netcdf(milli_psd: xr.DataArray, filename: str):
-    print(f"  - saving NetCDF: {filename}")
-    milli_psd.to_netcdf(filename)
-    # on my Mac: format='NETCDF4_CLASSIC' triggers:
-    #    ValueError: invalid format for scipy.io.netcdf backend: 'NETCDF4_CLASSIC'
-
-
-def _save_csv(milli_psd: xr.DataArray, filename: str):
-    print(f"  -    saving CSV: {filename}")
-    milli_psd.to_pandas().to_csv(filename, float_format="%.1f")
-
-
-def _get_cpus_to_use(num_cpus: int) -> int:
-    cpu_count = os.cpu_count()
-    if num_cpus <= 0 and cpu_count is not None:
-        num_cpus = cpu_count
-    if cpu_count is not None and num_cpus > cpu_count:
-        num_cpus = cpu_count
-    return num_cpus
+            save_netcdf(milli_psd, f"{self.output_dir}/{basename}.nc")
+            save_csv(milli_psd, f"{self.output_dir}/{basename}.csv")
