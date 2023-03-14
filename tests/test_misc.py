@@ -1,4 +1,4 @@
-from src.misc_helper import gen_hour_minute_times
+from src.misc_helper import gen_hour_minute_times, map_prefix
 
 
 def test_gen_hour_minute_times(snapshot):
@@ -15,3 +15,20 @@ def test_gen_hour_minute_times(snapshot):
     do_size(1)
     do_size(10)
     do_size(60)
+
+
+def test_map_prefix():
+    prefix_map = "s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022"
+
+    def check(uri: str, mapped: str):
+        assert map_prefix(prefix_map, uri) == mapped
+
+    check(
+        "s3://pacific-sound-256khz-2022/09/MARS_20220901_235016.wav",
+        "file:///PAM_Archive/2022/09/MARS_20220901_235016.wav",
+    )
+
+    check(
+        "s3://pacific-sound-256khz-2022/09/MARS_20220921_002442.wav",
+        "file:///PAM_Archive/2022/09/MARS_20220921_002442.wav",
+    )

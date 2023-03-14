@@ -1,6 +1,7 @@
 import os
 from math import ceil, floor
 from typing import List, Optional, Tuple
+from urllib.parse import urlparse
 
 import numpy as np
 import soundfile as sf
@@ -11,6 +12,7 @@ from src.json_support import (
     TME,
     TMEIntersection,
 )
+from src.misc_helper import map_prefix
 
 
 class FileHelper:
@@ -22,6 +24,7 @@ class FileHelper:
         self,
         json_base_dir: str,
         audio_base_dir: Optional[str] = None,
+        audio_path_map_prefix: str = "",
         audio_path_prefix: str = "",
         segment_size_in_mins: int = 1,
     ):
@@ -32,6 +35,9 @@ class FileHelper:
         :param audio_base_dir:
           If given, it will be used as base directory for any relative (not starting with a slash)
           `path` attribute in the json entries.
+        :param audio_path_map_prefix:
+          Prefix mapping to get actual audio uri to be used.
+          Example: `s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022`
         :param audio_path_prefix:
           Ad hoc path prefix for wav locations, e.g. "/Volumes"
         :param segment_size_in_mins:
@@ -39,6 +45,7 @@ class FileHelper:
         """
         self.json_base_dir = json_base_dir
         self.audio_base_dir = audio_base_dir
+        self.audio_path_map_prefix = audio_path_map_prefix
         self.audio_path_prefix = audio_path_prefix
         self.segment_size_in_mins = segment_size_in_mins
 
@@ -103,10 +110,7 @@ class FileHelper:
 
         prefix = f"({at_hour:02}h:{at_minute:02}m)"
         for intersection in intersections:
-            if intersection.tme.path.startswith("/"):
-                wav_filename = f"{self.audio_path_prefix}{intersection.tme.path}"
-            else:
-                wav_filename = f"{self.audio_base_dir}/{intersection.tme.path}"
+            wav_filename = self._get_wav_filename(intersection.tme.uri)
             print(f"    {prefix} {intersection.duration_secs} secs from {wav_filename}")
 
             ai = _get_audio_info(wav_filename)
@@ -152,6 +156,16 @@ class FileHelper:
         if aggregated_segment is not None:
             return audio_info, aggregated_segment
         return None
+
+    def _get_wav_filename(self, uri: str) -> str:
+        # TODO note, we still assume local files.
+        uri = map_prefix(self.audio_path_map_prefix, uri)
+        path = urlparse(uri).path
+        if path.startswith("/"):
+            wav_filename = f"{self.audio_path_prefix}{path}"
+        else:
+            wav_filename = f"{self.audio_base_dir}/{path}"
+        return wav_filename
 
 
 def _get_audio_info(wav_filename: str) -> Optional[sf._SoundFileInfo]:

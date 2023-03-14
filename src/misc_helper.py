@@ -2,7 +2,7 @@ from typing import Generator, Tuple
 
 
 def gen_hour_minute_times(
-    segment_size_in_mins: int = 1,
+        segment_size_in_mins: int = 1,
 ) -> Generator[Tuple[int, int], None, None]:
     """
     Generate a sequence of starting (hour, minute) tuples to cover a whole day.
@@ -16,3 +16,18 @@ def gen_hour_minute_times(
         at_hour, at_minute = divmod(current_minute, 60)
         yield at_hour, at_minute
         current_minute += segment_size_in_mins
+
+
+def map_prefix(prefix_map: str, s: str) -> str:
+    """
+    Helper to replace a prefix to another prefix in given string
+    according to prefix_map.
+    :param prefix_map:  Like "old~new".
+    :param s:  The string to replace the prefix in.
+    :return:  Resulting string, possibly unchanged.
+    """
+    if "~" in prefix_map:
+        old, new = prefix_map.split("~", 2)
+        if s.startswith(old):
+            return new + s[len(old):]
+    return s

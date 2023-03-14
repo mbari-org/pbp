@@ -31,6 +31,7 @@ main-gizo *more_args="":
     PYTHONPATH=. python src/main.py \
                  --json-base-dir=tests/json \
                  --audio-base-dir=tests/wav \
+                 --audio-path-map-prefix="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
                  --year=2022 --month=9 --day=2 \
                  --output-dir=/PAM_Analysis/pypam-space/test_output \
                  {{more_args}}

@@ -38,6 +38,15 @@ Examples:
     )
 
     parser.add_argument(
+        "--audio-path-map-prefix",
+        type=str,
+        metavar="from~to",
+        default="",
+        help="Prefix mapping to get actual audio uri to be used."
+        " Example: 's3://pacific-sound-256khz-2022~file:///PAM_Archive/2022'.",
+    )
+
+    parser.add_argument(
         "--audio-path-prefix",
         type=str,
         metavar="dir",
@@ -95,6 +104,7 @@ def main(opts):
     file_helper = FileHelper(
         json_base_dir=opts.json_base_dir,
         audio_base_dir=opts.audio_base_dir,
+        audio_path_map_prefix=opts.audio_path_map_prefix,
         audio_path_prefix=opts.audio_path_prefix,
     )
 
