@@ -7,9 +7,7 @@ from urllib.parse import urlparse
 from dataclasses_json import config, dataclass_json
 from marshmallow import fields
 
-from src import PBPException
-
-from src.misc_helper import error
+from src.misc_helper import warn
 
 metadata = config(
     encoder=datetime.isoformat,
@@ -83,17 +81,11 @@ def get_intersecting_entries(
     # verify expected duration:
     segment_size_in_secs = segment_size_in_mins * 60
     if tot_duration_secs != segment_size_in_secs:
-        error(
-            f"tot_duration_secs={tot_duration_secs} but expected to be {segment_size_in_secs}"
-        )
-        error(
-            f"   year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
-        )
-        error("   intersecting_entries=")
+        msg = f"tot_duration_secs={tot_duration_secs} != {segment_size_in_secs}\n"
+        msg += f"  year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}\n"
+        msg += f"  intersecting_entries ({len(intersecting_entries)}):\n"
         for i in intersecting_entries:
-            error(f"    {i}")
-        raise PBPException(
-            f"tot_duration_secs={tot_duration_secs} != {segment_size_in_secs}=segment_size_in_secs"
-        )
+            msg += f"    {i}"
+        warn(msg)
 
     return intersecting_entries

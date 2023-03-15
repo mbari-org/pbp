@@ -23,6 +23,10 @@ def debug(s: str):
     logging.debug(s)
 
 
+def warn(s: str):
+    logging.warning(s)
+
+
 def error(s: str):
     logging.error(s)
 
