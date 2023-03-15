@@ -12,7 +12,7 @@ from src.json_support import (
     TME,
     TMEIntersection,
 )
-from src.misc_helper import error, info, map_prefix
+from src.misc_helper import error, info, map_prefix, warn
 
 
 class FileHelper:
@@ -112,6 +112,10 @@ class FileHelper:
         for intersection in intersections:
             wav_filename = self._get_wav_filename(intersection.tme.uri)
             info(f"    {prefix} {intersection.duration_secs} secs from {wav_filename}")
+
+            if intersection.duration_secs == 0:
+                warn("No data from intersection")
+                continue
 
             ai = _get_audio_info(wav_filename)
             if (

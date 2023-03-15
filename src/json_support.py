@@ -81,11 +81,11 @@ def get_intersecting_entries(
     # verify expected duration:
     segment_size_in_secs = segment_size_in_mins * 60
     if tot_duration_secs != segment_size_in_secs:
-        msg = f"tot_duration_secs={tot_duration_secs} != {segment_size_in_secs}\n"
-        msg += f"  year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}\n"
-        msg += f"  intersecting_entries ({len(intersecting_entries)}):\n"
-        for i in intersecting_entries:
-            msg += f"    {i}"
+        msg = f"tot_duration_secs={tot_duration_secs} != {segment_size_in_secs}"
+        msg += f"  year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
+        msg += f"  intersecting_entries ({len(intersecting_entries)})"
+        if len(intersecting_entries) > 0:
+            msg += "".join(f"\n    {i}" for i in intersecting_entries)
         warn(msg)
 
     return intersecting_entries
