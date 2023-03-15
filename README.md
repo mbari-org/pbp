@@ -30,16 +30,6 @@ At this point I typically run the unit tests while putting together the code:
 ```shell
 just test
 ```
-```text
-collected 3 items
-
-tests/test_json_support.py ..                                                                            [ 66%]
-tests/test_misc.py .                                                                                     [100%]
-
-------------------------------------------- snapshot report summary --------------------------------------------
-8 snapshots passed.
-============================================== 3 passed in 0.12s ==============================================
-```
 
 as well as others including:
 ```shell
@@ -52,5 +42,28 @@ just to-gizo
 
 ```shell
 just all
+```
+```shell
+(virtenv) ➜  pypam-based-processing git:(main) j all
+python -m mypy .
+Success: no issues found in 11 source files
+python -m pytest
+========================================= test session starts =========================================
+platform darwin -- Python 3.9.12, pytest-7.2.2, pluggy-1.0.0
+rootdir: /Users/carueda/github/mbari-org/pypam-based-processing
+plugins: syrupy-4.0.1
+collected 4 items
+
+tests/test_json_support.py ..                                                                   [ 50%]
+tests/test_misc.py ..                                                                           [100%]
+
+--------------------------------------- snapshot report summary ---------------------------------------
+8 snapshots passed.
+========================================== 4 passed in 0.56s ==========================================
+python -m ufmt format .
+✨ 10 files already formatted ✨
+python -m pylint src
+
+--------------------------------------------------------------------
 ```
 which includes testing, formatting, and pylint.
