@@ -66,9 +66,11 @@ class FileHelper:
         :return:  True only if selection was successful
         """
 
+        info(f"Selecting day: {year:04}{month:02}{day:02}")
+
         json_filename = f"{self.json_base_dir}/{year:04}{month:02}{day:02}.json"
         if not os.path.isfile(json_filename):
-            error(f"{self.json_filename}: file not found\n")
+            error(f"{json_filename}: file not found\n")
             return False
 
         self.year = year
@@ -76,7 +78,6 @@ class FileHelper:
         self.day = day
         self.json_filename = json_filename
         self.json_entries = list(parse_json_file(self.json_filename))
-        info(f"Day selected: {year:04}{month:02}{day:02}")
         return True
 
     def extract_audio_segment(
