@@ -44,7 +44,6 @@ just to-gizo
 just all
 ```
 ```shell
-(virtenv) ➜  pypam-based-processing git:(main) j all
 python -m mypy .
 Success: no issues found in 11 source files
 python -m pytest
@@ -65,5 +64,6 @@ python -m ufmt format .
 python -m pylint src
 
 --------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 ```
 which includes testing, formatting, and pylint.
