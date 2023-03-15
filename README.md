@@ -1,13 +1,14 @@
-WIP: Preparations for pypam-based data processing ...
-
-Roughly:
+Preparations for pypam-based data processing ...
 
 - [x] parse json files
-- [ ] process associated audio files
+- [x] process associated audio files
     - [x] iteration segment by segment
     - [x] concatenate segments for timekeeping
-    - [ ] invoke pypam per segment
-    - [ ] aggregate results
+    - [x] invoke pypam per segment
+    - [x] aggregate results
+    - [x] frequency and psd array output between 10 and 10^5 Hz
+    - [x] generate NetCDF and CSV
+    - [x] preliminary inclusion of "effort" (number of seconds per minute)
 - [ ] cloud processing
 - [ ] ...
 
@@ -53,9 +54,3 @@ just to-gizo
 just all
 ```
 which includes testing, formatting, and pylint.
-
-
-```
-aws s3 sync s3://pacific-sound-metadata/256khz/ . --exclude '*' --include '2022/202209*'
-
-```
