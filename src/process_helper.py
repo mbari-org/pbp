@@ -9,7 +9,7 @@ import soundfile as sf
 from src import get_cpus_to_use, save_csv, save_netcdf
 
 from src.file_helper import FileHelper
-from src.misc_helper import gen_hour_minute_times, info
+from src.misc_helper import gen_hour_minute_times, info, warn
 from src.pypam_support import PypamSupport
 
 
@@ -63,12 +63,14 @@ class ProcessHelper:
             # return
 
         self.process_hours_minutes(at_hour_and_minutes)
-        assert self.pypam_support is not None
-        info("Aggregating results ...")
-        aggregated_result = self.pypam_support.get_aggregated_milli_psd()
-        basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
-        save_netcdf(aggregated_result, f"{basename}.nc")
-        save_csv(aggregated_result, f"{basename}.csv")
+        if self.pypam_support is not None:
+            info("Aggregating results ...")
+            aggregated_result = self.pypam_support.get_aggregated_milli_psd()
+            basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
+            save_netcdf(aggregated_result, f"{basename}.nc")
+            save_csv(aggregated_result, f"{basename}.csv")
+        else:
+            warn("No segments processed, nothing to aggregate.")
 
     def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
         info(f"Processing {len(hour_and_minutes)} segments ...")
@@ -84,7 +86,7 @@ class ProcessHelper:
         info(f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:")
         extraction = file_helper.extract_audio_segment(at_hour, at_minute)
         if extraction is None:
-            info(f"ERROR: cannot get audio segment at {at_hour:02}:{at_minute:02}")
+            warn(f"cannot get audio segment at {at_hour:02}:{at_minute:02}")
             return
 
         audio_info, audio_segment = extraction
