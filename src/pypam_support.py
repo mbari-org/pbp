@@ -35,9 +35,11 @@ class PypamSupport:
         self.fbands: Optional[np.ndarray] = None
         self.spectra: List[np.ndarray] = []
         self.iso_minutes: List[str] = []
+        self.num_secs_per_minute: List[int] = []
 
     def add_segment(self, data: np.ndarray, iso_minute: str):
-        info(f"  add_segment: data.shape = {data.shape}")
+        num_secs = int(len(data) / self.fs)
+        info(f"  adding segment: {iso_minute} ({num_secs} secs used)")
 
         signal = sig.Signal(data, fs=self.fs)
         signal.set_band(None)
@@ -46,6 +48,7 @@ class PypamSupport:
         )
         self.spectra.append(spectrum)
         self.iso_minutes.append(iso_minute)
+        self.num_secs_per_minute.append(num_secs)
 
     def get_aggregated_milli_psd(self) -> xr.DataArray:
         # Convert the spectra to a datarray
@@ -58,7 +61,54 @@ class PypamSupport:
         milli_psd = cast(xr.DataArray, 10 * np.log10(milli_psd) + APPROX_FLAT_SENSITIVITY)
         milli_psd.name = "psd"
 
+        # ----------------------------------------
+        # Toward capturing "effort" variable:
+        #
+        # With: milli_psd.attrs["effort"] = self.num_secs_per_minute
+        # getting this when loading the resulting netcdf (via xarray.open_dataset):
+        #    In [41]: droot.info()
+        #    xarray.Dataset {
+        #    dimensions:
+        #    	frequency_bins = 2788 ;
+        #    	iso_minute = 2 ;
+        #
+        #    variables:
+        #    	float64 frequency_bins(frequency_bins) ;
+        #    	float64 lower_frequency(frequency_bins) ;
+        #    	float64 upper_frequency(frequency_bins) ;
+        #    	float64 psd(iso_minute, frequency_bins) ;
+        #    		psd:effort = [60 60] ;
+        #    	object iso_minute(iso_minute) ;
+        #
+        #    // global attributes:
+        #    }
+        #
+        # With: milli_psd["iso_minute"].attrs["effort"] = self.num_secs_per_minute
+        # getting this when loading the resulting netcdf (via xarray.open_dataset):
+        #    In [43]: d.info()
+        #    xarray.Dataset {
+        #    dimensions:
+        #    	frequency_bins = 2788 ;
+        #    	iso_minute = 2 ;
+        #
+        #    variables:
+        #    	float64 frequency_bins(frequency_bins) ;
+        #    	float64 lower_frequency(frequency_bins) ;
+        #    	float64 upper_frequency(frequency_bins) ;
+        #    	float64 psd(iso_minute, frequency_bins) ;
+        #    	object iso_minute(iso_minute) ;
+        #    		iso_minute:effort = [60 60] ;
+        #
+        #    // global attributes:
+        #    }
+
+        # So, let's use the latter for now:
+        milli_psd["iso_minute"].attrs["effort"] = self.num_secs_per_minute
+
+        info(f"Resulting milli_psd={milli_psd}")
+
         self.iso_minutes = []
+        self.num_secs_per_minute = []
         return milli_psd
 
     def get_milli_psd(self, data: np.ndarray, iso_minute: str) -> xr.DataArray:

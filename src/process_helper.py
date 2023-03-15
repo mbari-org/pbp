@@ -107,10 +107,6 @@ class ProcessHelper:
             )
             info(f"  saved extracted wav: {wav_filename} len={len(audio_segment):,}")
 
-        extracted_num_secs = len(audio_segment) / audio_info.samplerate
-
-        info(f"  segment loaded, extracted_num_secs = {extracted_num_secs:,}")
-
         info("  - processing ...")
         audio_segment *= VOLTAGE_MULTIPLIER
 
