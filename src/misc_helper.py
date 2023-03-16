@@ -13,6 +13,12 @@ def set_logger(output_dir: str, year: int, month: int, day: int) -> str:
     handler.setFormatter(formatter)
     logger.setLevel(logging.DEBUG)
     logger.addHandler(handler)
+
+    # also log to console
+    console = logging.StreamHandler()
+    console.setLevel(logging.DEBUG)
+    console.setFormatter(formatter)
+    logger.addHandler(console)
     return log_filename
 
 
