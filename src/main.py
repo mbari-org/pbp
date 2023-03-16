@@ -70,6 +70,13 @@ Examples:
     )
 
     parser.add_argument(
+        "--gen-csv",
+        default=False,
+        action="store_true",
+        help="Also generate CSV version of the result. By default, only NetCDF is generated.",
+    )
+
+    parser.add_argument(
         "--save-extracted-wav",
         default=False,
         action="store_true",
@@ -115,6 +122,7 @@ def main(opts):
     processor_helper = ProcessHelper(
         file_helper,
         output_dir=opts.output_dir,
+        gen_csv=opts.gen_csv,
         save_segment_result=opts.save_segment_result,
         save_extracted_wav=opts.save_extracted_wav,
         num_cpus=opts.cpus,

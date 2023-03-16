@@ -21,6 +21,7 @@ class ProcessHelper:
         self,
         file_helper: FileHelper,
         output_dir: str,
+        gen_csv: bool,
         save_segment_result: bool = False,
         save_extracted_wav: bool = False,
         num_cpus: int = 0,
@@ -28,6 +29,7 @@ class ProcessHelper:
     ):
         self.file_helper = file_helper
         self.output_dir = output_dir
+        self.gen_csv = gen_csv
         self.save_segment_result = save_segment_result
         self.save_extracted_wav = save_extracted_wav
         self.num_cpus = get_cpus_to_use(num_cpus)
@@ -68,7 +70,8 @@ class ProcessHelper:
             aggregated_result = self.pypam_support.get_aggregated_milli_psd()
             basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
             save_netcdf(aggregated_result, f"{basename}.nc")
-            save_csv(aggregated_result, f"{basename}.csv")
+            if self.gen_csv:
+                save_csv(aggregated_result, f"{basename}.csv")
         else:
             warn("No segments processed, nothing to aggregate.")
 
@@ -122,4 +125,5 @@ class ProcessHelper:
                 f"milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00"
             )
             save_netcdf(milli_psd, f"{self.output_dir}/{basename}.nc")
-            save_csv(milli_psd, f"{self.output_dir}/{basename}.csv")
+            if self.gen_csv:
+                save_csv(milli_psd, f"{self.output_dir}/{basename}.csv")

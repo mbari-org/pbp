@@ -143,7 +143,7 @@ class FileHelper:
                         audio_segment = f.read(num_samples)
                         if len(audio_segment) < num_samples:
                             # partial-data case.
-                            info(
+                            warn(
                                 f"!!! partial data: {len(audio_segment)} < {num_samples}"
                             )
 
