@@ -70,7 +70,10 @@ def get_intersecting_entries(
     tot_duration_secs = 0
     for tme in json_entries:
         tme_start_in_secs: int = int(tme.start.timestamp())
-        tme_end_in_secs: int = int(tme.end.timestamp())
+        # issue with `end` in some JSON files...
+        # tme_end_in_secs: int = int(tme.end.timestamp())
+        # ... so, let's use `duration_secs`
+        tme_end_in_secs: int = tme_start_in_secs + int(tme.duration_secs)
         if tme_start_in_secs <= day_end_in_secs and tme_end_in_secs >= day_start_in_secs:
             start_secs = max(tme_start_in_secs, day_start_in_secs) - tme_start_in_secs
             end_secs = min(tme_end_in_secs, day_end_in_secs) - tme_start_in_secs
