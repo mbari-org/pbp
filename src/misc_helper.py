@@ -1,33 +1,35 @@
 import logging
 from typing import Generator, Tuple
 
+# for simplicity, a common logger
+LOGGER_NAME = "PYPBP"
 
-def set_logger(opts):
-    log_filename = (
-        f"{opts.output_dir}/milli_psd_{opts.year:04}{opts.month:02}{opts.day:02}.log"
-    )
-    logging.basicConfig(
-        filename=log_filename,
-        filemode="w",
-        level=logging.DEBUG,
-        format="%(asctime)s %(levelname)s %(message)s",
-    )
+
+def set_logger(output_dir: str, year: int, month: int, day: int) -> str:
+    logger = logging.getLogger(LOGGER_NAME)
+    log_filename = f"{output_dir}/milli_psd_{year:04}{month:02}{day:02}.log"
+    handler = logging.FileHandler(log_filename, mode="w")
+    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+    handler.setFormatter(formatter)
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+    return log_filename
 
 
 def info(s: str):
-    logging.info(s)
+    logging.getLogger(LOGGER_NAME).info(s)
 
 
 def debug(s: str):
-    logging.debug(s)
+    logging.getLogger(LOGGER_NAME).debug(s)
 
 
 def warn(s: str):
-    logging.warning(s)
+    logging.getLogger(LOGGER_NAME).warning(s)
 
 
 def error(s: str):
-    logging.error(s)
+    logging.getLogger(LOGGER_NAME).error(s)
 
 
 def gen_hour_minute_times(

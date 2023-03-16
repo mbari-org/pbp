@@ -1,4 +1,4 @@
-Preparations for pypam-based data processing ...
+# PyPAM based data processing
 
 - [x] parse json files
 - [x] process associated audio files
@@ -9,8 +9,7 @@ Preparations for pypam-based data processing ...
     - [x] frequency and psd array output between 10 and 10^5 Hz
     - [x] generate NetCDF and CSV
     - [x] preliminary inclusion of "effort" (number of seconds per minute)
-- [ ] cloud processing
-- [ ] ...
+- [x] cloud processing
 
 
 ## Development

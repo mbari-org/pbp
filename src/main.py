@@ -110,7 +110,7 @@ Examples:
 
 
 def main(opts):
-    set_logger(opts)
+    set_logger(opts.output_dir, opts.year, opts.month, opts.day)
 
     file_helper = FileHelper(
         json_base_dir=opts.json_base_dir,

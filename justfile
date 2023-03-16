@@ -60,6 +60,14 @@ main-mac *more_args="":
 #                 --save-segment-result \
 #                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
+# Basic test for cloud processing
+main-cloud-basic-test:
+    #!/usr/bin/env bash
+    export DATE="20220902"
+    export MAX_SEGMENTS="1"
+    export PYTHONPATH=.
+    python src/main_cloud.py
+
 # Run main
 main *args="":
     PYTHONPATH=. python src/main.py {{args}}

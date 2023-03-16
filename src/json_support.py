@@ -38,6 +38,11 @@ class TME:
         return urlparse(self.uri).path
 
 
+def parse_json_contents(contents: str) -> Generator[TME, None, None]:
+    for item in json.loads(contents):
+        yield TME.from_dict(item)  # type: ignore [attr-defined]
+
+
 def parse_json_file(filename: str) -> Generator[TME, None, None]:
     with open(filename, "r", encoding="UTF-8") as f:
         for item in json.load(f):

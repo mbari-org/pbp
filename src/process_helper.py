@@ -40,9 +40,15 @@ class ProcessHelper:
 
         pathlib.Path(output_dir).mkdir(exist_ok=True)
 
-    def process_day(self, year: int, month: int, day: int):
+    def process_day(self, year: int, month: int, day: int) -> Optional[str]:
+        """
+        :param year:
+        :param month:
+        :param day:
+        :return: The path of the generated NetCDF file, or None if no segments were processed.
+        """
         if not self.file_helper.select_day(year, month, day):
-            return
+            return None
 
         at_hour_and_minutes: List[Tuple[int, int]] = list(
             gen_hour_minute_times(self.file_helper.segment_size_in_mins)
@@ -65,15 +71,18 @@ class ProcessHelper:
             # return
 
         self.process_hours_minutes(at_hour_and_minutes)
-        if self.pypam_support is not None:
-            info("Aggregating results ...")
-            aggregated_result = self.pypam_support.get_aggregated_milli_psd()
-            basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
-            save_netcdf(aggregated_result, f"{basename}.nc")
-            if self.gen_csv:
-                save_csv(aggregated_result, f"{basename}.csv")
-        else:
+        if self.pypam_support is None:
             warn("No segments processed, nothing to aggregate.")
+            return None
+
+        info("Aggregating results ...")
+        aggregated_result = self.pypam_support.get_aggregated_milli_psd()
+        basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
+        nc_filename = f"{basename}.nc"
+        save_netcdf(aggregated_result, nc_filename)
+        if self.gen_csv:
+            save_csv(aggregated_result, f"{basename}.csv")
+        return nc_filename
 
     def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
         info(f"Processing {len(hour_and_minutes)} segments ...")

@@ -1,4 +1,5 @@
-output/
+output*/
+cloud_tmp/
 virtenv/
 __pycache__
 HASH

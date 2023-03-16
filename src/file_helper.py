@@ -1,18 +1,18 @@
-import os
 from math import ceil, floor
 from typing import List, Optional, Tuple
-from urllib.parse import urlparse
+from urllib.parse import ParseResult, urlparse
 
 import numpy as np
 import soundfile as sf
+from botocore.client import BaseClient, ClientError
 
 from src.json_support import (
     get_intersecting_entries,
-    parse_json_file,
+    parse_json_contents,
     TME,
     TMEIntersection,
 )
-from src.misc_helper import error, info, map_prefix, warn
+from src.misc_helper import debug, error, info, map_prefix, warn
 
 
 class FileHelper:
@@ -27,6 +27,8 @@ class FileHelper:
         audio_path_map_prefix: str = "",
         audio_path_prefix: str = "",
         segment_size_in_mins: int = 1,
+        s3_client: Optional[BaseClient] = None,
+        download_dir: Optional[str] = None,
     ):
         """
 
@@ -42,18 +44,23 @@ class FileHelper:
           Ad hoc path prefix for wav locations, e.g. "/Volumes"
         :param segment_size_in_mins:
             The size of each audio segment to extract, in minutes. By default, 1.
+        :param s3_client:
+            If given, it will be used to handle `s3:` based uris.
+        :param download_dir:
+            Save downloaded S3 files here if given, otherwise, save in current directory.
         """
         self.json_base_dir = json_base_dir
         self.audio_base_dir = audio_base_dir
         self.audio_path_map_prefix = audio_path_map_prefix
         self.audio_path_prefix = audio_path_prefix
         self.segment_size_in_mins = segment_size_in_mins
+        self.s3_client = s3_client
+        self.download_dir: str = download_dir if download_dir else "."
 
         # the following set by select_day:
         self.year: Optional[int] = None
         self.month: Optional[int] = None
         self.day: Optional[int] = None
-        self.json_filename: Optional[str] = None
         self.json_entries: Optional[List[TME]] = None
 
     def select_day(self, year: int, month: int, day: int) -> bool:
@@ -68,17 +75,30 @@ class FileHelper:
 
         info(f"Selecting day: {year:04}{month:02}{day:02}")
 
-        json_filename = f"{self.json_base_dir}/{year:04}{month:02}{day:02}.json"
-        if not os.path.isfile(json_filename):
-            error(f"{json_filename}: file not found\n")
+        json_uri = f"{self.json_base_dir}/{year:04}/{year:04}{month:02}{day:02}.json"
+        json_contents = self._get_json(json_uri)
+        if json_contents is None:
+            error(f"{json_uri}: file not found\n")
             return False
 
         self.year = year
         self.month = month
         self.day = day
-        self.json_filename = json_filename
-        self.json_entries = list(parse_json_file(self.json_filename))
+        self.json_entries = list(parse_json_contents(json_contents))
         return True
+
+    def _get_json(self, uri: str) -> Optional[str]:
+        parsed_uri = urlparse(uri)
+        if parsed_uri.scheme == "s3":
+            return self._get_json_s3(parsed_uri)
+        #  simply assume local file:
+        return _get_json_local(parsed_uri.path)
+
+    def _get_json_s3(self, parsed_uri: ParseResult) -> Optional[str]:
+        local_filename = self._download(parsed_uri)
+        if local_filename is None:
+            return None
+        return _get_json_local(local_filename)
 
     def extract_audio_segment(
         self, at_hour: int, at_minute: int
@@ -111,12 +131,15 @@ class FileHelper:
 
         prefix = f"({at_hour:02}h:{at_minute:02}m)"
         for intersection in intersections:
-            wav_filename = self._get_wav_filename(intersection.tme.uri)
-            info(f"    {prefix} {intersection.duration_secs} secs from {wav_filename}")
-
             if intersection.duration_secs == 0:
                 warn("No data from intersection")
                 continue
+
+            wav_filename = self._get_wav_filename(intersection.tme.uri)
+            if wav_filename is None:
+                return None  # error!
+
+            info(f"    {prefix} {intersection.duration_secs} secs from {wav_filename}")
 
             ai = _get_audio_info(wav_filename)
             if (
@@ -162,8 +185,12 @@ class FileHelper:
             return audio_info, aggregated_segment
         return None
 
-    def _get_wav_filename(self, uri: str) -> str:
-        # TODO note, we still assume local files.
+    def _get_wav_filename(self, uri: str) -> Optional[str]:
+        debug(f"_get_wav_filename: uri={uri}")
+        parsed_uri = urlparse(uri)
+        if parsed_uri.scheme == "s3":
+            return self._get_wav_filename_s3(parsed_uri)
+
         uri = map_prefix(self.audio_path_map_prefix, uri)
         path = urlparse(uri).path
         if path.startswith("/"):
@@ -171,6 +198,39 @@ class FileHelper:
         else:
             wav_filename = f"{self.audio_base_dir}/{path}"
         return wav_filename
+
+    def _get_wav_filename_s3(self, parsed_uri: ParseResult) -> Optional[str]:
+        return self._download(parsed_uri)
+
+    def _download(self, parsed_uri: ParseResult) -> Optional[str]:
+        assert self.s3_client is not None
+
+        bucket, key, simple = get_bucket_key_simple(parsed_uri)
+        local_filename = f"{self.download_dir}/{simple}"
+        info(f"Downloading bucket={bucket} key={key} to {local_filename}")
+        try:
+            self.s3_client.download_file(bucket, key, local_filename)
+            return local_filename
+        except ClientError as e:
+            error(f"Error downloading {bucket}/{key}: {e}")
+            return None
+
+
+def get_bucket_key_simple(parsed_uri: ParseResult) -> Tuple[str, str, str]:
+    bucket = parsed_uri.netloc
+    key = parsed_uri.path.lstrip("/")
+    simple = key.split("/")[-1] if "/" in key else key
+    assert "/" not in simple, f"Unexpected simple_filename: '{simple}'"
+    return bucket, key, simple
+
+
+def _get_json_local(filename: str) -> Optional[str]:
+    try:
+        with open(filename, "r", encoding="UTF-8") as f:
+            return f.read()
+    except IOError as e:
+        error(f"Error reading {filename}: {e}")
+        return None
 
 
 def _get_audio_info(wav_filename: str) -> Optional[sf._SoundFileInfo]:
