@@ -31,7 +31,7 @@ tgz:
 # Run main (on gizo)
 main-gizo year="2022" month="9" day="2" output_dir="/PAM_Analysis/pypam-space/test_output/daily":
     PYTHONPATH=. python src/main.py \
-                 --json-base-dir=json/{{year}} \
+                 --json-base-dir=json \
                  --audio-path-map-prefix="s3://pacific-sound-256khz-{{year}}~file:///PAM_Archive/{{year}}" \
                  --year={{year}} --month={{month}} --day={{day}} \
                  --output-dir={{output_dir}}

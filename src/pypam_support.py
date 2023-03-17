@@ -6,7 +6,7 @@ import pypam.signal as sig
 import xarray as xr
 from pypam import utils
 
-from src.misc_helper import info
+from src.misc_helper import brief_list, info
 
 # Approximate "flat" sensitivity of the hydrophone
 APPROX_FLAT_SENSITIVITY = 178
@@ -152,7 +152,7 @@ class PypamSupport:
         bands_limits = bands_limits[start_index : start_index + new_bands_c_len + 1]
 
         def print_array(name: str, arr: np.ndarray):
-            info(f"{name} ({len(arr)}) = {arr[:3]} ... {arr[-5:]}")
+            info(f"{name} ({len(arr)}) = {brief_list(arr)}")
 
         print_array("       bands_c", bands_c)
         print_array("  bands_limits", bands_limits)

@@ -1,4 +1,6 @@
 import logging
+import os
+import pathlib
 from math import ceil, floor
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
@@ -13,7 +15,7 @@ from src.json_support import (
     TME,
     TMEIntersection,
 )
-from src.misc_helper import debug, error, get_logger, info, map_prefix, warn
+from src.misc_helper import brief_list, debug, error, get_logger, info, map_prefix, warn
 
 
 class WavStatus:
@@ -28,11 +30,10 @@ class WavStatus:
         s3_client: Optional[BaseClient] = None,
         download_dir: Optional[str] = None,
     ):
-        self.uri = uri
+        self.uri = map_prefix(audio_path_map_prefix, uri)
         self.parsed_uri = urlparse(self.uri)
 
         self.audio_base_dir = audio_base_dir
-        self.audio_path_map_prefix = audio_path_map_prefix
         self.audio_path_prefix = audio_path_prefix
         self.s3_client = s3_client
         self.download_dir: str = download_dir if download_dir else "."
@@ -58,8 +59,7 @@ class WavStatus:
         if self.parsed_uri.scheme == "s3":
             return self._get_wav_filename_s3()
 
-        uri = map_prefix(self.audio_path_map_prefix, self.uri)
-        path = urlparse(uri).path
+        path = self.parsed_uri.path
         if path.startswith("/"):
             wav_filename = f"{self.audio_path_prefix}{path}"
         else:
@@ -68,6 +68,20 @@ class WavStatus:
 
     def _get_wav_filename_s3(self) -> Optional[str]:
         return _download(self.parsed_uri, self.s3_client, self.download_dir)
+
+    def remove_downloaded_file(self):
+        if not pathlib.Path(self.wav_filename).exists():
+            return
+
+        if self.s3_client is None or self.parsed_uri.scheme != "s3":
+            debug(f"No file download involved for uri={self.uri}")
+            return
+
+        try:
+            os.remove(self.wav_filename)
+            debug(f"Removed cached file {self.wav_filename} for uri={self.uri}")
+        except OSError as e:
+            error(f"Error removing file {self.wav_filename}: {e}")
 
 
 def _download(
@@ -176,6 +190,11 @@ class FileHelper:
             for c_ws in c_ws_files_open:
                 debug(f"Closing sound file for cached uri={c_ws.uri} age={c_ws.age}")
                 c_ws.sound_file.close()
+
+        # remove any downloaded files (cloud case):
+        for c_ws in self.wav_cache.values():
+            c_ws.remove_downloaded_file()
+
         self.wav_cache = {}
 
     def _get_json(self, uri: str) -> Optional[str]:
@@ -298,20 +317,20 @@ class FileHelper:
         else:
             debug(f"WavStatus: already available for uri={uri}")
 
-        # close files in the cache that are not fresh enough in terms
+        # close and remove files in the cache that are not fresh enough in terms
         # of not being recently used
         for c_uri, c_ws in list(self.wav_cache.items()):
             if uri != c_uri and c_ws.age > 2 and c_ws.sound_file is not None:
                 debug(f"Closing sound file for cached uri={c_uri} age={c_ws.age}")
                 c_ws.sound_file.close()
                 c_ws.sound_file = None
-                # TODO(low prio?) for the S3 case, also remove the downloaded file.
+                c_ws.remove_downloaded_file()
 
         if get_logger().isEnabledFor(logging.DEBUG):
             c_wss = self.wav_cache.values()
             open_files = len([c_ws for c_ws in c_wss if c_ws.sound_file])
             ages = [c_ws.age for c_ws in c_wss]
-            debug(f"open_files={open_files}  ages={ages}")
+            debug(f"open_files={open_files}  ages={brief_list(ages)}")
 
         return ws
 

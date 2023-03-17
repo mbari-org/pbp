@@ -1,5 +1,7 @@
 import logging
-from typing import Generator, Tuple
+from typing import Any, Generator, List, Tuple, Union
+
+import numpy as np
 
 # for simplicity, a common logger
 LOGGER_NAME = "PYPBP"
@@ -7,11 +9,14 @@ LOGGER_NAME = "PYPBP"
 
 def set_logger(output_dir: str, year: int, month: int, day: int) -> str:
     logger = get_logger()
+    logger.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+
     log_filename = f"{output_dir}/milli_psd_{year:04}{month:02}{day:02}.log"
     handler = logging.FileHandler(log_filename, mode="w")
-    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
     handler.setFormatter(formatter)
-    logger.setLevel(logging.DEBUG)
+    handler.setLevel(logging.INFO)
     logger.addHandler(handler)
 
     # also log to console
@@ -72,3 +77,19 @@ def map_prefix(prefix_map: str, s: str) -> str:
         if s.startswith(old):
             return new + s[len(old) :]
     return s
+
+
+def brief_list(l: Union[List, np.ndarray[Any, Any]], max_items: int = 10) -> str:
+    """
+    Helper to format a list as a string, with a maximum number of items.
+    :param l:  The list to format.
+    :param max_items:  The maximum number of items to show.
+    :return:  The formatted string.
+    """
+    if len(l) > max_items:
+        half = max_items // 2
+        rest = max_items - half
+        prefix = ", ".join(str(x) for x in l[:half])
+        postfix = ", ".join(str(x) for x in l[-rest:])
+        return f"[{prefix}, ..., {postfix}]"
+    return str(l)
