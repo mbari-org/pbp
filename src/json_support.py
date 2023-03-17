@@ -1,4 +1,5 @@
 import json
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Generator, List
@@ -7,7 +8,7 @@ from urllib.parse import urlparse
 from dataclasses_json import config, dataclass_json
 from marshmallow import fields
 
-from src.misc_helper import warn
+from src.misc_helper import debug, get_logger, warn
 
 metadata = config(
     encoder=datetime.isoformat,
@@ -86,14 +87,23 @@ def get_intersecting_entries(
             intersecting_entries.append(TMEIntersection(tme, start_secs, duration_secs))
             tot_duration_secs += duration_secs
 
+    time_spec = (
+        f"year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
+    )
+
     # verify expected duration:
     segment_size_in_secs = segment_size_in_mins * 60
     if tot_duration_secs != segment_size_in_secs:
         msg = f"tot_duration_secs={tot_duration_secs} != {segment_size_in_secs}"
-        msg += f"  year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
+        msg += f"  {time_spec}"
         msg += f"  intersecting_entries ({len(intersecting_entries)})"
         if len(intersecting_entries) > 0:
             msg += "".join(f"\n    {i}" for i in intersecting_entries)
         warn(msg)
+
+    if get_logger().isEnabledFor(logging.DEBUG):
+        uris = [i.tme.uri for i in intersecting_entries]
+        uris_str = "\n  ".join([f"[{e}] {uri}" for e, uri in enumerate(uris)])
+        debug(f"{time_spec}: intersection uris({len(uris)}):\n  {uris_str}")
 
     return intersecting_entries

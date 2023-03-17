@@ -26,6 +26,8 @@ tgz:
     HASH=$(git rev-parse --short HEAD)
     git archive ${HASH} -o pypam-based-processing_${HASH}.tgz --prefix=pypam-based-processing/
 
+# TODO review `--json-base-dir` value per subquent changes to support cloud processing,
+
 # Run main (on gizo)
 main-gizo year="2022" month="9" day="2" output_dir="/PAM_Analysis/pypam-space/test_output/daily":
     PYTHONPATH=. python src/main.py \
@@ -61,10 +63,10 @@ main-mac *more_args="":
 #                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
 # Basic test for cloud processing
-main-cloud-basic-test:
+main-cloud-basic-test max_segments="1":
     #!/usr/bin/env bash
     export DATE="20220902"
-    export MAX_SEGMENTS="1"
+    export MAX_SEGMENTS={{max_segments}}
     export PYTHONPATH=.
     python src/main_cloud.py
 

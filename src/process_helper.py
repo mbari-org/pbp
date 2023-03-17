@@ -88,7 +88,6 @@ class ProcessHelper:
         info(f"Processing {len(hour_and_minutes)} segments ...")
         for at_hour, at_minute in hour_and_minutes:
             self.process_segment_at_hour_minute(at_hour, at_minute)
-            # TODO generate "effort" variable with number of seconds of actual data per segment
 
     def process_segment_at_hour_minute(self, at_hour: int, at_minute: int):
         file_helper = self.file_helper

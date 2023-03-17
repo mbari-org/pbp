@@ -1,10 +1,10 @@
-boto3==1.26.92
+boto3==1.26.93
 dataclasses-json==0.5.7
 marshmallow==3.19.0
 # lifewatch-pypam  # when published
 soundfile==0.12.1
 
-# quickly tried it by got: AttributeError: module 'xarray_extras' has no attribute 'csv'
+# quickly tried it but got: AttributeError: module 'xarray_extras' has no attribute 'csv'
 # xarray-extras==0.5.0
 
 # netCDF4==1.6.3  # in case of loading netCDF4 files

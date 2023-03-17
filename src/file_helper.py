@@ -1,5 +1,6 @@
+import logging
 from math import ceil, floor
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
 
 import numpy as np
@@ -12,7 +13,80 @@ from src.json_support import (
     TME,
     TMEIntersection,
 )
-from src.misc_helper import debug, error, info, map_prefix, warn
+from src.misc_helper import debug, error, get_logger, info, map_prefix, warn
+
+
+class WavStatus:
+    # TODO cleanup!  there's some repetition here wrt FileHelper!
+
+    def __init__(
+        self,
+        uri: str,
+        audio_base_dir: Optional[str] = None,
+        audio_path_map_prefix: str = "",
+        audio_path_prefix: str = "",
+        s3_client: Optional[BaseClient] = None,
+        download_dir: Optional[str] = None,
+    ):
+        self.uri = uri
+        self.parsed_uri = urlparse(self.uri)
+
+        self.audio_base_dir = audio_base_dir
+        self.audio_path_map_prefix = audio_path_map_prefix
+        self.audio_path_prefix = audio_path_prefix
+        self.s3_client = s3_client
+        self.download_dir: str = download_dir if download_dir else "."
+
+        self.error = None
+
+        self.wav_filename = self._get_wav_filename()
+        if self.wav_filename is None:
+            self.error = "error getting wav filename"
+            return
+
+        ai = _get_audio_info(self.wav_filename)
+        if ai is None:
+            self.error = "error getting audio info"
+            return
+
+        self.audio_info: sf._SoundFileInfo = ai
+        self.sound_file = sf.SoundFile(self.wav_filename)
+        self.age = 0  # see _get_wav_status.
+
+    def _get_wav_filename(self) -> Optional[str]:
+        debug(f"_get_wav_filename: uri={self.uri}")
+        if self.parsed_uri.scheme == "s3":
+            return self._get_wav_filename_s3()
+
+        uri = map_prefix(self.audio_path_map_prefix, self.uri)
+        path = urlparse(uri).path
+        if path.startswith("/"):
+            wav_filename = f"{self.audio_path_prefix}{path}"
+        else:
+            wav_filename = f"{self.audio_base_dir}/{path}"
+        return wav_filename
+
+    def _get_wav_filename_s3(self) -> Optional[str]:
+        return _download(self.parsed_uri, self.s3_client, self.download_dir)
+
+
+def _download(
+    parsed_uri: ParseResult, s3_client: BaseClient, download_dir: str
+) -> Optional[str]:
+    """
+    Downloads the given S3 URI to the given download directory.
+    :param parsed_uri: the URI to download
+    :return: Downloaded filename or None if error
+    """
+    bucket, key, simple = get_bucket_key_simple(parsed_uri)
+    local_filename = f"{download_dir}/{simple}"
+    info(f"Downloading bucket={bucket} key={key} to {local_filename}")
+    try:
+        s3_client.download_file(bucket, key, local_filename)
+        return local_filename
+    except ClientError as e:
+        error(f"Error downloading {bucket}/{key}: {e}")
+        return None
 
 
 class FileHelper:
@@ -57,6 +131,8 @@ class FileHelper:
         self.s3_client = s3_client
         self.download_dir: str = download_dir if download_dir else "."
 
+        self.wav_cache: Dict[str, WavStatus] = {}
+
         # the following set by select_day:
         self.year: Optional[int] = None
         self.month: Optional[int] = None
@@ -95,7 +171,7 @@ class FileHelper:
         return _get_json_local(parsed_uri.path)
 
     def _get_json_s3(self, parsed_uri: ParseResult) -> Optional[str]:
-        local_filename = self._download(parsed_uri)
+        local_filename = _download(parsed_uri, self.s3_client, self.download_dir)
         if local_filename is None:
             return None
         return _get_json_local(local_filename)
@@ -135,85 +211,94 @@ class FileHelper:
                 warn("No data from intersection")
                 continue
 
-            wav_filename = self._get_wav_filename(intersection.tme.uri)
-            if wav_filename is None:
-                return None  # error!
+            ws = self._get_wav_status(intersection.tme.uri)
+            if ws.error is not None:
+                return None
 
-            info(f"    {prefix} {intersection.duration_secs} secs from {wav_filename}")
+            info(f"    {prefix} {intersection.duration_secs} secs from {ws.wav_filename}")
 
-            ai = _get_audio_info(wav_filename)
-            if (
-                ai is None
-                or audio_info is not None
-                and not _check_audio_info(audio_info, ai)
+            if audio_info is not None and not _check_audio_info(
+                audio_info, ws.audio_info
             ):
                 return None  # error!
 
-            audio_info = ai
+            audio_info = ws.audio_info
 
             start_sample = floor(intersection.start_secs * audio_info.samplerate)
             num_samples = ceil(intersection.duration_secs * audio_info.samplerate)
 
-            with sf.SoundFile(wav_filename) as f:
-                # info(f"  loading {num_samples:,} samples starting at {start_sample:,}")
-
-                try:
-                    new_pos = f.seek(start_sample)
-                    if new_pos != start_sample:
-                        # no-data case, let's just read 0 samples to get an empty array:
-                        audio_segment = f.read(0)
-                    else:
-                        audio_segment = f.read(num_samples)
-                        if len(audio_segment) < num_samples:
-                            # partial-data case.
-                            warn(
-                                f"!!! partial data: {len(audio_segment)} < {num_samples}"
-                            )
-
-                except sf.LibsndfileError as e:
-                    error(f"{e}")
-                    return None
-
-                if aggregated_segment is None:
-                    aggregated_segment = audio_segment
+            try:
+                new_pos = ws.sound_file.seek(start_sample)
+                if new_pos != start_sample:
+                    # no-data case, let's just read 0 samples to get an empty array:
+                    audio_segment = ws.sound_file.read(0)
                 else:
-                    aggregated_segment = np.concatenate(
-                        (aggregated_segment, audio_segment)
-                    )
+                    audio_segment = ws.sound_file.read(num_samples)
+                    if len(audio_segment) < num_samples:
+                        # partial-data case.
+                        warn(f"!!! partial data: {len(audio_segment)} < {num_samples}")
+
+            except sf.LibsndfileError as e:
+                error(f"{e}")
+                return None
+
+            if aggregated_segment is None:
+                aggregated_segment = audio_segment
+            else:
+                aggregated_segment = np.concatenate((aggregated_segment, audio_segment))
 
         if aggregated_segment is not None:
             return audio_info, aggregated_segment
         return None
 
-    def _get_wav_filename(self, uri: str) -> Optional[str]:
-        debug(f"_get_wav_filename: uri={uri}")
-        parsed_uri = urlparse(uri)
-        if parsed_uri.scheme == "s3":
-            return self._get_wav_filename_s3(parsed_uri)
+    def _get_wav_status(self, uri: str) -> WavStatus:
+        """
+        Returns a WavStatus object for the given uri.
+        Internally, the 'age' attribute helps to keep the relevant files open
+        as long as recently used. Note that traversal of the files indicated in the
+        JSON array happens in a monotonically increasing order in time, so we
+        can increment the 'age' for all entries in the cache except for the uri
+        just requested.
 
-        uri = map_prefix(self.audio_path_map_prefix, uri)
-        path = urlparse(uri).path
-        if path.startswith("/"):
-            wav_filename = f"{self.audio_path_prefix}{path}"
+        :param uri:
+        :return:
+        """
+        debug(f"_get_wav_status: uri={uri}")
+        ws = self.wav_cache.get(uri)
+        if ws is None:
+            # currently cached ones get a bit older:
+            for c_ws in self.wav_cache.values():
+                c_ws.age += 1
+
+            debug(f"WavStatus: creating for uri={uri}")
+            ws = WavStatus(
+                uri,
+                self.audio_base_dir,
+                self.audio_path_map_prefix,
+                self.audio_path_prefix,
+                self.s3_client,
+                self.download_dir,
+            )
+            self.wav_cache[uri] = ws
         else:
-            wav_filename = f"{self.audio_base_dir}/{path}"
-        return wav_filename
+            debug(f"WavStatus: already available for uri={uri}")
 
-    def _get_wav_filename_s3(self, parsed_uri: ParseResult) -> Optional[str]:
-        return self._download(parsed_uri)
+        # close files in the cache that are not fresh enough in terms
+        # of not being recently used
+        for c_uri, c_ws in list(self.wav_cache.items()):
+            if uri != c_uri and c_ws.age > 2 and c_ws.sound_file is not None:
+                debug(f"Closing sound file for cached uri={c_uri} age={c_ws.age}")
+                c_ws.sound_file.close()
+                c_ws.sound_file = None
+                # TODO(low prio?) for the S3 case, also remove the downloaded file.
 
-    def _download(self, parsed_uri: ParseResult) -> Optional[str]:
-        assert self.s3_client is not None
+        if get_logger().isEnabledFor(logging.DEBUG):
+            c_wss = self.wav_cache.values()
+            open_files = len([c_ws for c_ws in c_wss if c_ws.sound_file])
+            ages = [c_ws.age for c_ws in c_wss]
+            debug(f"open_files={open_files}  ages={ages}")
 
-        bucket, key, simple = get_bucket_key_simple(parsed_uri)
-        local_filename = f"{self.download_dir}/{simple}"
-        info(f"Downloading bucket={bucket} key={key} to {local_filename}")
-        try:
-            self.s3_client.download_file(bucket, key, local_filename)
-            return local_filename
-        except ClientError as e:
-            error(f"Error downloading {bucket}/{key}: {e}")
-            return None
+        return ws
 
 
 def get_bucket_key_simple(parsed_uri: ParseResult) -> Tuple[str, str, str]:

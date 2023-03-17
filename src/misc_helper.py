@@ -6,7 +6,7 @@ LOGGER_NAME = "PYPBP"
 
 
 def set_logger(output_dir: str, year: int, month: int, day: int) -> str:
-    logger = logging.getLogger(LOGGER_NAME)
+    logger = get_logger()
     log_filename = f"{output_dir}/milli_psd_{year:04}{month:02}{day:02}.log"
     handler = logging.FileHandler(log_filename, mode="w")
     formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
@@ -22,20 +22,24 @@ def set_logger(output_dir: str, year: int, month: int, day: int) -> str:
     return log_filename
 
 
+def get_logger() -> logging.Logger:
+    return logging.getLogger(LOGGER_NAME)
+
+
 def info(s: str):
     logging.getLogger(LOGGER_NAME).info(s)
 
 
 def debug(s: str):
-    logging.getLogger(LOGGER_NAME).debug(s)
+    get_logger().debug(s)
 
 
 def warn(s: str):
-    logging.getLogger(LOGGER_NAME).warning(s)
+    get_logger().warning(s)
 
 
 def error(s: str):
-    logging.getLogger(LOGGER_NAME).error(s)
+    get_logger().error(s)
 
 
 def gen_hour_minute_times(
