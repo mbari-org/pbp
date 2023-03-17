@@ -89,7 +89,8 @@ def main():
 
         def upload(filename):
             print(f"Uploading {filename} to {output_bucket}")
-            ok = s3_client.upload_file(filename, output_bucket)
+            filename_out = pathlib.Path(filename).name
+            ok = s3_client.upload_file(filename, output_bucket, filename_out)
             print(f"Upload result: {ok}")
 
         upload(log_filename)
