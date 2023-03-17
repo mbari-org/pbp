@@ -5,7 +5,7 @@ import pathlib
 import boto3
 
 from src.file_helper import FileHelper
-from src.misc_helper import set_logger
+from src.misc_helper import set_logger, info
 from src.process_helper import ProcessHelper
 
 
@@ -42,7 +42,7 @@ def main():
             b["Name"] == output_bucket for b in s3_client.list_buckets()["Buckets"]
         )
         if not found:
-            print(f"Creating bucket {output_bucket}")
+            info(f"Creating bucket {output_bucket}")
             s3_client.create_bucket(
                 Bucket=output_bucket,
                 CreateBucketConfiguration={"LocationConstraint": aws_region},
@@ -82,16 +82,16 @@ def main():
     )
 
     if nc_filename is None:
-        print("No NetDF file was generated.")
+        info("No NetDF file was generated.")
         return
 
     if output_bucket is not None:
 
         def upload(filename):
-            print(f"Uploading {filename} to {output_bucket}")
+            info(f"Uploading {filename} to {output_bucket}")
             filename_out = pathlib.Path(filename).name
             ok = s3_client.upload_file(filename, output_bucket, filename_out)
-            print(f"Upload result: {ok}")
+            info(f"Upload result: {ok}")
 
         upload(log_filename)
         upload(nc_filename)
