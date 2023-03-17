@@ -82,6 +82,9 @@ class ProcessHelper:
         save_netcdf(aggregated_result, nc_filename)
         if self.gen_csv:
             save_csv(aggregated_result, f"{basename}.csv")
+
+        self.file_helper.day_completed()
+
         return nc_filename
 
     def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):

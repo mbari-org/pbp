@@ -163,6 +163,21 @@ class FileHelper:
         self.json_entries = list(parse_json_contents(json_contents))
         return True
 
+    def day_completed(self):
+        """
+        Since a process is launched only for day, we simply clear the cache.
+        """
+        # first, close all wav files still open:
+        c_ws_files_open = [
+            c_ws for c_ws in self.wav_cache.values() if c_ws.sound_file is not None
+        ]
+        if len(c_ws_files_open) > 0:
+            debug(f"day_completed: closing {len(c_ws_files_open)} wav files still open")
+            for c_ws in c_ws_files_open:
+                debug(f"Closing sound file for cached uri={c_ws.uri} age={c_ws.age}")
+                c_ws.sound_file.close()
+        self.wav_cache = {}
+
     def _get_json(self, uri: str) -> Optional[str]:
         parsed_uri = urlparse(uri)
         if parsed_uri.scheme == "s3":

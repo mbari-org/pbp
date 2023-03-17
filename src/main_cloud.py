@@ -5,7 +5,7 @@ import pathlib
 import boto3
 
 from src.file_helper import FileHelper
-from src.misc_helper import set_logger, info
+from src.misc_helper import info, set_logger
 from src.process_helper import ProcessHelper
 
 
