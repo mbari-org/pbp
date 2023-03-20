@@ -26,7 +26,21 @@ class ProcessHelper:
         save_extracted_wav: bool = False,
         num_cpus: int = 0,
         max_segments: int = 0,
+        subset_to: Optional[Tuple[int, int]] = None,
     ):
+        """
+
+        :param file_helper:
+        :param output_dir:
+        :param gen_csv:
+        :param save_segment_result:
+        :param save_extracted_wav:
+        :param num_cpus:
+        :param max_segments:
+        :param subset_to:
+            Tuple of (lower, upper) frequency limits to use for the PSD,
+            lower inclusive, upper exclusive.
+        """
         self.file_helper = file_helper
         self.output_dir = output_dir
         self.gen_csv = gen_csv
@@ -34,6 +48,7 @@ class ProcessHelper:
         self.save_extracted_wav = save_extracted_wav
         self.num_cpus = get_cpus_to_use(num_cpus)
         self.max_segments = max_segments
+        self.subset_to = subset_to
 
         # obtained once upon first segment to be processed
         self.pypam_support: Optional[PypamSupport] = None
@@ -106,9 +121,8 @@ class ProcessHelper:
         audio_info, audio_segment = extraction
 
         if self.pypam_support is None:
-            # TODO capture subset_to and/or band from command line.
             self.pypam_support = PypamSupport(
-                audio_info.samplerate, subset_to=(10, 100_000)
+                audio_info.samplerate, subset_to=self.subset_to
             )
         elif self.pypam_support.fs != audio_info.samplerate:
             info(

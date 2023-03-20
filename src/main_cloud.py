@@ -5,7 +5,7 @@ import pathlib
 import boto3
 
 from src.file_helper import FileHelper
-from src.misc_helper import info, set_logger
+from src.misc_helper import info, set_logger, warn
 from src.process_helper import ProcessHelper
 
 
@@ -73,6 +73,7 @@ def main():
         output_dir=generated_dir,
         gen_csv=False,
         max_segments=max_segments,
+        subset_to=(10, 100_000),
     )
 
     nc_filename = processor_helper.process_day(
@@ -82,7 +83,7 @@ def main():
     )
 
     if nc_filename is None:
-        info("No NetDF file was generated.")
+        warn("No NetDF file was generated.")
         return
 
     if output_bucket is not None:

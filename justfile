@@ -55,6 +55,7 @@ main-mac *more_args="":
                  --json-base-dir=tests/json \
                  --audio-path-prefix=/Volumes \
                  --year=2022 --month=9 --day=2 \
+                 --subset-to 10 100000 \
                  --output-dir=output \
                  {{more_args}}
 

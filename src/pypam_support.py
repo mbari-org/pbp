@@ -6,7 +6,7 @@ import pypam.signal as sig
 import xarray as xr
 from pypam import utils
 
-from src.misc_helper import brief_list, info
+from src.misc_helper import brief_list, debug, info
 
 # Approximate "flat" sensitivity of the hydrophone
 APPROX_FLAT_SENSITIVITY = 178
@@ -19,14 +19,15 @@ class PypamSupport:
         """
         :param fs:
         :param nfft:
-        :param subset_to: Actually, `band` but different name while pypam is fixed
+        :param subset_to:
         """
         self.fs = fs
         self.nfft = nfft if nfft > 0 else self.fs
 
         self.subset_to = subset_to
         band = [0, self.fs / 2]  # for now.
-        info(f"PypamSupport: subset_to={subset_to}  band={band}")
+
+        debug(f"PypamSupport: subset_to={subset_to}  band={band}")
 
         self.bands_limits, self.bands_c = utils.get_hybrid_millidecade_limits(
             band=band, nfft=self.nfft
@@ -136,16 +137,16 @@ class PypamSupport:
         if self.subset_to is None:
             return da
 
-        info(f"subsetting to {self.subset_to}")
+        start_hz, end_hz = self.subset_to
+        info(f"subsetting to [{start_hz:,}, {end_hz:,})Hz")
         bands_c = self.bands_c
         bands_limits = self.bands_limits
 
-        start_hz, end_hz = self.subset_to
         start_index = 0
         while bands_c[start_index] < start_hz:
             start_index += 1
         end_index = start_index
-        while bands_c[end_index - 1] < end_hz:
+        while bands_c[end_index] < end_hz:
             end_index += 1
         bands_c = bands_c[start_index:end_index]
         new_bands_c_len = len(bands_c)

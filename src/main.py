@@ -94,7 +94,17 @@ Examples:
         "--max-segments",
         type=int,
         default=0,
+        metavar="num",
         help="Test convenience: limit number of segments to process. By default, 0 (no limit).",
+    )
+
+    parser.add_argument(
+        "--subset-to",
+        type=int,
+        nargs=2,
+        default=None,
+        metavar=("lower", "upper"),
+        help="Subset the resulting PSD to [lower, upper), in terms of central frequency.",
     )
 
     parser.add_argument(
@@ -127,8 +137,8 @@ def main(opts):
         save_extracted_wav=opts.save_extracted_wav,
         num_cpus=opts.cpus,
         max_segments=opts.max_segments,
+        subset_to=tuple(opts.subset_to),
     )
-
     try:
         processor_helper.process_day(
             year=opts.year,
