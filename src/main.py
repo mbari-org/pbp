@@ -2,7 +2,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 
 from src.file_helper import FileHelper
 
-from src.misc_helper import info, set_logger
+from src.misc_helper import info, parse_date, set_logger
 
 from src.process_helper import ProcessHelper
 
@@ -13,9 +13,7 @@ def parse_arguments():
 Examples:
     src/main.py  --json-base-dir=tests/json \\
                  --audio-base-dir=tests/wav \\
-                 --year=2022 \\
-                 --month=9 \\
-                 --day=2 \\
+                 --date=20220902 \\
                  --output-dir=output
     """
 
@@ -57,9 +55,13 @@ Examples:
         " By default, no prefix applied.",
     )
 
-    parser.add_argument("--year", type=int, metavar="YYYY", required=True, help="Year")
-    parser.add_argument("--month", type=int, metavar="M", required=True, help="Month")
-    parser.add_argument("--day", type=int, metavar="D", required=True, help="Day")
+    parser.add_argument(
+        "--date",
+        type=str,
+        required=True,
+        metavar="YYYYMMDD",
+        help="The date to be processed.",
+    )
 
     parser.add_argument(
         "--output-dir",
@@ -120,7 +122,9 @@ Examples:
 
 
 def main(opts):
-    set_logger(opts.output_dir, opts.year, opts.month, opts.day)
+    year, month, day = parse_date(opts.date)
+
+    set_logger(opts.output_dir, year, month, day)
 
     file_helper = FileHelper(
         json_base_dir=opts.json_base_dir,

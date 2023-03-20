@@ -7,6 +7,12 @@ import numpy as np
 LOGGER_NAME = "PYPBP"
 
 
+def parse_date(date: str) -> Tuple[int, int, int]:
+    assert date.isdigit() and len(date) == 8
+    year, month, day = int(date[:4]), int(date[4:6]), int(date[6:8])
+    return year, month, day
+
+
 def set_logger(output_dir: str, year: int, month: int, day: int) -> str:
     logger = get_logger()
     logger.setLevel(logging.DEBUG)

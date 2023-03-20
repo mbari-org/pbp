@@ -29,11 +29,11 @@ tgz:
 # TODO review `--json-base-dir` value per subquent changes to support cloud processing,
 
 # Run main (on gizo)
-main-gizo year="2022" month="9" day="2" output_dir="/PAM_Analysis/pypam-space/test_output/daily":
+main-gizo date="20220902" output_dir="/PAM_Analysis/pypam-space/test_output/daily":
     PYTHONPATH=. python src/main.py \
                  --json-base-dir=json \
-                 --audio-path-map-prefix="s3://pacific-sound-256khz-{{year}}~file:///PAM_Archive/{{year}}" \
-                 --year={{year}} --month={{month}} --day={{day}} \
+                 --audio-path-map-prefix="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
+                 --date={{date}} \
                  --output-dir={{output_dir}}
 
 # Run main (on gizo) with some initial test jsons
@@ -42,7 +42,7 @@ main-gizo-test *more_args="":
                  --json-base-dir=tests/json \
                  --audio-base-dir=tests/wav \
                  --audio-path-map-prefix="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
-                 --year=2022 --month=9 --day=2 \
+                 --date=20220902 \
                  --output-dir=/PAM_Analysis/pypam-space/test_output/daily \
                  {{more_args}}
 
@@ -54,7 +54,7 @@ main-mac *more_args="":
     PYTHONPATH=. python src/main.py \
                  --json-base-dir=tests/json \
                  --audio-path-prefix=/Volumes \
-                 --year=2022 --month=9 --day=2 \
+                 --date=20220902 \
                  --subset-to 10 100000 \
                  --output-dir=output \
                  {{more_args}}

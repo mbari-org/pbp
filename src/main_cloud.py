@@ -5,7 +5,7 @@ import pathlib
 import boto3
 
 from src.file_helper import FileHelper
-from src.misc_helper import info, set_logger, warn
+from src.misc_helper import info, parse_date, set_logger, warn
 from src.process_helper import ProcessHelper
 
 
@@ -15,8 +15,7 @@ def main():
 
     # The date to process. Format: "YYYYMMDD"
     date = os.environ["DATE"]
-    assert date.isdigit() and len(date) == 8
-    year, month, day = int(date[:4]), int(date[4:6]), int(date[6:8])
+    year, month, day = parse_date(date)
 
     # Bucket prefix to be used to locate the YYYYMMDD.json file
     json_bucket_prefix = os.getenv(
