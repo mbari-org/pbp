@@ -1,6 +1,7 @@
 import logging
 import os
 import pathlib
+from dataclasses import dataclass
 from math import ceil, floor
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
@@ -16,6 +17,13 @@ from src.json_support import (
     TMEIntersection,
 )
 from src.misc_helper import brief_list, debug, error, get_logger, info, map_prefix, warn
+
+
+@dataclass
+class AudioInfo:
+    samplerate: int
+    channels: int
+    subtype: str
 
 
 class WavStatus:
@@ -50,7 +58,7 @@ class WavStatus:
             self.error = "error getting audio info"
             return
 
-        self.audio_info: sf._SoundFileInfo = ai
+        self.audio_info: AudioInfo = ai
         self.sound_file = sf.SoundFile(self.wav_filename)
         self.age = 0  # see _get_wav_status.
 
@@ -228,7 +236,7 @@ class FileHelper:
 
     def extract_audio_segment(
         self, at_hour: int, at_minute: int
-    ) -> Optional[Tuple[sf._SoundFileInfo, np.ndarray]]:
+    ) -> Optional[Tuple[AudioInfo, np.ndarray]]:
         """
         Extracts the audio segment at the given start time.
         For this it loads and aggregates the relevant audio segments.
@@ -251,7 +259,7 @@ class FileHelper:
             at_minute,
         )
 
-        audio_info: Optional[sf._SoundFileInfo] = None
+        audio_info: Optional[AudioInfo] = None
 
         aggregated_segment: Optional[np.ndarray] = None
 
@@ -298,6 +306,7 @@ class FileHelper:
                 aggregated_segment = np.concatenate((aggregated_segment, audio_segment))
 
         if aggregated_segment is not None:
+            assert audio_info is not None
             return audio_info, aggregated_segment
         return None
 
@@ -368,15 +377,16 @@ def _get_json_local(filename: str) -> Optional[str]:
         return None
 
 
-def _get_audio_info(wav_filename: str) -> Optional[sf._SoundFileInfo]:
+def _get_audio_info(wav_filename: str) -> Optional[AudioInfo]:
     try:
-        return sf.info(wav_filename)
+        sfi = sf.info(wav_filename)
+        return AudioInfo(sfi.samplerate, sfi.channels, sfi.subtype)
     except sf.LibsndfileError as e:
         error(f"{e}")
         return None
 
 
-def _check_audio_info(ai1: sf._SoundFileInfo, ai2: sf._SoundFileInfo) -> bool:
+def _check_audio_info(ai1: AudioInfo, ai2: AudioInfo) -> bool:
     if ai1.samplerate != ai2.samplerate:
         error(f"UNEXPECTED: sample rate mismatch: {ai1.samplerate} vs {ai2.samplerate}")
         return False
