@@ -36,7 +36,7 @@ def get_logger() -> logging.Logger:
 
 
 def info(s: str):
-    logging.getLogger(LOGGER_NAME).info(s)
+    get_logger().info(s)
 
 
 def debug(s: str):
