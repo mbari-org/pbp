@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+# On gizo, running like this:
+#    nohup misc/run_multiple_days.sh 10 30 &
+
 set -ue
 
 from_day=$1
@@ -6,7 +10,7 @@ to_day=$2
 
 year="2022"
 month="9"
-output_dir="/PAM_Analysis/pypam-space/test_output/daily"
+output_dir="/PAM_Analysis/pypam-space/test_output/daily/with_per_band_calibration"
 
 echo "Running: year=$year month=$month from_day=$from_day to_day=$to_day"
 
@@ -19,6 +23,7 @@ for day in $(seq "$from_day" "$to_day"); do
   echo "running: day=$day output_dir=$output_dir"
   python src/main.py \
          --date="$date" \
+         --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
          --json-base-dir=json/"$year" \
          --audio-path-map-prefix="s3://pacific-sound-256khz-${year}~file:///PAM_Archive/${year}" \
          --output-dir="$output_dir" \
