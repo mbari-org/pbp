@@ -55,6 +55,8 @@ main-mac *more_args="":
                  --json-base-dir=tests/json \
                  --audio-path-prefix=/Volumes \
                  --date=20220902 \
+                 --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
+                 --gen-csv \
                  --subset-to 10 100000 \
                  --output-dir=output \
                  {{more_args}}

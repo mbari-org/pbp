@@ -85,7 +85,7 @@ def map_prefix(prefix_map: str, s: str) -> str:
     return s
 
 
-def brief_list(l: Union[List, np.ndarray[Any, Any]], max_items: int = 10) -> str:
+def brief_list(l: Union[List, np.ndarray[Any, Any]], max_items: int = 6) -> str:
     """
     Helper to format a list as a string, with a maximum number of items.
     :param l:  The list to format.

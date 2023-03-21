@@ -67,10 +67,13 @@ def main():
         download_dir=download_dir,
     )
 
+    # TODO indicate an s3 address for sensitivity_uri
+    #   For now, using checked in file.
     processor_helper = ProcessHelper(
         file_helper,
         output_dir=generated_dir,
         gen_csv=False,
+        sensitivity_uri="misc/icListen1689_sensitivity_hms256kHz.nc",
         max_segments=max_segments,
         subset_to=(10, 100_000),
     )

@@ -177,6 +177,22 @@ class FileHelper:
         self.json_entries = list(parse_json_contents(json_contents))
         return True
 
+    def get_local_sensitivity_filename(
+        self, sensitivity_uri: Optional[str]
+    ) -> Optional[str]:
+        """
+        Returns the local sensitivity filename, which may be a downloaded one
+        when the given uri is s3 based.
+        """
+        if sensitivity_uri is None:
+            return None
+
+        parsed_uri = urlparse(sensitivity_uri)
+        if parsed_uri.scheme == "s3":
+            return _download(parsed_uri, self.s3_client, self.download_dir)
+
+        return parsed_uri.path
+
     def day_completed(self):
         """
         Since a process is launched only for day, we simply clear the cache.

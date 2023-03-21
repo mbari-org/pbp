@@ -9,7 +9,7 @@ from pypam import utils
 from src.misc_helper import brief_list, debug, info
 
 # Approximate "flat" sensitivity of the hydrophone
-APPROX_FLAT_SENSITIVITY = 178
+APPROX_FLAT_SENSITIVITY = -178
 
 
 class PypamSupport:
@@ -51,15 +51,41 @@ class PypamSupport:
         self.iso_minutes.append(iso_minute)
         self.num_secs_per_minute.append(num_secs)
 
-    def get_aggregated_milli_psd(self) -> xr.DataArray:
+    def get_aggregated_milli_psd(
+        self, sensitivity_da: Optional[xr.DataArray] = None
+    ) -> xr.DataArray:
+        """
+        Gets the resulting hybrid millidecade bands.
+
+        :param sensitivity_da:
+            If given, it's used to calibrate the result.
+            Otherwise, the result is calibrated using APPROX_FLAT_SENSITIVITY.
+        :return:
+        """
         # Convert the spectra to a datarray
         psd_da = xr.DataArray(
             data=self.spectra,
             coords={"iso_minute": self.iso_minutes, "frequency": self.fbands},
             dims=["iso_minute", "frequency"],
         )
-        milli_psd = self.subset_result(psd_da)
-        milli_psd = cast(xr.DataArray, 10 * np.log10(milli_psd) + APPROX_FLAT_SENSITIVITY)
+
+        # We first to any subsetting:
+        if self.subset_to is not None:
+            psd_da = self.subset_result(psd_da, self.subset_to)
+
+        debug(f"  frequency_bins={psd_da.frequency_bins}")
+
+        # to then use the restricted frequency values for calibration:
+        psd_da = cast(xr.DataArray, 10 * np.log10(psd_da))
+        if sensitivity_da is not None:
+            freq_subset = sensitivity_da.interp(frequency=psd_da.frequency_bins)
+            info(f"  Applying sensitivity({len(freq_subset.values)})={freq_subset}")
+            psd_da -= freq_subset.values
+        else:
+            info(f"  applying APPROX_FLAT_SENSITIVITY={APPROX_FLAT_SENSITIVITY}")
+            psd_da -= APPROX_FLAT_SENSITIVITY
+
+        milli_psd = psd_da
         milli_psd.name = "psd"
 
         # ----------------------------------------
@@ -128,17 +154,17 @@ class PypamSupport:
             dims=["iso_minute", "frequency"],
         )
 
-        milli_psd = self.subset_result(psd_da)
+        if self.subset_to is not None:
+            milli_psd = self.subset_result(psd_da, self.subset_to)
+        else:
+            milli_psd = psd_da
         milli_psd = cast(xr.DataArray, 10 * np.log10(milli_psd) + APPROX_FLAT_SENSITIVITY)
         milli_psd.name = "psd"
         return milli_psd
 
-    def subset_result(self, da: xr.DataArray) -> xr.DataArray:
-        if self.subset_to is None:
-            return da
-
-        start_hz, end_hz = self.subset_to
-        info(f"subsetting to [{start_hz:,}, {end_hz:,})Hz")
+    def subset_result(self, da: xr.DataArray, subset_to: Tuple[int, int]) -> xr.DataArray:
+        start_hz, end_hz = subset_to
+        info(f"Subsetting to [{start_hz:,}, {end_hz:,})Hz")
         bands_c = self.bands_c
         bands_limits = self.bands_limits
 

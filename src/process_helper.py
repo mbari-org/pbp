@@ -5,11 +5,12 @@ from typing import List, Optional, Tuple
 
 # import numpy as np
 import soundfile as sf
+import xarray as xr
 
 from src import get_cpus_to_use, save_csv, save_netcdf
 
 from src.file_helper import FileHelper
-from src.misc_helper import gen_hour_minute_times, info, warn
+from src.misc_helper import debug, error, gen_hour_minute_times, info, warn
 from src.pypam_support import PypamSupport
 
 
@@ -22,6 +23,7 @@ class ProcessHelper:
         file_helper: FileHelper,
         output_dir: str,
         gen_csv: bool,
+        sensitivity_uri: Optional[str] = None,
         save_segment_result: bool = False,
         save_extracted_wav: bool = False,
         num_cpus: int = 0,
@@ -33,6 +35,7 @@ class ProcessHelper:
         :param file_helper:
         :param output_dir:
         :param gen_csv:
+        :param sensitivity_uri:
         :param save_segment_result:
         :param save_extracted_wav:
         :param num_cpus:
@@ -49,6 +52,19 @@ class ProcessHelper:
         self.num_cpus = get_cpus_to_use(num_cpus)
         self.max_segments = max_segments
         self.subset_to = subset_to
+
+        self.sensitivity_da: Optional[xr.DataArray] = None
+        if sensitivity_uri is not None:
+            s_local_filename = file_helper.get_local_sensitivity_filename(sensitivity_uri)
+            if s_local_filename is not None:
+                sensitivity_ds = xr.open_dataset(s_local_filename)
+                debug(f"Loaded sensitivity from '{s_local_filename}'")
+                self.sensitivity_da = sensitivity_ds.sensitivity
+                debug(f"sensitivity_da={self.sensitivity_da}")
+            else:
+                error(
+                    f"Unable to resolve sensitivity_uri: '{sensitivity_uri}'. Ignoring it."
+                )
 
         # obtained once upon first segment to be processed
         self.pypam_support: Optional[PypamSupport] = None
@@ -91,7 +107,9 @@ class ProcessHelper:
             return None
 
         info("Aggregating results ...")
-        aggregated_result = self.pypam_support.get_aggregated_milli_psd()
+        aggregated_result = self.pypam_support.get_aggregated_milli_psd(
+            self.sensitivity_da
+        )
         basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
         nc_filename = f"{basename}.nc"
         save_netcdf(aggregated_result, nc_filename)

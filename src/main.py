@@ -64,6 +64,14 @@ Examples:
     )
 
     parser.add_argument(
+        "--sensitivity-uri",
+        type=str,
+        default=None,
+        metavar="file",
+        help="URI of sensitivity NetCDF for calibration of result. By default, a flat value of 178 is applied.",
+    )
+
+    parser.add_argument(
         "--output-dir",
         type=str,
         metavar="dir",
@@ -137,6 +145,7 @@ def main(opts):
         file_helper,
         output_dir=opts.output_dir,
         gen_csv=opts.gen_csv,
+        sensitivity_uri=opts.sensitivity_uri,
         save_segment_result=opts.save_segment_result,
         save_extracted_wav=opts.save_extracted_wav,
         num_cpus=opts.cpus,
@@ -145,9 +154,9 @@ def main(opts):
     )
     try:
         processor_helper.process_day(
-            year=opts.year,
-            month=opts.month,
-            day=opts.day,
+            year=year,
+            month=month,
+            day=day,
         )
     except KeyboardInterrupt:
         info("INTERRUPTED")
