@@ -22,7 +22,8 @@ TODO more details
 - PyPAM - Python tool for Passive Acoustic Monitoring –
   <https://github.com/lifewatch/pypam/>
 - Computation of single-sided mean-square sound pressure spectral density with 1 Hz resolution follows
-  ISO 18405 3.1.3.13 (International Standard ISO 18405:2017(E), Underwater Acoustics – Terminology. Geneva: ISO).
+  ISO 18405 3.1.3.13 (International Standard ISO 18405:2017(E), Underwater Acoustics – Terminology. Geneva: ISO)
+  – https://www.iso.org/standard/62406.html
 - Hybrid millidecade spectra: A practical format for exchange of long-term ambient sound data –
   <https://asa.scitation.org/doi/10.1121/10.0003324>
 - Erratum: Hybrid millidecade spectra –
