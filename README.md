@@ -13,19 +13,19 @@ to generate _hybrid millidecade spectra_ for Soundscape data.
     - [x] Calibration with given sensitivity file (NetCDF)
     - [x] NetCDF and CSV data products
     - [x] Preliminary inclusion of "effort" (number of used seconds per minute)
-- [x] Cloud processing (download of inputs from, and upload of generated products to S3)
+- [x] Cloud processing (download inputs from, and upload generated products to S3)
 
 TODO more details
 
 ## Refs
 
-- Python tool for Passive Acoustic Monitoring -
+- PyPAM - Python tool for Passive Acoustic Monitoring –
   <https://github.com/lifewatch/pypam/>
-- Ocean Sound Analysis Software for Making Ambient Noise Trends Accessible (MANTA) -
-  <https://www.frontiersin.org/articles/10.3389/fmars.2021.703650/full>
-- Hybrid millidecade spectra -
+- Computation of single-sided mean-square sound pressure spectral density with 1 Hz resolution follows
+  ISO 18405 3.1.3.13 (International Standard ISO 18405:2017(E), Underwater Acoustics – Terminology. Geneva: ISO).
+- Hybrid millidecade spectra: A practical format for exchange of long-term ambient sound data –
   <https://asa.scitation.org/doi/10.1121/10.0003324>
-- Erratum: Hybrid millidecade spectra
+- Erratum: Hybrid millidecade spectra –
   <https://asa.scitation.org/doi/10.1121/10.0005818>
 
 ## Development
