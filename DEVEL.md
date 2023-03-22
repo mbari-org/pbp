@@ -18,7 +18,7 @@ source virtenv/bin/activate
 j setup
 ```
 
-While working on the code, you want to keep the all unit testing green:
+While working on the code, you want to keep all unit testing green:
 ```shell
 j test
 ```
