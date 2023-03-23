@@ -20,7 +20,7 @@ TODO more details
 ## Refs
 
 - PyPAM - Python tool for Passive Acoustic Monitoring –
-  <https://github.com/lifewatch/pypam/>
+  <https://doi.org/10.5281/zenodo.6044593>
 - Computation of single-sided mean-square sound pressure spectral density with 1 Hz resolution follows
   ISO 18405 3.1.3.13 (International Standard ISO 18405:2017(E), Underwater Acoustics – Terminology. Geneva: ISO)
   – https://www.iso.org/standard/62406.html
