@@ -70,9 +70,9 @@ main-mac *more_args="":
 #                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
 # Basic test for cloud processing
-main-cloud-basic-test max_segments="1":
+main-cloud-basic-test max_segments="1" date="20220902":
     #!/usr/bin/env bash
-    export DATE="20220902"
+    export DATE={{date}}
     export MAX_SEGMENTS={{max_segments}}
     export PYTHONPATH=.
     python src/main_cloud.py
