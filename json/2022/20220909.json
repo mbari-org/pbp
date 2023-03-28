@@ -1,1 +1,1138 @@
-[{"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_002442.wav", "start": "2022-09-09T00:24:42", "end": "2022-09-09T00:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_003442.wav", "start": "2022-09-09T00:34:42", "end": "2022-09-09T00:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_004442.wav", "start": "2022-09-09T00:44:42", "end": "2022-09-09T00:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_005442.wav", "start": "2022-09-09T00:54:42", "end": "2022-09-09T00:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_010442.wav", "start": "2022-09-09T01:04:42", "end": "2022-09-09T01:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_011442.wav", "start": "2022-09-09T01:14:42", "end": "2022-09-09T01:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_012442.wav", "start": "2022-09-09T01:24:42", "end": "2022-09-09T01:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_013442.wav", "start": "2022-09-09T01:34:42", "end": "2022-09-09T01:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_014442.wav", "start": "2022-09-09T01:44:42", "end": "2022-09-09T01:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_015442.wav", "start": "2022-09-09T01:54:42", "end": "2022-09-09T01:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_020442.wav", "start": "2022-09-09T02:04:42", "end": "2022-09-09T02:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_021442.wav", "start": "2022-09-09T02:14:42", "end": "2022-09-09T02:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_022442.wav", "start": "2022-09-09T02:24:42", "end": "2022-09-09T02:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_023442.wav", "start": "2022-09-09T02:34:42", "end": "2022-09-09T02:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_024442.wav", "start": "2022-09-09T02:44:42", "end": "2022-09-09T02:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_025442.wav", "start": "2022-09-09T02:54:42", "end": "2022-09-09T02:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_030442.wav", "start": "2022-09-09T03:04:42", "end": "2022-09-09T03:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_031442.wav", "start": "2022-09-09T03:14:42", "end": "2022-09-09T03:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_032442.wav", "start": "2022-09-09T03:24:42", "end": "2022-09-09T03:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_033442.wav", "start": "2022-09-09T03:34:42", "end": "2022-09-09T03:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_034442.wav", "start": "2022-09-09T03:44:42", "end": "2022-09-09T03:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_035442.wav", "start": "2022-09-09T03:54:42", "end": "2022-09-09T03:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_040442.wav", "start": "2022-09-09T04:04:42", "end": "2022-09-09T04:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_041442.wav", "start": "2022-09-09T04:14:42", "end": "2022-09-09T04:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_042442.wav", "start": "2022-09-09T04:24:42", "end": "2022-09-09T04:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_043442.wav", "start": "2022-09-09T04:34:42", "end": "2022-09-09T04:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_044442.wav", "start": "2022-09-09T04:44:42", "end": "2022-09-09T04:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_045442.wav", "start": "2022-09-09T04:54:42", "end": "2022-09-09T04:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_050442.wav", "start": "2022-09-09T05:04:42", "end": "2022-09-09T05:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_051442.wav", "start": "2022-09-09T05:14:42", "end": "2022-09-09T05:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_052442.wav", "start": "2022-09-09T05:24:42", "end": "2022-09-09T05:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_053442.wav", "start": "2022-09-09T05:34:42", "end": "2022-09-09T05:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_054442.wav", "start": "2022-09-09T05:44:42", "end": "2022-09-09T05:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_055442.wav", "start": "2022-09-09T05:54:42", "end": "2022-09-09T05:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_060442.wav", "start": "2022-09-09T06:04:42", "end": "2022-09-09T06:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_061442.wav", "start": "2022-09-09T06:14:42", "end": "2022-09-09T06:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_062442.wav", "start": "2022-09-09T06:24:42", "end": "2022-09-09T06:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_063442.wav", "start": "2022-09-09T06:34:42", "end": "2022-09-09T06:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_064442.wav", "start": "2022-09-09T06:44:42", "end": "2022-09-09T06:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_065442.wav", "start": "2022-09-09T06:54:42", "end": "2022-09-09T06:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_070442.wav", "start": "2022-09-09T07:04:42", "end": "2022-09-09T07:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_071442.wav", "start": "2022-09-09T07:14:42", "end": "2022-09-09T07:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_072442.wav", "start": "2022-09-09T07:24:42", "end": "2022-09-09T07:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_073442.wav", "start": "2022-09-09T07:34:42", "end": "2022-09-09T07:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_074442.wav", "start": "2022-09-09T07:44:42", "end": "2022-09-09T07:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_075442.wav", "start": "2022-09-09T07:54:42", "end": "2022-09-09T07:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_080442.wav", "start": "2022-09-09T08:04:42", "end": "2022-09-09T08:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_081442.wav", "start": "2022-09-09T08:14:42", "end": "2022-09-09T08:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_082442.wav", "start": "2022-09-09T08:24:42", "end": "2022-09-09T08:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_083442.wav", "start": "2022-09-09T08:34:42", "end": "2022-09-09T08:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_084442.wav", "start": "2022-09-09T08:44:42", "end": "2022-09-09T08:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_085442.wav", "start": "2022-09-09T08:54:42", "end": "2022-09-09T08:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_090442.wav", "start": "2022-09-09T09:04:42", "end": "2022-09-09T09:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_091442.wav", "start": "2022-09-09T09:14:42", "end": "2022-09-09T09:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_092442.wav", "start": "2022-09-09T09:24:42", "end": "2022-09-09T09:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_093442.wav", "start": "2022-09-09T09:34:42", "end": "2022-09-09T09:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_094442.wav", "start": "2022-09-09T09:44:42", "end": "2022-09-09T09:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_095442.wav", "start": "2022-09-09T09:54:42", "end": "2022-09-09T09:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_100442.wav", "start": "2022-09-09T10:04:42", "end": "2022-09-09T10:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_101442.wav", "start": "2022-09-09T10:14:42", "end": "2022-09-09T10:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_102442.wav", "start": "2022-09-09T10:24:42", "end": "2022-09-09T10:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_103442.wav", "start": "2022-09-09T10:34:42", "end": "2022-09-09T10:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_104442.wav", "start": "2022-09-09T10:44:42", "end": "2022-09-09T10:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_105442.wav", "start": "2022-09-09T10:54:42", "end": "2022-09-09T10:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_110442.wav", "start": "2022-09-09T11:04:42", "end": "2022-09-09T11:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_111442.wav", "start": "2022-09-09T11:14:42", "end": "2022-09-09T11:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_112442.wav", "start": "2022-09-09T11:24:42", "end": "2022-09-09T11:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_113442.wav", "start": "2022-09-09T11:34:42", "end": "2022-09-09T11:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_114442.wav", "start": "2022-09-09T11:44:42", "end": "2022-09-09T11:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_115442.wav", "start": "2022-09-09T11:54:42", "end": "2022-09-09T11:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_120442.wav", "start": "2022-09-09T12:04:42", "end": "2022-09-09T12:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_121442.wav", "start": "2022-09-09T12:14:42", "end": "2022-09-09T12:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_122442.wav", "start": "2022-09-09T12:24:42", "end": "2022-09-09T12:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_123442.wav", "start": "2022-09-09T12:34:42", "end": "2022-09-09T12:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_124442.wav", "start": "2022-09-09T12:44:42", "end": "2022-09-09T12:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_125442.wav", "start": "2022-09-09T12:54:42", "end": "2022-09-09T12:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_130442.wav", "start": "2022-09-09T13:04:42", "end": "2022-09-09T13:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_131442.wav", "start": "2022-09-09T13:14:42", "end": "2022-09-09T13:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_132442.wav", "start": "2022-09-09T13:24:42", "end": "2022-09-09T13:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_133442.wav", "start": "2022-09-09T13:34:42", "end": "2022-09-09T13:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_134442.wav", "start": "2022-09-09T13:44:42", "end": "2022-09-09T13:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_135442.wav", "start": "2022-09-09T13:54:42", "end": "2022-09-09T13:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_140442.wav", "start": "2022-09-09T14:04:42", "end": "2022-09-09T14:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_141442.wav", "start": "2022-09-09T14:14:42", "end": "2022-09-09T14:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_142442.wav", "start": "2022-09-09T14:24:42", "end": "2022-09-09T14:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_143442.wav", "start": "2022-09-09T14:34:42", "end": "2022-09-09T14:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_144442.wav", "start": "2022-09-09T14:44:42", "end": "2022-09-09T14:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_145442.wav", "start": "2022-09-09T14:54:42", "end": "2022-09-09T14:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_150442.wav", "start": "2022-09-09T15:04:42", "end": "2022-09-09T15:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_151442.wav", "start": "2022-09-09T15:14:42", "end": "2022-09-09T15:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_152442.wav", "start": "2022-09-09T15:24:42", "end": "2022-09-09T15:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_153442.wav", "start": "2022-09-09T15:34:42", "end": "2022-09-09T15:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_154442.wav", "start": "2022-09-09T15:44:42", "end": "2022-09-09T15:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_155442.wav", "start": "2022-09-09T15:54:42", "end": "2022-09-09T15:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_160442.wav", "start": "2022-09-09T16:04:42", "end": "2022-09-09T16:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_161442.wav", "start": "2022-09-09T16:14:42", "end": "2022-09-09T16:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_162442.wav", "start": "2022-09-09T16:24:42", "end": "2022-09-09T16:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_163442.wav", "start": "2022-09-09T16:34:42", "end": "2022-09-09T16:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_164442.wav", "start": "2022-09-09T16:44:42", "end": "2022-09-09T16:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_165442.wav", "start": "2022-09-09T16:54:42", "end": "2022-09-09T16:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_170442.wav", "start": "2022-09-09T17:04:42", "end": "2022-09-09T17:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_171442.wav", "start": "2022-09-09T17:14:42", "end": "2022-09-09T17:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_172442.wav", "start": "2022-09-09T17:24:42", "end": "2022-09-09T17:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_173442.wav", "start": "2022-09-09T17:34:42", "end": "2022-09-09T17:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_174442.wav", "start": "2022-09-09T17:44:42", "end": "2022-09-09T17:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_175442.wav", "start": "2022-09-09T17:54:42", "end": "2022-09-09T17:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_180442.wav", "start": "2022-09-09T18:04:42", "end": "2022-09-09T18:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_181442.wav", "start": "2022-09-09T18:14:42", "end": "2022-09-09T18:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_182442.wav", "start": "2022-09-09T18:24:42", "end": "2022-09-09T18:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_183442.wav", "start": "2022-09-09T18:34:42", "end": "2022-09-09T18:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_184442.wav", "start": "2022-09-09T18:44:42", "end": "2022-09-09T18:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_185442.wav", "start": "2022-09-09T18:54:42", "end": "2022-09-09T18:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_190442.wav", "start": "2022-09-09T19:04:42", "end": "2022-09-09T19:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_191442.wav", "start": "2022-09-09T19:14:42", "end": "2022-09-09T19:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_192442.wav", "start": "2022-09-09T19:24:42", "end": "2022-09-09T19:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_193442.wav", "start": "2022-09-09T19:34:42", "end": "2022-09-09T19:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_194442.wav", "start": "2022-09-09T19:44:42", "end": "2022-09-09T19:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_195442.wav", "start": "2022-09-09T19:54:42", "end": "2022-09-09T19:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_200442.wav", "start": "2022-09-09T20:04:42", "end": "2022-09-09T20:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_201442.wav", "start": "2022-09-09T20:14:42", "end": "2022-09-09T20:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_202442.wav", "start": "2022-09-09T20:24:42", "end": "2022-09-09T20:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_203442.wav", "start": "2022-09-09T20:34:42", "end": "2022-09-09T20:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_204442.wav", "start": "2022-09-09T20:44:42", "end": "2022-09-09T20:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_205442.wav", "start": "2022-09-09T20:54:42", "end": "2022-09-09T20:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_210442.wav", "start": "2022-09-09T21:04:42", "end": "2022-09-09T21:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_211442.wav", "start": "2022-09-09T21:14:42", "end": "2022-09-09T21:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_212442.wav", "start": "2022-09-09T21:24:42", "end": "2022-09-09T21:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_213442.wav", "start": "2022-09-09T21:34:42", "end": "2022-09-09T21:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_214442.wav", "start": "2022-09-09T21:44:42", "end": "2022-09-09T21:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_215442.wav", "start": "2022-09-09T21:54:42", "end": "2022-09-09T21:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_220442.wav", "start": "2022-09-09T22:04:42", "end": "2022-09-09T22:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_221442.wav", "start": "2022-09-09T22:14:42", "end": "2022-09-09T22:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_222442.wav", "start": "2022-09-09T22:24:42", "end": "2022-09-09T22:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_223442.wav", "start": "2022-09-09T22:34:42", "end": "2022-09-09T22:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_224442.wav", "start": "2022-09-09T22:44:42", "end": "2022-09-09T22:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_225442.wav", "start": "2022-09-09T22:54:42", "end": "2022-09-09T22:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_230442.wav", "start": "2022-09-09T23:04:42", "end": "2022-09-09T23:04:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_231442.wav", "start": "2022-09-09T23:14:42", "end": "2022-09-09T23:14:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_232442.wav", "start": "2022-09-09T23:24:42", "end": "2022-09-09T23:24:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_233442.wav", "start": "2022-09-09T23:34:42", "end": "2022-09-09T23:34:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_234442.wav", "start": "2022-09-09T23:44:42", "end": "2022-09-09T23:44:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}, {"uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_235442.wav", "start": "2022-09-09T23:54:42", "end": "2022-09-09T23:54:42", "duration_secs": 600.0, "channels": 1, "jitter_secs": 0}]
+[
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_002442.wav",
+    "start": "2022-09-09T00:24:42",
+    "end": "2022-09-09T00:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_003442.wav",
+    "start": "2022-09-09T00:34:42",
+    "end": "2022-09-09T00:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_004442.wav",
+    "start": "2022-09-09T00:44:42",
+    "end": "2022-09-09T00:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_005442.wav",
+    "start": "2022-09-09T00:54:42",
+    "end": "2022-09-09T01:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_010442.wav",
+    "start": "2022-09-09T01:04:42",
+    "end": "2022-09-09T01:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_011442.wav",
+    "start": "2022-09-09T01:14:42",
+    "end": "2022-09-09T01:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_012442.wav",
+    "start": "2022-09-09T01:24:42",
+    "end": "2022-09-09T01:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_013442.wav",
+    "start": "2022-09-09T01:34:42",
+    "end": "2022-09-09T01:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_014442.wav",
+    "start": "2022-09-09T01:44:42",
+    "end": "2022-09-09T01:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_015442.wav",
+    "start": "2022-09-09T01:54:42",
+    "end": "2022-09-09T02:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_020442.wav",
+    "start": "2022-09-09T02:04:42",
+    "end": "2022-09-09T02:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_021442.wav",
+    "start": "2022-09-09T02:14:42",
+    "end": "2022-09-09T02:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_022442.wav",
+    "start": "2022-09-09T02:24:42",
+    "end": "2022-09-09T02:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_023442.wav",
+    "start": "2022-09-09T02:34:42",
+    "end": "2022-09-09T02:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_024442.wav",
+    "start": "2022-09-09T02:44:42",
+    "end": "2022-09-09T02:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_025442.wav",
+    "start": "2022-09-09T02:54:42",
+    "end": "2022-09-09T03:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_030442.wav",
+    "start": "2022-09-09T03:04:42",
+    "end": "2022-09-09T03:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_031442.wav",
+    "start": "2022-09-09T03:14:42",
+    "end": "2022-09-09T03:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_032442.wav",
+    "start": "2022-09-09T03:24:42",
+    "end": "2022-09-09T03:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_033442.wav",
+    "start": "2022-09-09T03:34:42",
+    "end": "2022-09-09T03:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_034442.wav",
+    "start": "2022-09-09T03:44:42",
+    "end": "2022-09-09T03:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_035442.wav",
+    "start": "2022-09-09T03:54:42",
+    "end": "2022-09-09T04:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_040442.wav",
+    "start": "2022-09-09T04:04:42",
+    "end": "2022-09-09T04:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_041442.wav",
+    "start": "2022-09-09T04:14:42",
+    "end": "2022-09-09T04:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_042442.wav",
+    "start": "2022-09-09T04:24:42",
+    "end": "2022-09-09T04:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_043442.wav",
+    "start": "2022-09-09T04:34:42",
+    "end": "2022-09-09T04:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_044442.wav",
+    "start": "2022-09-09T04:44:42",
+    "end": "2022-09-09T04:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_045442.wav",
+    "start": "2022-09-09T04:54:42",
+    "end": "2022-09-09T05:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_050442.wav",
+    "start": "2022-09-09T05:04:42",
+    "end": "2022-09-09T05:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_051442.wav",
+    "start": "2022-09-09T05:14:42",
+    "end": "2022-09-09T05:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_052442.wav",
+    "start": "2022-09-09T05:24:42",
+    "end": "2022-09-09T05:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_053442.wav",
+    "start": "2022-09-09T05:34:42",
+    "end": "2022-09-09T05:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_054442.wav",
+    "start": "2022-09-09T05:44:42",
+    "end": "2022-09-09T05:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_055442.wav",
+    "start": "2022-09-09T05:54:42",
+    "end": "2022-09-09T06:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_060442.wav",
+    "start": "2022-09-09T06:04:42",
+    "end": "2022-09-09T06:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_061442.wav",
+    "start": "2022-09-09T06:14:42",
+    "end": "2022-09-09T06:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_062442.wav",
+    "start": "2022-09-09T06:24:42",
+    "end": "2022-09-09T06:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_063442.wav",
+    "start": "2022-09-09T06:34:42",
+    "end": "2022-09-09T06:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_064442.wav",
+    "start": "2022-09-09T06:44:42",
+    "end": "2022-09-09T06:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_065442.wav",
+    "start": "2022-09-09T06:54:42",
+    "end": "2022-09-09T07:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_070442.wav",
+    "start": "2022-09-09T07:04:42",
+    "end": "2022-09-09T07:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_071442.wav",
+    "start": "2022-09-09T07:14:42",
+    "end": "2022-09-09T07:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_072442.wav",
+    "start": "2022-09-09T07:24:42",
+    "end": "2022-09-09T07:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_073442.wav",
+    "start": "2022-09-09T07:34:42",
+    "end": "2022-09-09T07:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_074442.wav",
+    "start": "2022-09-09T07:44:42",
+    "end": "2022-09-09T07:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_075442.wav",
+    "start": "2022-09-09T07:54:42",
+    "end": "2022-09-09T08:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_080442.wav",
+    "start": "2022-09-09T08:04:42",
+    "end": "2022-09-09T08:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_081442.wav",
+    "start": "2022-09-09T08:14:42",
+    "end": "2022-09-09T08:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_082442.wav",
+    "start": "2022-09-09T08:24:42",
+    "end": "2022-09-09T08:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_083442.wav",
+    "start": "2022-09-09T08:34:42",
+    "end": "2022-09-09T08:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_084442.wav",
+    "start": "2022-09-09T08:44:42",
+    "end": "2022-09-09T08:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_085442.wav",
+    "start": "2022-09-09T08:54:42",
+    "end": "2022-09-09T09:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_090442.wav",
+    "start": "2022-09-09T09:04:42",
+    "end": "2022-09-09T09:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_091442.wav",
+    "start": "2022-09-09T09:14:42",
+    "end": "2022-09-09T09:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_092442.wav",
+    "start": "2022-09-09T09:24:42",
+    "end": "2022-09-09T09:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_093442.wav",
+    "start": "2022-09-09T09:34:42",
+    "end": "2022-09-09T09:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_094442.wav",
+    "start": "2022-09-09T09:44:42",
+    "end": "2022-09-09T09:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_095442.wav",
+    "start": "2022-09-09T09:54:42",
+    "end": "2022-09-09T10:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_100442.wav",
+    "start": "2022-09-09T10:04:42",
+    "end": "2022-09-09T10:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_101442.wav",
+    "start": "2022-09-09T10:14:42",
+    "end": "2022-09-09T10:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_102442.wav",
+    "start": "2022-09-09T10:24:42",
+    "end": "2022-09-09T10:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_103442.wav",
+    "start": "2022-09-09T10:34:42",
+    "end": "2022-09-09T10:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_104442.wav",
+    "start": "2022-09-09T10:44:42",
+    "end": "2022-09-09T10:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_105442.wav",
+    "start": "2022-09-09T10:54:42",
+    "end": "2022-09-09T11:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_110442.wav",
+    "start": "2022-09-09T11:04:42",
+    "end": "2022-09-09T11:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_111442.wav",
+    "start": "2022-09-09T11:14:42",
+    "end": "2022-09-09T11:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_112442.wav",
+    "start": "2022-09-09T11:24:42",
+    "end": "2022-09-09T11:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_113442.wav",
+    "start": "2022-09-09T11:34:42",
+    "end": "2022-09-09T11:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_114442.wav",
+    "start": "2022-09-09T11:44:42",
+    "end": "2022-09-09T11:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_115442.wav",
+    "start": "2022-09-09T11:54:42",
+    "end": "2022-09-09T12:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_120442.wav",
+    "start": "2022-09-09T12:04:42",
+    "end": "2022-09-09T12:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_121442.wav",
+    "start": "2022-09-09T12:14:42",
+    "end": "2022-09-09T12:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_122442.wav",
+    "start": "2022-09-09T12:24:42",
+    "end": "2022-09-09T12:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_123442.wav",
+    "start": "2022-09-09T12:34:42",
+    "end": "2022-09-09T12:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_124442.wav",
+    "start": "2022-09-09T12:44:42",
+    "end": "2022-09-09T12:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_125442.wav",
+    "start": "2022-09-09T12:54:42",
+    "end": "2022-09-09T13:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_130442.wav",
+    "start": "2022-09-09T13:04:42",
+    "end": "2022-09-09T13:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_131442.wav",
+    "start": "2022-09-09T13:14:42",
+    "end": "2022-09-09T13:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_132442.wav",
+    "start": "2022-09-09T13:24:42",
+    "end": "2022-09-09T13:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_133442.wav",
+    "start": "2022-09-09T13:34:42",
+    "end": "2022-09-09T13:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_134442.wav",
+    "start": "2022-09-09T13:44:42",
+    "end": "2022-09-09T13:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_135442.wav",
+    "start": "2022-09-09T13:54:42",
+    "end": "2022-09-09T14:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_140442.wav",
+    "start": "2022-09-09T14:04:42",
+    "end": "2022-09-09T14:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_141442.wav",
+    "start": "2022-09-09T14:14:42",
+    "end": "2022-09-09T14:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_142442.wav",
+    "start": "2022-09-09T14:24:42",
+    "end": "2022-09-09T14:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_143442.wav",
+    "start": "2022-09-09T14:34:42",
+    "end": "2022-09-09T14:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_144442.wav",
+    "start": "2022-09-09T14:44:42",
+    "end": "2022-09-09T14:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_145442.wav",
+    "start": "2022-09-09T14:54:42",
+    "end": "2022-09-09T15:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_150442.wav",
+    "start": "2022-09-09T15:04:42",
+    "end": "2022-09-09T15:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_151442.wav",
+    "start": "2022-09-09T15:14:42",
+    "end": "2022-09-09T15:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_152442.wav",
+    "start": "2022-09-09T15:24:42",
+    "end": "2022-09-09T15:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_153442.wav",
+    "start": "2022-09-09T15:34:42",
+    "end": "2022-09-09T15:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_154442.wav",
+    "start": "2022-09-09T15:44:42",
+    "end": "2022-09-09T15:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_155442.wav",
+    "start": "2022-09-09T15:54:42",
+    "end": "2022-09-09T16:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_160442.wav",
+    "start": "2022-09-09T16:04:42",
+    "end": "2022-09-09T16:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_161442.wav",
+    "start": "2022-09-09T16:14:42",
+    "end": "2022-09-09T16:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_162442.wav",
+    "start": "2022-09-09T16:24:42",
+    "end": "2022-09-09T16:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_163442.wav",
+    "start": "2022-09-09T16:34:42",
+    "end": "2022-09-09T16:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_164442.wav",
+    "start": "2022-09-09T16:44:42",
+    "end": "2022-09-09T16:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_165442.wav",
+    "start": "2022-09-09T16:54:42",
+    "end": "2022-09-09T17:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_170442.wav",
+    "start": "2022-09-09T17:04:42",
+    "end": "2022-09-09T17:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_171442.wav",
+    "start": "2022-09-09T17:14:42",
+    "end": "2022-09-09T17:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_172442.wav",
+    "start": "2022-09-09T17:24:42",
+    "end": "2022-09-09T17:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_173442.wav",
+    "start": "2022-09-09T17:34:42",
+    "end": "2022-09-09T17:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_174442.wav",
+    "start": "2022-09-09T17:44:42",
+    "end": "2022-09-09T17:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_175442.wav",
+    "start": "2022-09-09T17:54:42",
+    "end": "2022-09-09T18:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_180442.wav",
+    "start": "2022-09-09T18:04:42",
+    "end": "2022-09-09T18:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_181442.wav",
+    "start": "2022-09-09T18:14:42",
+    "end": "2022-09-09T18:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_182442.wav",
+    "start": "2022-09-09T18:24:42",
+    "end": "2022-09-09T18:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_183442.wav",
+    "start": "2022-09-09T18:34:42",
+    "end": "2022-09-09T18:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_184442.wav",
+    "start": "2022-09-09T18:44:42",
+    "end": "2022-09-09T18:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_185442.wav",
+    "start": "2022-09-09T18:54:42",
+    "end": "2022-09-09T19:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_190442.wav",
+    "start": "2022-09-09T19:04:42",
+    "end": "2022-09-09T19:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_191442.wav",
+    "start": "2022-09-09T19:14:42",
+    "end": "2022-09-09T19:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_192442.wav",
+    "start": "2022-09-09T19:24:42",
+    "end": "2022-09-09T19:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_193442.wav",
+    "start": "2022-09-09T19:34:42",
+    "end": "2022-09-09T19:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_194442.wav",
+    "start": "2022-09-09T19:44:42",
+    "end": "2022-09-09T19:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_195442.wav",
+    "start": "2022-09-09T19:54:42",
+    "end": "2022-09-09T20:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_200442.wav",
+    "start": "2022-09-09T20:04:42",
+    "end": "2022-09-09T20:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_201442.wav",
+    "start": "2022-09-09T20:14:42",
+    "end": "2022-09-09T20:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_202442.wav",
+    "start": "2022-09-09T20:24:42",
+    "end": "2022-09-09T20:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_203442.wav",
+    "start": "2022-09-09T20:34:42",
+    "end": "2022-09-09T20:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_204442.wav",
+    "start": "2022-09-09T20:44:42",
+    "end": "2022-09-09T20:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_205442.wav",
+    "start": "2022-09-09T20:54:42",
+    "end": "2022-09-09T21:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_210442.wav",
+    "start": "2022-09-09T21:04:42",
+    "end": "2022-09-09T21:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_211442.wav",
+    "start": "2022-09-09T21:14:42",
+    "end": "2022-09-09T21:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_212442.wav",
+    "start": "2022-09-09T21:24:42",
+    "end": "2022-09-09T21:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_213442.wav",
+    "start": "2022-09-09T21:34:42",
+    "end": "2022-09-09T21:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_214442.wav",
+    "start": "2022-09-09T21:44:42",
+    "end": "2022-09-09T21:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_215442.wav",
+    "start": "2022-09-09T21:54:42",
+    "end": "2022-09-09T22:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_220442.wav",
+    "start": "2022-09-09T22:04:42",
+    "end": "2022-09-09T22:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_221442.wav",
+    "start": "2022-09-09T22:14:42",
+    "end": "2022-09-09T22:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_222442.wav",
+    "start": "2022-09-09T22:24:42",
+    "end": "2022-09-09T22:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_223442.wav",
+    "start": "2022-09-09T22:34:42",
+    "end": "2022-09-09T22:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_224442.wav",
+    "start": "2022-09-09T22:44:42",
+    "end": "2022-09-09T22:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_225442.wav",
+    "start": "2022-09-09T22:54:42",
+    "end": "2022-09-09T23:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_230442.wav",
+    "start": "2022-09-09T23:04:42",
+    "end": "2022-09-09T23:14:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_231442.wav",
+    "start": "2022-09-09T23:14:42",
+    "end": "2022-09-09T23:24:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_232442.wav",
+    "start": "2022-09-09T23:24:42",
+    "end": "2022-09-09T23:34:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_233442.wav",
+    "start": "2022-09-09T23:34:42",
+    "end": "2022-09-09T23:44:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_234442.wav",
+    "start": "2022-09-09T23:44:42",
+    "end": "2022-09-09T23:54:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  },
+  {
+    "uri": "s3://pacific-sound-256khz-2022/09/MARS_20220909_235442.wav",
+    "start": "2022-09-09T23:54:42",
+    "end": "2022-09-10T00:04:42",
+    "duration_secs": 600.0,
+    "channels": 1,
+    "jitter_secs": 0
+  }
+]
