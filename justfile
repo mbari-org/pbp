@@ -53,6 +53,30 @@ main-gizo-test *more_args="":
 #                 --save-segment-result \
 #                 --save-extracted-wav \
 
+# Run multiple days (on gizo)
+main-gizo-multiple-days year month *days="":
+    #!/usr/bin/env bash
+    source virtenv/bin/activate
+    set -ue
+    output_dir="/PAM_Analysis/pypam-space/test_output/daily"
+    echo "Running: year={{year}} month={{month}} days={{days}}"
+    export PYTHONPATH=.
+    for day in {{days}}; do
+      date=$(printf "%04d%02d%02d" {{year}} {{month}} "$day")
+      base="$output_dir/milli_psd_$date"
+      out="$base.out"
+      echo "running: day=$day output_dir=$output_dir"
+      python src/main.py \
+             --json-base-dir=json \
+             --date="$date" \
+             --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
+             --subset-to 10 100000 \
+             --audio-path-map-prefix="s3://pacific-sound-256khz-{{year}}~file:///PAM_Archive/{{year}}" \
+             --output-dir="$output_dir" \
+             > "$out" 2>&1 &
+    done
+    wait
+
 # Run main (on my mac)
 main-mac *more_args="":
     PYTHONPATH=. python src/main.py \
