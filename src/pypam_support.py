@@ -166,13 +166,16 @@ class PypamSupport:
         print_array("       bands_c", bands_c)
         print_array("  bands_limits", bands_limits)
 
-        return utils.spectra_ds_to_bands(
+        psd_da = utils.spectra_ds_to_bands(
             psd_da,
             bands_limits,
             bands_c,
             fft_bin_width=self.fs / self.nfft,
             db=False,
         )
+
+        psd_da = psd_da.drop_vars(["lower_frequency", "upper_frequency"])
+        return psd_da
 
 
 def apply_sensitivity(
