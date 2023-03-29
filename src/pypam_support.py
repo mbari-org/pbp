@@ -9,6 +9,7 @@ from pypam import utils
 from src.misc_helper import brief_list, debug, info
 
 # Approximate "flat" sensitivity of the hydrophone
+# TODO allow passing this in as a parameter
 APPROX_FLAT_SENSITIVITY = -178
 
 
@@ -69,21 +70,9 @@ class PypamSupport:
             dims=["iso_minute", "frequency"],
         )
 
-        # We first to any subsetting:
-        if self.subset_to is not None:
-            psd_da = self.subset_result(psd_da, self.subset_to)
-
+        psd_da = self.spectra_to_bands(psd_da)
         debug(f"  frequency_bins={psd_da.frequency_bins}")
-
-        # to then use the restricted frequency values for calibration:
-        psd_da = cast(xr.DataArray, 10 * np.log10(psd_da))
-        if sensitivity_da is not None:
-            freq_subset = sensitivity_da.interp(frequency=psd_da.frequency_bins)
-            info(f"  Applying sensitivity({len(freq_subset.values)})={freq_subset}")
-            psd_da -= freq_subset.values
-        else:
-            info(f"  applying APPROX_FLAT_SENSITIVITY={APPROX_FLAT_SENSITIVITY}")
-            psd_da -= APPROX_FLAT_SENSITIVITY
+        psd_da = apply_sensitivity(psd_da, sensitivity_da)
 
         milli_psd = psd_da
         milli_psd.name = "psd"
@@ -138,7 +127,12 @@ class PypamSupport:
         self.num_secs_per_minute = []
         return milli_psd
 
-    def get_milli_psd(self, data: np.ndarray, iso_minute: str) -> xr.DataArray:
+    def get_milli_psd(
+        self,
+        data: np.ndarray,
+        iso_minute: str,
+        sensitivity_da: Optional[xr.DataArray] = None,
+    ) -> xr.DataArray:
         """
         Convenience to get the millidecade bands for a single segment of data
         """
@@ -154,29 +148,17 @@ class PypamSupport:
             dims=["iso_minute", "frequency"],
         )
 
-        if self.subset_to is not None:
-            milli_psd = self.subset_result(psd_da, self.subset_to)
-        else:
-            milli_psd = psd_da
-        milli_psd = cast(xr.DataArray, 10 * np.log10(milli_psd) + APPROX_FLAT_SENSITIVITY)
+        psd_da = self.spectra_to_bands(psd_da)
+        psd_da = apply_sensitivity(psd_da, sensitivity_da)
+
+        milli_psd = psd_da
         milli_psd.name = "psd"
         return milli_psd
 
-    def subset_result(self, da: xr.DataArray, subset_to: Tuple[int, int]) -> xr.DataArray:
-        start_hz, end_hz = subset_to
-        info(f"Subsetting to [{start_hz:,}, {end_hz:,})Hz")
-        bands_c = self.bands_c
-        bands_limits = self.bands_limits
-
-        start_index = 0
-        while bands_c[start_index] < start_hz:
-            start_index += 1
-        end_index = start_index
-        while bands_c[end_index] < end_hz:
-            end_index += 1
-        bands_c = bands_c[start_index:end_index]
-        new_bands_c_len = len(bands_c)
-        bands_limits = bands_limits[start_index : start_index + new_bands_c_len + 1]
+    def spectra_to_bands(self, psd_da: xr.DataArray) -> xr.DataArray:
+        bands_limits, bands_c = self.bands_limits, self.bands_c
+        if self.subset_to is not None:
+            bands_limits, bands_c = adjust_limits(bands_limits, bands_c, self.subset_to)
 
         def print_array(name: str, arr: np.ndarray):
             info(f"{name} ({len(arr)}) = {brief_list(arr)}")
@@ -185,9 +167,42 @@ class PypamSupport:
         print_array("  bands_limits", bands_limits)
 
         return utils.spectra_ds_to_bands(
-            da,
+            psd_da,
             bands_limits,
             bands_c,
             fft_bin_width=self.fs / self.nfft,
             db=False,
         )
+
+
+def apply_sensitivity(
+    psd_da: xr.DataArray, sensitivity_da: Optional[xr.DataArray]
+) -> xr.DataArray:
+    psd_da = cast(xr.DataArray, 10 * np.log10(psd_da))
+    if sensitivity_da is not None:
+        freq_subset = sensitivity_da.interp(frequency=psd_da.frequency_bins)
+        info(f"  Applying sensitivity({len(freq_subset.values)})={freq_subset}")
+        psd_da -= freq_subset.values
+    else:
+        info(f"  applying APPROX_FLAT_SENSITIVITY={APPROX_FLAT_SENSITIVITY}")
+        psd_da -= APPROX_FLAT_SENSITIVITY
+    return psd_da
+
+
+def adjust_limits(
+    bands_limits: List[float], bands_c: List[float], subset_to: Tuple[int, int]
+) -> Tuple[List[float], List[float]]:
+    start_hz, end_hz = subset_to
+    info(f"Subsetting to [{start_hz:,}, {end_hz:,})Hz")
+
+    start_index = 0
+    while bands_c[start_index] < start_hz:
+        start_index += 1
+    end_index = start_index
+    while bands_c[end_index] < end_hz:
+        end_index += 1
+    bands_c = bands_c[start_index:end_index]
+    new_bands_c_len = len(bands_c)
+    bands_limits = bands_limits[start_index : start_index + new_bands_c_len + 1]
+
+    return bands_limits, bands_c

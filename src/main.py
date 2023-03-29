@@ -150,7 +150,7 @@ def main(opts):
         save_extracted_wav=opts.save_extracted_wav,
         num_cpus=opts.cpus,
         max_segments=opts.max_segments,
-        subset_to=tuple(opts.subset_to),
+        subset_to=tuple(opts.subset_to) if opts.subset_to else None,
     )
     try:
         processor_helper.process_day(

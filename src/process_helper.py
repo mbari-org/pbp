@@ -162,7 +162,9 @@ class ProcessHelper:
         self.pypam_support.add_segment(audio_segment, iso_minute)
 
         if self.save_segment_result:
-            milli_psd = self.pypam_support.get_milli_psd(audio_segment, iso_minute)
+            milli_psd = self.pypam_support.get_milli_psd(
+                audio_segment, iso_minute, self.sensitivity_da
+            )
             # Note: preliminary naming for output, etc.
             basename = (
                 f"milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00"
