@@ -74,6 +74,10 @@ class PypamSupport:
         debug(f"  frequency_bins={psd_da.frequency_bins}")
         psd_da = apply_sensitivity(psd_da, sensitivity_da)
 
+        # just need single precision:
+        psd_da = psd_da.astype(np.float32)
+        psd_da["frequency_bins"] = psd_da.frequency_bins.astype(np.float32)
+
         milli_psd = psd_da
         milli_psd.name = "psd"
 
