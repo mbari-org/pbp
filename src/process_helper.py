@@ -58,9 +58,9 @@ class ProcessHelper:
             s_local_filename = file_helper.get_local_sensitivity_filename(sensitivity_uri)
             if s_local_filename is not None:
                 sensitivity_ds = xr.open_dataset(s_local_filename)
-                debug(f"Loaded sensitivity from '{s_local_filename}'")
+                debug(f"Loaded sensitivity from {s_local_filename=}")
                 self.sensitivity_da = sensitivity_ds.sensitivity
-                debug(f"sensitivity_da={self.sensitivity_da}")
+                debug(f"{self.sensitivity_da=}")
             else:
                 error(
                     f"Unable to resolve sensitivity_uri: '{sensitivity_uri}'. Ignoring it."

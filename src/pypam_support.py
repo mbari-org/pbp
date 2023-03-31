@@ -28,7 +28,7 @@ class PypamSupport:
         self.subset_to = subset_to
         band = [0, self.fs / 2]  # for now.
 
-        debug(f"PypamSupport: subset_to={subset_to}  band={band}")
+        debug(f"PypamSupport: {subset_to=} {band=}")
 
         self.bands_limits, self.bands_c = utils.get_hybrid_millidecade_limits(
             band=band, nfft=self.nfft
@@ -71,7 +71,7 @@ class PypamSupport:
         )
 
         psd_da = self.spectra_to_bands(psd_da)
-        debug(f"  frequency_bins={psd_da.frequency_bins}")
+        debug(f"  {psd_da.frequency_bins=}")
         psd_da = apply_sensitivity(psd_da, sensitivity_da)
 
         # just need single precision:

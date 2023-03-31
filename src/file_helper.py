@@ -63,7 +63,7 @@ class WavStatus:
         self.age = 0  # see _get_wav_status.
 
     def _get_wav_filename(self) -> Optional[str]:
-        debug(f"_get_wav_filename: uri={self.uri}")
+        debug(f"_get_wav_filename: {self.uri=}")
         if self.parsed_uri.scheme == "s3":
             return self._get_wav_filename_s3()
 
@@ -82,12 +82,12 @@ class WavStatus:
             return
 
         if self.s3_client is None or self.parsed_uri.scheme != "s3":
-            debug(f"No file download involved for uri={self.uri}")
+            debug(f"No file download involved for {self.uri=}")
             return
 
         try:
             os.remove(self.wav_filename)
-            debug(f"Removed cached file {self.wav_filename} for uri={self.uri}")
+            debug(f"Removed cached file {self.wav_filename} for {self.uri=}")
         except OSError as e:
             error(f"Error removing file {self.wav_filename}: {e}")
 
@@ -102,7 +102,7 @@ def _download(
     """
     bucket, key, simple = get_bucket_key_simple(parsed_uri)
     local_filename = f"{download_dir}/{simple}"
-    info(f"Downloading bucket={bucket} key={key} to {local_filename}")
+    info(f"Downloading {bucket=} {key=} to {local_filename}")
     try:
         s3_client.download_file(bucket, key, local_filename)
         return local_filename
@@ -212,7 +212,7 @@ class FileHelper:
         if len(c_ws_files_open) > 0:
             debug(f"day_completed: closing {len(c_ws_files_open)} wav files still open")
             for c_ws in c_ws_files_open:
-                debug(f"Closing sound file for cached uri={c_ws.uri} age={c_ws.age}")
+                debug(f"Closing sound file for cached {c_ws.uri=} {c_ws.age=}")
                 c_ws.sound_file.close()
 
         # remove any downloaded files (cloud case):
@@ -322,14 +322,14 @@ class FileHelper:
         :param uri:
         :return:
         """
-        debug(f"_get_wav_status: uri={uri}")
+        debug(f"_get_wav_status: {uri=}")
         ws = self.wav_cache.get(uri)
         if ws is None:
             # currently cached ones get a bit older:
             for c_ws in self.wav_cache.values():
                 c_ws.age += 1
 
-            debug(f"WavStatus: creating for uri={uri}")
+            debug(f"WavStatus: creating for {uri=}")
             ws = WavStatus(
                 uri,
                 self.audio_base_dir,
@@ -340,7 +340,7 @@ class FileHelper:
             )
             self.wav_cache[uri] = ws
         else:
-            debug(f"WavStatus: already available for uri={uri}")
+            debug(f"WavStatus: already available for {uri=}")
 
         # close and remove files in the cache that are not fresh enough in terms
         # of not being recently used
@@ -355,7 +355,7 @@ class FileHelper:
             c_wss = self.wav_cache.values()
             open_files = len([c_ws for c_ws in c_wss if c_ws.sound_file])
             ages = [c_ws.age for c_ws in c_wss]
-            debug(f"open_files={open_files}  ages={brief_list(ages)}")
+            debug(f"{open_files=}  ages={brief_list(ages)}")
 
         return ws
 
