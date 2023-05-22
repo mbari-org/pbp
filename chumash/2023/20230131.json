@@ -1,0 +1,37 @@
+[
+  {
+    "uri": "s3://pacific-sound-ch01/6716.230130213752.wav",
+    "start": "2023-01-30T21:37:52",
+    "end": "2023-01-31T03:37:50",
+    "duration_secs": 21598.8753333333,
+    "channels": 1
+  },
+  {
+    "uri": "s3://pacific-sound-ch01/6716.230131033750.wav",
+    "start": "2023-01-31T03:37:50",
+    "end": "2023-01-31T09:37:48",
+    "duration_secs": 21599.1936666667,
+    "channels": 1
+  },
+  {
+    "uri": "s3://pacific-sound-ch01/6716.230131093748.wav",
+    "start": "2023-01-31T09:37:48",
+    "end": "2023-01-31T15:37:46",
+    "duration_secs": 21598.8396666667,
+    "channels": 1
+  },
+  {
+    "uri": "s3://pacific-sound-ch01/6716.230131153746.wav",
+    "start": "2023-01-31T15:37:46",
+    "end": "2023-01-31T21:37:44",
+    "duration_secs": 21599.0316666667,
+    "channels": 1
+  },
+  {
+    "uri": "s3://pacific-sound-ch01/6716.230131213744.wav",
+    "start": "2023-01-31T21:37:44",
+    "end": "2023-02-01T03:37:43",
+    "duration_secs": 21599.35,
+    "channels": 1
+  }
+]
