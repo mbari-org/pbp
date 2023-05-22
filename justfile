@@ -101,6 +101,15 @@ main-cloud-basic-test max_segments="1" date="20220902":
     export PYTHONPATH=.
     python src/main_cloud.py
 
+# chumash basic test for cloud processing
+main-cloud-chumash-basic-test max_segments="1" date="20230101":
+    #!/usr/bin/env bash
+    export DATE={{date}}
+    export S3_JSON_BUCKET_PREFIX="s3://pacific-sound-metadata/ch01"
+    export MAX_SEGMENTS={{max_segments}}
+    export PYTHONPATH=.
+    python src/main_cloud.py
+
 # Run main
 main *args="":
     PYTHONPATH=. python src/main.py {{args}}
