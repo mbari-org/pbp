@@ -8,7 +8,7 @@ from src.process_helper import ProcessHelper
 
 
 def parse_arguments():
-    description = "Pypam based processing of a Pacific Sound data."
+    description = "Pypam based processing of Pacific Sound data."
     example = """
 Examples:
     src/main.py  --json-base-dir=tests/json \\
