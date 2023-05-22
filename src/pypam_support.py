@@ -203,10 +203,10 @@ def adjust_limits(
     info(f"Subsetting to [{start_hz:,}, {end_hz:,})Hz")
 
     start_index = 0
-    while bands_c[start_index] < start_hz:
+    while start_index < len(bands_c) and bands_c[start_index] < start_hz:
         start_index += 1
     end_index = start_index
-    while bands_c[end_index] < end_hz:
+    while end_index < len(bands_c) and bands_c[end_index] < end_hz:
         end_index += 1
     bands_c = bands_c[start_index:end_index]
     new_bands_c_len = len(bands_c)
