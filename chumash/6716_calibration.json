@@ -1,0 +1,30 @@
+[
+  {
+    "device": {
+      "calibrations": [],
+      "model": null,
+      "prodTestResults": [],
+      "deviceId": 5181,
+      "serialNo": "6716",
+      "modelId": 15,
+      "dateCreated": "2021-12-13T20:56:50",
+      "dateUpdated": "2021-12-13T20:56:50",
+      "hardwareSerial": "1007161381",
+      "hpSerial": null
+    },
+    "calibrationId": 7503,
+    "deviceId": 5181,
+    "lowFreq": 188.4,
+    "highFreq": 176,
+    "tone": 134.8,
+    "refLevel": 120,
+    "dateCreated": "2021-12-13T23:14:12",
+    "refDevice": "CENTER 327",
+    "calType": 0,
+    "operator": null,
+    "refSerial": "130307390",
+    "hpId": null,
+    "hpModel": null,
+    "hpCalibrationId": null
+  }
+]

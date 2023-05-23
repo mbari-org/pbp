@@ -1,0 +1,464 @@
+[
+  {
+    "deviceId": 5181,
+    "serialNo": "6716",
+    "modelId": 15,
+    "hpSerial": null,
+    "modelName": "SoundTrap 600 HF"
+  },
+  {
+    "deviceId": 2233,
+    "serialNo": "671612940",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2216,
+    "serialNo": "671612942",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2966,
+    "serialNo": "671612958",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2891,
+    "serialNo": "671612964",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 3057,
+    "serialNo": "671612965",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2980,
+    "serialNo": "671612967",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 2969,
+    "serialNo": "671612968",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 2967,
+    "serialNo": "671617045",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 2833,
+    "serialNo": "671617054",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2890,
+    "serialNo": "671617060",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2997,
+    "serialNo": "671617061",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 3079,
+    "serialNo": "671621150",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 3060,
+    "serialNo": "671621158",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2983,
+    "serialNo": "671621160",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 2478,
+    "serialNo": "67162121",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2441,
+    "serialNo": "67162122",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 33,
+    "serialNo": "67162135",
+    "modelId": 2,
+    "hpSerial": null,
+    "modelName": "SoundTrap 202 HF"
+  },
+  {
+    "deviceId": 3078,
+    "serialNo": "671625252",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2998,
+    "serialNo": "671625254",
+    "modelId": 8,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 HF"
+  },
+  {
+    "deviceId": 2832,
+    "serialNo": "671629342",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2954,
+    "serialNo": "671629349",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2901,
+    "serialNo": "671629350",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 3024,
+    "serialNo": "671629352",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 5888,
+    "serialNo": "671633429",
+    "modelId": 15,
+    "hpSerial": 0,
+    "modelName": "SoundTrap 600 HF"
+  },
+  {
+    "deviceId": 3084,
+    "serialNo": "671633430",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2840,
+    "serialNo": "671633438",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2827,
+    "serialNo": "671633444",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2934,
+    "serialNo": "671633445",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2895,
+    "serialNo": "671633447",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 2193,
+    "serialNo": "671637524",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 5882,
+    "serialNo": "671637525",
+    "modelId": 15,
+    "hpSerial": 0,
+    "modelName": "SoundTrap 600 HF"
+  },
+  {
+    "deviceId": 2936,
+    "serialNo": "671637534",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2849,
+    "serialNo": "671637540",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2981,
+    "serialNo": "671637543",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 2937,
+    "serialNo": "671641630",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 3013,
+    "serialNo": "671641636",
+    "modelId": 8,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 HF"
+  },
+  {
+    "deviceId": 2945,
+    "serialNo": "671641637",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 5884,
+    "serialNo": "671645717",
+    "modelId": 15,
+    "hpSerial": 0,
+    "modelName": "SoundTrap 600 HF"
+  },
+  {
+    "deviceId": 2829,
+    "serialNo": "671645726",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2831,
+    "serialNo": "671649822",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2916,
+    "serialNo": "671649828",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 2953,
+    "serialNo": "671649830",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 3012,
+    "serialNo": "671649831",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 5955,
+    "serialNo": "671653909",
+    "modelId": 15,
+    "hpSerial": 0,
+    "modelName": "SoundTrap 600 HF"
+  },
+  {
+    "deviceId": 2992,
+    "serialNo": "671653918",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2883,
+    "serialNo": "671653925",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 3011,
+    "serialNo": "671653928",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 2841,
+    "serialNo": "671658014",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2875,
+    "serialNo": "671658021",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 3096,
+    "serialNo": "671658022",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2213,
+    "serialNo": "671662095",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2189,
+    "serialNo": "671662105",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 3027,
+    "serialNo": "671662116",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2955,
+    "serialNo": "671662117",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2949,
+    "serialNo": "671662118",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 3030,
+    "serialNo": "671662121",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2472,
+    "serialNo": "67166216",
+    "modelId": 3,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 STD"
+  },
+  {
+    "deviceId": 2482,
+    "serialNo": "67166217",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2446,
+    "serialNo": "67166218",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2881,
+    "serialNo": "671666213",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 2964,
+    "serialNo": "671666214",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 3074,
+    "serialNo": "671666216",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 2898,
+    "serialNo": "671670302",
+    "modelId": 6,
+    "hpSerial": null,
+    "modelName": "SoundTrap 500 STD"
+  },
+  {
+    "deviceId": 2861,
+    "serialNo": "671674405",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  },
+  {
+    "deviceId": 3055,
+    "serialNo": "671674406",
+    "modelId": 4,
+    "hpSerial": null,
+    "modelName": "SoundTrap 300 HF"
+  }
+]
