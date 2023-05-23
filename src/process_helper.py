@@ -26,7 +26,7 @@ class ProcessHelper:
         sensitivity_uri: Optional[str] = None,
         save_segment_result: bool = False,
         save_extracted_wav: bool = False,
-        num_cpus: int = 0,
+        num_cpus: int = 1,
         max_segments: int = 0,
         subset_to: Optional[Tuple[int, int]] = None,
     ):

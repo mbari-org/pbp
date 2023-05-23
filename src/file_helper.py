@@ -216,8 +216,9 @@ class FileHelper:
                 c_ws.sound_file.close()
 
         # remove any downloaded files (cloud case):
-        for c_ws in self.wav_cache.values():
-            c_ws.remove_downloaded_file()
+        if os.getenv("REMOVE_DOWNLOADED_FILES", "yes") == "yes":
+            for c_ws in self.wav_cache.values():
+                c_ws.remove_downloaded_file()
 
         self.wav_cache = {}
 

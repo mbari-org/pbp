@@ -1,4 +1,33 @@
 #!/usr/bin/env python
+
+# Script for cloud based processing. By this, we basically mean the ability
+# to get input files (json and wav) from S3 and write output files to S3.
+#
+# Environment variables:
+#  DATE: (Required)
+#     The date to process. Format: "YYYYMMDD".
+#  S3_JSON_BUCKET_PREFIX: (Optional)
+#     Bucket prefix to be used to locate the YYYYMMDD.json file
+#     By default, "s3://pacific-sound-metadata/256khz".
+#  S3_OUTPUT_BUCKET: (Optional)
+#     The bucket to write the generated output to.
+#     Typically this is to be provided but it is optional to facilitate testing.
+#  SENSITIVITY_NETCDF_URI: (Optional)
+#     URI of sensitivity NetCDF file that should be used to calibrate the result.
+#     If omitted, a flat -178 value is used.
+#     NOTE: it is a TODO to retrieve this information using PyHydrophone.
+#
+# Mainly for testing purposes, also these environment variables are considered:
+#  CLOUD_TMP_DIR: (Optional)
+#     Workspace for downloads and for generated files to be uploaded.
+#     By default, "cloud_tmp".
+#  MAX_SEGMENTS: (Optional)
+#     0, the default, means no restriction, that is, all segments for each day
+#     will be processed.
+#  REMOVE_DOWNLOADED_FILES: (Optional)
+#     "yes", the default, means that any downloaded files for a day
+#     will be removed after processing.
+
 import os
 import pathlib
 
@@ -25,8 +54,14 @@ def main():
     # The bucket to write the output to
     output_bucket = os.getenv("S3_OUTPUT_BUCKET")
 
+    # URI of sensitivity NetCDF file
+    sensitivity_uri = os.getenv("SENSITIVITY_NETCDF_URI")
+
     # Convenience for testing (0 means no restriction)
     max_segments = int(os.getenv("MAX_SEGMENTS", "0"))
+
+    # workspace for downloads and generated files to be uploaded
+    cloud_tmp_dir = os.getenv("CLOUD_TMP_DIR", "cloud_tmp")
 
     kwargs = {}
     aws_region = os.getenv("AWS_REGION")
@@ -47,11 +82,11 @@ def main():
                 CreateBucketConfiguration={"LocationConstraint": aws_region},
             )
 
+    else:
+        info("No output bucket specified. Output will not be uploaded.")
+
     # --------------------------
     # Get working:
-
-    # workspace for downloads and generated files to be uploaded
-    cloud_tmp_dir = "cloud_tmp"
 
     download_dir = f"{cloud_tmp_dir}/downloads"
     pathlib.Path(download_dir).mkdir(parents=True, exist_ok=True)
@@ -67,13 +102,11 @@ def main():
         download_dir=download_dir,
     )
 
-    # TODO indicate an s3 address for sensitivity_uri
-    #   For now, using checked in file.
     processor_helper = ProcessHelper(
         file_helper,
         output_dir=generated_dir,
         gen_csv=False,
-        sensitivity_uri="misc/icListen1689_sensitivity_hms256kHz.nc",
+        sensitivity_uri=sensitivity_uri,
         max_segments=max_segments,
         subset_to=(10, 100_000),
     )
@@ -98,6 +131,9 @@ def main():
 
         upload(log_filename)
         upload(nc_filename)
+
+    else:
+        info("No uploads attempted as output bucket was not given.")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 output*/
-cloud_tmp/
+cloud_tmp*/
 virtenv/
 __pycache__
 HASH

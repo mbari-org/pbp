@@ -97,16 +97,19 @@ main-mac *more_args="":
 main-cloud-basic-test max_segments="1" date="20220902":
     #!/usr/bin/env bash
     export DATE={{date}}
+    export SENSITIVITY_NETCDF_URI=misc/icListen1689_sensitivity_hms256kHz.nc
     export MAX_SEGMENTS={{max_segments}}
     export PYTHONPATH=.
     python src/main_cloud.py
 
 # chumash basic test for cloud processing
-main-cloud-chumash-basic-test max_segments="1" date="20230101":
+main-cloud-chumash-basic-test max_segments="60" date="20230101":
     #!/usr/bin/env bash
     export DATE={{date}}
     export S3_JSON_BUCKET_PREFIX="s3://pacific-sound-metadata/ch01"
     export MAX_SEGMENTS={{max_segments}}
+    export CLOUD_TMP_DIR="cloud_tmp_chumash"
+    export REMOVE_DOWNLOADED_FILES=no
     export PYTHONPATH=.
     python src/main_cloud.py
 
