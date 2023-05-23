@@ -107,6 +107,7 @@ main-cloud-chumash-basic-test max_segments="60" date="20230101":
     #!/usr/bin/env bash
     export DATE={{date}}
     export S3_JSON_BUCKET_PREFIX="s3://pacific-sound-metadata/ch01"
+    export SENSITIVITY_FLAT_VALUE=176
     export MAX_SEGMENTS={{max_segments}}
     export CLOUD_TMP_DIR="cloud_tmp_chumash"
     export REMOVE_DOWNLOADED_FILES=no

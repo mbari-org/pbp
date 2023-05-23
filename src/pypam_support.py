@@ -8,10 +8,6 @@ from pypam import utils
 
 from src.misc_helper import brief_list, debug, info
 
-# Approximate "flat" sensitivity of the hydrophone
-# TODO allow passing this in as a parameter
-APPROX_FLAT_SENSITIVITY = -178
-
 
 class PypamSupport:
     def __init__(
@@ -53,14 +49,20 @@ class PypamSupport:
         self.num_secs_per_minute.append(num_secs)
 
     def get_aggregated_milli_psd(
-        self, sensitivity_da: Optional[xr.DataArray] = None
+        self,
+        sensitivity_da: Optional[xr.DataArray] = None,
+        sensitivity_flat_value: Optional[float] = None,
     ) -> xr.DataArray:
         """
         Gets the resulting hybrid millidecade bands.
+        Calibration is done if either `sensitivity_da` or `sensitivity_flat_value` is given.
+        `sensitivity_da` has priority over `sensitivity_flat_value`.
+        No calibration is done if neither is given.
 
         :param sensitivity_da:
-            If given, it's used to calibrate the result.
-            Otherwise, the result is calibrated using APPROX_FLAT_SENSITIVITY.
+            If given, it will be used to calibrate the result.
+        :param sensitivity_flat_value:
+            If given, and sensitivity_da not given, it will be used to calibrate the result.
         :return:
         """
         # Convert the spectra to a datarray
@@ -72,7 +74,7 @@ class PypamSupport:
 
         psd_da = self.spectra_to_bands(psd_da)
         debug(f"  {psd_da.frequency_bins=}")
-        psd_da = apply_sensitivity(psd_da, sensitivity_da)
+        psd_da = apply_sensitivity(psd_da, sensitivity_da, sensitivity_flat_value)
 
         # just need single precision:
         psd_da = psd_da.astype(np.float32)
@@ -183,16 +185,20 @@ class PypamSupport:
 
 
 def apply_sensitivity(
-    psd_da: xr.DataArray, sensitivity_da: Optional[xr.DataArray]
+    psd_da: xr.DataArray,
+    sensitivity_da: Optional[xr.DataArray],
+    sensitivity_flat_value: Optional[float] = None,
 ) -> xr.DataArray:
     psd_da = cast(xr.DataArray, 10 * np.log10(psd_da))
+
     if sensitivity_da is not None:
         freq_subset = sensitivity_da.interp(frequency=psd_da.frequency_bins)
         info(f"  Applying sensitivity({len(freq_subset.values)})={freq_subset}")
         psd_da -= freq_subset.values
-    else:
-        info(f"  applying APPROX_FLAT_SENSITIVITY={APPROX_FLAT_SENSITIVITY}")
-        psd_da -= APPROX_FLAT_SENSITIVITY
+    elif sensitivity_flat_value is not None:
+        info(f"  applying {sensitivity_flat_value=}")
+        psd_da -= sensitivity_flat_value
+
     return psd_da
 
 

@@ -8,7 +8,7 @@ from src.process_helper import ProcessHelper
 
 
 def parse_arguments():
-    description = "Pypam based processing of Pacific Sound data."
+    description = "PyPAM based processing of Pacific Sound data."
     example = """
 Examples:
     src/main.py  --json-base-dir=tests/json \\
@@ -68,7 +68,16 @@ Examples:
         type=str,
         default=None,
         metavar="file",
-        help="URI of sensitivity NetCDF for calibration of result. By default, a flat value of 178 is applied.",
+        help="URI of sensitivity NetCDF for calibration of result. "
+        "Has precedence over --sensitivity-flat-value.",
+    )
+
+    parser.add_argument(
+        "--sensitivity-flat-value",
+        type=float,
+        default=None,
+        metavar="value",
+        help="Flat sensitivity value to be used for calibration.",
     )
 
     parser.add_argument(
@@ -146,6 +155,7 @@ def main(opts):
         output_dir=opts.output_dir,
         gen_csv=opts.gen_csv,
         sensitivity_uri=opts.sensitivity_uri,
+        sensitivity_flat_value=opts.sensitivity_flat_value,
         save_segment_result=opts.save_segment_result,
         save_extracted_wav=opts.save_extracted_wav,
         num_cpus=opts.cpus,

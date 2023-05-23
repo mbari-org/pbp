@@ -3,7 +3,7 @@
 # Script for cloud based processing. By this, we basically mean the ability
 # to get input files (json and wav) from S3 and write output files to S3.
 #
-# Environment variables:
+# Inputs to the program are to be passed via environment variables:
 #  DATE: (Required)
 #     The date to process. Format: "YYYYMMDD".
 #  S3_JSON_BUCKET_PREFIX: (Optional)
@@ -14,12 +14,17 @@
 #     Typically this is to be provided but it is optional to facilitate testing.
 #  SENSITIVITY_NETCDF_URI: (Optional)
 #     URI of sensitivity NetCDF file that should be used to calibrate the result.
-#     If omitted, a flat -178 value is used.
-#     NOTE: it is a TODO to retrieve this information using PyHydrophone.
+#  SENSITIVITY_FLAT_VALUE: (Optional)
+#     Flat sensitivity value to be used for calibration
+#     if SENSITIVITY_NETCDF_URI is not given.
 #
-# Mainly for testing purposes, also these environment variables are considered:
+# *Note*:
+#   TODO retrieve sensitivity information using PyHydrophone when none
+#     of the `SENSITIVITY_*` environment variables above are given.
+#
+# Mainly for testing purposes, also these environment variables are inspected:
 #  CLOUD_TMP_DIR: (Optional)
-#     Workspace for downloads and for generated files to be uploaded.
+#     Local workspace for downloads and for generated files to be uploaded.
 #     By default, "cloud_tmp".
 #  MAX_SEGMENTS: (Optional)
 #     0, the default, means no restriction, that is, all segments for each day
@@ -54,8 +59,15 @@ def main():
     # The bucket to write the output to
     output_bucket = os.getenv("S3_OUTPUT_BUCKET")
 
-    # URI of sensitivity NetCDF file
+    # URI of sensitivity NetCDF file to be used for calibration
     sensitivity_uri = os.getenv("SENSITIVITY_NETCDF_URI")
+
+    # Flat sensitivity value to be used for calibration
+    sensitivity_flat_value = (
+        float(os.getenv("SENSITIVITY_FLAT_VALUE"))
+        if os.getenv("SENSITIVITY_FLAT_VALUE") is not None
+        else None
+    )
 
     # Convenience for testing (0 means no restriction)
     max_segments = int(os.getenv("MAX_SEGMENTS", "0"))
@@ -107,6 +119,7 @@ def main():
         output_dir=generated_dir,
         gen_csv=False,
         sensitivity_uri=sensitivity_uri,
+        sensitivity_flat_value=sensitivity_flat_value,
         max_segments=max_segments,
         subset_to=(10, 100_000),
     )

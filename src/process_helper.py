@@ -24,6 +24,7 @@ class ProcessHelper:
         output_dir: str,
         gen_csv: bool,
         sensitivity_uri: Optional[str] = None,
+        sensitivity_flat_value: Optional[float] = None,
         save_segment_result: bool = False,
         save_extracted_wav: bool = False,
         num_cpus: int = 1,
@@ -36,6 +37,7 @@ class ProcessHelper:
         :param output_dir:
         :param gen_csv:
         :param sensitivity_uri:
+        :param sensitivity_flat_value:
         :param save_segment_result:
         :param save_extracted_wav:
         :param num_cpus:
@@ -54,17 +56,22 @@ class ProcessHelper:
         self.subset_to = subset_to
 
         self.sensitivity_da: Optional[xr.DataArray] = None
+        self.sensitivity_flat_value: Optional[float] = sensitivity_flat_value
+
         if sensitivity_uri is not None:
             s_local_filename = file_helper.get_local_sensitivity_filename(sensitivity_uri)
             if s_local_filename is not None:
                 sensitivity_ds = xr.open_dataset(s_local_filename)
-                debug(f"Loaded sensitivity from {s_local_filename=}")
+                info(f"Will use loaded sensitivity from {s_local_filename=}")
                 self.sensitivity_da = sensitivity_ds.sensitivity
                 debug(f"{self.sensitivity_da=}")
             else:
                 error(
                     f"Unable to resolve sensitivity_uri: '{sensitivity_uri}'. Ignoring it."
                 )
+
+        if self.sensitivity_da is None and self.sensitivity_flat_value is not None:
+            info(f"Will use given flat sensitivity value: {sensitivity_flat_value}")
 
         # obtained once upon first segment to be processed
         self.pypam_support: Optional[PypamSupport] = None
@@ -108,7 +115,8 @@ class ProcessHelper:
 
         info("Aggregating results ...")
         aggregated_result = self.pypam_support.get_aggregated_milli_psd(
-            self.sensitivity_da
+            sensitivity_da=self.sensitivity_da,
+            sensitivity_flat_value=self.sensitivity_flat_value,
         )
         basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
         nc_filename = f"{basename}.nc"
