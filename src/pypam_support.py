@@ -129,10 +129,12 @@ class PypamSupport:
 
         # Capture the sensitivity used:
         if sensitivity_da is not None:
-            milli_psd["sensitivity"] = sensitivity_da
+            milli_psd.attrs["sensitivity"] = sensitivity_da.values
         elif sensitivity_flat_value is not None:
-            milli_psd["sensitivity"] = sensitivity_flat_value
-        # With that above, getting this when loading the resulting netcdf (via xarray.open_dataset):
+            milli_psd.attrs["sensitivity"] = sensitivity_flat_value
+        # The above tested with both the array and scalar cases.
+        # For the scalar (SoundTrap) case, looks like this when loading the
+        # resulting netcdf (via xarray.open_dataset):
         # import xarray as xr
         # d = xr.open_dataset("cloud_tmp_chumash/generated/milli_psd_20230101.nc"
         # d.info()
@@ -144,9 +146,9 @@ class PypamSupport:
         # variables:
         # 	float32 frequency_bins(frequency_bins) ;
         # 	float32 psd(iso_minute, frequency_bins) ;
+        # 		psd:sensitivity = 176.0 ;
         # 	object iso_minute(iso_minute) ;
         # 		iso_minute:effort = [60 60 60 .... 60 60 60] ;
-        # 	float64 sensitivity() ;
 
         info(f"Resulting milli_psd={milli_psd}")
 
