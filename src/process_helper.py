@@ -14,15 +14,13 @@ from src.misc_helper import debug, error, gen_hour_minute_times, info, warn
 from src.pypam_support import PypamSupport
 
 
-VOLTAGE_MULTIPLIER = 3
-
-
 class ProcessHelper:
     def __init__(
         self,
         file_helper: FileHelper,
         output_dir: str,
         gen_csv: bool,
+        voltage_multiplier: Optional[float] = None,
         sensitivity_uri: Optional[str] = None,
         sensitivity_flat_value: Optional[float] = None,
         save_segment_result: bool = False,
@@ -36,6 +34,7 @@ class ProcessHelper:
         :param file_helper:
         :param output_dir:
         :param gen_csv:
+        :param voltage_multiplier:
         :param sensitivity_uri:
         :param sensitivity_flat_value:
         :param save_segment_result:
@@ -46,6 +45,7 @@ class ProcessHelper:
             Tuple of (lower, upper) frequency limits to use for the PSD,
             lower inclusive, upper exclusive.
         """
+
         self.file_helper = file_helper
         self.output_dir = output_dir
         self.gen_csv = gen_csv
@@ -54,6 +54,8 @@ class ProcessHelper:
         self.num_cpus = get_cpus_to_use(num_cpus)
         self.max_segments = max_segments
         self.subset_to = subset_to
+
+        self.voltage_multiplier: Optional[float] = voltage_multiplier
 
         self.sensitivity_da: Optional[xr.DataArray] = None
         self.sensitivity_flat_value: Optional[float] = sensitivity_flat_value
@@ -164,7 +166,9 @@ class ProcessHelper:
             info(f"  saved extracted wav: {wav_filename} len={len(audio_segment):,}")
 
         info("  - processing ...")
-        audio_segment *= VOLTAGE_MULTIPLIER
+
+        if self.voltage_multiplier is not None:
+            audio_segment *= self.voltage_multiplier
 
         iso_minute = f"{year:04}-{month:02}-{day:02}T{at_hour:02}:{at_minute:02}:00Z"
         self.pypam_support.add_segment(audio_segment, iso_minute)

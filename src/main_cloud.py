@@ -12,6 +12,8 @@
 #  S3_OUTPUT_BUCKET: (Optional)
 #     The bucket to write the generated output to.
 #     Typically this is to be provided but it is optional to facilitate testing.
+#  VOLTAGE_MULTIPLIER: (Optional)
+#     Applied on the loaded signal.
 #  SENSITIVITY_NETCDF_URI: (Optional)
 #     URI of sensitivity NetCDF file that should be used to calibrate the result.
 #  SENSITIVITY_FLAT_VALUE: (Optional)
@@ -58,6 +60,13 @@ def main():
 
     # The bucket to write the output to
     output_bucket = os.getenv("S3_OUTPUT_BUCKET")
+
+    # Applied on the loaded signal
+    voltage_multiplier = (
+        float(os.getenv("VOLTAGE_MULTIPLIER"))
+        if os.getenv("VOLTAGE_MULTIPLIER") is not None
+        else None
+    )
 
     # URI of sensitivity NetCDF file to be used for calibration
     sensitivity_uri = os.getenv("SENSITIVITY_NETCDF_URI")
@@ -118,6 +127,7 @@ def main():
         file_helper,
         output_dir=generated_dir,
         gen_csv=False,
+        voltage_multiplier=voltage_multiplier,
         sensitivity_uri=sensitivity_uri,
         sensitivity_flat_value=sensitivity_flat_value,
         max_segments=max_segments,

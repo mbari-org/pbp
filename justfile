@@ -33,6 +33,7 @@ main-gizo date="20220902" output_dir="/PAM_Analysis/pypam-space/test_output/dail
     PYTHONPATH=. python src/main.py \
                  --json-base-dir=json \
                  --date={{date}} \
+                 --voltage-multiplier=3 \
                  --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
                  --subset-to 10 100000 \
                  --audio-path-map-prefix="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
@@ -43,6 +44,7 @@ main-gizo-test *more_args="":
     PYTHONPATH=. python src/main.py \
                  --json-base-dir=tests/json \
                  --date=20220902 \
+                 --voltage-multiplier=3 \
                  --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
                  --subset-to 10 100000 \
                  --audio-base-dir=tests/wav \
@@ -69,6 +71,7 @@ main-gizo-multiple-days year month *days="":
       python src/main.py \
              --json-base-dir=json \
              --date="$date" \
+             --voltage-multiplier=3 \
              --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
              --subset-to 10 100000 \
              --audio-path-map-prefix="s3://pacific-sound-256khz-{{year}}~file:///PAM_Archive/{{year}}" \
@@ -83,6 +86,7 @@ main-mac *more_args="":
                  --json-base-dir=tests/json \
                  --audio-path-prefix=/Volumes \
                  --date=20220902 \
+                 --voltage-multiplier=3 \
                  --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
                  --gen-csv \
                  --subset-to 10 100000 \
@@ -97,6 +101,7 @@ main-mac *more_args="":
 main-cloud-basic-test max_segments="1" date="20220902":
     #!/usr/bin/env bash
     export DATE={{date}}
+    export VOLTAGE_MULTIPLIER=3
     export SENSITIVITY_NETCDF_URI=misc/icListen1689_sensitivity_hms256kHz.nc
     export MAX_SEGMENTS={{max_segments}}
     export PYTHONPATH=.

@@ -214,13 +214,18 @@ def apply_sensitivity(
 ) -> xr.DataArray:
     psd_da = cast(xr.DataArray, 10 * np.log10(psd_da))
 
+    # NOTE: per slack discussion today 2023-05-23,
+    # apply _addition_ of the given sensitivity
+    # (previously, subtraction)
+    # TODO but this is still one pending aspect to finalize.
+
     if sensitivity_da is not None:
         freq_subset = sensitivity_da.interp(frequency=psd_da.frequency_bins)
         info(f"  Applying sensitivity({len(freq_subset.values)})={freq_subset}")
-        psd_da -= freq_subset.values
+        psd_da += freq_subset.values
     elif sensitivity_flat_value is not None:
         info(f"  applying {sensitivity_flat_value=}")
-        psd_da -= sensitivity_flat_value
+        psd_da += sensitivity_flat_value
 
     return psd_da
 

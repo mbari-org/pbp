@@ -64,6 +64,14 @@ Examples:
     )
 
     parser.add_argument(
+        "--voltage-multiplier",
+        type=float,
+        default=None,
+        metavar="value",
+        help="Applied on the loaded signal.",
+    )
+
+    parser.add_argument(
         "--sensitivity-uri",
         type=str,
         default=None,
@@ -154,6 +162,7 @@ def main(opts):
         file_helper,
         output_dir=opts.output_dir,
         gen_csv=opts.gen_csv,
+        voltage_multiplier=opts.voltage_multiplier,
         sensitivity_uri=opts.sensitivity_uri,
         sensitivity_flat_value=opts.sensitivity_flat_value,
         save_segment_result=opts.save_segment_result,
