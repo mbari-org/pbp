@@ -1,10 +1,11 @@
-In [100]: chumash = xr.open_dataset("cloud_tmp_chumash/generated/milli_psd_20230101.nc")
+In [4]: chumash = xr.open_dataset("cloud_tmp_chumash/generated/milli_psd_20230101.nc")
 
-In [101]: chumash.info()
+In [5]: chumash.info()
 xarray.Dataset {
 dimensions:
 	frequency = 2168 ;
 	time = 60 ;
+	1 = 1 ;
 
 variables:
 	float32 frequency(frequency) ;
@@ -12,12 +13,6 @@ variables:
 		frequency:long_name = center frequency of hybrid millidecade spectral bands ;
 		frequency:units = Hz ;
 		frequency:coverage_content_type = coordinate ;
-	float64 sensitivity(frequency) ;
-		sensitivity:standard_name = calibration ;
-		sensitivity:long_name = hydrophone_sensitivity ;
-		sensitivity:units = dB re 1 volt / micropascal ;
-		sensitivity:coverage_content_type = physicalMeasurement ;
-		sensitivity:comment = Sensitivity values measured by the manufacturer were linearly interpolated to the center frequencies of HMD bands.  Values for bands below the lowest frequency measured (250 Hz) were set equal to the value at 250 Hz ;
 	float32 psd(time, frequency) ;
 		psd:standard_name = sound_intensity_in_water ;
 		psd:long_name = single-sided mean-square sound pressure spectral density ;
@@ -28,11 +23,15 @@ variables:
 		time:standard_name = time ;
 		time:long_name = ISO 8601 UTC time beginning each 1-minute temporal bin ;
 		time:coverage_content_type = coordinate ;
-	int32 effort(time) ;
+	timedelta64[ns] effort(time) ;
 		effort:standard_name = effort ;
 		effort:long_name = duration of input data available for each 1-minute bin ;
-		effort:units = dB re 1 volt / micropascal ;
 		effort:coverage_content_type = qualityInformation ;
+	float32 sensitivity(1) ;
+		sensitivity:standard_name = calibration ;
+		sensitivity:long_name = hydrophone_sensitivity ;
+		sensitivity:units = dB re 1 volt / micropascal ;
+		sensitivity:coverage_content_type = physicalMeasurement ;
 
 // global attributes:
 	:title = Hybrid Millidecade Band Sound Pressure Levels Computed at 1 Minute Resolution.. ;
@@ -44,4 +43,4 @@ variables:
 	:cdm_data_type = TimeSeries ;
 	:date_created = 2023-05-25 ;
 }
-In [102]:
+In [6]:

@@ -144,6 +144,9 @@ class ProcessHelper:
             sensitivity_flat_value=self.sensitivity_flat_value,
         )
 
+        # rename 'frequency_bins' dimension to 'frequency':
+        aggregated_result = aggregated_result.swap_dims(frequency_bins="frequency")
+
         data_vars = {
             "psd": aggregated_result,
             "effort": xr.DataArray(
@@ -154,18 +157,27 @@ class ProcessHelper:
         }
 
         if self.sensitivity_da is not None:
-            # TODO should be the actual intersection
-            data_vars["sensitivity"] = self.sensitivity_da
+            # TODO this case not yet tested
+            freq_subset = self.sensitivity_da.interp(
+                frequency=aggregated_result.frequency
+            )
+            data_vars["sensitivity"] = freq_subset
 
         elif self.sensitivity_flat_value is not None:
-            # TODO should probably be just the scalar value itself?
-            #  For now, repeating the value for each frequency:
-            num_freqs = aggregated_result.frequency.shape[0]
+            # better way to capture a scalar?
             data_vars["sensitivity"] = xr.DataArray(
-                data=np.repeat(self.sensitivity_flat_value, num_freqs),
-                dims=["frequency_bins"],
-                coords={"frequency": aggregated_result.frequency},
-            )
+                data=[self.sensitivity_flat_value],
+                dims=["1"],
+            ).astype(np.float32)
+
+            # If repeating the scalar for each frequency:
+            # num_freqs = aggregated_result.frequency.shape[0]
+            # data_vars["sensitivity"] = xr.DataArray(
+            #     data=np.repeat(self.sensitivity_flat_value, num_freqs),
+            #     dims=["frequency_bins"],
+            #     coords={"frequency": aggregated_result.frequency},
+            # ).astype(np.float32)
+
             add_variable_attributes(data_vars["sensitivity"], "sensitivity")
 
         add_variable_attributes(aggregated_result["time"], "time")
@@ -180,9 +192,6 @@ class ProcessHelper:
             data_vars=data_vars,
             attrs=self.global_attrs,
         )
-
-        # rename 'frequency_bins' dimension to 'frequency':
-        ds_result = ds_result.rename(frequency_bins="frequency")
 
         basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
         nc_filename = f"{basename}.nc"
