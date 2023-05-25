@@ -1,0 +1,19 @@
+# Global attributes
+title: Hybrid Millidecade Band Sound Pressure Levels Computed at 1 Minute Resolution from Oceanic Passive Acoustic Monitoring Recordings at the Monterey Accelerated Research System (MARS) Cabled Observatory ;
+summary: >-
+  To understand natural and anthropogenic sound in the ocean,
+  and to compare underwater soundscapes globally, standard methods
+  of analysis must be applied to passive acoustic monitoring (PAM) data.
+  Methods that balance constrained volume and adequate resolution of acoustic
+  spectra have recently been published (Martin et al., 2021a,b).
+  A community effort supported by NOAA, BOEM, U.S. Navy, and ONR was initiated
+  to apply these methods to PAM datasets from around the world. This record 
+  represents the hybrid millidecade (HMD) spectra of sound levels derived from
+  calibrated PAM data. Daily HMD at 1 minute resolution were created using PyPAM software v1.x.
+  These data were recorded at the Monterey Accelerated Research System (MARS)
+  cabled observatory between January 1, 2021 and December 31, 2021.
+
+Conventions: COARDS, CF-1.6, ACDD-1.31
+keywords: oceans, ocean acoustics, ambient noise, intensity, marine environment monitoring, marine habitat, sound_intensity_level_in_water, soundscapes
+keywords_vocabulary: GCMD Science Keywords
+history: Original hybrid millidecade spectra were produced by the Monterey Bay Aquarium Research Institute in May 2023

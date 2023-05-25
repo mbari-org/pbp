@@ -185,17 +185,15 @@ class FileHelper:
         self.json_entries = list(parse_json_contents(json_contents))
         return True
 
-    def get_local_sensitivity_filename(
-        self, sensitivity_uri: Optional[str]
-    ) -> Optional[str]:
+    def get_local_filename(self, uri: Optional[str]) -> Optional[str]:
         """
-        Returns the local sensitivity filename, which may be a downloaded one
-        when the given uri is s3 based.
+        Returns the local filename for the given URI, which will be that of
+        the downloaded file when the given uri is s3 based.
         """
-        if sensitivity_uri is None:
+        if uri is None:
             return None
 
-        parsed_uri = urlparse(sensitivity_uri)
+        parsed_uri = urlparse(uri)
         if parsed_uri.scheme == "s3":
             return _download(parsed_uri, self.s3_client, self.download_dir)
 

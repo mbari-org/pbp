@@ -1,0 +1,10 @@
+{
+    "title": "Hybrid Millidecade Band Sound Pressure Levels Computed at 1 Minute Resolution..",
+    "Conventions": "COARDS, CF-1.6, ACDD-1.31",
+    "keywords": "oceans, ocean acoustics, ambient noise, intensity, marine environment monitoring, marine habitat, sound_intensity_level_in_water, soundscapes",
+    "keywords_vocabulary": "GCMD Science Keywords",
+    "source": "Data analysis was performed using Python Passive Acoustic Monitoring (PyPAM) software,..",
+    "standard_name_vocabulary": "CF Standard Name Table v80",
+    "date_created": "2023-05-24",
+    "cdm_data_type": "TimeSeries"
+}

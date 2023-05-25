@@ -1,13 +1,14 @@
+import json
 import pathlib
 
 # from multiprocessing import Pool
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 # import numpy as np
 import soundfile as sf
 import xarray as xr
 
-from src import get_cpus_to_use, save_csv, save_netcdf
+from src import get_cpus_to_use, save_csv, save_dataset_to_netcdf, save_netcdf
 
 from src.file_helper import FileHelper
 from src.misc_helper import debug, error, gen_hour_minute_times, info, warn
@@ -20,6 +21,7 @@ class ProcessHelper:
         file_helper: FileHelper,
         output_dir: str,
         gen_csv: bool,
+        global_attrs_uri: Optional[str] = None,
         voltage_multiplier: Optional[float] = None,
         sensitivity_uri: Optional[str] = None,
         sensitivity_flat_value: Optional[float] = None,
@@ -34,6 +36,7 @@ class ProcessHelper:
         :param file_helper:
         :param output_dir:
         :param gen_csv:
+        :param global_attrs_uri:
         :param voltage_multiplier:
         :param sensitivity_uri:
         :param sensitivity_flat_value:
@@ -55,13 +58,17 @@ class ProcessHelper:
         self.max_segments = max_segments
         self.subset_to = subset_to
 
+        self.global_attrs: Optional[Dict[str, Any]] = None
+        if global_attrs_uri is not None:
+            self._load_global_attrs(global_attrs_uri)
+
         self.voltage_multiplier: Optional[float] = voltage_multiplier
 
         self.sensitivity_da: Optional[xr.DataArray] = None
         self.sensitivity_flat_value: Optional[float] = sensitivity_flat_value
 
         if sensitivity_uri is not None:
-            s_local_filename = file_helper.get_local_sensitivity_filename(sensitivity_uri)
+            s_local_filename = file_helper.get_local_filename(sensitivity_uri)
             if s_local_filename is not None:
                 sensitivity_ds = xr.open_dataset(s_local_filename)
                 info(f"Will use loaded sensitivity from {s_local_filename=}")
@@ -79,6 +86,15 @@ class ProcessHelper:
         self.pypam_support: Optional[PypamSupport] = None
 
         pathlib.Path(output_dir).mkdir(exist_ok=True)
+
+    def _load_global_attrs(self, global_attrs_uri):
+        info(f"Loading global attributes from {global_attrs_uri=}")
+        filename = self.file_helper.get_local_filename(global_attrs_uri)
+        if filename is not None:
+            with open(filename, "r", encoding="UTF-8") as f:
+                self.global_attrs = json.load(f)
+        else:
+            error(f"Unable to resolve '{global_attrs_uri=}'. Ignoring it.")
 
     def process_day(self, year: int, month: int, day: int) -> Optional[str]:
         """
@@ -120,9 +136,15 @@ class ProcessHelper:
             sensitivity_da=self.sensitivity_da,
             sensitivity_flat_value=self.sensitivity_flat_value,
         )
+        ds_result = xr.Dataset(
+            {
+                "milli_psd": aggregated_result,
+            },
+            attrs=self.global_attrs,
+        )
         basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
         nc_filename = f"{basename}.nc"
-        save_netcdf(aggregated_result, nc_filename)
+        save_dataset_to_netcdf(ds_result, nc_filename)
         if self.gen_csv:
             save_csv(aggregated_result, f"{basename}.csv")
 

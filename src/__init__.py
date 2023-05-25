@@ -5,6 +5,17 @@ import xarray as xr
 from src.misc_helper import info
 
 
+def save_dataset_to_netcdf(ds: xr.Dataset, filename: str):
+    info(f"  - saving dataset to: {filename}")
+    ds.to_netcdf(filename)
+
+
+def save_dataset_to_csv(ds: xr.Dataset, filename: str):
+    info(f"  - saving dataset to: {filename}")
+    ds.to_pandas().to_csv(filename, float_format="%.1f")
+
+
+# TODO remove:
 def save_netcdf(milli_psd: xr.DataArray, filename: str):
     info(f"  - saving NetCDF: {filename}")
     milli_psd.to_netcdf(filename)
@@ -12,6 +23,7 @@ def save_netcdf(milli_psd: xr.DataArray, filename: str):
     #    ValueError: invalid format for scipy.io.netcdf backend: 'NETCDF4_CLASSIC'
 
 
+# TODO remove:
 def save_csv(milli_psd: xr.DataArray, filename: str):
     info(f"  - saving    CSV: {filename}")
     milli_psd.to_pandas().to_csv(filename, float_format="%.1f")

@@ -12,6 +12,8 @@
 #  S3_OUTPUT_BUCKET: (Optional)
 #     The bucket to write the generated output to.
 #     Typically this is to be provided but it is optional to facilitate testing.
+#  GLOBAL_ATTRS_URI: (Optional)
+#     URI of JSON file with global attributes to be added to the NetCDF file.
 #  VOLTAGE_MULTIPLIER: (Optional)
 #     Applied on the loaded signal.
 #  SENSITIVITY_NETCDF_URI: (Optional)
@@ -67,6 +69,9 @@ def main():
         if os.getenv("VOLTAGE_MULTIPLIER") is not None
         else None
     )
+
+    # URI of JSON file with global attributes to be added to the NetCDF file.
+    global_attrs_uri = os.getenv("GLOBAL_ATTRS_URI")
 
     # URI of sensitivity NetCDF file to be used for calibration
     sensitivity_uri = os.getenv("SENSITIVITY_NETCDF_URI")
@@ -127,6 +132,7 @@ def main():
         file_helper,
         output_dir=generated_dir,
         gen_csv=False,
+        global_attrs_uri=global_attrs_uri,
         voltage_multiplier=voltage_multiplier,
         sensitivity_uri=sensitivity_uri,
         sensitivity_flat_value=sensitivity_flat_value,
