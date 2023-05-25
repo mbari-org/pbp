@@ -12,7 +12,7 @@ import xarray as xr
 from src import get_cpus_to_use, save_csv, save_dataset_to_netcdf, save_netcdf
 
 from src.file_helper import FileHelper
-from src.metadata import add_attributes, metadata_init
+from src.metadata import add_variable_attributes, metadata_init
 from src.misc_helper import debug, error, gen_hour_minute_times, info, warn
 from src.pypam_support import PypamSupport
 
@@ -166,12 +166,15 @@ class ProcessHelper:
                 dims=["frequency_bins"],
                 coords={"frequency": aggregated_result.frequency},
             )
-            add_attributes(data_vars["sensitivity"], "sensitivity")
+            add_variable_attributes(data_vars["sensitivity"], "sensitivity")
 
-        add_attributes(aggregated_result["time"], "time")
-        add_attributes(aggregated_result["frequency"], "frequency")
-        add_attributes(data_vars["psd"], "psd")
-        add_attributes(data_vars["effort"], "effort")
+        add_variable_attributes(aggregated_result["time"], "time")
+        add_variable_attributes(aggregated_result["frequency"], "frequency")
+        add_variable_attributes(data_vars["psd"], "psd")
+        add_variable_attributes(data_vars["effort"], "effort")
+
+        assert self.global_attrs is not None
+        self.global_attrs["date_created"] = datetime.utcnow().strftime("%Y-%m-%d")
 
         ds_result = xr.Dataset(
             data_vars=data_vars,

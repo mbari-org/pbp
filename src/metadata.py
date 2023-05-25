@@ -5,22 +5,21 @@ import xarray as xr
 
 from src.misc_helper import error
 
-ATTRIBUTES_FILENAME = "metadata/attributes.json"
+VAR_ATTRIBUTES_FILENAME = "metadata/var_attributes.json"
 
-attributes: Dict[str, Any] = {}
+var_attributes: Dict[str, Any] = {}
 
 
 def metadata_init():
-    global attributes
-    with open(ATTRIBUTES_FILENAME, "r", encoding="UTF-8") as f:
-        attributes = json.load(f)
+    global var_attributes
+    with open(VAR_ATTRIBUTES_FILENAME, "r", encoding="UTF-8") as f:
+        var_attributes = json.load(f)
 
 
-def add_attributes(da: xr.DataArray, attr_name: str):
-    global attributes
-    assert len(attributes), "init() must be called first"
-    if attr_name in attributes:
-        for k, v in attributes[attr_name].items():
+def add_variable_attributes(da: xr.DataArray, var_attribute_name: str):
+    assert len(var_attributes), "init() must be called first"
+    if var_attribute_name in var_attributes:
+        for k, v in var_attributes[var_attribute_name].items():
             da.attrs[k] = v
     else:
-        error(f"Unrecognized {attr_name=}")
+        error(f"Unrecognized {var_attribute_name=}")
