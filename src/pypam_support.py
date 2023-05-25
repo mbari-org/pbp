@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import cast, List, Optional, Tuple
 
 import numpy as np
@@ -32,12 +33,12 @@ class PypamSupport:
 
         self.fbands: Optional[np.ndarray] = None
         self.spectra: List[np.ndarray] = []
-        self.iso_minutes: List[str] = []
+        self.iso_minutes: List[datetime] = []
         self.num_secs_per_minute: List[int] = []
 
-    def add_segment(self, data: np.ndarray, iso_minute: str):
+    def add_segment(self, data: np.ndarray, dt: datetime):
         num_secs = int(len(data) / self.fs)
-        info(f"  adding segment: {iso_minute} ({num_secs} secs used)")
+        info(f"  adding segment: {dt} ({num_secs} secs used)")
 
         signal = sig.Signal(data, fs=self.fs)
         signal.set_band(None)
@@ -45,7 +46,7 @@ class PypamSupport:
             scaling="density", nfft=self.nfft, db=False, overlap=0.5, force_calc=True
         )
         self.spectra.append(spectrum)
-        self.iso_minutes.append(iso_minute)
+        self.iso_minutes.append(dt)
         self.num_secs_per_minute.append(num_secs)
 
     def get_aggregated_milli_psd(
@@ -68,8 +69,8 @@ class PypamSupport:
         # Convert the spectra to a datarray
         psd_da = xr.DataArray(
             data=self.spectra,
-            coords={"iso_minute": self.iso_minutes, "frequency": self.fbands},
-            dims=["iso_minute", "frequency"],
+            coords={"time": self.iso_minutes, "frequency": self.fbands},
+            dims=["time", "frequency"],
         )
 
         psd_da = self.spectra_to_bands(psd_da)
@@ -78,83 +79,20 @@ class PypamSupport:
 
         # just need single precision:
         psd_da = psd_da.astype(np.float32)
-        psd_da["frequency_bins"] = psd_da.frequency_bins.astype(np.float32)
+        psd_da["frequency"] = psd_da.frequency_bins.astype(np.float32)
+        del psd_da["frequency_bins"]
 
         milli_psd = psd_da
         milli_psd.name = "psd"
-
-        # ----------------------------------------
-        # Toward capturing "effort" variable:
-        #
-        # With: milli_psd.attrs["effort"] = self.num_secs_per_minute
-        # getting this when loading the resulting netcdf (via xarray.open_dataset):
-        #    In [41]: droot.info()
-        #    xarray.Dataset {
-        #    dimensions:
-        #    	frequency_bins = 2788 ;
-        #    	iso_minute = 2 ;
-        #
-        #    variables:
-        #    	float64 frequency_bins(frequency_bins) ;
-        #    	float64 lower_frequency(frequency_bins) ;
-        #    	float64 upper_frequency(frequency_bins) ;
-        #    	float64 psd(iso_minute, frequency_bins) ;
-        #    		psd:effort = [60 60] ;
-        #    	object iso_minute(iso_minute) ;
-        #
-        #    // global attributes:
-        #    }
-        #
-        # With: milli_psd["iso_minute"].attrs["effort"] = self.num_secs_per_minute
-        # getting this when loading the resulting netcdf (via xarray.open_dataset):
-        #    In [43]: d.info()
-        #    xarray.Dataset {
-        #    dimensions:
-        #    	frequency_bins = 2788 ;
-        #    	iso_minute = 2 ;
-        #
-        #    variables:
-        #    	float64 frequency_bins(frequency_bins) ;
-        #    	float64 lower_frequency(frequency_bins) ;
-        #    	float64 upper_frequency(frequency_bins) ;
-        #    	float64 psd(iso_minute, frequency_bins) ;
-        #    	object iso_minute(iso_minute) ;
-        #    		iso_minute:effort = [60 60] ;
-        #
-        #    // global attributes:
-        #    }
-
-        # So, let's use the latter for now:
-        milli_psd["iso_minute"].attrs["effort"] = self.num_secs_per_minute
-
-        # Capture the sensitivity used:
-        if sensitivity_da is not None:
-            milli_psd.attrs["sensitivity"] = sensitivity_da.values
-        elif sensitivity_flat_value is not None:
-            milli_psd.attrs["sensitivity"] = sensitivity_flat_value
-        # The above tested with both the array and scalar cases.
-        # For the scalar (SoundTrap) case, looks like this when loading the
-        # resulting netcdf (via xarray.open_dataset):
-        # import xarray as xr
-        # d = xr.open_dataset("cloud_tmp_chumash/generated/milli_psd_20230101.nc"
-        # d.info()
-        #   xarray.Dataset {
-        # dimensions:
-        # 	frequency_bins = 2168 ;
-        # 	iso_minute = 60 ;
-        #
-        # variables:
-        # 	float32 frequency_bins(frequency_bins) ;
-        # 	float32 psd(iso_minute, frequency_bins) ;
-        # 		psd:sensitivity = 176.0 ;
-        # 	object iso_minute(iso_minute) ;
-        # 		iso_minute:effort = [60 60 60 .... 60 60 60] ;
 
         info(f"Resulting milli_psd={milli_psd}")
 
         self.iso_minutes = []
         self.num_secs_per_minute = []
         return milli_psd
+
+    def get_effort(self) -> List[int]:
+        return self.num_secs_per_minute
 
     def get_milli_psd(
         self,
@@ -173,8 +111,8 @@ class PypamSupport:
         # Convert the spectrum to a datarray
         psd_da = xr.DataArray(
             data=[spectrum],
-            coords={"iso_minute": [iso_minute], "frequency": fbands},
-            dims=["iso_minute", "frequency"],
+            coords={"time": [iso_minute], "frequency": fbands},
+            dims=["time", "frequency"],
         )
 
         psd_da = self.spectra_to_bands(psd_da)

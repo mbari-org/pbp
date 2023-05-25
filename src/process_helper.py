@@ -1,16 +1,18 @@
 import json
 import pathlib
+from datetime import datetime
 
 # from multiprocessing import Pool
 from typing import Any, Dict, List, Optional, Tuple
 
-# import numpy as np
+import numpy as np
 import soundfile as sf
 import xarray as xr
 
 from src import get_cpus_to_use, save_csv, save_dataset_to_netcdf, save_netcdf
 
 from src.file_helper import FileHelper
+from src.metadata import add_attributes, metadata_init
 from src.misc_helper import debug, error, gen_hour_minute_times, info, warn
 from src.pypam_support import PypamSupport
 
@@ -48,6 +50,8 @@ class ProcessHelper:
             Tuple of (lower, upper) frequency limits to use for the PSD,
             lower inclusive, upper exclusive.
         """
+
+        metadata_init()
 
         self.file_helper = file_helper
         self.output_dir = output_dir
@@ -131,17 +135,52 @@ class ProcessHelper:
             warn("No segments processed, nothing to aggregate.")
             return None
 
+        # get effort before calling get_aggregated_milli_psd, which will reset it:
+        effort = self.pypam_support.get_effort()
+
         info("Aggregating results ...")
         aggregated_result = self.pypam_support.get_aggregated_milli_psd(
             sensitivity_da=self.sensitivity_da,
             sensitivity_flat_value=self.sensitivity_flat_value,
         )
+
+        data_vars = {
+            "psd": aggregated_result,
+            "effort": xr.DataArray(
+                data=effort,
+                dims=["time"],
+                coords={"time": aggregated_result.time},
+            ),
+        }
+
+        if self.sensitivity_da is not None:
+            # TODO should be the actual intersection
+            data_vars["sensitivity"] = self.sensitivity_da
+
+        elif self.sensitivity_flat_value is not None:
+            # TODO should probably be just the scalar value itself?
+            #  For now, repeating the value for each frequency:
+            num_freqs = aggregated_result.frequency.shape[0]
+            data_vars["sensitivity"] = xr.DataArray(
+                data=np.repeat(self.sensitivity_flat_value, num_freqs),
+                dims=["frequency_bins"],
+                coords={"frequency": aggregated_result.frequency},
+            )
+            add_attributes(data_vars["sensitivity"], "sensitivity")
+
+        add_attributes(aggregated_result["time"], "time")
+        add_attributes(aggregated_result["frequency"], "frequency")
+        add_attributes(data_vars["psd"], "psd")
+        add_attributes(data_vars["effort"], "effort")
+
         ds_result = xr.Dataset(
-            {
-                "milli_psd": aggregated_result,
-            },
+            data_vars=data_vars,
             attrs=self.global_attrs,
         )
+
+        # rename 'frequency_bins' dimension to 'frequency':
+        ds_result = ds_result.rename(frequency_bins="frequency")
+
         basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
         nc_filename = f"{basename}.nc"
         save_dataset_to_netcdf(ds_result, nc_filename)
@@ -160,6 +199,7 @@ class ProcessHelper:
     def process_segment_at_hour_minute(self, at_hour: int, at_minute: int):
         file_helper = self.file_helper
         year, month, day = file_helper.year, file_helper.month, file_helper.day
+        assert year is not None and month is not None and day is not None
 
         info(f"Segment at {at_hour:02}h:{at_minute:02}m ...")
         info(f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:")
@@ -192,10 +232,12 @@ class ProcessHelper:
         if self.voltage_multiplier is not None:
             audio_segment *= self.voltage_multiplier
 
-        iso_minute = f"{year:04}-{month:02}-{day:02}T{at_hour:02}:{at_minute:02}:00Z"
-        self.pypam_support.add_segment(audio_segment, iso_minute)
+        dt = datetime(year, month, day, at_hour, at_minute, 0)
+        self.pypam_support.add_segment(audio_segment, dt)
 
+        # TODO remove individual segment reports
         if self.save_segment_result:
+            iso_minute = f"{year:04}-{month:02}-{day:02}T{at_hour:02}:{at_minute:02}:00Z"
             milli_psd = self.pypam_support.get_milli_psd(
                 audio_segment, iso_minute, self.sensitivity_da
             )
