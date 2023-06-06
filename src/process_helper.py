@@ -12,7 +12,7 @@ import xarray as xr
 from src import get_cpus_to_use, save_csv, save_dataset_to_netcdf, save_netcdf
 
 from src.file_helper import FileHelper
-from src.metadata import add_variable_attributes, metadata_init
+from src.metadata import MetadataHelper
 from src.misc_helper import debug, error, gen_hour_minute_times, info, warn
 from src.pypam_support import PypamSupport
 
@@ -24,6 +24,7 @@ class ProcessHelper:
         output_dir: str,
         gen_csv: bool,
         global_attrs_uri: Optional[str] = None,
+        variable_attrs_uri: Optional[str] = None,
         voltage_multiplier: Optional[float] = None,
         sensitivity_uri: Optional[str] = None,
         sensitivity_flat_value: Optional[float] = None,
@@ -39,6 +40,7 @@ class ProcessHelper:
         :param output_dir:
         :param gen_csv:
         :param global_attrs_uri:
+        :param variable_attrs_uri:
         :param voltage_multiplier:
         :param sensitivity_uri:
         :param sensitivity_flat_value:
@@ -51,20 +53,20 @@ class ProcessHelper:
             lower inclusive, upper exclusive.
         """
 
-        metadata_init()
-
         self.file_helper = file_helper
         self.output_dir = output_dir
         self.gen_csv = gen_csv
+
+        self.metadata_helper = MetadataHelper(
+            self._load_attributes("global", global_attrs_uri),
+            self._load_attributes("variable", variable_attrs_uri),
+        )
+
         self.save_segment_result = save_segment_result
         self.save_extracted_wav = save_extracted_wav
         self.num_cpus = get_cpus_to_use(num_cpus)
         self.max_segments = max_segments
         self.subset_to = subset_to
-
-        self.global_attrs: Optional[Dict[str, Any]] = None
-        if global_attrs_uri is not None:
-            self._load_global_attrs(global_attrs_uri)
 
         self.voltage_multiplier: Optional[float] = voltage_multiplier
 
@@ -91,14 +93,20 @@ class ProcessHelper:
 
         pathlib.Path(output_dir).mkdir(exist_ok=True)
 
-    def _load_global_attrs(self, global_attrs_uri):
-        info(f"Loading global attributes from {global_attrs_uri=}")
-        filename = self.file_helper.get_local_filename(global_attrs_uri)
-        if filename is not None:
-            with open(filename, "r", encoding="UTF-8") as f:
-                self.global_attrs = json.load(f)
+    def _load_attributes(
+        self, what: str, attrs_uri: Optional[str]
+    ) -> Optional[Dict[str, Any]]:
+        if attrs_uri:
+            info(f"Loading {what} attributes from {attrs_uri=}")
+            filename = self.file_helper.get_local_filename(attrs_uri)
+            if filename is not None:
+                with open(filename, "r", encoding="UTF-8") as f:
+                    return json.load(f)
+            else:
+                error(f"Unable to resolve '{attrs_uri=}'. Ignoring it.")
         else:
-            error(f"Unable to resolve '{global_attrs_uri=}'. Ignoring it.")
+            info(f"No '{what}' attributes URI given.")
+        return None
 
     def process_day(self, year: int, month: int, day: int) -> Optional[str]:
         """
@@ -134,6 +142,8 @@ class ProcessHelper:
         if self.pypam_support is None:
             warn("No segments processed, nothing to aggregate.")
             return None
+
+        md_helper = self.metadata_helper
 
         # get effort before calling get_aggregated_milli_psd, which will reset it:
         effort = self.pypam_support.get_effort()
@@ -178,19 +188,20 @@ class ProcessHelper:
             #     coords={"frequency": aggregated_result.frequency},
             # ).astype(np.float32)
 
-            add_variable_attributes(data_vars["sensitivity"], "sensitivity")
+            md_helper.add_variable_attributes(data_vars["sensitivity"], "sensitivity")
 
-        add_variable_attributes(aggregated_result["time"], "time")
-        add_variable_attributes(aggregated_result["frequency"], "frequency")
-        add_variable_attributes(data_vars["psd"], "psd")
-        add_variable_attributes(data_vars["effort"], "effort")
+        md_helper.add_variable_attributes(aggregated_result["time"], "time")
+        md_helper.add_variable_attributes(aggregated_result["frequency"], "frequency")
+        md_helper.add_variable_attributes(data_vars["psd"], "psd")
+        md_helper.add_variable_attributes(data_vars["effort"], "effort")
 
-        assert self.global_attrs is not None
-        self.global_attrs["date_created"] = datetime.utcnow().strftime("%Y-%m-%d")
+        md_helper.set_global_attribute(
+            "date_created", datetime.utcnow().strftime("%Y-%m-%d")
+        )
 
         ds_result = xr.Dataset(
             data_vars=data_vars,
-            attrs=self.global_attrs,
+            attrs=md_helper.get_global_attributes(),
         )
 
         basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"

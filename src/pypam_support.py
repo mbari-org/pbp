@@ -34,7 +34,7 @@ class PypamSupport:
         self.fbands: Optional[np.ndarray] = None
         self.spectra: List[np.ndarray] = []
         self.iso_minutes: List[datetime] = []
-        self.num_secs_per_minute: List[np.timedelta64] = []
+        self.effort: List[np.timedelta64] = []  # num secs per minute
 
     def add_segment(self, data: np.ndarray, dt: datetime):
         num_secs = int(len(data) / self.fs)
@@ -47,7 +47,7 @@ class PypamSupport:
         )
         self.spectra.append(spectrum)
         self.iso_minutes.append(dt)
-        self.num_secs_per_minute.append(np.timedelta64(num_secs, "s"))
+        self.effort.append(np.timedelta64(num_secs, "s"))
 
     def get_aggregated_milli_psd(
         self,
@@ -88,11 +88,11 @@ class PypamSupport:
         info(f"Resulting milli_psd={milli_psd}")
 
         self.iso_minutes = []
-        self.num_secs_per_minute = []
+        self.effort = []
         return milli_psd
 
     def get_effort(self) -> List[np.timedelta64]:
-        return self.num_secs_per_minute
+        return self.effort
 
     def get_milli_psd(
         self,

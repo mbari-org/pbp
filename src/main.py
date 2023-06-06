@@ -46,6 +46,14 @@ Examples:
     )
 
     parser.add_argument(
+        "--variable-attrs",
+        type=str,
+        metavar="uri",
+        default=None,
+        help="URI of JSON file with attributes to associate to the variables in the NetCDF file.",
+    )
+
+    parser.add_argument(
         "--audio-path-map-prefix",
         type=str,
         metavar="from~to",
@@ -171,6 +179,7 @@ def main(opts):
         output_dir=opts.output_dir,
         gen_csv=opts.gen_csv,
         global_attrs_uri=opts.global_attrs,
+        variable_attrs_uri=opts.var_attrs,
         voltage_multiplier=opts.voltage_multiplier,
         sensitivity_uri=opts.sensitivity_uri,
         sensitivity_flat_value=opts.sensitivity_flat_value,

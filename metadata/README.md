@@ -1,7 +1,11 @@
 Part of preparations to capture metadata into the product.
 
-- `attributes.json` - 
-  Defines attributes to associate to variables in the netCDF file.
+- `chumash/` –  Contains metadata attributes for the Chumash Heritage NMS products.
+    - `globalAttributes.json`
+    - `variableAttributes.json`
 
-- `globalAttrsChumash.json` - PRELIMINARY.
-   Defines global attributes for the Chumash Heritage NMS products.
+TODO
+
+- `mars/` – Contains metadata attributes for MARS.
+    - `globalAttributes.json`
+    - `variableAttributes.json`
