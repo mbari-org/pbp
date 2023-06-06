@@ -22,7 +22,8 @@
     "standard_name": "calibration",
     "long_name": "hydrophone_sensitivity",
     "units": "dB re 1 volt / micropascal",
-    "coverage_content_type": "physicalMeasurement"
+    "coverage_content_type": "physicalMeasurement",
+    "comment": "Sensitivity values measured by the manufacturer were linearly interpolated to the center frequencies of HMD bands.  Values for bands below the lowest frequency measured (250 Hz) were set equal to the value at 250 Hz"
   },
   "time": {
     "standard_name": "time",
