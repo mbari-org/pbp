@@ -2,7 +2,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 
 from src.file_helper import FileHelper
 
-from src.misc_helper import info, parse_date, set_logger
+from src.misc_helper import info, set_logger
 
 from src.process_helper import ProcessHelper
 
@@ -120,20 +120,6 @@ Examples:
     )
 
     parser.add_argument(
-        "--save-extracted-wav",
-        default=False,
-        action="store_true",
-        help="Save each extracted segment",
-    )
-
-    parser.add_argument(
-        "--save-segment-result",
-        default=False,
-        action="store_true",
-        help="Save result for each extracted segment",
-    )
-
-    parser.add_argument(
         "--max-segments",
         type=int,
         default=0,
@@ -163,9 +149,7 @@ Examples:
 
 
 def main(opts):
-    year, month, day = parse_date(opts.date)
-
-    set_logger(opts.output_dir, year, month, day)
+    set_logger(opts.output_dir, opts.date)
 
     file_helper = FileHelper(
         json_base_dir=opts.json_base_dir,
@@ -183,18 +167,12 @@ def main(opts):
         voltage_multiplier=opts.voltage_multiplier,
         sensitivity_uri=opts.sensitivity_uri,
         sensitivity_flat_value=opts.sensitivity_flat_value,
-        save_segment_result=opts.save_segment_result,
-        save_extracted_wav=opts.save_extracted_wav,
         num_cpus=opts.cpus,
         max_segments=opts.max_segments,
         subset_to=tuple(opts.subset_to) if opts.subset_to else None,
     )
     try:
-        processor_helper.process_day(
-            year=year,
-            month=month,
-            day=day,
-        )
+        processor_helper.process_day(opts.date)
     except KeyboardInterrupt:
         info("INTERRUPTED")
 

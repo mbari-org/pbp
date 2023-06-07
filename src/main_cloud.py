@@ -45,7 +45,7 @@ import pathlib
 import boto3
 
 from src.file_helper import FileHelper
-from src.misc_helper import info, parse_date, set_logger, warn
+from src.misc_helper import info, set_logger, warn
 from src.process_helper import ProcessHelper
 
 
@@ -55,7 +55,6 @@ def main():
 
     # The date to process. Format: "YYYYMMDD"
     date = os.environ["DATE"]
-    year, month, day = parse_date(date)
 
     # Bucket prefix to be used to locate the YYYYMMDD.json file
     json_bucket_prefix = os.getenv(
@@ -122,7 +121,7 @@ def main():
     generated_dir = f"{cloud_tmp_dir}/generated"
     pathlib.Path(generated_dir).mkdir(parents=True, exist_ok=True)
 
-    log_filename = set_logger(generated_dir, year, month, day)
+    log_filename = set_logger(generated_dir, date)
 
     file_helper = FileHelper(
         json_base_dir=json_bucket_prefix,
@@ -143,11 +142,7 @@ def main():
         subset_to=(10, 100_000),
     )
 
-    nc_filename = processor_helper.process_day(
-        year=year,
-        month=month,
-        day=day,
-    )
+    nc_filename = processor_helper.process_day(date)
 
     if nc_filename is None:
         warn("No NetDF file was generated.")

@@ -15,20 +15,6 @@ def save_dataset_to_csv(ds: xr.Dataset, filename: str):
     ds.to_pandas().to_csv(filename, float_format="%.1f")
 
 
-# TODO remove:
-def save_netcdf(milli_psd: xr.DataArray, filename: str):
-    info(f"  - saving NetCDF: {filename}")
-    milli_psd.to_netcdf(filename)
-    # on my Mac: format='NETCDF4_CLASSIC' triggers:
-    #    ValueError: invalid format for scipy.io.netcdf backend: 'NETCDF4_CLASSIC'
-
-
-# TODO remove:
-def save_csv(milli_psd: xr.DataArray, filename: str):
-    info(f"  - saving    CSV: {filename}")
-    milli_psd.to_pandas().to_csv(filename, float_format="%.1f")
-
-
 def get_cpus_to_use(num_cpus: int) -> int:
     cpu_count: int = os.cpu_count() or 1
     if num_cpus <= 0 or num_cpus > cpu_count:

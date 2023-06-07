@@ -6,18 +6,25 @@ LOGGER_NAME = "PYPBP"
 
 
 def parse_date(date: str) -> Tuple[int, int, int]:
+    """
+    Parses given string into a (year, month, day) integer tuple.
+    :param date:
+        Digit string with YYYYMMDD format.
+    :return:
+        (year, month, day) tuple.
+    """
     assert date.isdigit() and len(date) == 8
     year, month, day = int(date[:4]), int(date[4:6]), int(date[6:8])
     return year, month, day
 
 
-def set_logger(output_dir: str, year: int, month: int, day: int) -> str:
+def set_logger(output_dir: str, date: str) -> str:
     logger = get_logger()
     logger.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 
-    log_filename = f"{output_dir}/milli_psd_{year:04}{month:02}{day:02}.log"
+    log_filename = f"{output_dir}/milli_psd_{date}.log"
     handler = logging.FileHandler(log_filename, mode="w")
     handler.setFormatter(formatter)
     handler.setLevel(logging.INFO)

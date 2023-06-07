@@ -52,9 +52,6 @@ main-gizo-test *more_args="":
                  --output-dir=/PAM_Analysis/pypam-space/test_output/daily \
                  {{more_args}}
 
-#                 --save-segment-result \
-#                 --save-extracted-wav \
-
 # Run multiple days (on gizo)
 main-gizo-multiple-days year month *days="":
     #!/usr/bin/env bash
@@ -94,7 +91,6 @@ main-mac *more_args="":
                  {{more_args}}
 
 #                 --max-segments=5 \
-#                 --save-segment-result \
 #                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
 # Basic test for cloud processing

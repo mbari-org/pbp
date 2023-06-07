@@ -6,14 +6,13 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
-import soundfile as sf
 import xarray as xr
 
-from src import get_cpus_to_use, save_csv, save_dataset_to_netcdf, save_netcdf
+from src import get_cpus_to_use, save_dataset_to_csv, save_dataset_to_netcdf
 
 from src.file_helper import FileHelper
 from src.metadata import MetadataHelper
-from src.misc_helper import debug, error, gen_hour_minute_times, info, warn
+from src.misc_helper import debug, error, gen_hour_minute_times, info, parse_date, warn
 from src.pypam_support import PypamSupport
 
 
@@ -28,8 +27,6 @@ class ProcessHelper:
         voltage_multiplier: Optional[float] = None,
         sensitivity_uri: Optional[str] = None,
         sensitivity_flat_value: Optional[float] = None,
-        save_segment_result: bool = False,
-        save_extracted_wav: bool = False,
         num_cpus: int = 1,
         max_segments: int = 0,
         subset_to: Optional[Tuple[int, int]] = None,
@@ -44,8 +41,6 @@ class ProcessHelper:
         :param voltage_multiplier:
         :param sensitivity_uri:
         :param sensitivity_flat_value:
-        :param save_segment_result:
-        :param save_extracted_wav:
         :param num_cpus:
         :param max_segments:
         :param subset_to:
@@ -62,8 +57,6 @@ class ProcessHelper:
             self._load_attributes("variable", variable_attrs_uri),
         )
 
-        self.save_segment_result = save_segment_result
-        self.save_extracted_wav = save_extracted_wav
         self.num_cpus = get_cpus_to_use(num_cpus)
         self.max_segments = max_segments
         self.subset_to = subset_to
@@ -108,13 +101,17 @@ class ProcessHelper:
             info(f"No '{what}' attributes URI given.")
         return None
 
-    def process_day(self, year: int, month: int, day: int) -> Optional[str]:
+    def process_day(self, date: str) -> Optional[str]:
         """
-        :param year:
-        :param month:
-        :param day:
-        :return: The path of the generated NetCDF file, or None if no segments were processed.
+        Generates NetCDF file with the result of processing all segments of the given day.
+
+        :param date:
+            Date to process in YYYYMMDD format.
+        :return:
+            The path of the generated NetCDF file, or None if no segments were processed
+            for the day.
         """
+        year, month, day = parse_date(date)
         if not self.file_helper.select_day(year, month, day):
             return None
 
@@ -140,12 +137,11 @@ class ProcessHelper:
 
         self.process_hours_minutes(at_hour_and_minutes)
         if self.pypam_support is None:
-            warn("No segments processed, nothing to aggregate.")
+            warn(f"No segments processed, nothing to aggregate for day {date}.")
             return None
 
         md_helper = self.metadata_helper
 
-        # get effort before calling get_aggregated_milli_psd, which will reset it:
         effort = self.pypam_support.get_effort()
 
         info("Aggregating results ...")
@@ -165,6 +161,8 @@ class ProcessHelper:
                 coords={"time": aggregated_result.time},
             ),
         }
+
+        md_helper = self.metadata_helper
 
         if self.sensitivity_da is not None:
             # TODO this case not yet tested
@@ -208,7 +206,7 @@ class ProcessHelper:
         nc_filename = f"{basename}.nc"
         save_dataset_to_netcdf(ds_result, nc_filename)
         if self.gen_csv:
-            save_csv(aggregated_result, f"{basename}.csv")
+            save_dataset_to_csv(ds_result, f"{basename}.csv")
 
         self.file_helper.day_completed()
 
@@ -242,13 +240,6 @@ class ProcessHelper:
                 f"ERROR: samplerate changed from {self.pypam_support.fs} to {audio_info.samplerate}"
             )
             return
-
-        if self.save_extracted_wav:
-            wav_filename = f"{self.output_dir}/extracted_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00.wav"
-            sf.write(
-                wav_filename, audio_segment, audio_info.samplerate, audio_info.subtype
-            )
-            info(f"  saved extracted wav: {wav_filename} len={len(audio_segment):,}")
 
         info("  - processing ...")
 

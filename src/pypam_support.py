@@ -125,34 +125,6 @@ class PypamSupport:
         self.iso_minutes = []
         self.effort = []
 
-    def get_milli_psd(
-        self,
-        data: np.ndarray,
-        iso_minute: str,
-        sensitivity_da: Optional[xr.DataArray] = None,
-    ) -> xr.DataArray:
-        """
-        Convenience to get the millidecade bands for a single segment of data
-        """
-        signal = sig.Signal(data, fs=self.fs)
-        signal.set_band(None)
-        fbands, spectrum, _ = signal.spectrum(
-            scaling="density", nfft=self.nfft, db=False, overlap=0.5, force_calc=True
-        )
-        # Convert the spectrum to a datarray
-        psd_da = xr.DataArray(
-            data=[spectrum],
-            coords={"time": [iso_minute], "frequency": fbands},
-            dims=["time", "frequency"],
-        )
-
-        psd_da = self.spectra_to_bands(psd_da)
-        psd_da = apply_sensitivity(psd_da, sensitivity_da)
-
-        milli_psd = psd_da
-        milli_psd.name = "psd"
-        return milli_psd
-
     def spectra_to_bands(self, psd_da: xr.DataArray) -> xr.DataArray:
         bands_limits, bands_c = self.bands_limits, self.bands_c
         if self.subset_to is not None:
