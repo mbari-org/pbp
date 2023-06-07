@@ -348,7 +348,8 @@ class FileHelper:
                 debug(f"Closing sound file for cached uri={c_uri} age={c_ws.age}")
                 c_ws.sound_file.close()
                 c_ws.sound_file = None
-                c_ws.remove_downloaded_file()
+                if os.getenv("REMOVE_DOWNLOADED_FILES", "yes") == "yes":
+                    c_ws.remove_downloaded_file()
 
         if get_logger().isEnabledFor(logging.DEBUG):
             c_wss = self.wav_cache.values()
