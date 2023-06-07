@@ -81,8 +81,7 @@ class ProcessHelper:
         if self.sensitivity_da is None and self.sensitivity_flat_value is not None:
             info(f"Will use given flat sensitivity value: {sensitivity_flat_value}")
 
-        # obtained once upon first segment to be processed
-        self.pypam_support: Optional[PypamSupport] = None
+        self.pypam_support = PypamSupport()
 
         pathlib.Path(output_dir).mkdir(exist_ok=True)
 
@@ -136,11 +135,12 @@ class ProcessHelper:
             # return
 
         self.process_hours_minutes(at_hour_and_minutes)
-        if self.pypam_support is None:
+        if self.pypam_support.get_num_actual_segments() == 0:
             warn(f"No segments processed, nothing to aggregate for day {date}.")
             return None
 
-        md_helper = self.metadata_helper
+        info("Processing captured segments ...")
+        self.pypam_support.process_captured_segments()
 
         effort = self.pypam_support.get_effort()
 
@@ -222,43 +222,32 @@ class ProcessHelper:
         year, month, day = file_helper.year, file_helper.month, file_helper.day
         assert year is not None and month is not None and day is not None
 
+        dt = datetime(year, month, day, at_hour, at_minute, 0)
+
         info(f"Segment at {at_hour:02}h:{at_minute:02}m ...")
         info(f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:")
         extraction = file_helper.extract_audio_segment(at_hour, at_minute)
         if extraction is None:
             warn(f"cannot get audio segment at {at_hour:02}:{at_minute:02}")
+            self.pypam_support.add_missing_segment(dt)
             return
 
         audio_info, audio_segment = extraction
 
-        if self.pypam_support is None:
-            self.pypam_support = PypamSupport(
-                audio_info.samplerate, subset_to=self.subset_to
+        if self.pypam_support.parameters_set():
+            if self.pypam_support.fs != audio_info.samplerate:
+                info(
+                    f"ERROR: samplerate changed from {self.pypam_support.fs} to {audio_info.samplerate}"
+                )
+                return
+        else:
+            info("Got audio parameters")
+            self.pypam_support.set_parameters(
+                audio_info.samplerate,
+                subset_to=self.subset_to,
             )
-        elif self.pypam_support.fs != audio_info.samplerate:
-            info(
-                f"ERROR: samplerate changed from {self.pypam_support.fs} to {audio_info.samplerate}"
-            )
-            return
-
-        info("  - processing ...")
 
         if self.voltage_multiplier is not None:
             audio_segment *= self.voltage_multiplier
 
-        dt = datetime(year, month, day, at_hour, at_minute, 0)
         self.pypam_support.add_segment(audio_segment, dt)
-
-        # TODO remove individual segment reports
-        if self.save_segment_result:
-            iso_minute = f"{year:04}-{month:02}-{day:02}T{at_hour:02}:{at_minute:02}:00Z"
-            milli_psd = self.pypam_support.get_milli_psd(
-                audio_segment, iso_minute, self.sensitivity_da
-            )
-            # Note: preliminary naming for output, etc.
-            basename = (
-                f"milli_psd_{year:04}{month:02}{day:02}_{at_hour:02}{at_minute:02}00"
-            )
-            save_netcdf(milli_psd, f"{self.output_dir}/{basename}.nc")
-            if self.gen_csv:
-                save_csv(milli_psd, f"{self.output_dir}/{basename}.csv")

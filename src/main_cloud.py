@@ -145,7 +145,7 @@ def main():
     nc_filename = processor_helper.process_day(date)
 
     if nc_filename is None:
-        warn("No NetDF file was generated.")
+        warn(f"No NetDF file was generated.  ({date=})")
         return
 
     if output_bucket is not None:

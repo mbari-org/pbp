@@ -11,25 +11,62 @@ from src.misc_helper import brief_list, debug, info
 
 
 class PypamSupport:
-    def __init__(
+    def __init__(self) -> None:
+        """
+        Creates a helper to process audio segments for a given day,
+        resulting in the aggregated hybrid millidecade PSD product.
+
+        The created instance should be used only for a day of processing.
+
+        The overall call sequence is:
+
+        `add_missing_segment` can be called before calling `set_parameters`.
+        This allows capturing initial segments with no data for the day.
+
+        Call `set_parameters` as soon as you get the first audio segment for a day.
+        Such segment is used to determine the sampling frequency.
+
+        Then you can call `add_segment` or `add_missing_segment` as appropriate
+        for each subsequent segment until covering the day.
+
+        When all segments have been captured, call `process_captured_segments`
+        and then `get_effort` and `get_aggregated_milli_psd` to get the effort
+        and result.
+        """
+
+        # to capture reported segments (missing and otherwise):
+        self.captured_segments: List[Tuple[datetime, Optional[np.ndarray]]] = []
+        self.num_actual_segments: int = 0
+
+        # The following determined when `set_parameters` is called:
+
+        self.fs: Optional[int] = None
+        self.nfft: Optional[int] = None
+        self.subset_to: Optional[Tuple[int, int]] = None
+        self.bands_limits: List[float] = []
+        self.bands_c: List[float] = []
+        self.fbands: Optional[np.ndarray] = None
+        self.spectra: List[np.ndarray] = []
+        self.iso_minutes: List[datetime] = []
+        self.effort: List[np.float32] = []  # num secs per minute
+        # TODO final effort type still TBD
+
+    def set_parameters(
         self, fs: int, nfft: int = 0, subset_to: Optional[Tuple[int, int]] = None
     ):
         """
-        Creates a helper to perform PyPAM calculations according to given parameters.
-
-        Once created, typical use is that you repeatedly call `add_segment` for each
-        (1-minute) segment of data until covering a whole day, and then call
-        `get_aggregated_milli_psd` to get the result.
-        You could then call `reset` before starting a new day processing.
+        Call this as soon as you get the first audio segment for a day,
+        in particular, to set the sampling frequency used for subsequent calculations.
 
         :param fs:
             Sampling frequency.
         :param nfft:
             Number of samples to use for the FFT. If 0, it will be set to `fs`.
         :param subset_to:
-            If not None, it will subset the resulting PSD to [lower, upper),
-            in terms of central frequency.
+            If not None, the product for a day will get the resulting PSD
+            subset to `[lower, upper)`, in terms of central frequency.
         """
+        assert fs > 0
         self.fs = fs
         self.nfft = nfft if nfft > 0 else self.fs
 
@@ -42,32 +79,95 @@ class PypamSupport:
             band=band, nfft=self.nfft
         )
 
-        self.fbands: Optional[np.ndarray] = None
-        self.spectra: List[np.ndarray] = []
-        self.iso_minutes: List[datetime] = []
-        self.effort: List[np.float32] = []  # num secs per minute
-        # TODO final effort type still TBD
+    def parameters_set(self) -> bool:
+        """
+        Returns True if `set_parameters` has been called.
+        """
+        return self.fs is not None
+
+    def add_missing_segment(self, dt: datetime):
+        """
+        Adds a missing segment to the ongoing aggregation.
+        This method can be called even before `set_parameters` is called.
+
+        :param dt:
+            The datetime of the start of the missing segment.
+        """
+        self.captured_segments.append((dt, None))
+        info(f"  captured segment: {dt}  (NO DATA)")
 
     def add_segment(self, data: np.ndarray, dt: datetime):
         """
-        Adds one more audio segment to the ongoing processing.
+        Adds an audio segment to the ongoing aggregation.
+
+        `set_parameters` must have been called first.
 
         :param data:
             The audio data.
         :param dt:
             The datetime of the start of the segment.
         """
-        num_secs = len(data) / self.fs
-        info(f"  adding segment: {dt} ({num_secs} secs used)")
+        assert self.parameters_set()
 
+        self.captured_segments.append((dt, data))
+        self.num_actual_segments += 1
+        info(f"  captured segment: {dt}")
+
+    def get_num_actual_segments(self) -> int:
+        """
+        Gets the number of actual (non-missing) segments so far.
+        """
+        return self.num_actual_segments
+
+    def process_captured_segments(self):
+        """
+        Processes the captured segments.
+        At least one actual segment must have been captured.
+        """
+        assert self.get_num_actual_segments() > 0
+
+        # Use any actual segment to determine NaN spectrum for the missing segments:
+        actual = next(s for s in self.captured_segments if s[1] is not None)
+        assert actual is not None, "unexpected: no actual segment found"
+        _, data = actual
+        self.fbands, spectrum = self._get_spectrum(data)
+        nan_spectrum = np.full(len(spectrum), np.nan)
+
+        self.spectra = []
+        self.iso_minutes = []
+        self.effort = []
+
+        # get resulting variables:
+        for dt, data in self.captured_segments:
+            self.iso_minutes.append(dt)
+
+            if data is None:
+                num_secs = 0
+                spectrum = nan_spectrum
+            else:
+                num_secs = len(data) / self.fs
+                _, spectrum = self._get_spectrum(data)
+
+            info(f"  got spectrum for: {dt} ({num_secs} secs used)")
+            self.spectra.append(spectrum)
+            self.effort.append(np.float32(num_secs))
+
+    def _get_spectrum(self, data: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         signal = sig.Signal(data, fs=self.fs)
         signal.set_band(None)
-        self.fbands, spectrum, _ = signal.spectrum(
+        fbands, spectrum, _ = signal.spectrum(
             scaling="density", nfft=self.nfft, db=False, overlap=0.5, force_calc=True
         )
-        self.spectra.append(spectrum)
-        self.iso_minutes.append(dt)
-        self.effort.append(np.float32(num_secs))
+        return fbands, spectrum
+
+    def get_effort(self) -> List[np.float32]:
+        """
+        Gets the resulting effort.
+        `process_captured_segments` must have been called first.
+        """
+        assert self.get_num_actual_segments() > 0
+        assert len(self.spectra) > 0
+        return self.effort
 
     def get_aggregated_milli_psd(
         self,
@@ -75,10 +175,9 @@ class PypamSupport:
         sensitivity_flat_value: Optional[float] = None,
     ) -> xr.DataArray:
         """
-        Gets the resulting hybrid millidecade bands for the ongoing processing.
+        Gets the resulting hybrid millidecade bands for all captured segments.
 
-        After this call, you must call `reset` if you want to start a new day
-        processing with this helper object.
+        `process_captured_segments` must have been called first.
 
         Calibration is done if either `sensitivity_da` or `sensitivity_flat_value` is given.
         `sensitivity_da` has priority over `sensitivity_flat_value`.
@@ -90,6 +189,9 @@ class PypamSupport:
             If given, and sensitivity_da not given, it will be used to calibrate the result.
         :return:
         """
+        assert self.get_num_actual_segments() > 0
+        assert len(self.spectra) > 0
+
         # Convert the spectra to a datarray
         psd_da = xr.DataArray(
             data=self.spectra,
@@ -97,7 +199,7 @@ class PypamSupport:
             dims=["time", "frequency"],
         )
 
-        psd_da = self.spectra_to_bands(psd_da)
+        psd_da = self._spectra_to_bands(psd_da)
         debug(f"  {psd_da.frequency_bins=}")
         psd_da = apply_sensitivity(psd_da, sensitivity_da, sensitivity_flat_value)
 
@@ -113,24 +215,15 @@ class PypamSupport:
 
         return milli_psd
 
-    def get_effort(self) -> List[np.float32]:
-        return self.effort
+    def _spectra_to_bands(self, psd_da: xr.DataArray) -> xr.DataArray:
+        assert self.fs is not None
+        assert self.nfft is not None
 
-    def reset(self):
-        """
-        Resets this helper instance in preparation for a new day.
-        """
-        self.fbands = None
-        self.spectra = []
-        self.iso_minutes = []
-        self.effort = []
-
-    def spectra_to_bands(self, psd_da: xr.DataArray) -> xr.DataArray:
         bands_limits, bands_c = self.bands_limits, self.bands_c
         if self.subset_to is not None:
             bands_limits, bands_c = adjust_limits(bands_limits, bands_c, self.subset_to)
 
-        def print_array(name: str, arr: np.ndarray):
+        def print_array(name: str, arr: List[float]):
             info(f"{name} ({len(arr)}) = {brief_list(arr)}")
 
         print_array("       bands_c", bands_c)
