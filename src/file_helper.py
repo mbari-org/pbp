@@ -104,7 +104,7 @@ def _download(
     local_filename = f"{download_dir}/{simple}"
     info(f"Downloading {bucket=} {key=} to {local_filename}")
     try:
-        s3_client.download_file(bucket, key, local_filename)
+        # s3_client.download_file(bucket, key, local_filename)
         return local_filename
     except ClientError as e:
         error(f"Error downloading {bucket}/{key}: {e}")
