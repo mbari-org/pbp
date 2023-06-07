@@ -2,7 +2,6 @@
   "effort": {
     "standard_name": "effort",
     "long_name": "duration of input data available for each 1-minute bin",
-    "units": "seconds",
     "coverage_content_type": "qualityInformation"
   },
   "frequency": {

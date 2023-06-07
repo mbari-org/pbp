@@ -15,9 +15,20 @@ class PypamSupport:
         self, fs: int, nfft: int = 0, subset_to: Optional[Tuple[int, int]] = None
     ):
         """
+        Creates a helper to perform PyPAM calculations according to given parameters.
+
+        Once created, typical use is that you repeatedly call `add_segment` for each
+        (1-minute) segment of data until covering a whole day, and then call
+        `get_aggregated_milli_psd` to get the result.
+        You could then call `reset` before starting a new day processing.
+
         :param fs:
+            Sampling frequency.
         :param nfft:
+            Number of samples to use for the FFT. If 0, it will be set to `fs`.
         :param subset_to:
+            If not None, it will subset the resulting PSD to [lower, upper),
+            in terms of central frequency.
         """
         self.fs = fs
         self.nfft = nfft if nfft > 0 else self.fs
@@ -37,6 +48,14 @@ class PypamSupport:
         self.effort: List[np.timedelta64] = []  # num secs per minute
 
     def add_segment(self, data: np.ndarray, dt: datetime):
+        """
+        Adds one more audio segment to the ongoing processing.
+
+        :param data:
+            The audio data.
+        :param dt:
+            The datetime of the start of the segment.
+        """
         num_secs = int(len(data) / self.fs)
         info(f"  adding segment: {dt} ({num_secs} secs used)")
 
@@ -55,7 +74,11 @@ class PypamSupport:
         sensitivity_flat_value: Optional[float] = None,
     ) -> xr.DataArray:
         """
-        Gets the resulting hybrid millidecade bands.
+        Gets the resulting hybrid millidecade bands for the ongoing processing.
+
+        After this call, you must call `reset` if you want to start a new day
+        processing with this helper object.
+
         Calibration is done if either `sensitivity_da` or `sensitivity_flat_value` is given.
         `sensitivity_da` has priority over `sensitivity_flat_value`.
         No calibration is done if neither is given.
@@ -87,12 +110,19 @@ class PypamSupport:
 
         info(f"Resulting milli_psd={milli_psd}")
 
-        self.iso_minutes = []
-        self.effort = []
         return milli_psd
 
     def get_effort(self) -> List[np.timedelta64]:
         return self.effort
+
+    def reset(self):
+        """
+        Resets this helper instance in preparation for a new day.
+        """
+        self.fbands = None
+        self.spectra = []
+        self.iso_minutes = []
+        self.effort = []
 
     def get_milli_psd(
         self,
