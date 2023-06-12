@@ -166,8 +166,6 @@ class ProcessHelper:
             ),
         }
 
-        md_helper = self.metadata_helper
-
         if self.sensitivity_da is not None:
             # TODO this case not yet tested
             freq_subset = self.sensitivity_da.interp(
@@ -190,12 +188,14 @@ class ProcessHelper:
             #     coords={"frequency": aggregated_result.frequency},
             # ).astype(np.float32)
 
-            md_helper.add_variable_attributes(data_vars["sensitivity"], "sensitivity")
+        md_helper = self.metadata_helper
 
         md_helper.add_variable_attributes(aggregated_result["time"], "time")
-        md_helper.add_variable_attributes(aggregated_result["frequency"], "frequency")
-        md_helper.add_variable_attributes(data_vars["psd"], "psd")
         md_helper.add_variable_attributes(data_vars["effort"], "effort")
+        md_helper.add_variable_attributes(aggregated_result["frequency"], "frequency")
+        if "sensitivity" in data_vars:
+            md_helper.add_variable_attributes(data_vars["sensitivity"], "sensitivity")
+        md_helper.add_variable_attributes(data_vars["psd"], "psd")
 
         md_helper.set_global_attribute(
             "date_created", datetime.utcnow().strftime("%Y-%m-%d")
