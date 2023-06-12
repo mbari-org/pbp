@@ -1,4 +1,5 @@
-from typing import Any, Dict, Optional
+from collections import OrderedDict
+from typing import Any, Optional
 
 import xarray as xr
 
@@ -8,16 +9,16 @@ from src.misc_helper import error
 class MetadataHelper:
     def __init__(
         self,
-        global_attributes: Optional[Dict[str, Any]] = None,
-        variable_attributes: Optional[Dict[str, Any]] = None,
+        global_attributes: Optional[OrderedDict[str, Any]] = None,
+        variable_attributes: Optional[OrderedDict[str, Any]] = None,
     ):
-        self._global_attrs: Dict[str, Any] = global_attributes or {}
-        self._var_attrs: Dict[str, Any] = variable_attributes or {}
+        self._global_attrs: OrderedDict[str, Any] = global_attributes or OrderedDict()
+        self._var_attrs: OrderedDict[str, Any] = variable_attributes or OrderedDict()
 
     def set_global_attribute(self, attribute_name: str, value: Any):
         self._global_attrs[attribute_name] = value
 
-    def get_global_attributes(self) -> Dict[str, Any]:
+    def get_global_attributes(self) -> OrderedDict[str, Any]:
         return self._global_attrs
 
     def add_variable_attributes(self, da: xr.DataArray, var_attribute_name: str):

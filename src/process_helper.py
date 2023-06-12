@@ -4,7 +4,7 @@ import pathlib
 from datetime import datetime
 
 # from multiprocessing import Pool
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, OrderedDict, Tuple
 
 import numpy as np
 import xarray as xr
@@ -91,13 +91,13 @@ class ProcessHelper:
 
     def _load_attributes(
         self, what: str, attrs_uri: Optional[str]
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[OrderedDict[str, Any]]:
         if attrs_uri:
             info(f"Loading {what} attributes from {attrs_uri=}")
             filename = self.file_helper.get_local_filename(attrs_uri)
             if filename is not None:
                 with open(filename, "r", encoding="UTF-8") as f:
-                    return json.load(f)
+                    return json.load(f, object_pairs_hook=collections.OrderedDict)
             else:
                 error(f"Unable to resolve '{attrs_uri=}'. Ignoring it.")
         else:
