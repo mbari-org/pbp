@@ -1,3 +1,4 @@
+import collections
 import json
 import pathlib
 from datetime import datetime
@@ -21,6 +22,7 @@ class ProcessHelper:
         self,
         file_helper: FileHelper,
         output_dir: str,
+        output_prefix: str,
         gen_csv: bool,
         global_attrs_uri: Optional[str] = None,
         variable_attrs_uri: Optional[str] = None,
@@ -35,6 +37,7 @@ class ProcessHelper:
 
         :param file_helper:
         :param output_dir:
+        :param output_prefix:
         :param gen_csv:
         :param global_attrs_uri:
         :param variable_attrs_uri:
@@ -50,6 +53,7 @@ class ProcessHelper:
 
         self.file_helper = file_helper
         self.output_dir = output_dir
+        self.output_prefix = output_prefix
         self.gen_csv = gen_csv
 
         self.metadata_helper = MetadataHelper(
@@ -202,7 +206,7 @@ class ProcessHelper:
             attrs=md_helper.get_global_attributes(),
         )
 
-        basename = f"{self.output_dir}/milli_psd_{year:04}{month:02}{day:02}"
+        basename = f"{self.output_dir}/{self.output_prefix}{year:04}{month:02}{day:02}"
         nc_filename = f"{basename}.nc"
         save_dataset_to_netcdf(ds_result, nc_filename)
         if self.gen_csv:

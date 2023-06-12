@@ -113,6 +113,14 @@ Examples:
     )
 
     parser.add_argument(
+        "--output-prefix",
+        type=str,
+        metavar="prefix",
+        default="milli_psd_",
+        help="Output filename prefix",
+    )
+
+    parser.add_argument(
         "--gen-csv",
         default=False,
         action="store_true",
@@ -149,7 +157,7 @@ Examples:
 
 
 def main(opts):
-    set_logger(opts.output_dir, opts.date)
+    set_logger(f"{opts.output_dir}/{opts.output_prefix}{opts.date}.log")
 
     file_helper = FileHelper(
         json_base_dir=opts.json_base_dir,
@@ -161,6 +169,7 @@ def main(opts):
     processor_helper = ProcessHelper(
         file_helper,
         output_dir=opts.output_dir,
+        output_prefix=opts.output_prefix,
         gen_csv=opts.gen_csv,
         global_attrs_uri=opts.global_attrs,
         variable_attrs_uri=opts.var_attrs,

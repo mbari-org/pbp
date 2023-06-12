@@ -18,13 +18,12 @@ def parse_date(date: str) -> Tuple[int, int, int]:
     return year, month, day
 
 
-def set_logger(output_dir: str, date: str) -> str:
+def set_logger(log_filename: str):
     logger = get_logger()
     logger.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 
-    log_filename = f"{output_dir}/milli_psd_{date}.log"
     handler = logging.FileHandler(log_filename, mode="w")
     handler.setFormatter(formatter)
     handler.setLevel(logging.INFO)
@@ -35,7 +34,6 @@ def set_logger(output_dir: str, date: str) -> str:
     console.setLevel(logging.DEBUG)
     console.setFormatter(formatter)
     logger.addHandler(console)
-    return log_filename
 
 
 def get_logger() -> logging.Logger:

@@ -12,6 +12,9 @@
 #  S3_OUTPUT_BUCKET: (Optional)
 #     The bucket to write the generated output to.
 #     Typically this is to be provided but it is optional to facilitate testing.
+#  OUTPUT_PREFIX: (Optional)
+#     Output filename prefix. By default, "milli_psd_".
+#     The resulting file will be named as <OUTPUT_PREFIX><DATE>.nc.
 #  GLOBAL_ATTRS_URI: (Optional)
 #     URI of JSON file with global attributes to be added to the NetCDF file.
 #  VARIABLE_ATTRS_URI: (Optional)
@@ -60,6 +63,8 @@ def main():
     json_bucket_prefix = os.getenv(
         "S3_JSON_BUCKET_PREFIX", "s3://pacific-sound-metadata/256khz"
     )
+
+    output_prefix = os.getenv("OUTPUT_PREFIX", "milli_psd_")
 
     # The bucket to write the output to
     output_bucket = os.getenv("S3_OUTPUT_BUCKET")
@@ -121,7 +126,8 @@ def main():
     generated_dir = f"{cloud_tmp_dir}/generated"
     pathlib.Path(generated_dir).mkdir(parents=True, exist_ok=True)
 
-    log_filename = set_logger(generated_dir, date)
+    log_filename = f"{generated_dir}/{output_prefix}{date}.log"
+    set_logger(log_filename)
 
     file_helper = FileHelper(
         json_base_dir=json_bucket_prefix,
@@ -132,6 +138,7 @@ def main():
     processor_helper = ProcessHelper(
         file_helper,
         output_dir=generated_dir,
+        output_prefix=output_prefix,
         gen_csv=False,
         global_attrs_uri=global_attrs_uri,
         variable_attrs_uri=variable_attrs_uri,
