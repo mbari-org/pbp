@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import cast, List, Optional, Tuple
 
@@ -8,6 +9,12 @@ import xarray as xr
 from pypam import utils
 
 from src.misc_helper import brief_list, debug, info
+
+
+@dataclass
+class CapturedSegment:
+    dt: datetime
+    data: Optional[np.ndarray]
 
 
 class PypamSupport:
@@ -35,7 +42,7 @@ class PypamSupport:
         """
 
         # to capture reported segments (missing and otherwise):
-        self.captured_segments: List[Tuple[datetime, Optional[np.ndarray]]] = []
+        self.captured_segments: List[CapturedSegment] = []
         self.num_actual_segments: int = 0
 
         # The following determined when `set_parameters` is called:
@@ -92,7 +99,7 @@ class PypamSupport:
         :param dt:
             The datetime of the start of the missing segment.
         """
-        self.captured_segments.append((dt, None))
+        self.captured_segments.append(CapturedSegment(dt, None))
         info(f"  captured segment: {dt}  (NO DATA)")
 
     def add_segment(self, data: np.ndarray, dt: datetime):
@@ -108,7 +115,7 @@ class PypamSupport:
         """
         assert self.parameters_set()
 
-        self.captured_segments.append((dt, data))
+        self.captured_segments.append(CapturedSegment(dt, data))
         self.num_actual_segments += 1
         info(f"  captured segment: {dt}")
 
@@ -126,10 +133,9 @@ class PypamSupport:
         assert self.get_num_actual_segments() > 0
 
         # Use any actual segment to determine NaN spectrum for the missing segments:
-        actual = next(s for s in self.captured_segments if s[1] is not None)
+        actual = next(s for s in self.captured_segments if s.data is not None)
         assert actual is not None, "unexpected: no actual segment found"
-        _, data = actual
-        self.fbands, spectrum = self._get_spectrum(data)
+        self.fbands, spectrum = self._get_spectrum(actual.data)
         nan_spectrum = np.full(len(spectrum), np.nan)
 
         self.spectra = []
@@ -137,17 +143,17 @@ class PypamSupport:
         self.effort = []
 
         # get resulting variables:
-        for dt, data in self.captured_segments:
-            self.times.append(dt)
+        for cs in self.captured_segments:
+            self.times.append(cs.dt)
 
-            if data is None:
+            if cs.data is None:
                 num_secs = 0
                 spectrum = nan_spectrum
             else:
-                num_secs = len(data) / self.fs
-                _, spectrum = self._get_spectrum(data)
+                num_secs = len(cs.data) / self.fs
+                _, spectrum = self._get_spectrum(cs.data)
 
-            info(f"  got spectrum for: {dt} ({num_secs} secs used)")
+            info(f"  got spectrum for: {cs.dt} ({num_secs} secs used)")
             self.spectra.append(spectrum)
             self.effort.append(np.float32(num_secs))
 

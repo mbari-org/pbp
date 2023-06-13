@@ -1,7 +1,7 @@
 # TODO revert to direct use of collections.OrderedDict as a type
 #  when gizo has python >= 3.9 (because: "Type subscription requires python >= 3.9")
-from typing import Any, Optional, OrderedDict as TOrderedDict
 from collections import OrderedDict
+from typing import Any, Optional, OrderedDict as TOrderedDict
 
 import xarray as xr
 
