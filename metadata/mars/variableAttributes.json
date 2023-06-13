@@ -1,7 +1,7 @@
 {
   "time": {
     "standard_name": "time",
-    "long_name": "ISO 8601 UTC time beginning each 1-minute temporal bin",
+    "long_name": "UTC time beginning each 1-minute temporal bin",
     "coverage_content_type": "coordinate"
   },
   "effort": {
