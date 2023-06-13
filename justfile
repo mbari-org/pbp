@@ -9,7 +9,7 @@ list:
 ####################
 # some conveniences:
 
-# ssh to the gizo
+# ssh to gizo
 ssh-gizo user="carueda" server="gizo.shore.mbari.org":
     ssh {{user}}@{{server}}
 
@@ -25,8 +25,6 @@ tgz:
     #!/usr/bin/env bash
     HASH=$(git rev-parse --short HEAD)
     git archive ${HASH} -o pypam-based-processing_${HASH}.tgz --prefix=pypam-based-processing/
-
-# TODO review `--json-base-dir` value per subquent changes to support cloud processing,
 
 # Run main (on gizo)
 main-gizo date="20220902" output_dir="/PAM_Analysis/pypam-space/test_output/daily":

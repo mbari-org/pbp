@@ -167,7 +167,6 @@ class ProcessHelper:
         }
 
         if self.sensitivity_da is not None:
-            # TODO this case not yet tested
             freq_subset = self.sensitivity_da.interp(
                 frequency=aggregated_result.frequency
             )

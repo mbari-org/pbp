@@ -49,7 +49,6 @@ class PypamSupport:
         self.spectra: List[np.ndarray] = []
         self.iso_minutes: List[datetime] = []
         self.effort: List[np.float32] = []  # num secs per minute
-        # TODO final effort type still TBD
 
     def set_parameters(
         self, fs: int, nfft: int = 0, subset_to: Optional[Tuple[int, int]] = None

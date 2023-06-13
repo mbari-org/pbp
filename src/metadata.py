@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 import xarray as xr
 
-from src.misc_helper import error, debug
+from src.misc_helper import debug, error
 
 
 class MetadataHelper:
