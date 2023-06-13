@@ -47,7 +47,7 @@ class PypamSupport:
         self.bands_c: List[float] = []
         self.fbands: Optional[np.ndarray] = None
         self.spectra: List[np.ndarray] = []
-        self.iso_minutes: List[datetime] = []
+        self.times: List[datetime] = []
         self.effort: List[np.float32] = []  # num secs per minute
 
     def set_parameters(
@@ -133,12 +133,12 @@ class PypamSupport:
         nan_spectrum = np.full(len(spectrum), np.nan)
 
         self.spectra = []
-        self.iso_minutes = []
+        self.times = []
         self.effort = []
 
         # get resulting variables:
         for dt, data in self.captured_segments:
-            self.iso_minutes.append(dt)
+            self.times.append(dt)
 
             if data is None:
                 num_secs = 0
@@ -194,7 +194,7 @@ class PypamSupport:
         # Convert the spectra to a datarray
         psd_da = xr.DataArray(
             data=self.spectra,
-            coords={"time": self.iso_minutes, "frequency": self.fbands},
+            coords={"time": self.times, "frequency": self.fbands},
             dims=["time", "frequency"],
         )
 
