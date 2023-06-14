@@ -14,7 +14,8 @@ from src.misc_helper import brief_list, debug, info
 @dataclass
 class CapturedSegment:
     dt: datetime
-    data: Optional[np.ndarray]
+    num_secs: float
+    spectrum: Optional[np.ndarray]
 
 
 class PypamSupport:
@@ -99,7 +100,7 @@ class PypamSupport:
         :param dt:
             The datetime of the start of the missing segment.
         """
-        self.captured_segments.append(CapturedSegment(dt, None))
+        self.captured_segments.append(CapturedSegment(dt, 0, None))
         info(f"  captured segment: {dt}  (NO DATA)")
 
     def add_segment(self, data: np.ndarray, dt: datetime):
@@ -114,8 +115,11 @@ class PypamSupport:
             The datetime of the start of the segment.
         """
         assert self.parameters_set()
+        assert self.fs is not None
 
-        self.captured_segments.append(CapturedSegment(dt, data))
+        num_secs = len(data) / self.fs
+        self.fbands, spectrum = self._get_spectrum(data)
+        self.captured_segments.append(CapturedSegment(dt, num_secs, spectrum))
         self.num_actual_segments += 1
         info(f"  captured segment: {dt}")
 
@@ -133,29 +137,21 @@ class PypamSupport:
         assert self.get_num_actual_segments() > 0
 
         # Use any actual segment to determine NaN spectrum for the missing segments:
-        actual = next(s for s in self.captured_segments if s.data is not None)
+        actual = next(s for s in self.captured_segments if s.spectrum is not None)
         assert actual is not None, "unexpected: no actual segment found"
-        self.fbands, spectrum = self._get_spectrum(actual.data)
-        nan_spectrum = np.full(len(spectrum), np.nan)
+        nan_spectrum = np.full(len(actual.spectrum), np.nan)
 
-        self.spectra = []
+        # gather resulting variables:
         self.times = []
         self.effort = []
-
-        # get resulting variables:
+        self.spectra = []
         for cs in self.captured_segments:
             self.times.append(cs.dt)
+            self.effort.append(np.float32(cs.num_secs))
 
-            if cs.data is None:
-                num_secs = 0
-                spectrum = nan_spectrum
-            else:
-                num_secs = len(cs.data) / self.fs
-                _, spectrum = self._get_spectrum(cs.data)
-
-            info(f"  got spectrum for: {cs.dt} ({num_secs} secs used)")
+            spectrum = nan_spectrum if cs.spectrum is None else cs.spectrum
+            info(f"  spectrum for: {cs.dt} ({cs.num_secs} secs used)")
             self.spectra.append(spectrum)
-            self.effort.append(np.float32(num_secs))
 
     def _get_spectrum(self, data: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         signal = sig.Signal(data, fs=self.fs)
