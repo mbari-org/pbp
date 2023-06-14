@@ -118,6 +118,20 @@ main-cloud-mars-basic-test date="20220909":
     export PYTHONPATH=.
     python src/main_cloud.py
 
+# Process multiple days for MARS data
+main-cloud-mars-multiple-days year="2022" month="9" *days="5 7 8 9":
+    #!/usr/bin/env bash
+    source virtenv/bin/activate
+    set -ue
+    out_dir="cloud_tmp_mars/generated"
+    echo "Running: year={{year}} month={{month}} days={{days}}"
+    for day in {{days}}; do
+      date=$(printf "%04d%02d%02d" {{year}} {{month}} "$day")
+      out="$output_dir/MARS_$date.out"
+      just main-cloud-mars-basic-test $date > "$out" 2>&1 &
+    done
+    wait
+
 # chumash basic test for cloud processing
 main-cloud-chumash-basic-test max_segments="60" date="20230101":
     #!/usr/bin/env bash
