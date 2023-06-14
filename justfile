@@ -123,7 +123,7 @@ main-cloud-mars-multiple-days year="2022" month="9" *days="5 7 8 9":
     #!/usr/bin/env bash
     source virtenv/bin/activate
     set -ue
-    out_dir="cloud_tmp_mars/generated"
+    output_dir="cloud_tmp_mars/generated"
     echo "Running: year={{year}} month={{month}} days={{days}}"
     for day in {{days}}; do
       date=$(printf "%04d%02d%02d" {{year}} {{month}} "$day")
