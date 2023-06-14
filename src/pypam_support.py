@@ -209,9 +209,6 @@ class PypamSupport:
         psd_da["frequency"] = psd_da.frequency_bins.astype(np.float32)
         del psd_da["frequency_bins"]
 
-        # TODO get dimensions in order "time" then "frequency"
-        # psd_da = psd_da.transpose("time", "frequency_bins")
-
         milli_psd = psd_da
         milli_psd.name = "psd"
 

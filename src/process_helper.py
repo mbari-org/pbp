@@ -157,9 +157,6 @@ class ProcessHelper:
         # rename 'frequency_bins' dimension to 'frequency':
         aggregated_result = aggregated_result.swap_dims(frequency_bins="frequency")
 
-        # TODO get dimensions in order "time" then "frequency"
-        # aggregated_result = aggregated_result.transpose("time", "frequency")
-
         data_vars = {
             "psd": aggregated_result,
             "effort": xr.DataArray(
