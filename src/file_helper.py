@@ -102,6 +102,11 @@ def _download(
     """
     bucket, key, simple = get_bucket_key_simple(parsed_uri)
     local_filename = f"{download_dir}/{simple}"
+
+    if os.getenv("ASSUME_DOWNLOADED_FILES", "no") == "yes":
+        warn(f"ASSUMING already downloaded: {bucket=} {key=} to {local_filename}")
+        return local_filename
+
     info(f"Downloading {bucket=} {key=} to {local_filename}")
     try:
         s3_client.download_file(bucket, key, local_filename)
