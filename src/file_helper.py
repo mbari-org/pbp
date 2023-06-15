@@ -12,9 +12,9 @@ from botocore.client import BaseClient, ClientError
 
 from src.json_support import (
     get_intersecting_entries,
+    JEntry,
+    JEntryIntersection,
     parse_json_contents,
-    TME,
-    TMEIntersection,
 )
 from src.misc_helper import brief_list, debug, error, get_logger, info, map_prefix, warn
 
@@ -167,7 +167,7 @@ class FileHelper:
         self.year: Optional[int] = None
         self.month: Optional[int] = None
         self.day: Optional[int] = None
-        self.json_entries: Optional[List[TME]] = None
+        self.json_entries: Optional[List[JEntry]] = None
 
     def select_day(self, year: int, month: int, day: int) -> bool:
         """
@@ -256,7 +256,7 @@ class FileHelper:
         assert self.month is not None
         assert self.day is not None
 
-        intersections: List[TMEIntersection] = get_intersecting_entries(
+        intersections: List[JEntryIntersection] = get_intersecting_entries(
             self.json_entries,
             self.segment_size_in_mins,
             self.year,
@@ -276,7 +276,7 @@ class FileHelper:
                 warn("No data from intersection")
                 continue
 
-            ws = self._get_wav_status(intersection.tme.uri)
+            ws = self._get_wav_status(intersection.entry.uri)
             if ws.error is not None:
                 return None
 

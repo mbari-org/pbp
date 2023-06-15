@@ -19,10 +19,9 @@ metadata = config(
 
 @dataclass_json
 @dataclass
-class TME:
+class JEntry:
     """
     Captures each object in the array contained in the given Json file.
-    ("TME" for "ten-minute entry".)
     """
 
     uri: str
@@ -39,52 +38,57 @@ class TME:
         return urlparse(self.uri).path
 
 
-def parse_json_contents(contents: str) -> Generator[TME, None, None]:
+def parse_json_contents(contents: str) -> Generator[JEntry, None, None]:
     for item in json.loads(contents):
-        yield TME.from_dict(item)  # type: ignore [attr-defined]
+        yield JEntry.from_dict(item)  # type: ignore [attr-defined]
 
 
-def parse_json_file(filename: str) -> Generator[TME, None, None]:
+def parse_json_file(filename: str) -> Generator[JEntry, None, None]:
     with open(filename, "r", encoding="UTF-8") as f:
         for item in json.load(f):
-            yield TME.from_dict(item)  # type: ignore [attr-defined]
+            yield JEntry.from_dict(item)  # type: ignore [attr-defined]
 
 
 @dataclass
-class TMEIntersection:
-    tme: TME
+class JEntryIntersection:
+    entry: JEntry
 
-    # relative to the start of the TME
+    # relative to the start of the JEntry
     start_secs: int
     duration_secs: int
 
 
 def get_intersecting_entries(
-    json_entries: List[TME],
+    json_entries: List[JEntry],
     segment_size_in_mins: int,
     year: int,
     month: int,
     day: int,
     at_hour: int,
     at_minute: int,
-) -> List[TMEIntersection]:
+) -> List[JEntryIntersection]:
     dt = datetime(year, month, day, at_hour, at_minute)
     day_start_in_secs: int = int(dt.timestamp())
     day_end_in_secs: int = day_start_in_secs + segment_size_in_mins * 60
 
-    intersecting_entries: List[TMEIntersection] = []
+    intersecting_entries: List[JEntryIntersection] = []
     tot_duration_secs = 0
-    for tme in json_entries:
-        tme_start_in_secs: int = int(tme.start.timestamp())
+    for entry in json_entries:
+        entry_start_in_secs: int = int(entry.start.timestamp())
         # issue with `end` in some JSON files...
-        # tme_end_in_secs: int = int(tme.end.timestamp())
+        # entry_end_in_secs: int = int(entry.end.timestamp())
         # ... so, let's use `duration_secs`
-        tme_end_in_secs: int = tme_start_in_secs + int(tme.duration_secs)
-        if tme_start_in_secs <= day_end_in_secs and tme_end_in_secs >= day_start_in_secs:
-            start_secs = max(tme_start_in_secs, day_start_in_secs) - tme_start_in_secs
-            end_secs = min(tme_end_in_secs, day_end_in_secs) - tme_start_in_secs
+        entry_end_in_secs: int = entry_start_in_secs + int(entry.duration_secs)
+        if (
+            entry_start_in_secs <= day_end_in_secs
+            and entry_end_in_secs >= day_start_in_secs
+        ):
+            start_secs = max(entry_start_in_secs, day_start_in_secs) - entry_start_in_secs
+            end_secs = min(entry_end_in_secs, day_end_in_secs) - entry_start_in_secs
             duration_secs = end_secs - start_secs
-            intersecting_entries.append(TMEIntersection(tme, start_secs, duration_secs))
+            intersecting_entries.append(
+                JEntryIntersection(entry, start_secs, duration_secs)
+            )
             tot_duration_secs += duration_secs
 
     time_spec = (
@@ -102,7 +106,7 @@ def get_intersecting_entries(
         warn(msg)
 
     if get_logger().isEnabledFor(logging.DEBUG):
-        uris = [i.tme.uri for i in intersecting_entries]
+        uris = [i.entry.uri for i in intersecting_entries]
         uris_str = "\n  ".join([f"[{e}] {uri}" for e, uri in enumerate(uris)])
         debug(f"{time_spec}: intersection uris({len(uris)}):\n  {uris_str}")
 
