@@ -5,7 +5,6 @@
     "coverage_content_type": "coordinate"
   },
   "effort": {
-    "standard_name": "effort",
     "long_name": "duration of input data available for each 1-minute bin",
     "coverage_content_type": "qualityInformation",
     "units": "sec"
@@ -17,7 +16,6 @@
     "coverage_content_type": "coordinate"
   },
   "sensitivity": {
-    "standard_name": "calibration",
     "long_name": "hydrophone_sensitivity",
     "units": "dB re 1 volt / micropascal",
     "coverage_content_type": "physicalMeasurement",
