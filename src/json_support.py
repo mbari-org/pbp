@@ -39,14 +39,19 @@ class JEntry:
 
 
 def parse_json_contents(contents: str) -> Generator[JEntry, None, None]:
+    reported_uris = set()
     for item in json.loads(contents):
-        yield JEntry.from_dict(item)  # type: ignore [attr-defined]
+        entry = JEntry.from_dict(item)  # type: ignore [attr-defined]
+        if entry.uri in reported_uris:
+            warn(f"Skipping duplicate json entry: uri={entry.uri}")
+            continue
+        reported_uris.add(entry.uri)
+        yield entry
 
 
 def parse_json_file(filename: str) -> Generator[JEntry, None, None]:
     with open(filename, "r", encoding="UTF-8") as f:
-        for item in json.load(f):
-            yield JEntry.from_dict(item)  # type: ignore [attr-defined]
+        return parse_json_contents(f.read())
 
 
 @dataclass
