@@ -116,9 +116,10 @@ class PypamSupport:
         """
         assert self.parameters_set()
         assert self.fs is not None
+        assert self.nfft is not None
 
+        self.fbands, spectrum = _get_spectrum(data, self.fs, self.nfft)
         num_secs = len(data) / self.fs
-        self.fbands, spectrum = self._get_spectrum(data)
         self.captured_segments.append(CapturedSegment(dt, num_secs, spectrum))
         self.num_actual_segments += 1
         info(f"  captured segment: {dt}")
@@ -152,14 +153,6 @@ class PypamSupport:
             spectrum = nan_spectrum if cs.spectrum is None else cs.spectrum
             info(f"  spectrum for: {cs.dt} ({cs.num_secs} secs used)")
             self.spectra.append(spectrum)
-
-    def _get_spectrum(self, data: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        signal = sig.Signal(data, fs=self.fs)
-        signal.set_band(None)
-        fbands, spectrum, _ = signal.spectrum(
-            scaling="density", nfft=self.nfft, db=False, overlap=0.5, force_calc=True
-        )
-        return fbands, spectrum
 
     def get_effort(self) -> List[np.float32]:
         """
@@ -202,7 +195,7 @@ class PypamSupport:
 
         psd_da = self._spectra_to_bands(psd_da)
         debug(f"  {psd_da.frequency_bins=}")
-        psd_da = apply_sensitivity(psd_da, sensitivity_da, sensitivity_flat_value)
+        psd_da = _apply_sensitivity(psd_da, sensitivity_da, sensitivity_flat_value)
 
         # just need single precision:
         psd_da = psd_da.astype(np.float32)
@@ -222,7 +215,7 @@ class PypamSupport:
 
         bands_limits, bands_c = self.bands_limits, self.bands_c
         if self.subset_to is not None:
-            bands_limits, bands_c = adjust_limits(bands_limits, bands_c, self.subset_to)
+            bands_limits, bands_c = _adjust_limits(bands_limits, bands_c, self.subset_to)
 
         def print_array(name: str, arr: List[float]):
             info(f"{name} ({len(arr)}) = {brief_list(arr)}")
@@ -242,7 +235,16 @@ class PypamSupport:
         return psd_da
 
 
-def apply_sensitivity(
+def _get_spectrum(data: np.ndarray, fs: int, nfft: int) -> Tuple[np.ndarray, np.ndarray]:
+    signal = sig.Signal(data, fs=fs)
+    signal.set_band(None)
+    fbands, spectrum, _ = signal.spectrum(
+        scaling="density", nfft=nfft, db=False, overlap=0.5, force_calc=True
+    )
+    return fbands, spectrum
+
+
+def _apply_sensitivity(
     psd_da: xr.DataArray,
     sensitivity_da: Optional[xr.DataArray],
     sensitivity_flat_value: Optional[float] = None,
@@ -266,7 +268,7 @@ def apply_sensitivity(
     return psd_da
 
 
-def adjust_limits(
+def _adjust_limits(
     bands_limits: List[float], bands_c: List[float], subset_to: Tuple[int, int]
 ) -> Tuple[List[float], List[float]]:
     start_hz, end_hz = subset_to
