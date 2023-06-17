@@ -144,15 +144,6 @@ Examples:
         help="Subset the resulting PSD to [lower, upper), in terms of central frequency.",
     )
 
-    parser.add_argument(
-        "-j",
-        "--cpus",
-        type=int,
-        default=1,
-        metavar="num",
-        help="Number of cpus to use. 0 will indicate all available cpus. By default, 1.",
-    )
-
     return parser.parse_args()
 
 
@@ -176,7 +167,6 @@ def main(opts):
         voltage_multiplier=opts.voltage_multiplier,
         sensitivity_uri=opts.sensitivity_uri,
         sensitivity_flat_value=opts.sensitivity_flat_value,
-        num_cpus=opts.cpus,
         max_segments=opts.max_segments,
         subset_to=tuple(opts.subset_to) if opts.subset_to else None,
     )

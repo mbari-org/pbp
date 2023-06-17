@@ -3,13 +3,12 @@ import json
 import pathlib
 from datetime import datetime
 
-# from multiprocessing import Pool
 from typing import Any, List, Optional, OrderedDict, Tuple
 
 import numpy as np
 import xarray as xr
 
-from src import get_cpus_to_use, save_dataset_to_csv, save_dataset_to_netcdf
+from src import save_dataset_to_csv, save_dataset_to_netcdf
 
 from src.file_helper import FileHelper
 from src.metadata import MetadataHelper
@@ -29,7 +28,6 @@ class ProcessHelper:
         voltage_multiplier: Optional[float] = None,
         sensitivity_uri: Optional[str] = None,
         sensitivity_flat_value: Optional[float] = None,
-        num_cpus: int = 1,
         max_segments: int = 0,
         subset_to: Optional[Tuple[int, int]] = None,
     ):
@@ -44,7 +42,6 @@ class ProcessHelper:
         :param voltage_multiplier:
         :param sensitivity_uri:
         :param sensitivity_flat_value:
-        :param num_cpus:
         :param max_segments:
         :param subset_to:
             Tuple of (lower, upper) frequency limits to use for the PSD,
@@ -61,7 +58,6 @@ class ProcessHelper:
             self._load_attributes("variable", variable_attrs_uri),
         )
 
-        self.num_cpus = get_cpus_to_use(num_cpus)
         self.max_segments = max_segments
         self.subset_to = subset_to
 
@@ -125,18 +121,6 @@ class ProcessHelper:
         if self.max_segments > 0:
             at_hour_and_minutes = at_hour_and_minutes[: self.max_segments]
             info(f"NOTE: Limiting to {len(at_hour_and_minutes)} segments ...")
-
-        if self.num_cpus > 1:
-            # TODO appropriate dispatch to then aggregate results
-            info("NOTE: ignoring multiprocessing while completing aggregation of day")
-            # splits = np.array_split(at_hour_and_minutes, self.num_cpus)
-            # info(
-            #     f"Splitting {len(at_hour_and_minutes)} segments into {len(splits)} processes ..."
-            # )
-            # with Pool(self.num_cpus) as pool:
-            #     args = [(s,) for s in splits]
-            #     pool.starmap(self.process_hours_minutes, args)
-            # return
 
         self.process_hours_minutes(at_hour_and_minutes)
         if self.pypam_support.get_num_actual_segments() == 0:
