@@ -1,20 +1,23 @@
 import json
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Generator, List
 from urllib.parse import urlparse
 
 from dataclasses_json import config, dataclass_json
-from marshmallow import fields
+from dateutil import parser as iso8601_parser
 
 from src.misc_helper import debug, get_logger, warn
 
-metadata = config(
-    encoder=datetime.isoformat,
-    decoder=datetime.fromisoformat,
-    mm_field=fields.DateTime(format="iso"),
-)
+
+def datetime_field():
+    return field(
+        metadata=config(
+            encoder=datetime.isoformat,  # tough we don't actually care about encoding
+            decoder=iso8601_parser.parse,
+        )
+    )
 
 
 @dataclass_json
@@ -26,16 +29,16 @@ class JEntry:
 
     uri: str
     duration_secs: float
-    start: datetime = field(metadata=metadata)
-    end: datetime = field(metadata=metadata)
-
-    # add when needed:
-    # channels: int = 1
-    # jitter: float = 0
+    start: datetime = datetime_field()
+    end: datetime = datetime_field()
 
     @property
     def path(self) -> str:
         return urlparse(self.uri).path
+
+    @property
+    def start_in_seconds(self) -> int:
+        return int(self.start.timestamp())
 
 
 def parse_json_contents(contents: str) -> Generator[JEntry, None, None]:
@@ -72,17 +75,14 @@ def get_intersecting_entries(
     at_hour: int,
     at_minute: int,
 ) -> List[JEntryIntersection]:
-    dt = datetime(year, month, day, at_hour, at_minute)
+    dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
     day_start_in_secs: int = int(dt.timestamp())
     day_end_in_secs: int = day_start_in_secs + segment_size_in_mins * 60
 
     intersecting_entries: List[JEntryIntersection] = []
     tot_duration_secs = 0
     for entry in json_entries:
-        entry_start_in_secs: int = int(entry.start.timestamp())
-        # issue with `end` in some JSON files...
-        # entry_end_in_secs: int = int(entry.end.timestamp())
-        # ... so, let's use `duration_secs`
+        entry_start_in_secs: int = entry.start_in_seconds
         entry_end_in_secs: int = entry_start_in_secs + int(entry.duration_secs)
         if (
             entry_start_in_secs <= day_end_in_secs

@@ -26,3 +26,13 @@ def test_get_intersecting_entries(json_entries, snapshot):
     do_test(1, 23, 59)
     do_test(20, 0, 0)
     do_test(10, 23, 40)
+
+
+@pytest.fixture
+def json_entries_2():
+    res = list(parse_json_file("tests/json/2022/20221102.json"))
+    return res
+
+
+def test_json_parsing_2(json_entries_2, snapshot):
+    assert json_entries_2 == snapshot
