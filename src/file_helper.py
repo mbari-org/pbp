@@ -10,12 +10,7 @@ import numpy as np
 import soundfile as sf
 from botocore.client import BaseClient, ClientError
 
-from src.json_support import (
-    get_intersecting_entries,
-    JEntry,
-    JEntryIntersection,
-    parse_json_contents,
-)
+from src.json_support import get_intersecting_entries, JEntry, parse_json_contents
 from src.misc_helper import brief_list, debug, error, get_logger, info, map_prefix, warn
 
 
@@ -256,14 +251,14 @@ class FileHelper:
         assert self.month is not None
         assert self.day is not None
 
-        intersections: List[JEntryIntersection] = get_intersecting_entries(
+        intersections = get_intersecting_entries(
             self.json_entries,
-            self.segment_size_in_mins,
             self.year,
             self.month,
             self.day,
             at_hour,
             at_minute,
+            segment_size_in_mins=self.segment_size_in_mins,
         )
 
         audio_info: Optional[AudioInfo] = None

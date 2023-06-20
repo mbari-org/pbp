@@ -22,7 +22,13 @@ def test_get_intersecting_entries(json_entries, snapshot):
 
     def do_test(segment_size_in_mins: int, at_hour: int, at_minute: int):
         intersecting_entries = get_intersecting_entries(
-            json_entries, segment_size_in_mins, year, month, day, at_hour, at_minute
+            json_entries,
+            year,
+            month,
+            day,
+            at_hour,
+            at_minute,
+            segment_size_in_mins=segment_size_in_mins,
         )
         assert _as_jsons(intersecting_entries) == snapshot(
             name=f"size={segment_size_in_mins:02} h={at_hour:02} m={at_minute:02}"

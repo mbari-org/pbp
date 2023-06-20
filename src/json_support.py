@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from dataclasses_json import config, dataclass_json
 from dateutil import parser as iso8601_parser
 
-from src.misc_helper import debug, get_logger, warn
+from src.misc_helper import debug, error, get_logger, warn
 
 
 def datetime_field():
@@ -65,16 +65,41 @@ class JEntryIntersection:
 
 def get_intersecting_entries(
     json_entries: List[JEntry],
-    segment_size_in_mins: int,
     year: int,
     month: int,
     day: int,
     at_hour: int,
     at_minute: int,
+    segment_size_in_mins: int = 1,
 ) -> List[JEntryIntersection]:
+    """
+    Gets the list of intersecting entries for the UTC "start minute"
+    given by (year, month, day, at_hour, at_minute).
+
+    :param json_entries:
+        JSON entries for the day
+    :param year:
+        Year associated to the start minute
+    :param month:
+        Month associated to the start minute
+    :param day:
+        Day associated to the start minute
+    :param at_hour:
+        Hour associated to the start minute
+    :param at_minute:
+        Minute associated to the start minute
+    :param segment_size_in_mins:
+        The size of the segment in minutes, by default 1.
+
+    :return:
+        The list of intersecting entries
+    """
+    # the requested start minute as datetime:
     dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
-    day_start_in_secs: int = int(dt.timestamp())
-    day_end_in_secs: int = day_start_in_secs + segment_size_in_mins * 60
+    # the start of the requested start minute in seconds:
+    minute_start_in_secs: int = int(dt.timestamp())
+    # the end of the requested start minute in seconds:
+    minute_end_in_secs: int = minute_start_in_secs + segment_size_in_mins * 60
 
     intersecting_entries: List[JEntryIntersection] = []
     tot_duration_secs = 0
@@ -82,30 +107,35 @@ def get_intersecting_entries(
         entry_start_in_secs: int = int(entry.start.timestamp())
         entry_end_in_secs: int = entry_start_in_secs + int(entry.duration_secs)
         if (
-            entry_start_in_secs <= day_end_in_secs
-            and entry_end_in_secs >= day_start_in_secs
+            entry_start_in_secs <= minute_end_in_secs
+            and entry_end_in_secs >= minute_start_in_secs
         ):
-            start_secs = max(entry_start_in_secs, day_start_in_secs) - entry_start_in_secs
-            end_secs = min(entry_end_in_secs, day_end_in_secs) - entry_start_in_secs
+            start_secs = (
+                max(entry_start_in_secs, minute_start_in_secs) - entry_start_in_secs
+            )
+            end_secs = min(entry_end_in_secs, minute_end_in_secs) - entry_start_in_secs
             duration_secs = end_secs - start_secs
             intersecting_entries.append(
                 JEntryIntersection(entry, start_secs, duration_secs)
             )
             tot_duration_secs += duration_secs
 
+    # for logging purposes:
     time_spec = (
         f"year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
     )
 
-    # verify expected duration:
+    # check captured duration:
     segment_size_in_secs = segment_size_in_mins * 60
-    if tot_duration_secs != segment_size_in_secs:
-        msg = f"tot_duration_secs={tot_duration_secs} != {segment_size_in_secs}"
-        msg += f"  {time_spec}"
+    if tot_duration_secs < segment_size_in_secs:
+        # partial day can happen, just a warning:
+        warn(f"{tot_duration_secs=} < {segment_size_in_secs=}  {time_spec}")
+    elif tot_duration_secs > segment_size_in_secs:
+        msg = f"UNEXPECTED: {tot_duration_secs=} > {segment_size_in_secs=}  {time_spec}"
         msg += f"  intersecting_entries ({len(intersecting_entries)})"
         if len(intersecting_entries) > 0:
             msg += "".join(f"\n    {i}" for i in intersecting_entries)
-        warn(msg)
+        error(msg)
 
     if get_logger().isEnabledFor(logging.DEBUG):
         uris = [i.entry.uri for i in intersecting_entries]
