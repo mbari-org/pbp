@@ -170,6 +170,10 @@ setup:
     pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam==0.1.10
     mypy --install-types
 
+# Install updated dependencies
+update-deps:
+    pip3 install -r requirements.txt
+
 # Do static type checking (not very strict)
 check:
     python -m mypy .
