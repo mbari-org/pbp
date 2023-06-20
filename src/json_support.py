@@ -14,7 +14,7 @@ from src.misc_helper import debug, get_logger, warn
 def datetime_field():
     return field(
         metadata=config(
-            encoder=datetime.isoformat,  # tough we don't actually care about encoding
+            encoder=lambda dt: dt.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
             decoder=iso8601_parser.parse,
         )
     )
@@ -30,15 +30,11 @@ class JEntry:
     uri: str
     duration_secs: float
     start: datetime = datetime_field()
-    end: datetime = datetime_field()
+    # end: datetime = datetime_field()  -- not used
 
     @property
     def path(self) -> str:
         return urlparse(self.uri).path
-
-    @property
-    def start_in_seconds(self) -> int:
-        return int(self.start.timestamp())
 
 
 def parse_json_contents(contents: str) -> Generator[JEntry, None, None]:
@@ -57,6 +53,7 @@ def parse_json_file(filename: str) -> Generator[JEntry, None, None]:
         return parse_json_contents(f.read())
 
 
+@dataclass_json
 @dataclass
 class JEntryIntersection:
     entry: JEntry
@@ -82,7 +79,7 @@ def get_intersecting_entries(
     intersecting_entries: List[JEntryIntersection] = []
     tot_duration_secs = 0
     for entry in json_entries:
-        entry_start_in_secs: int = entry.start_in_seconds
+        entry_start_in_secs: int = int(entry.start.timestamp())
         entry_end_in_secs: int = entry_start_in_secs + int(entry.duration_secs)
         if (
             entry_start_in_secs <= day_end_in_secs
