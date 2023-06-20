@@ -1,20 +1,23 @@
 import json
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Generator, List
 from urllib.parse import urlparse
 
 from dataclasses_json import config, dataclass_json
-from marshmallow import fields
+from dateutil import parser as iso8601_parser
 
 from src.misc_helper import debug, get_logger, warn
 
-metadata = config(
-    encoder=datetime.isoformat,
-    decoder=datetime.fromisoformat,
-    mm_field=fields.DateTime(format="iso"),
-)
+
+def datetime_field():
+    return field(
+        metadata=config(
+            encoder=lambda dt: dt.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            decoder=iso8601_parser.parse,
+        )
+    )
 
 
 @dataclass_json
@@ -26,12 +29,8 @@ class JEntry:
 
     uri: str
     duration_secs: float
-    start: datetime = field(metadata=metadata)
-    end: datetime = field(metadata=metadata)
-
-    # add when needed:
-    # channels: int = 1
-    # jitter: float = 0
+    start: datetime = datetime_field()
+    # end: datetime = datetime_field()  -- not used
 
     @property
     def path(self) -> str:
@@ -54,6 +53,7 @@ def parse_json_file(filename: str) -> Generator[JEntry, None, None]:
         return parse_json_contents(f.read())
 
 
+@dataclass_json
 @dataclass
 class JEntryIntersection:
     entry: JEntry
@@ -72,7 +72,7 @@ def get_intersecting_entries(
     at_hour: int,
     at_minute: int,
 ) -> List[JEntryIntersection]:
-    dt = datetime(year, month, day, at_hour, at_minute)
+    dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
     day_start_in_secs: int = int(dt.timestamp())
     day_end_in_secs: int = day_start_in_secs + segment_size_in_mins * 60
 
@@ -80,9 +80,6 @@ def get_intersecting_entries(
     tot_duration_secs = 0
     for entry in json_entries:
         entry_start_in_secs: int = int(entry.start.timestamp())
-        # issue with `end` in some JSON files...
-        # entry_end_in_secs: int = int(entry.end.timestamp())
-        # ... so, let's use `duration_secs`
         entry_end_in_secs: int = entry_start_in_secs + int(entry.duration_secs)
         if (
             entry_start_in_secs <= day_end_in_secs
