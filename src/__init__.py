@@ -7,7 +7,7 @@ from src.misc_helper import info
 
 def save_dataset_to_netcdf(ds: xr.Dataset, filename: str):
     info(f"  - saving dataset to: {filename}")
-    ds.to_netcdf(filename)
+    ds.to_netcdf(filename, engine="h5netcdf", encoding={"time": {"dtype": "int64"}})
 
 
 def save_dataset_to_csv(ds: xr.Dataset, filename: str):

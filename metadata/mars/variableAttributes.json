@@ -11,7 +11,7 @@
   },
   "frequency": {
     "standard_name": "sound_frequency",
-    "long_name": "center frequency of hybrid millidecade spectral bands",
+    "long_name": "Center frequency of hybrid millidecade spectral bands",
     "units": "Hz",
     "coverage_content_type": "coordinate"
   },
