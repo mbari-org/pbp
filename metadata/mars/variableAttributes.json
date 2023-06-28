@@ -2,6 +2,7 @@
   "time": {
     "standard_name": "time",
     "long_name": "UTC time beginning each 1-minute temporal bin",
+    "units": "seconds since 1970-01-01T00:00:00Z",
     "coverage_content_type": "coordinate"
   },
   "effort": {

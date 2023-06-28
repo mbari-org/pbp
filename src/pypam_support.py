@@ -55,7 +55,7 @@ class PypamSupport:
         self.bands_c: List[float] = []
         self.fbands: Optional[np.ndarray] = None
         self.spectra: List[np.ndarray] = []
-        self.times: List[datetime] = []
+        self.times: List[np.int64] = []
         self.effort: List[np.float32] = []  # num secs per minute
 
     def set_parameters(
@@ -147,7 +147,7 @@ class PypamSupport:
         self.effort = []
         self.spectra = []
         for cs in self.captured_segments:
-            self.times.append(cs.dt)
+            self.times.append(np.int64(cs.dt.timestamp()))
             self.effort.append(np.float32(cs.num_secs))
 
             spectrum = nan_spectrum if cs.spectrum is None else cs.spectrum
