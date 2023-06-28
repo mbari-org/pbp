@@ -13,7 +13,7 @@ from src import save_dataset_to_csv, save_dataset_to_netcdf
 from src.file_helper import FileHelper
 from src.metadata import MetadataHelper
 from src.misc_helper import debug, error, gen_hour_minute_times, info, parse_date, warn
-from src.pypam_support import PypamSupport
+from src.pypam_support import ProcessResult, PypamSupport
 
 
 class ProcessHelper:
@@ -123,37 +123,28 @@ class ProcessHelper:
             info(f"NOTE: Limiting to {len(at_hour_and_minutes)} segments ...")
 
         self.process_hours_minutes(at_hour_and_minutes)
-        if self.pypam_support.get_num_actual_segments() == 0:
-            warn(f"No segments processed, nothing to aggregate for day {date}.")
-            return None
 
-        info("Processing captured segments ...")
-        self.pypam_support.process_captured_segments()
-
-        effort = self.pypam_support.get_effort()
-
-        info("Aggregating results ...")
-        aggregated_result = self.pypam_support.get_aggregated_milli_psd(
+        result: Optional[ProcessResult] = self.pypam_support.process_captured_segments(
             sensitivity_da=self.sensitivity_da,
             sensitivity_flat_value=self.sensitivity_flat_value,
         )
 
+        if result is None:
+            warn(f"No segments processed, nothing to aggregate for day {date}.")
+            return None
+
+        psd_da = result.psd_da
+
         # rename 'frequency_bins' dimension to 'frequency':
-        aggregated_result = aggregated_result.swap_dims(frequency_bins="frequency")
+        psd_da = psd_da.swap_dims(frequency_bins="frequency")
 
         data_vars = {
-            "psd": aggregated_result,
-            "effort": xr.DataArray(
-                data=effort,
-                dims=["time"],
-                coords={"time": aggregated_result.time},
-            ),
+            "psd": psd_da,
+            "effort": result.effort_da,
         }
 
         if self.sensitivity_da is not None:
-            freq_subset = self.sensitivity_da.interp(
-                frequency=aggregated_result.frequency
-            )
+            freq_subset = self.sensitivity_da.interp(frequency=psd_da.frequency)
             data_vars["sensitivity"] = freq_subset
 
         elif self.sensitivity_flat_value is not None:
@@ -163,19 +154,11 @@ class ProcessHelper:
                 dims=["1"],
             ).astype(np.float32)
 
-            # If repeating the scalar for each frequency:
-            # num_freqs = aggregated_result.frequency.shape[0]
-            # data_vars["sensitivity"] = xr.DataArray(
-            #     data=np.repeat(self.sensitivity_flat_value, num_freqs),
-            #     dims=["frequency_bins"],
-            #     coords={"frequency": aggregated_result.frequency},
-            # ).astype(np.float32)
-
         md_helper = self.metadata_helper
 
-        md_helper.add_variable_attributes(aggregated_result["time"], "time")
+        md_helper.add_variable_attributes(psd_da["time"], "time")
         md_helper.add_variable_attributes(data_vars["effort"], "effort")
-        md_helper.add_variable_attributes(aggregated_result["frequency"], "frequency")
+        md_helper.add_variable_attributes(psd_da["frequency"], "frequency")
         if "sensitivity" in data_vars:
             md_helper.add_variable_attributes(data_vars["sensitivity"], "sensitivity")
         md_helper.add_variable_attributes(data_vars["psd"], "psd")
@@ -237,4 +220,4 @@ class ProcessHelper:
         if self.voltage_multiplier is not None:
             audio_segment *= self.voltage_multiplier
 
-        self.pypam_support.add_segment(audio_segment, dt)
+        self.pypam_support.add_segment(dt, audio_segment)

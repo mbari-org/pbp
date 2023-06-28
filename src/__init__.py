@@ -13,6 +13,7 @@ def save_dataset_to_netcdf(ds: xr.Dataset, filename: str):
         encoding={
             "effort": {"_FillValue": None},
             "frequency": {"_FillValue": None},
+            "sensitivity": {"_FillValue": None},
         },
     )
 
