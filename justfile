@@ -94,6 +94,7 @@ main-mac *more_args="":
 # Basic test for cloud processing
 main-cloud-basic-test max_segments="1" date="20220902":
     #!/usr/bin/env bash
+    export EXCLUDE_LOG_TIME=yes
     export DATE={{date}}
     export VOLTAGE_MULTIPLIER=3
     export SENSITIVITY_NETCDF_URI=misc/icListen1689_sensitivity_hms256kHz.nc
@@ -101,11 +102,12 @@ main-cloud-basic-test max_segments="1" date="20220902":
     export PYTHONPATH=.
     python src/main_cloud.py
 
-#   export MAX_SEGMENTS={{max_segments}}
-#main-cloud-mars-basic-test max_segments="3" date="20210901":
 # MARS basic test for cloud processing
-main-cloud-mars-basic-test date="20220909":
+#main-cloud-mars-basic-test date="20220909":
+main-cloud-mars-basic-test max_segments="3" date="20210901":
     #!/usr/bin/env bash
+    export EXCLUDE_LOG_TIME=yes
+    export MAX_SEGMENTS={{max_segments}}
     export DATE={{date}}
     export S3_JSON_BUCKET_PREFIX="s3://pacific-sound-metadata/256khz"
     export OUTPUT_PREFIX="MARS_"

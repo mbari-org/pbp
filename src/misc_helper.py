@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Any, Generator, Tuple
 
 # for simplicity, a common logger
@@ -22,7 +23,13 @@ def set_logger(log_filename: str):
     logger = get_logger()
     logger.setLevel(logging.DEBUG)
 
-    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+    if os.getenv("EXCLUDE_LOG_TIME", "no") == "yes":
+        # test convenience to facilitate local diffing of log files
+        fmt = "%(levelname)s %(message)s"
+    else:
+        fmt = "%(asctime)s %(levelname)s %(message)s"
+
+    formatter = logging.Formatter(fmt)
 
     handler = logging.FileHandler(log_filename, mode="w")
     handler.setFormatter(formatter)
