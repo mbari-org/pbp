@@ -1,7 +1,7 @@
 import collections
 import json
 import pathlib
-from datetime import datetime
+from datetime import datetime, timezone
 
 from typing import Any, List, Optional, OrderedDict, Tuple
 
@@ -192,7 +192,7 @@ class ProcessHelper:
         year, month, day = file_helper.year, file_helper.month, file_helper.day
         assert year is not None and month is not None and day is not None
 
-        dt = datetime(year, month, day, at_hour, at_minute, 0)
+        dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
 
         info(f"Segment at {at_hour:02}h:{at_minute:02}m ...")
         info(f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:")
