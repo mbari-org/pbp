@@ -1,7 +1,7 @@
 # TODO revert to direct use of collections.OrderedDict as a type
 #  when gizo has python >= 3.9 (because: "Type subscription requires python >= 3.9")
 from collections import OrderedDict
-from typing import Any, Optional, OrderedDict as TOrderedDict
+from typing import Any, Dict, Optional, OrderedDict as TOrderedDict
 
 import xarray as xr
 
@@ -32,3 +32,24 @@ class MetadataHelper:
             debug(f"For variable '{var_attribute_name}', added attributes: {keys}")
         else:
             error(f"Unrecognized {var_attribute_name=}")
+
+
+def replace_snippets(
+    attributes: TOrderedDict[str, Any], snippets: Dict[str, str]
+) -> TOrderedDict[str, Any]:
+    """
+    Replaces snippets in any entries with values of type string.
+    :param attributes:
+        Attribute dictionary to replace snippets in.
+    :param snippets:
+        Example: { "{{PyPAM_version}}": "0.2.0" }
+    :return:
+        A new dictionary with the snippets replaced.
+    """
+    result = OrderedDict()
+    for k, v in attributes.items():
+        if isinstance(v, str):
+            for snippet, replacement in snippets.items():
+                v = v.replace(snippet, replacement)
+        result[k] = v
+    return result

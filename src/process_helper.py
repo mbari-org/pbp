@@ -11,7 +11,7 @@ import xarray as xr
 from src import save_dataset_to_csv, save_dataset_to_netcdf
 
 from src.file_helper import FileHelper
-from src.metadata import MetadataHelper
+from src.metadata import MetadataHelper, replace_snippets
 from src.misc_helper import debug, error, gen_hour_minute_times, info, parse_date, warn
 from src.pypam_support import ProcessResult, PypamSupport
 
@@ -163,13 +163,9 @@ class ProcessHelper:
             md_helper.add_variable_attributes(data_vars["sensitivity"], "sensitivity")
         md_helper.add_variable_attributes(data_vars["psd"], "psd")
 
-        md_helper.set_global_attribute(
-            "date_created", datetime.utcnow().strftime("%Y-%m-%d")
-        )
-
         ds_result = xr.Dataset(
             data_vars=data_vars,
-            attrs=md_helper.get_global_attributes(),
+            attrs=self._get_global_attributes(),
         )
 
         basename = f"{self.output_dir}/{self.output_prefix}{year:04}{month:02}{day:02}"
@@ -221,3 +217,13 @@ class ProcessHelper:
             audio_segment *= self.voltage_multiplier
 
         self.pypam_support.add_segment(dt, audio_segment)
+
+    def _get_global_attributes(self):
+        md_helper = self.metadata_helper
+        md_helper.set_global_attribute(
+            "date_created", datetime.utcnow().strftime("%Y-%m-%d")
+        )
+        # TODO get PyPAM version from somewhere
+        snippets = {"{{PyPAM_version}}": "0.2.0"}
+        global_attrs = md_helper.get_global_attributes()
+        return replace_snippets(global_attrs, snippets)

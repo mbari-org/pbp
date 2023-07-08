@@ -104,13 +104,14 @@ main-cloud-basic-test max_segments="1" date="20220902":
 
 # MARS basic test for cloud processing
 #main-cloud-mars-basic-test date="20220909":
-main-cloud-mars-basic-test max_segments="3" date="20210901":
+main-cloud-mars-basic-test max_segments="60" date="20210901":
     #!/usr/bin/env bash
     export EXCLUDE_LOG_TIME=yes
+    export ASSUME_DOWNLOADED_FILES=yes
     export MAX_SEGMENTS={{max_segments}}
     export DATE={{date}}
     export S3_JSON_BUCKET_PREFIX="s3://pacific-sound-metadata/256khz"
-    export OUTPUT_PREFIX="MARS_"
+    export OUTPUT_PREFIX="MARS_pypam_0_2_0_"
     export VOLTAGE_MULTIPLIER=3
     export SENSITIVITY_NETCDF_URI=misc/icListen1689_sensitivity_hms256kHz.nc
     export GLOBAL_ATTRS_URI="metadata/mars/globalAttributes.json"
@@ -169,7 +170,8 @@ virtenv:
 # Install dependencies
 setup:
     pip3 install -r requirements.txt
-    pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam==0.1.10
+    # pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam==0.1.10
+    pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pypam==0.2.0
     mypy --install-types
 
 # Install updated dependencies
