@@ -32,7 +32,7 @@ jobs:
           sudo apt-get install libsndfile1
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-          python -m pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pypam==0.2.0
+          python -m pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam==0.2.0
 
       - name: test
         run:

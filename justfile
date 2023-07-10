@@ -126,7 +126,7 @@ main-cloud-mars-multiple-days year="2022" month="9" *days="5 7 8 9":
     #!/usr/bin/env bash
     source virtenv/bin/activate
     set -ue
-    output_dir="cloud_tmp_mars/generated"
+    output_dir="/PAM_Analysis/pypam-space/test_output_mars/with_pypam_0.2.0"
     mkdir -p "$output_dir"
     echo "Running: year={{year}} month={{month}} days={{days}}"
     for day in {{days}}; do
@@ -170,8 +170,7 @@ virtenv:
 # Install dependencies
 setup:
     pip3 install -r requirements.txt
-    # pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam==0.1.10
-    pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pypam==0.2.0
+    pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam==0.2.0
     mypy --install-types
 
 # Install updated dependencies
