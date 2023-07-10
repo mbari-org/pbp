@@ -1,18 +1,18 @@
 # PyPAM based data processing
 
 This package uses [PyPAM](https://github.com/lifewatch/pypam/)
-to generate _hybrid millidecade spectra_ for Soundscape data.
+to generate _hybrid millidecade spectra_ for soundscape data.
 
-**Status**: Initial functional version, including cloud based processing.
+**Status**: Functional version, including support for S3-based cloud based processing.
 
-- [x] JSON file ingestion according to initial structure
+- [x] Timekeeping based on given JSON indicating start and duration of every available `.wav` file
 - [x] Audio file processing
-    - [x] Timekeeping
     - [x] Frequency and psd array output between 10 and 10^5 Hz
     - [x] Concatenation of processed 1-minute segments for daily product
     - [x] Calibration with given sensitivity file (NetCDF)
-    - [x] NetCDF and CSV data products
-    - [x] Preliminary inclusion of "effort" (number of used seconds per minute)
+- [x] Data products
+    - [x] NetCDF with metadata
+    - [x] CSV (optionally)
 - [x] Cloud processing (download inputs from, and upload generated products to S3)
 
 TODO more details
