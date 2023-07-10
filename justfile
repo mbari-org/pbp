@@ -102,21 +102,22 @@ main-cloud-basic-test max_segments="1" date="20220902":
     export PYTHONPATH=.
     python src/main_cloud.py
 
+# dev/test conveniences:
+#    export EXCLUDE_LOG_TIME=yes
+#    export ASSUME_DOWNLOADED_FILES=yes
+#    export MAX_SEGMENTS=60
+#main-cloud-mars-basic-test max_segments="60" date="20210901":
 # MARS basic test for cloud processing
-#main-cloud-mars-basic-test date="20220909":
-main-cloud-mars-basic-test max_segments="60" date="20210901":
+main-cloud-mars-basic-test date="20210909":
     #!/usr/bin/env bash
-    export EXCLUDE_LOG_TIME=yes
-    export ASSUME_DOWNLOADED_FILES=yes
-    export MAX_SEGMENTS={{max_segments}}
     export DATE={{date}}
     export S3_JSON_BUCKET_PREFIX="s3://pacific-sound-metadata/256khz"
-    export OUTPUT_PREFIX="MARS_pypam_0_2_0_"
+    export OUTPUT_PREFIX="MARS_"
     export VOLTAGE_MULTIPLIER=3
     export SENSITIVITY_NETCDF_URI=misc/icListen1689_sensitivity_hms256kHz.nc
     export GLOBAL_ATTRS_URI="metadata/mars/globalAttributes.json"
     export VARIABLE_ATTRS_URI="metadata/mars/variableAttributes.json"
-    export CLOUD_TMP_DIR="cloud_tmp_mars"
+    export CLOUD_TMP_DIR="with_pypam_0.2.0"
     export REMOVE_DOWNLOADED_FILES=no
     export PYTHONPATH=.
     python src/main_cloud.py
@@ -126,7 +127,7 @@ main-cloud-mars-multiple-days year="2022" month="9" *days="5 7 8 9":
     #!/usr/bin/env bash
     source virtenv/bin/activate
     set -ue
-    output_dir="/PAM_Analysis/pypam-space/test_output_mars/with_pypam_0.2.0"
+    output_dir="with_pypam_0.2.0"
     mkdir -p "$output_dir"
     echo "Running: year={{year}} month={{month}} days={{days}}"
     for day in {{days}}; do
