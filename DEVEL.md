@@ -13,7 +13,7 @@ to see the available recipes (and look at [`justfile`](justfile) for more detail
 ### Setup
 
 ```shell
-python3 -m venv virtenv
+python3.9 -m venv virtenv
 source virtenv/bin/activate
 j setup
 ```

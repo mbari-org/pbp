@@ -166,7 +166,7 @@ all: dev pylint
 
 # Create virtual environment
 virtenv:
-    python3 -m venv virtenv
+    python3.9 -m venv virtenv
 
 # Install dependencies
 setup:
