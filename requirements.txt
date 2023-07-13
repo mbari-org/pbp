@@ -1,6 +1,7 @@
-boto3==1.28.1
+boto3==1.28.3
 dataclasses-json==0.5.9
 python-dateutil==2.8.2
+pyyaml==6.0
 marshmallow==3.19.0
 # lifewatch-pypam  # when published
 soundfile==0.12.1
@@ -15,8 +16,8 @@ h5netcdf==1.2.0
 
 ## dev dependencies
 mypy==1.4.1
-ruff==0.0.277
+ruff==0.0.278
 ufmt==2.1.0
 pylint==2.17.4
 pytest==7.4.0
-syrupy==4.0.5
+syrupy==4.0.6

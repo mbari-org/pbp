@@ -1,5 +1,3 @@
-import collections
-import json
 import pathlib
 from datetime import datetime, timezone
 
@@ -11,7 +9,7 @@ import xarray as xr
 from src import save_dataset_to_csv, save_dataset_to_netcdf
 
 from src.file_helper import FileHelper
-from src.metadata import MetadataHelper, replace_snippets
+from src.metadata import MetadataHelper, parse_attributes, replace_snippets
 from src.misc_helper import debug, error, gen_hour_minute_times, info, parse_date, warn
 from src.pypam_support import ProcessResult, PypamSupport
 
@@ -93,7 +91,7 @@ class ProcessHelper:
             filename = self.file_helper.get_local_filename(attrs_uri)
             if filename is not None:
                 with open(filename, "r", encoding="UTF-8") as f:
-                    return json.load(f, object_pairs_hook=collections.OrderedDict)
+                    return parse_attributes(f.read(), pathlib.Path(filename).suffix)
             else:
                 error(f"Unable to resolve '{attrs_uri=}'. Ignoring it.")
         else:

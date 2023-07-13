@@ -1,27 +1,44 @@
-# TODO revert to direct use of collections.OrderedDict as a type
-#  when gizo has python >= 3.9 (because: "Type subscription requires python >= 3.9")
+import json
 from collections import OrderedDict
-from typing import Any, Dict, Optional, OrderedDict as TOrderedDict
+from typing import Any, Dict, Optional
 
 import xarray as xr
+import yaml
 
 from src.misc_helper import debug, error
+
+
+def parse_attributes(contents: str, suffix: str) -> OrderedDict[str, Any]:
+    """
+    Parses given contents into a dictionary of attributes.
+    :param contents:
+        String with valid JSON or YAML contents.
+    :param suffix:
+        Used to determine the content format.
+    :return:
+        The parsed attributes.
+    """
+    if suffix == ".json":
+        return json.loads(contents, object_pairs_hook=OrderedDict)
+    if suffix in (".yaml", ".yml"):
+        return yaml.load(contents, Loader=yaml.SafeLoader)
+    raise ValueError(f"Unrecognized contents for format: {suffix}")
 
 
 class MetadataHelper:
     def __init__(
         self,
-        global_attributes: Optional[TOrderedDict[str, Any]] = None,
-        variable_attributes: Optional[TOrderedDict[str, Any]] = None,
+        global_attributes: Optional[OrderedDict[str, Any]] = None,
+        variable_attributes: Optional[OrderedDict[str, Any]] = None,
     ):
-        self._global_attrs: TOrderedDict[str, Any] = global_attributes or OrderedDict()
-        self._var_attrs: TOrderedDict[str, Any] = variable_attributes or OrderedDict()
+        self._global_attrs: OrderedDict[str, Any] = global_attributes or OrderedDict()
+        self._var_attrs: OrderedDict[str, Any] = variable_attributes or OrderedDict()
 
     def set_some_global_attributes(self, attrs: Dict[str, Any]):
         for k, v in attrs.items():
             self._global_attrs[k] = v
 
-    def get_global_attributes(self) -> TOrderedDict[str, Any]:
+    def get_global_attributes(self) -> OrderedDict[str, Any]:
         return self._global_attrs
 
     def add_variable_attributes(self, da: xr.DataArray, var_attribute_name: str):
@@ -36,8 +53,8 @@ class MetadataHelper:
 
 
 def replace_snippets(
-    attributes: TOrderedDict[str, Any], snippets: Dict[str, str]
-) -> TOrderedDict[str, Any]:
+    attributes: OrderedDict[str, Any], snippets: Dict[str, str]
+) -> OrderedDict[str, Any]:
     """
     Replaces snippets in any entries with values of type string.
     :param attributes:
