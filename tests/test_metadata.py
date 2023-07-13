@@ -36,7 +36,7 @@ def test_parse_attributes_yaml():
 
 # TODO  NOTE: the following test is useful, but will be unnecessary once
 #   we keep only the YAML version of the metadata files.
-def test_compare_global_attrs_parsed_from_json_and_yaml():
+def test_compare_attrs_parsed_from_json_and_yaml():
     for x in ["mars", "chumash"]:
         with open(f"metadata/{x}/globalAttributes.yaml", "r", encoding="UTF-8") as f:
             from_yaml = parse_attributes(f.read(), ".yaml")
