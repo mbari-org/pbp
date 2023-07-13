@@ -165,7 +165,7 @@ class ProcessHelper:
 
         ds_result = xr.Dataset(
             data_vars=data_vars,
-            attrs=self._get_global_attributes(),
+            attrs=self._get_global_attributes(year, month, day),
         )
 
         basename = f"{self.output_dir}/{self.output_prefix}{year:04}{month:02}{day:02}"
@@ -218,10 +218,15 @@ class ProcessHelper:
 
         self.pypam_support.add_segment(dt, audio_segment)
 
-    def _get_global_attributes(self):
+    def _get_global_attributes(self, year: int, month: int, day: int):
+        coverage_date = f"{year:04}-{month:02}-{day:02}"
         md_helper = self.metadata_helper
-        md_helper.set_global_attribute(
-            "date_created", datetime.utcnow().strftime("%Y-%m-%d")
+        md_helper.set_some_global_attributes(
+            {
+                "time_coverage_start": f"{coverage_date} 00:00:00Z",
+                "time_coverage_end": f"{coverage_date} 23:59:00Z",
+                "date_created": datetime.utcnow().strftime("%Y-%m-%d"),
+            }
         )
         # TODO get PyPAM version from somewhere
         snippets = {"{{PyPAM_version}}": "0.2.0"}

@@ -17,8 +17,9 @@ class MetadataHelper:
         self._global_attrs: TOrderedDict[str, Any] = global_attributes or OrderedDict()
         self._var_attrs: TOrderedDict[str, Any] = variable_attributes or OrderedDict()
 
-    def set_global_attribute(self, attribute_name: str, value: Any):
-        self._global_attrs[attribute_name] = value
+    def set_some_global_attributes(self, attrs: Dict[str, Any]):
+        for k, v in attrs.items():
+            self._global_attrs[k] = v
 
     def get_global_attributes(self) -> TOrderedDict[str, Any]:
         return self._global_attrs

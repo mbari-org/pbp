@@ -8,7 +8,7 @@
   "effort": {
     "long_name": "duration of input data available for each 1-minute bin",
     "coverage_content_type": "qualityInformation",
-    "units": "sec"
+    "units": "seconds"
   },
   "frequency": {
     "standard_name": "sound_frequency",
@@ -17,15 +17,15 @@
     "coverage_content_type": "coordinate"
   },
   "sensitivity": {
-    "long_name": "hydrophone_sensitivity",
-    "units": "dB re 1 volt / micropascal",
+    "long_name": "Hydrophone sensitivity (dB re 1 volt / micropascal)",
+    "units": "dB",
     "coverage_content_type": "physicalMeasurement",
     "comment": "Sensitivity values measured by the manufacturer were linearly interpolated to the center frequencies of HMD bands.  Values for bands below the lowest frequency measured (250 Hz) were set equal to the value at 250 Hz"
   },
   "psd": {
     "standard_name": "sound_intensity_in_water",
-    "long_name": "single-sided mean-square sound pressure spectral density",
-    "units": "dB re 1 micropascal^2/Hz",
+    "long_name": "Single-sided mean-square sound pressure spectral density (dB re 1 micropascal^2/Hz)",
+    "units": "dB",
     "coverage_content_type": "physicalMeasurement",
     "comment": "Computation of single-sided mean-square sound pressure spectral density followed ISO 18405 3.1.3.13."
   }
