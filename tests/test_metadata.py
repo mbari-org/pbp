@@ -34,23 +34,6 @@ def test_parse_attributes_yaml():
     )
 
 
-# TODO  NOTE: the following test is useful, but will be unnecessary once
-#   we keep only the YAML version of the metadata files.
-def test_compare_attrs_parsed_from_json_and_yaml():
-    for x in ["mars", "chumash"]:
-        with open(f"metadata/{x}/globalAttributes.yaml", "r", encoding="UTF-8") as f:
-            from_yaml = parse_attributes(f.read(), ".yaml")
-        with open(f"metadata/{x}/globalAttributes.json", "r", encoding="UTF-8") as f:
-            from_json = parse_attributes(f.read(), ".json")
-        assert from_yaml == from_json
-
-        with open(f"metadata/{x}/variableAttributes.yaml", "r", encoding="UTF-8") as f:
-            from_yaml = parse_attributes(f.read(), ".yaml")
-        with open(f"metadata/{x}/variableAttributes.json", "r", encoding="UTF-8") as f:
-            from_json = parse_attributes(f.read(), ".json")
-        assert from_yaml == from_json
-
-
 def test_replace_snippets():
     attributes = OrderedDict(
         {

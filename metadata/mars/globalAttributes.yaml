@@ -1,18 +1,18 @@
 ---
 title: >-
   Hybrid Millidecade Band Sound Pressure Levels Computed at 1 Minute Resolution
-  from Oceanic Passive Acoustic Monitoring Recordings at the Monterey Accelerated
-  Research System (MARS) Cabled Observatory
+  from Oceanic Passive Acoustic Monitoring Recordings
+  at the Monterey Accelerated Research System (MARS) Cabled Observatory
 summary: >-
   To understand natural and anthropogenic sound in the ocean, and to compare
-  underwater soundscapes globally, standard methods of analysis must be applied to
-  passive acoustic monitoring (PAM) data. Methods that balance constrained volume
-  and adequate resolution of acoustic spectra have recently been published (Martin
-  et al., 2021a,b). A community effort supported by NOAA, BOEM, U.S. Navy, and ONR
-  was initiated to apply these methods to PAM datasets from around the world. This
-  record represents the hybrid millidecade (HMD) spectra of sound levels derived from
-  calibrated PAM data. Daily HMD at 1 minute resolution were created using PyPAM software
-  v{{PyPAM_version}}.
+  underwater soundscapes globally, standard methods of analysis must be applied
+  to passive acoustic monitoring (PAM) data. Methods that balance constrained
+  volume and adequate resolution of acoustic spectra have recently been published
+  (Martin et al., 2021a,b). A community effort supported by NOAA, BOEM, U.S. Navy,
+  and ONR was initiated to apply these methods to PAM datasets from around the world.
+  This record represents the hybrid millidecade band (HMB) spectra of sound levels
+  derived from calibrated PAM data.
+  Daily HMB spectra at 1 minute resolution were created using PyPAM software v{{PyPAM_version}}.
 Conventions: >-
   COARDS, CF-1.6, ACDD-1.3
 keywords: >-
@@ -21,31 +21,35 @@ keywords: >-
 keywords_vocabulary: >-
   GCMD Science Keywords
 history: >-
-  Original hybrid millidecade spectra were produced by the Monterey Bay Aquarium
-  Research Institute
+  Original hybrid millidecade spectra were produced by the Monterey Bay Aquarium Research Institute
 source: >-
-  Data analysis was performed using Python Passive Acoustic Monitoring (PyPAM)
-  software, version {{PyPAM_version}}, to produce hybrid millidecade spectra of sound
-  levels from oceanic audio recordings.  Processing followed the methods defined in
-  Martin et al. (2021a,b), and results were validated against results processed using
-  the MATLAB code provided as supplemental material in Martin et al. (2021b).  Power
-  spectral density (PSD) levels were computed from 1-minute segments of audio data.
-  With the Discrete Fourier Transform length equal to the sample rate, a Hann window
-  of equal length applied to the data, and 50% overlap, PSD estimates of mean-square
-  pressure amplitude (µPa^2) were computed with a frequency resolution of 1 Hz and
-  a temporal resolution of 1 second. The 120 PSD estimates from each 1-minute segment
-  were averaged, and the average spectrum for each minute was further processed to
-  a hybrid millidecade (HMD) spectrum.  Frequency-dependent calibration data provided
-  by the hydrophone manufacturer were applied to compute calibrated spectrum levels
-  (dB re 1 µPa^2/Hz).
+  Data analysis was performed using Python Passive Acoustic Monitoring (PyPAM) software,
+  version {{PyPAM_version}},
+  to produce hybrid millidecade spectra of sound levels from oceanic audio recordings.
+  Processing followed the methods defined in Martin et al. (2021a,b), and results were validated
+  by comparison with results processed using the MATLAB code provided as supplemental material
+  in Martin et al. (2021b).
+  Power spectral density (PSD) levels were computed from 1-minute segments of audio data.
+  The equivalent ADC voltage range of this digital hydrophone is 6 Vppk, and because digital
+  counts are mapped to [-1 1] by default in the reading software rather than the correct [-3 3],
+  wav data as read were rescaled by multiplying by a factor of 3.
+  Frequency-dependent sensitivity data were provided by Ocean Sonics as (dB re V/µPa)
+  to allow for comparison with traditional analog hydrophones, thus PSD was computed from voltage data.
+  By applying fast Fourier transform (FFT) with length equal to the sample rate,
+  using Hann window and 50% overlap, PSD estimates (V^2/Hz) were computed with a frequency
+  resolution of 1 Hz and a temporal resolution of 1 second.
+  The 119 PSD estimates from each 1-minute segment were averaged, and the average spectrum
+  for each minute was further processed to an HMB spectrum following Martin et al. (2021b).
+  Each 1-minute spectrum (dB re V^2/Hz) was calibrated using the frequency-dependent hydrophone
+  sensitivity (dB re V/µPa) data provided by the hydrophone manufacturer to obtain calibrated
+  PSD (dB re 1 µPa^2/Hz).
 acknowledgement: >-
-  The original audio recordings were supported by the David and Lucile
-  Packard Foundation through the Monterey Bay Aquarium Research Institute. The NSF
-  funded installation and maintenance of the MARS cabled observatory through awards
-  0739828 and 1114794. These products support the Passive Acoustic Monitoring National
-  Cyberinfrastructure (SoundCoop) project funded by the NOAA Integrated Ocean Observatory
-  System, Bureau of Ocean Energy Management, U.S. Navy Living Marine Resources, and
-  Office of Naval Research.
+  The original audio recordings were supported by the David and Lucile Packard Foundation
+  through the Monterey Bay Aquarium Research Institute. The NSF funded installation and
+  maintenance of the MARS cabled observatory through awards 0739828 and 1114794.
+  These products support the Passive Acoustic Monitoring National Cyberinfrastructure
+  (SoundCoop) project funded by the NOAA Integrated Ocean Observatory System, Bureau
+  of Ocean Energy Management, U.S. Navy Living Marine Resources, and Office of Naval Research.
 license: >-
   As for the original recordings available online (https://registry.opendata.aws/pacific-sound/),
   this derived data product carries the CC-BY 4.0 license.
@@ -61,11 +65,11 @@ publisher_email: pad.info@noaa.gov
 publisher_url: https://www.ncei.noaa.gov/products/passive-acoustic-data
 geospatial_bounds: POINT (36.7128 -122.186)
 comment: >-
-  The hydrophone is housed at the top of a tripod, 1 m above the seafloor.  Known
-  anthropogenic noise sources include a power supply on the main observatory node
-  (continuous at 50 and 100 kHz), a scientific echosounder on the MARS observatory
-  that has been operational during portions of the time-series (energy centered at
-  38 kHz), and vehicles that operate near MARS for maintenance and research purposes
+  The hydrophone is housed at the top of a tripod, 1 m above the seafloor.
+  Known anthropogenic noise sources include a power supply on the main observatory
+  node (continuous at 50 and 100 kHz), a scientific echosounder on the MARS observatory
+  that has been operational during portions of the time-series (energy centered at 38 kHz),
+  and vehicles that operate near MARS for maintenance and research purposes
   (ship, remotely operated vehicle, and autonomous surface and profiling vehicles
   that use acoustic sensors and communication).
 time_coverage_start: (THIS IS BY THE SOFTWARE)
@@ -76,16 +80,16 @@ platform: >-
   Monterey Accelerated Research System (MARS) cabled undersea observatory,
   www.mbari.org/technology/monterey-accelerated-research-system-mars
 instrument: >-
-  Ocean Sonics icListen HF broadband digital hydrophone (model RB9-900m,
-  SN 1689) with Reson element (model TC4059-1, SN 3815106).  The icListen is a digital
+  Ocean Sonics icListen HF broadband digital hydrophone (model RB9-900m, SN 1689)
+  with Reson element (model TC4059-1, SN 3815106).  The icListen is a digital
   hydrophone in which there is no separation between the sensor element, filters,
-  amplifier, and analog-to-digital converter. The internal amplifier gain is included
-  in the reported sensitivity.
+  amplifier, and analog-to-digital converter.
+  The internal amplifier gain is included in the reported sensitivity.
 cdm_data_type: TimeSeries
 references: >-
   Original audio recordings are available open-access: https://registry.opendata.aws/pacific-sound/.
-  Computation of single-sided mean-square sound pressure spectral density with 1 Hz
-  resolution followed ISO 18405 3.1.3.13 (International Standard ISO 18405:2017(E),
-  Underwater Acoustics – Terminology. Geneva: ISO).  Hybrid millidecade band processing
-  followed Martin et al.
+  Computation of single-sided mean-square sound pressure spectral density with 1 Hz resolution
+  followed ISO 18405 3.1.3.13 (International Standard ISO 18405:2017(E),
+  Underwater Acoustics – Terminology. Geneva: ISO).
+  Hybrid millidecade band processing followed Martin et al.
   (2021a,b:  https://doi.org/10.1121/10.0003324; https://doi.org/10.1121/10.0005818)
