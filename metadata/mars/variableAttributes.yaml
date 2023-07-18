@@ -14,7 +14,7 @@ frequency:
   units: Hz
   coverage_content_type: coordinate
 sensitivity:
-  long_name: Hydrophone sensitivity (dB re 1 volt / micropascal)
+  long_name: Hydrophone sensitivity (dB re 1 volt / µPa)
   units: dB
   coverage_content_type: physicalMeasurement
   comment: >-
@@ -24,7 +24,7 @@ sensitivity:
     were set equal to the value at 250 Hz
 psd:
   standard_name: sound_intensity_in_water
-  long_name: Single-sided mean-square sound pressure spectral density (dB re 1 micropascal^2/Hz)
+  long_name: Single-sided mean-square sound pressure spectral density (dB re 1 µPa^2/Hz)
   units: dB
   coverage_content_type: physicalMeasurement
   comment: >-

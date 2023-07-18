@@ -25,11 +25,15 @@ history: >-
 source: >-
   Data analysis was performed using Python Passive Acoustic Monitoring (PyPAM) software,
   version {{PyPAM_version}},
-  to produce hybrid millidecade spectra of sound levels from oceanic audio recordings.
+  to produce HMB spectra of sound levels from oceanic audio recordings.
+  to produce HMB spectra of sound levels from oceanic audio recordings.
   Processing followed the methods defined in Martin et al. (2021a,b), and results were validated
   by comparison with results processed using the MATLAB code provided as supplemental material
   in Martin et al. (2021b).
   Power spectral density (PSD) levels were computed from 1-minute segments of audio data.
+  The icListen is a digital hydrophone in which there is no separation between the sensor element,
+  filters, amplifier, and analog-to-digital converter.
+  The internal amplifier gain is included in the reported sensitivity.
   The equivalent ADC voltage range of this digital hydrophone is 6 Vppk, and because digital
   counts are mapped to [-1 1] by default in the reading software rather than the correct [-3 3],
   wav data as read were rescaled by multiplying by a factor of 3.
@@ -81,10 +85,7 @@ platform: >-
   www.mbari.org/technology/monterey-accelerated-research-system-mars
 instrument: >-
   Ocean Sonics icListen HF broadband digital hydrophone (model RB9-900m, SN 1689)
-  with Reson element (model TC4059-1, SN 3815106).  The icListen is a digital
-  hydrophone in which there is no separation between the sensor element, filters,
-  amplifier, and analog-to-digital converter.
-  The internal amplifier gain is included in the reported sensitivity.
+  with Reson element (model TC4059-1, SN 3815106)
 cdm_data_type: TimeSeries
 references: >-
   Original audio recordings are available open-access: https://registry.opendata.aws/pacific-sound/.
