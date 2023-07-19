@@ -2,25 +2,31 @@ import os
 
 import xarray as xr
 
-from src.misc_helper import info
+from src.misc_helper import error, info
 
 
 def save_dataset_to_netcdf(ds: xr.Dataset, filename: str):
     info(f"  - saving dataset to: {filename}")
-    ds.to_netcdf(
-        filename,
-        engine="h5netcdf",
-        encoding={
-            "effort": {"_FillValue": None},
-            "frequency": {"_FillValue": None},
-            "sensitivity": {"_FillValue": None},
-        },
-    )
+    try:
+        ds.to_netcdf(
+            filename,
+            engine="h5netcdf",
+            encoding={
+                "effort": {"_FillValue": None},
+                "frequency": {"_FillValue": None},
+                "sensitivity": {"_FillValue": None},
+            },
+        )
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        error(f"Unable to save {filename}: {e}")
 
 
 def save_dataset_to_csv(ds: xr.Dataset, filename: str):
     info(f"  - saving dataset to: {filename}")
-    ds.to_pandas().to_csv(filename, float_format="%.1f")
+    try:
+        ds.to_pandas().to_csv(filename, float_format="%.1f")
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        error(f"Unable to save {filename}: {e}")
 
 
 def get_cpus_to_use(num_cpus: int) -> int:

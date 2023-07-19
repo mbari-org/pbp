@@ -117,6 +117,7 @@ main-cloud-mars-basic-test date="20210901":
     export SENSITIVITY_NETCDF_URI=misc/icListen1689_sensitivity_hms256kHz.nc
     export GLOBAL_ATTRS_URI="metadata/mars/globalAttributes.yaml"
     export VARIABLE_ATTRS_URI="metadata/mars/variableAttributes.yaml"
+    export GEN_PLOT=y
     export CLOUD_TMP_DIR="with_pypam_0.2.0"
     export REMOVE_DOWNLOADED_FILES=no
     export PYTHONPATH=.
@@ -154,6 +155,12 @@ main-cloud-chumash-basic-test max_segments="60" date="20230101":
 # Run main
 main *args="":
     PYTHONPATH=. python src/main.py {{args}}
+
+##############
+# misc/utils:
+
+plot nc_file:
+    python src/plotting.py {{nc_file}}
 
 ##############
 # development:

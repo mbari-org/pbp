@@ -14,6 +14,8 @@ h5netcdf==1.2.0
 
 # netCDF4==1.6.3  # in case of loading netCDF4 files
 
+pvlib==0.10.1
+
 ## dev dependencies
 mypy==1.4.1
 ruff==0.0.278

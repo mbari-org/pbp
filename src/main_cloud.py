@@ -26,6 +26,8 @@
 #  SENSITIVITY_FLAT_VALUE: (Optional)
 #     Flat sensitivity value to be used for calibration
 #     if SENSITIVITY_NETCDF_URI is not given.
+#  GEN_PLOT: (Optional)
+#     Set this to 'y' to also generate plot file.
 #
 # *Note*:
 #   TODO retrieve sensitivity information using PyHydrophone when none
@@ -89,6 +91,8 @@ def main():
         else None
     )
 
+    gen_plot = "y" == os.getenv("GEN_PLOT")
+
     # Convenience for testing (0 means no restriction)
     max_segments = int(os.getenv("MAX_SEGMENTS", "0"))
 
@@ -140,13 +144,14 @@ def main():
         output_dir=generated_dir,
         output_prefix=output_prefix,
         gen_csv=False,
+        gen_plot=gen_plot,
         global_attrs_uri=global_attrs_uri,
         variable_attrs_uri=variable_attrs_uri,
         voltage_multiplier=voltage_multiplier,
         sensitivity_uri=sensitivity_uri,
         sensitivity_flat_value=sensitivity_flat_value,
         max_segments=max_segments,
-        subset_to=(10, 100_000),
+        subset_to=(10, 100_000),  # TODO allow indicating this.
     )
 
     nc_filename = processor_helper.process_day(date)
