@@ -156,6 +156,12 @@ main *args="":
     PYTHONPATH=. python src/main.py {{args}}
 
 ##############
+# misc/utils:
+
+plot nc_file:
+    python src/plot_helper.py {{nc_file}}
+
+##############
 # development:
 
 # A convenient recipe for development
