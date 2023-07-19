@@ -102,15 +102,16 @@ class ProcessHelper:
             info(f"No '{what}' attributes URI given.")
         return None
 
-    def process_day(self, date: str) -> Optional[str]:
+    def process_day(self, date: str) -> Optional[List[str]]:
         """
         Generates NetCDF file with the result of processing all segments of the given day.
 
         :param date:
             Date to process in YYYYMMDD format.
         :return:
-            The path of the generated NetCDF file, or None if no segments were processed
-            for the day.
+            List of paths to generated files (NetCDF in particular, but also others
+            like plot and csv, depending on given construction parameters);
+            or None if no segments at all were processed for the day.
         """
         year, month, day = parse_date(date)
         if not self.file_helper.select_day(year, month, day):
@@ -173,18 +174,23 @@ class ProcessHelper:
         basename = f"{self.output_dir}/{self.output_prefix}{year:04}{month:02}{day:02}"
         nc_filename = f"{basename}.nc"
         save_dataset_to_netcdf(ds_result, nc_filename)
+        generated_filenames = [nc_filename]
         if self.gen_csv:
-            save_dataset_to_csv(ds_result, f"{basename}.csv")
+            csv_filename = f"{basename}.csv"
+            save_dataset_to_csv(ds_result, csv_filename)
+            generated_filenames.append(csv_filename)
         if self.gen_plot:
             # do not fail overall processing if we can't generate a plot
             try:
-                plot_dataset_summary(ds_result, f"{basename}.jpg")
+                jpg_filename = f"{basename}.jpg"
+                plot_dataset_summary(ds_result, jpg_filename)
+                generated_filenames.append(jpg_filename)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 error(f"Unable to generate plot: {e}")
 
         self.file_helper.day_completed()
 
-        return nc_filename
+        return generated_filenames
 
     def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
         info(f"Processing {len(hour_and_minutes)} segments ...")

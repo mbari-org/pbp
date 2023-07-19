@@ -154,23 +154,20 @@ def main():
         subset_to=(10, 100_000),  # TODO allow indicating this.
     )
 
-    nc_filename = processor_helper.process_day(date)
+    generated_filenames = processor_helper.process_day(date)
 
-    if nc_filename is None:
+    if generated_filenames is None:
         warn(f"No NetDF file was generated.  ({date=})")
         return
 
-    if output_bucket is not None:
+    info(f"Generated files: {generated_filenames}")
 
-        def upload(filename):
+    if output_bucket is not None:
+        for filename in generated_filenames:
             info(f"Uploading {filename} to {output_bucket}")
             filename_out = pathlib.Path(filename).name
             ok = s3_client.upload_file(filename, output_bucket, filename_out)
             info(f"Upload result: {ok}")
-
-        upload(log_filename)
-        upload(nc_filename)
-
     else:
         info("No uploads attempted as output bucket was not given.")
 
