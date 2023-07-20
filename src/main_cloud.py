@@ -163,11 +163,18 @@ def main():
     info(f"Generated files: {generated_filenames}")
 
     if output_bucket is not None:
-        for filename in generated_filenames:
+
+        def upload(filename):
             info(f"Uploading {filename} to {output_bucket}")
             filename_out = pathlib.Path(filename).name
             ok = s3_client.upload_file(filename, output_bucket, filename_out)
             info(f"Upload result: {ok}")
+
+        for generated_filename in generated_filenames:
+            upload(generated_filename)
+
+        upload(log_filename)
+
     else:
         info("No uploads attempted as output bucket was not given.")
 
