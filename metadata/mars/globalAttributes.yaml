@@ -26,7 +26,6 @@ source: >-
   Data analysis was performed using Python Passive Acoustic Monitoring (PyPAM) software,
   version {{PyPAM_version}},
   to produce HMB spectra of sound levels from oceanic audio recordings.
-  to produce HMB spectra of sound levels from oceanic audio recordings.
   Processing followed the methods defined in Martin et al. (2021a,b), and results were validated
   by comparison with results processed using the MATLAB code provided as supplemental material
   in Martin et al. (2021b).
