@@ -148,6 +148,16 @@ class FileHelper:
         :param download_dir:
             Save downloaded S3 files here if given, otherwise, save in current directory.
         """
+        info(
+            "Creating FileHelper:"
+            f"\n    json_base_dir:         {json_base_dir}"
+            f"\n    audio_base_dir:        {audio_base_dir}"
+            f"\n    audio_path_map_prefix: '{audio_path_map_prefix}'"
+            f"\n    audio_path_prefix:     '{audio_path_prefix}'"
+            f"\n    segment_size_in_mins:  {segment_size_in_mins}"
+            f"\n    s3_client:             {s3_client}"
+            f"\n    download_dir:          {download_dir}"
+        )
         self.json_base_dir = json_base_dir
         self.audio_base_dir = audio_base_dir
         self.audio_path_map_prefix = audio_path_map_prefix

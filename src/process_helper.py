@@ -49,6 +49,20 @@ class ProcessHelper:
             lower inclusive, upper exclusive.
         """
 
+        info(
+            "Creating ProcessHelper:"
+            f"\n    output_dir:             {output_dir}"
+            f"\n    output_prefix:          {output_prefix}"
+            f"\n    gen_csv:                {gen_csv}"
+            f"\n    gen_plot:               {gen_plot}"
+            f"\n    global_attrs_uri:       {global_attrs_uri}"
+            f"\n    variable_attrs_uri:     {variable_attrs_uri}"
+            f"\n    voltage_multiplier:     {voltage_multiplier}"
+            f"\n    sensitivity_uri:        {sensitivity_uri}"
+            f"\n    sensitivity_flat_value: {sensitivity_flat_value}"
+            f"\n    max_segments:           {max_segments}"
+            f"\n    subset_to:              {subset_to}"
+        )
         self.file_helper = file_helper
         self.output_dir = output_dir
         self.output_prefix = output_prefix
