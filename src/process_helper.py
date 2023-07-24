@@ -1,5 +1,6 @@
 import pathlib
 from datetime import datetime, timezone
+import traceback
 
 from typing import Any, List, Optional, OrderedDict, Tuple
 
@@ -201,6 +202,7 @@ class ProcessHelper:
                 generated_filenames.append(jpg_filename)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 error(f"Unable to generate plot: {e}")
+                traceback.print_exc()
 
         self.file_helper.day_completed()
 
