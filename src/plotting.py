@@ -124,6 +124,7 @@ def plot_dataset_summary(
 
     plt.savefig(jpeg_filename, dpi=dpi)
     # plt.show()
+    plt.close(fig)
 
 
 def plot_summary_for_file(nc_filename: str, dpi: int = 200) -> str:
@@ -145,8 +146,20 @@ def plot_summary_for_file(nc_filename: str, dpi: int = 200) -> str:
 if __name__ == "__main__":
     import sys
 
-    nc_f = sys.argv[1]
-    dpi_ = int(sys.argv[2]) if len(sys.argv) > 2 else 200
-    print(f"plotting {nc_f} at {dpi_} dpi")
-    jpeg_f = plot_summary_for_file(nc_f, dpi_)
-    print(f"   done: {jpeg_f}")
+    dpi_ = 200
+    nc_files = []
+
+    if sys.argv[1] == "--dpi":
+        dpi_ = int(sys.argv[2])
+        nc_files = sys.argv[3:]
+    else:
+        nc_files = sys.argv[1:]
+
+    if len(nc_files) == 0:
+        print(f"usage: {sys.argv[0]} [--dpi <dpi>] <netcdf>... ")
+        sys.exit(1)
+
+    for nc_f in nc_files:
+        print(f"plotting {nc_f} at {dpi_} dpi")
+        jpeg_f = plot_summary_for_file(nc_f, dpi_)
+        print(f"   done: {jpeg_f}")

@@ -159,8 +159,9 @@ main *args="":
 ##############
 # misc/utils:
 
-plot nc_file:
-    python src/plotting.py {{nc_file}}
+# Generate summary plots
+plot *nc_files:
+    @python src/plotting.py {{nc_files}}
 
 ##############
 # development:
