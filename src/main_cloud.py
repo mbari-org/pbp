@@ -173,6 +173,7 @@ def main():
         for generated_filename in generated_filenames:
             upload(generated_filename)
 
+        # result of uploading the log itself won't of course show up there
         upload(log_filename)
 
     else:

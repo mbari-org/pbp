@@ -41,7 +41,9 @@ def plot_dataset_summary(
 
     # plotting variables
 
-    psdlabl = r'Spectrum level (dB re 1 $\mu$Pa$\mathregular{^{2}}$ Hz$\mathregular{^{-1}}$)'
+    psdlabl = (
+        r"Spectrum level (dB re 1 $\mu$Pa$\mathregular{^{2}}$ Hz$\mathregular{^{-1}}$)"
+    )
     freqlabl = "Frequency (Hz)"
     titl = "MBARI MARS Cabled Observatory   Monterey Bay, California, USA   36.713 \xb0N, 122.186 \xb0W"
 
