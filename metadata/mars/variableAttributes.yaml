@@ -19,7 +19,7 @@ sensitivity:
   coverage_content_type: physicalMeasurement
   comment: >-
     Sensitivity values measured by the manufacturer were linearly interpolated
-    to the center frequencies of HMB bands.
+    to the center frequencies of hybrid millidecade bands.
     Values for bands below the lowest frequency measured (250 Hz)
     were set equal to the value at 250 Hz
 psd:
