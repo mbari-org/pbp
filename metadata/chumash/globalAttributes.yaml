@@ -34,5 +34,9 @@ time_coverage_resolution: P60S
 platform: CH01 mooring
 instrument: SoundTrap ST600 HF, SN 6998
 cdm_data_type: TimeSeries
-references: Original audio recordings are available open-access: https://registry.opendata.aws/pacific-sound/. Computation of single-sided mean-square sound pressure spectral density with 1 Hz resolution followed ISO 18405 3.1.3.13 (International Standard ISO 18405:2017(E), Underwater Acoustics – Terminology. Geneva: ISO).  Hybrid millidecade band processing followed Martin et al. (2021a,b:  https://doi.org/10.1121/10.0003324; https://doi.org/10.1121/10.0005818)
-
+references: >-
+  Original audio recordings are available open-access: https://registry.opendata.aws/pacific-sound/.
+  Computation of single-sided mean-square sound pressure spectral density with 1 Hz resolution
+  followed ISO 18405 3.1.3.13 (International Standard ISO 18405:2017(E), Underwater Acoustics – Terminology.  Geneva: ISO).
+  Hybrid millidecade band processing followed Martin et al. (2021a,b:  https://doi.org/10.1121/10.0003324;
+  https://doi.org/10.1121/10.0005818)
