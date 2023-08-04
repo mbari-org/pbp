@@ -56,7 +56,7 @@ license: >-
   As for the original recordings available online (https://registry.opendata.aws/pacific-sound/),
   this derived data product carries the CC-BY 4.0 license.
 standard_name_vocabulary: CF Standard Name Table v80
-date_created: (THIS IS SET BY THE SOFTWARE)
+date_created: AUTOPOPULATE
 creator_name: John Ryan
 creator_email: ryjo@mbari.org
 creator_url: www.mbari.org/person/john-ryan/
@@ -74,8 +74,8 @@ comment: >-
   and vehicles that operate near MARS for maintenance and research purposes
   (ship, remotely operated vehicle, and autonomous surface and profiling vehicles
   that use acoustic sensors and communication).
-time_coverage_start: (THIS IS SET BY THE SOFTWARE)
-time_coverage_end: (THIS IS SET BY THE SOFTWARE)
+time_coverage_start: AUTOPOPULATE
+time_coverage_end: AUTOPOPULATE
 time_coverage_duration: P1D
 time_coverage_resolution: P60S
 platform: >-
