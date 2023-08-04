@@ -92,7 +92,10 @@ def _download(
 ) -> Optional[str]:
     """
     Downloads the given S3 URI to the given download directory.
-    :param parsed_uri: the URI to download
+
+    NOTE: For development/testing convenience, the `ASSUME_DOWNLOADED_FILES` environment variable
+    can be set to `yes` to skip downloading files that already exist in the download directory.
+
     :return: Downloaded filename or None if error
     """
     bucket, key, simple = get_bucket_key_simple(parsed_uri)
