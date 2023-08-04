@@ -9,11 +9,11 @@ keywords: >-
   marine habitat, sound_intensity_level_in_water, soundscapes
 keywords_vocabulary: GCMD Science Keywords
 history: >- 
-Original hybrid millidecade spectra were produced by the Monterey Bay Aquarium Research Institute
+  Original hybrid millidecade spectra were produced by the Monterey Bay Aquarium Research Institute
 source: >-
   Data analysis was performed using Python Passive Acoustic Monitoring (PyPAM) software, version 0.2.0, to produce hybrid millidecade band (HMB) spectra of sound levels from oceanic audio recordings.  Processing followed the methods defined in Martin et al. (2021a,b), and results were validated by comparison with results produced using the MATLAB code provided as supplemental material in Martin et al. (2021b).  Power spectral density (PSD) levels were computed from 1-minute segments of audio data.  By applying fast Fourier transform (FFT) with length equal to the sample rate, using Hann window and 50% overlap, PSD estimates (µPa^2/Hz) were computed with a frequency resolution of 1 Hz and a temporal resolution of 1 second. The 119 PSD estimates from each 1-minute segment were averaged, and the average spectrum for each minute was further processed to an HMB spectrum following Martin et al. (2021b). 
 acknowledgement: >- 
-Hydrophone deployments at Site CH01 have been jointly supported by NOAA, MBARI, and Monterey Bay Aquarium.  These products support the Passive Acoustic Monitoring National Cyberinfrastructure (SoundCoop) project funded by the NOAA Integrated Ocean Observatory System, Bureau of Ocean Energy Management, U.S. Navy Living Marine Resources, and Office of Naval Research."
+  Hydrophone deployments at Site CH01 have been jointly supported by NOAA, MBARI, and Monterey Bay Aquarium.  These products support the Passive Acoustic Monitoring National Cyberinfrastructure (SoundCoop) project funded by the NOAA Integrated Ocean Observatory System, Bureau of Ocean Energy Management, U.S. Navy Living Marine Resources, and Office of Naval Research."
 license: As for the original recordings available online (https://registry.opendata.aws/pacific-sound/), this derived data product carries the CC-BY 4.0 license.
 standard_name_vocabulary: CF Standard Name Table v80
 date_created: AUTOPOPULATE
