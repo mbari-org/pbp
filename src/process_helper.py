@@ -246,6 +246,11 @@ class ProcessHelper:
         if self.voltage_multiplier is not None:
             audio_segment *= self.voltage_multiplier
 
+        if self.sensitivity_flat_value is not None:
+            # TODO!!
+            # audio_segment = audio_segment.power(self.sensitivity_flat_value)
+            pass
+
         self.pypam_support.add_segment(dt, audio_segment)
 
     def _get_global_attributes(self, year: int, month: int, day: int):

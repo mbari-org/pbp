@@ -5,7 +5,7 @@ import xarray as xr
 from src.misc_helper import error, info
 
 
-def save_dataset_to_netcdf(ds: xr.Dataset, filename: str):
+def save_dataset_to_netcdf(ds: xr.Dataset, filename: str) -> bool:
     info(f"  - saving dataset to: {filename}")
     try:
         ds.to_netcdf(
@@ -17,8 +17,10 @@ def save_dataset_to_netcdf(ds: xr.Dataset, filename: str):
                 "sensitivity": {"_FillValue": None},
             },
         )
+        return True
     except Exception as e:  # pylint: disable=broad-exception-caught
         error(f"Unable to save {filename}: {e}")
+        return False
 
 
 def save_dataset_to_csv(ds: xr.Dataset, filename: str):

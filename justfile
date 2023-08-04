@@ -143,7 +143,7 @@ main-cloud-chumash-basic-test max_segments="60" date="20230101":
     #!/usr/bin/env bash
     export DATE={{date}}
     export S3_JSON_BUCKET_PREFIX="s3://pacific-sound-metadata/ch01"
-    export SENSITIVITY_FLAT_VALUE=176
+    export SENSITIVITY_FLAT_VALUE=176.1
     export GLOBAL_ATTRS_URI="metadata/chumash/globalAttributes.yaml"
     export VARIABLE_ATTRS_URI="metadata/chumash/variableAttributes.yaml"
     export MAX_SEGMENTS={{max_segments}}
@@ -162,6 +162,10 @@ main *args="":
 # Generate summary plots
 plot *nc_files:
     @python src/plotting.py {{nc_files}}
+
+# Update metadata
+update-metadata *nc_files:
+    @python src/md_update.py {{nc_files}}
 
 ##############
 # development:
