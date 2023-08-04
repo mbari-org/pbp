@@ -1,7 +1,7 @@
 # PyPAM based data processing
 
 This package uses [PyPAM](https://github.com/lifewatch/pypam/)
-to generate _hybrid millidecade spectra_ for soundscape data.
+to generate _hybrid millidecade band spectra_ for soundscape data.
 
 **Status**: Functional version, including support for S3-based cloud based processing.
 
