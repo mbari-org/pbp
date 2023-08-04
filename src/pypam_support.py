@@ -136,7 +136,6 @@ class PypamSupport:
     def process_captured_segments(
         self,
         sensitivity_da: Optional[xr.DataArray] = None,
-        sensitivity_flat_value: Optional[float] = None,
     ) -> Optional[ProcessResult]:
         """
         Gets the resulting hybrid millidecade bands for all captured segments.
@@ -179,7 +178,6 @@ class PypamSupport:
             times=times,
             spectra=spectra,
             sensitivity_da=sensitivity_da,
-            sensitivity_flat_value=sensitivity_flat_value,
         )
 
         effort_da = xr.DataArray(
@@ -194,7 +192,6 @@ class PypamSupport:
         times: List[np.int64],
         spectra: List[np.ndarray],
         sensitivity_da: Optional[xr.DataArray] = None,
-        sensitivity_flat_value: Optional[float] = None,
     ) -> xr.DataArray:
         # Convert the spectra to a DataArray
         psd_da = xr.DataArray(
@@ -205,7 +202,7 @@ class PypamSupport:
 
         psd_da = self._spectra_to_bands(psd_da)
         debug(f"  {psd_da.frequency_bins=}")
-        psd_da = _apply_sensitivity(psd_da, sensitivity_da, sensitivity_flat_value)
+        psd_da = _apply_sensitivity(psd_da, sensitivity_da)
 
         # just need single precision:
         psd_da = psd_da.astype(np.float32)
@@ -257,7 +254,6 @@ def _get_spectrum(data: np.ndarray, fs: int, nfft: int) -> Tuple[np.ndarray, np.
 def _apply_sensitivity(
     psd_da: xr.DataArray,
     sensitivity_da: Optional[xr.DataArray],
-    sensitivity_flat_value: Optional[float] = None,
 ) -> xr.DataArray:
     psd_da = cast(xr.DataArray, 10 * np.log10(psd_da))
 
@@ -266,14 +262,12 @@ def _apply_sensitivity(
     # (previously, subtraction)
     # 2023-06-12: Back to subtraction (as we're focusing on MARS data at the moment)
     # TODO but this is still one pending aspect to finalize.
+    # 2023-08-03: sensitivity_flat_value is handled upstream now.
 
     if sensitivity_da is not None:
         freq_subset = sensitivity_da.interp(frequency=psd_da.frequency_bins)
         info(f"  Applying sensitivity({len(freq_subset.values)})={freq_subset}")
         psd_da -= freq_subset.values
-    elif sensitivity_flat_value is not None:
-        info(f"  Applying {sensitivity_flat_value=}")
-        psd_da -= sensitivity_flat_value
 
     return psd_da
 

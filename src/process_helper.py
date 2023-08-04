@@ -144,7 +144,6 @@ class ProcessHelper:
 
         result: Optional[ProcessResult] = self.pypam_support.process_captured_segments(
             sensitivity_da=self.sensitivity_da,
-            sensitivity_flat_value=self.sensitivity_flat_value,
         )
 
         if result is None:
@@ -245,6 +244,10 @@ class ProcessHelper:
 
         if self.voltage_multiplier is not None:
             audio_segment *= self.voltage_multiplier
+
+        if self.sensitivity_flat_value is not None:
+            # convert signal to uPa
+            audio_segment = audio_segment * 10 ** (self.sensitivity_flat_value / 20)
 
         self.pypam_support.add_segment(dt, audio_segment)
 

@@ -138,15 +138,17 @@ main-cloud-mars-multiple-days year="2022" month="9" *days="5 7 8 9":
     done
     wait
 
+#    export MAX_SEGMENTS=60
+#    export ASSUME_DOWNLOADED_FILES=yes
 # chumash basic test for cloud processing
-main-cloud-chumash-basic-test max_segments="60" date="20230101":
+main-cloud-chumash-basic-test date="20230108":
     #!/usr/bin/env bash
     export DATE={{date}}
     export S3_JSON_BUCKET_PREFIX="s3://pacific-sound-metadata/ch01"
-    export SENSITIVITY_FLAT_VALUE=176
+    export SENSITIVITY_FLAT_VALUE=176.1
+    export OUTPUT_PREFIX="CH01_"
     export GLOBAL_ATTRS_URI="metadata/chumash/globalAttributes.yaml"
     export VARIABLE_ATTRS_URI="metadata/chumash/variableAttributes.yaml"
-    export MAX_SEGMENTS={{max_segments}}
     export CLOUD_TMP_DIR="cloud_tmp_chumash"
     export REMOVE_DOWNLOADED_FILES=no
     export PYTHONPATH=.
