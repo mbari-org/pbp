@@ -62,11 +62,14 @@ class WavStatus:
         if self.parsed_uri.scheme == "s3":
             return self._get_wav_filename_s3()
 
+        # otherwise assuming local file, so we only inspect the `path` attribute:
         path = self.parsed_uri.path
         if path.startswith("/"):
             wav_filename = f"{self.audio_path_prefix}{path}"
-        else:
+        elif self.audio_base_dir is not None:
             wav_filename = f"{self.audio_base_dir}/{path}"
+        else:
+            wav_filename = path
         return wav_filename
 
     def _get_wav_filename_s3(self) -> Optional[str]:

@@ -27,7 +27,7 @@ def main(opts):
         gen_csv=opts.gen_csv,
         gen_plot=opts.gen_plot,
         global_attrs_uri=opts.global_attrs,
-        variable_attrs_uri=opts.var_attrs,
+        variable_attrs_uri=opts.variable_attrs,
         voltage_multiplier=opts.voltage_multiplier,
         sensitivity_uri=opts.sensitivity_uri,
         sensitivity_flat_value=opts.sensitivity_flat_value,
