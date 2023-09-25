@@ -122,13 +122,6 @@ Examples:
     )
 
     parser.add_argument(
-        "--gen-plot",
-        default=False,
-        action="store_true",
-        help="Also generate JPG with summary plot of the result.",
-    )
-
-    parser.add_argument(
         "--max-segments",
         type=int,
         default=0,

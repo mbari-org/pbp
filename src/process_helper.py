@@ -12,7 +12,6 @@ from src import save_dataset_to_csv, save_dataset_to_netcdf
 from src.file_helper import FileHelper
 from src.metadata import MetadataHelper, parse_attributes, replace_snippets
 from src.misc_helper import debug, error, gen_hour_minute_times, info, parse_date, warn
-from src.plotting import plot_dataset_summary
 from src.pypam_support import ProcessResult, PypamSupport
 
 
@@ -23,7 +22,6 @@ class ProcessHelper:
         output_dir: str,
         output_prefix: str,
         gen_csv: bool,
-        gen_plot: bool,
         global_attrs_uri: Optional[str] = None,
         variable_attrs_uri: Optional[str] = None,
         voltage_multiplier: Optional[float] = None,
@@ -38,7 +36,6 @@ class ProcessHelper:
         :param output_dir:
         :param output_prefix:
         :param gen_csv:
-        :param gen_plot:
         :param global_attrs_uri:
         :param variable_attrs_uri:
         :param voltage_multiplier:
@@ -55,7 +52,6 @@ class ProcessHelper:
             f"\n    output_dir:             {output_dir}"
             f"\n    output_prefix:          {output_prefix}"
             f"\n    gen_csv:                {gen_csv}"
-            f"\n    gen_plot:               {gen_plot}"
             f"\n    global_attrs_uri:       {global_attrs_uri}"
             f"\n    variable_attrs_uri:     {variable_attrs_uri}"
             f"\n    voltage_multiplier:     {voltage_multiplier}"
@@ -68,7 +64,6 @@ class ProcessHelper:
         self.output_dir = output_dir
         self.output_prefix = output_prefix
         self.gen_csv = gen_csv
-        self.gen_plot = gen_plot
 
         self.metadata_helper = MetadataHelper(
             self._load_attributes("global", global_attrs_uri),
@@ -125,7 +120,7 @@ class ProcessHelper:
             Date to process in YYYYMMDD format.
         :return:
             List of paths to generated files (NetCDF in particular, but also others
-            like plot and csv, depending on given construction parameters);
+            like csv, depending on given construction parameters);
             or None if no segments at all were processed for the day.
         """
         year, month, day = parse_date(date)
@@ -193,15 +188,6 @@ class ProcessHelper:
             csv_filename = f"{basename}.csv"
             save_dataset_to_csv(ds_result, csv_filename)
             generated_filenames.append(csv_filename)
-        if self.gen_plot:
-            # do not fail overall processing if we can't generate a plot
-            try:
-                jpeg_filename = f"{basename}.jpg"
-                plot_dataset_summary(ds_result, jpeg_filename=jpeg_filename)
-                generated_filenames.append(jpeg_filename)
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                error(f"Unable to generate plot: {e}")
-                traceback.print_exc()
 
         self.file_helper.day_completed()
 

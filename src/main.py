@@ -25,7 +25,6 @@ def main(opts):
         output_dir=opts.output_dir,
         output_prefix=opts.output_prefix,
         gen_csv=opts.gen_csv,
-        gen_plot=opts.gen_plot,
         global_attrs_uri=opts.global_attrs,
         variable_attrs_uri=opts.variable_attrs,
         voltage_multiplier=opts.voltage_multiplier,
