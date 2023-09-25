@@ -7,15 +7,39 @@ to generate _hybrid millidecade band spectra_ for soundscape data.
 
 - [x] Timekeeping based on given JSON indicating start and duration of every available `.wav` file
 - [x] Audio file processing
-    - [x] Frequency and psd array output between 10 and 10^5 Hz
+    - [x] Frequency and psd array output
     - [x] Concatenation of processed 1-minute segments for daily product
     - [x] Calibration with given sensitivity file (NetCDF)
+    - [x] Calibration with given flat sensitivity value
 - [x] Data products
     - [x] NetCDF with metadata
-    - [x] CSV (optionally)
-- [x] Cloud processing (download inputs from, and upload generated products to S3)
+    - [x] CSV (optional)
+    - [x] Summary plot (optional)
+- [x] Cloud processing (inputs downloaded from, and generated products upload to S3)
 
 TODO more details
+
+## Setup
+
+### Create and activate virtual environment
+
+    python3.9 -m venv virtenv
+    source virtenv/bin/activate
+
+### Install dependencies
+
+    pip3 install -r requirements.txt
+    pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam==0.2.0
+
+### Programs
+
+- `src/main.py` - Main CLI program, run `python src/main.py --help` for usage.
+
+- `src/main_cloud.py` - Main program for cloud based processing. 
+   All parameters passed via environment variables, see source file.
+
+- `src/plot.py` - Plotting program: `python src/plot.py --help`.
+
 
 ## Refs
 
