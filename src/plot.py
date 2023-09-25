@@ -44,7 +44,7 @@ def parse_arguments():
         "--only-show",
         default=False,
         action="store_true",
-        help="Only show the plot",
+        help="Only show the plot (do not generate .jpg files)",
     )
 
     parser.add_argument("netcdf", nargs="+", help="netcdf file(s) to plot")
