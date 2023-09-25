@@ -1,3 +1,5 @@
+from typing import Optional
+
 import matplotlib.dates as md
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,16 +8,26 @@ import pvlib
 import xarray as xr
 from matplotlib import gridspec
 
+from src.plot_const import DEFAULT_DPI, DEFAULT_TITLE, DEFAULT_YLIM
+
 
 def plot_dataset_summary(
-    ds: xr.Dataset, jpeg_filename: str, dpi: int = 200
+    ds: xr.Dataset,
+    title: str = DEFAULT_TITLE,
+    ylim: tuple[int, int] = DEFAULT_YLIM,
+    dpi: int = DEFAULT_DPI,
+    jpeg_filename: Optional[str] = None,
+    show: bool = False,
 ):  # pylint: disable=R0915  too-many-statements
     """
     Generate a summary plot from the given dataset.
-    Code by RYJO, with minor formatting/variable naming adjustments.
+    Code by RYJO, with some typing/formatting/variable naming adjustments.
     :param ds: Dataset to plot.
-    :param jpeg_filename: Filename to save the plot to.
+    :param title: Title for the plot.
+    :param ylim: Limits for the y-axis.
     :param dpi: DPI to use for the plot.
+    :param jpeg_filename: If given, filename to save the plot to.
+    :param show: Whether to show the plot.
     """
     # Transpose psd array for plotting
     da = xr.DataArray.transpose(ds.psd)
@@ -45,7 +57,6 @@ def plot_dataset_summary(
         r"Spectrum level (dB re 1 $\mu$Pa$\mathregular{^{2}}$ Hz$\mathregular{^{-1}}$)"
     )
     freqlabl = "Frequency (Hz)"
-    titl = "MBARI MARS Cabled Observatory   Monterey Bay, California, USA   36.713 \xb0N, 122.186 \xb0W"
 
     # define percentiles
     pctlev = np.array([1, 10, 25, 50, 75, 90, 99])
@@ -76,7 +87,7 @@ def plot_dataset_summary(
         ds.time, ds.frequency, da, shading="nearest", cmap="rainbow", vmin=32, vmax=108
     )
     plt.yscale("log")
-    plt.ylim(10, 100000)
+    plt.ylim(list(ylim))
     plt.ylabel(freqlabl)
     xl = ax0.get_xlim()
     ax0.set_xticks([])
@@ -89,7 +100,7 @@ def plot_dataset_summary(
     ax1.yaxis.set_label_position("right")
     plt.plot(pctls.T, ds.frequency, linewidth=1)
     plt.yscale("log")
-    plt.ylim([10, 100000])
+    plt.ylim(list(ylim))
     plt.xlabel(psdlabl)
     plt.ylabel(freqlabl)
     plt.legend(loc="lower left", labels=pplabels)
@@ -122,47 +133,11 @@ def plot_dataset_summary(
         md.ConciseDateFormatter(timax.xaxis.get_major_locator())
     )
 
-    plt.gcf().text(0.5, 0.955, titl, fontsize=14, horizontalalignment="center")
+    plt.gcf().text(0.5, 0.955, title, fontsize=14, horizontalalignment="center")
     plt.gcf().text(0.65, 0.91, "UTC")
 
-    plt.savefig(jpeg_filename, dpi=dpi)
-    # plt.show()
+    if jpeg_filename is not None:
+        plt.savefig(jpeg_filename, dpi=dpi)
+    if show:
+        plt.show()
     plt.close(fig)
-
-
-def plot_summary_for_file(nc_filename: str, dpi: int = 200) -> str:
-    """
-    Generate a summary plot from the given netcdf file.
-    :param nc_filename:
-        netcdf file to plot
-    :param dpi:
-        DPI to use for the plot.
-    :return:
-        filename of the generated jpeg
-    """
-    jpeg_filename = nc_filename.replace(".nc", ".jpg")
-    ds = xr.open_dataset(nc_filename)
-    plot_dataset_summary(ds, jpeg_filename, dpi=dpi)
-    return jpeg_filename
-
-
-if __name__ == "__main__":
-    import sys
-
-    dpi_ = 200
-    nc_files = []
-
-    if sys.argv[1] == "--dpi":
-        dpi_ = int(sys.argv[2])
-        nc_files = sys.argv[3:]
-    else:
-        nc_files = sys.argv[1:]
-
-    if len(nc_files) == 0:
-        print(f"usage: {sys.argv[0]} [--dpi <dpi>] <netcdf>... ")
-        sys.exit(1)
-
-    for nc_f in nc_files:
-        print(f"plotting {nc_f} at {dpi_} dpi")
-        jpeg_f = plot_summary_for_file(nc_f, dpi_)
-        print(f"   done: {jpeg_f}")

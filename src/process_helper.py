@@ -196,9 +196,9 @@ class ProcessHelper:
         if self.gen_plot:
             # do not fail overall processing if we can't generate a plot
             try:
-                jpg_filename = f"{basename}.jpg"
-                plot_dataset_summary(ds_result, jpg_filename)
-                generated_filenames.append(jpg_filename)
+                jpeg_filename = f"{basename}.jpg"
+                plot_dataset_summary(ds_result, jpeg_filename=jpeg_filename)
+                generated_filenames.append(jpeg_filename)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 error(f"Unable to generate plot: {e}")
                 traceback.print_exc()
