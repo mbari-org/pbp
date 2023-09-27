@@ -8,11 +8,17 @@ import pvlib
 import xarray as xr
 from matplotlib import gridspec
 
-from src.plot_const import DEFAULT_DPI, DEFAULT_TITLE, DEFAULT_YLIM
+from src.plot_const import (
+    DEFAULT_DPI,
+    DEFAULT_LAT_LON_FOR_SOLPOS,
+    DEFAULT_TITLE,
+    DEFAULT_YLIM,
+)
 
 
 def plot_dataset_summary(
     ds: xr.Dataset,
+    lat_lon_for_solpos: tuple[float, float] = DEFAULT_LAT_LON_FOR_SOLPOS,
     title: str = DEFAULT_TITLE,
     ylim: tuple[int, int] = DEFAULT_YLIM,
     dpi: int = DEFAULT_DPI,
@@ -23,6 +29,7 @@ def plot_dataset_summary(
     Generate a summary plot from the given dataset.
     Code by RYJO, with some typing/formatting/variable naming adjustments.
     :param ds: Dataset to plot.
+    :param lat_lon_for_solpos: Lat/Lon for solar position calculation.
     :param title: Title for the plot.
     :param ylim: Limits for the y-axis.
     :param dpi: DPI to use for the plot.
@@ -34,7 +41,7 @@ def plot_dataset_summary(
 
     # get solar elevation
     # Estimate the solar position with a specific SPA defined with the argument 'method'
-    solpos = pvlib.solarposition.get_solarposition(ds.time, 36.7128, -122.186, 0)
+    solpos = pvlib.solarposition.get_solarposition(ds.time, *lat_lon_for_solpos)
     se = solpos.elevation  # isolate solar elevation
     # map elevation to gray scale
     seg = 0 * se  # 0 covers nighttime (black)

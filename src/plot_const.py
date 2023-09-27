@@ -1,4 +1,9 @@
-DEFAULT_TITLE = "MBARI MARS Cabled Observatory   Monterey Bay, California, USA   36.713 \xb0N, 122.186 \xb0W"
+DEFAULT_LAT_LON_FOR_SOLPOS = (36.7128, -122.186)
+
+DEFAULT_TITLE = (
+    "MBARI MARS Cabled Observatory   Monterey Bay, California, USA"
+    f"   {DEFAULT_LAT_LON_FOR_SOLPOS[0]} \xb0N, {DEFAULT_LAT_LON_FOR_SOLPOS[1]} \xb0W"
+)
 
 DEFAULT_YLIM = (10, 100000)
 

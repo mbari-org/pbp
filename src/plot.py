@@ -1,12 +1,26 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from src.plot_const import DEFAULT_DPI, DEFAULT_TITLE, DEFAULT_YLIM
+from src.plot_const import (
+    DEFAULT_DPI,
+    DEFAULT_LAT_LON_FOR_SOLPOS,
+    DEFAULT_TITLE,
+    DEFAULT_YLIM,
+)
 
 
 def parse_arguments():
     description = "Generate summary plots for given netcdf files."
 
     parser = ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)
+
+    parser.add_argument(
+        "--latlon",
+        type=float,
+        nargs=2,
+        default=DEFAULT_LAT_LON_FOR_SOLPOS,
+        metavar=("lat", "lon"),
+        help="Lat/Lon for solar position calculation . Default: %(default)s",
+    )
 
     parser.add_argument(
         "--title",
@@ -65,9 +79,10 @@ def main(opts):
         jpeg_filename = None if opts.only_show else nc_filename.replace(".nc", ".jpg")
         plot_dataset_summary(
             ds,
-            opts.title,
-            opts.ylim,
-            opts.dpi,
+            lat_lon_for_solpos=opts.latlon,
+            title=opts.title,
+            ylim=opts.ylim,
+            dpi=opts.dpi,
             jpeg_filename=jpeg_filename,
             show=show,
         )
