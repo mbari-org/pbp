@@ -15,7 +15,7 @@ to generate _hybrid millidecade band spectra_ for soundscape data.
     - [x] NetCDF with metadata
     - [x] CSV (optional)
     - [x] Summary plot (optional)
-- [x] Cloud processing (inputs downloaded from, and generated products upload to S3)
+- [x] Cloud processing (inputs downloaded from, and generated products uploaded to S3)
 
 TODO more details
 
