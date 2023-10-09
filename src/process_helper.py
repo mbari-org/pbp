@@ -20,7 +20,7 @@ class ProcessHelper:
         file_helper: FileHelper,
         output_dir: str,
         output_prefix: str,
-        gen_csv: bool,
+        gen_csv: bool = False,
         global_attrs_uri: Optional[str] = None,
         variable_attrs_uri: Optional[str] = None,
         voltage_multiplier: Optional[float] = None,
@@ -32,15 +32,27 @@ class ProcessHelper:
         """
 
         :param file_helper:
+            File loader.
         :param output_dir:
+            Output directory.
         :param output_prefix:
+            Output filename prefix.
         :param gen_csv:
+            True to also generate CSV version of the result.
         :param global_attrs_uri:
+            URI of JSON file with global attributes to be added to the NetCDF file.
         :param variable_attrs_uri:
+            URI of JSON file with variable attributes to be added to the NetCDF file.
         :param voltage_multiplier:
+            Applied on the loaded signal.
         :param sensitivity_uri:
+            URI of sensitivity NetCDF for calibration of result.
+            Has precedence over `sensitivity_flat_value`.
         :param sensitivity_flat_value:
+            Flat sensitivity value to be used for calibration.
         :param max_segments:
+            Maximum number of segments to process for each day.
+            By default, 0 (no limit).
         :param subset_to:
             Tuple of (lower, upper) frequency limits to use for the PSD,
             lower inclusive, upper exclusive.
