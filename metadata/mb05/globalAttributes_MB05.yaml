@@ -1,0 +1,41 @@
+---
+title: >-
+    Hybrid Millidecade Band Sound Pressure Levels Computed at 1 Minute Resolution from Oceanic Passive Acoustic Monitoring Recordings at site MB05 in Southern Monterey Bay National Marine Sanctuary, California USA
+Summary: >- 
+    To understand natural and anthropogenic sound in the ocean, and to compare underwater soundscapes globally, standard methods of analysis must be applied to passive acoustic monitoring (PAM) data. Methods that balance constrained volume and adequate resolution of acoustic spectra have recently been published (Martin et al., 2021a,b). A community effort supported by NOAA, BOEM, U.S. Navy, and ONR was initiated to apply these methods to PAM datasets from around the world. This record represents the hybrid millidecade band (HMB) spectra of sound levels derived from calibrated PAM data.
+Conventions: COARDS, CF-1.6, ACDD-1.3
+keywords: >-
+  oceans, ocean acoustics, ambient noise, intensity, marine environment monitoring,
+  marine habitat, sound_intensity_level_in_water, soundscapes
+keywords_vocabulary: GCMD Science Keywords
+history: >- 
+  Original hybrid millidecade spectra were produced by the Monterey Bay Aquarium Research Institute
+source: >-
+  Data analysis was performed using Python Passive Acoustic Monitoring (PyPAM) software, version {{PyPAM_version}}, to produce hybrid millidecade band (HMB) spectra of sound levels from oceanic audio recordings.  Processing followed the methods defined in Martin et al. (2021a,b), and results were validated by comparison with results produced using the MATLAB code provided as supplemental material in Martin et al. (2021b).  Input wav data were computed to µPa, and power spectral density (PSD) levels were computed from 1-minute segments of audio data using Welch's method.  By applying fast Fourier transform (FFT) with length equal to the sample rate, using Hann window and 50% overlap, PSD estimates (µPa^2/Hz) were computed with a frequency resolution of 1 Hz and a temporal resolution of 1 second. The 119 PSD estimates from each 1-minute segment were averaged, and the average spectrum for each minute was further processed to an HMB spectrum following Martin et al. (2021b).
+acknowledgement: >- 
+  Hydrophone deployments at Site MB05 have been jointly supported by NOAA, MBARI, and the Naval Postgraduate School.  These products support the Passive Acoustic Monitoring National Cyberinfrastructure (SoundCoop) project funded by the NOAA Integrated Ocean Observatory System, Bureau of Ocean Energy Management, U.S. Navy Living Marine Resources, and Office of Naval Research.
+license: CC 4.0
+standard_name_vocabulary: CF Standard Name Table v80
+date_created: AUTOPOPULATE
+creator_name: John Ryan
+creator_email: ryjo@mbari.org
+creator_url: www.mbari.org/person/john-ryan/
+institution: Monterey Bay Aquarium Research Institute
+project: MBARI Ocean Soundscape Project, www.mbari.org/team/ocean-soundscape/
+publisher_name: NOAA National Centers for Environmental Information
+publisher_email: pad.info@noaa.gov
+publisher_url: https://www.ncei.noaa.gov/products/passive-acoustic-data
+geospatial_bounds: POINT (35.77 -121.43)
+comment: The hydrophone is attached to a line on a subsurface mooring near the continental shelf break, at the head of La Cruz Canyon, 98 m water depth.
+time_coverage_start: AUTOPOPULATE
+time_coverage_end: AUTOPOPULATE
+time_coverage_duration: P1D
+time_coverage_resolution: P60S
+platform: SanctSound MB05 mooring
+instrument: SoundTrap ST600 HF, SN 6715
+cdm_data_type: TimeSeries
+references: >-
+  Computation of single-sided mean-square sound pressure spectral density with 1 Hz resolution
+  followed ISO 18405 3.1.3.13 (International Standard ISO 18405:2017(E), Underwater Acoustics – Terminology.  Geneva: ISO).
+  Hybrid millidecade band processing followed Martin et al. (2021a,b:  https://doi.org/10.1121/10.0003324;
+  https://doi.org/10.1121/10.0005818)
