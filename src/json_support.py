@@ -125,18 +125,6 @@ def get_intersecting_entries(
         f"year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
     )
 
-    # check captured duration:
-    segment_size_in_secs = segment_size_in_mins * 60
-    if tot_duration_secs < segment_size_in_secs:
-        # partial day can happen, just a warning:
-        warn(f"{tot_duration_secs=} < {segment_size_in_secs=}  {time_spec}")
-    elif tot_duration_secs > segment_size_in_secs:
-        msg = f"UNEXPECTED: {tot_duration_secs=} > {segment_size_in_secs=}  {time_spec}"
-        msg += f"  intersecting_entries ({len(intersecting_entries)})"
-        if len(intersecting_entries) > 0:
-            msg += "".join(f"\n    {i}" for i in intersecting_entries)
-        error(msg)
-
     if get_logger().isEnabledFor(logging.DEBUG):
         uris = [i.entry.uri for i in intersecting_entries]
         uris_str = "\n  ".join([f"[{e}] {uri}" for e, uri in enumerate(uris)])
