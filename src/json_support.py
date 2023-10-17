@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from dataclasses_json import config, dataclass_json
 from dateutil import parser as iso8601_parser
 
-from src.misc_helper import debug, error, get_logger, warn
+from src.misc_helper import debug, get_logger, warn
 
 
 def datetime_field():
