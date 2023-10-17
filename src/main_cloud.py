@@ -26,6 +26,8 @@
 #  SENSITIVITY_FLAT_VALUE: (Optional)
 #     Flat sensitivity value to be used for calibration
 #     if SENSITIVITY_NETCDF_URI is not given.
+#  SUBSET_TO: (Required)  Format: "lower,upper"
+#     Subset the resulting PSD to [lower, upper), in terms of central frequency.
 #
 # *Note*:
 #   TODO retrieve sensitivity information using PyHydrophone when none
@@ -89,6 +91,10 @@ def main():
         else None
     )
 
+    subset_to_string = os.environ["SUBSET_TO"]
+    subset_to = tuple(float(val.strip()) for val in subset_to_string.split(","))
+    assert len(subset_to) == 2
+
     # Convenience for testing (0 means no restriction)
     max_segments = int(os.getenv("MAX_SEGMENTS", "0"))
 
@@ -146,7 +152,7 @@ def main():
         sensitivity_uri=sensitivity_uri,
         sensitivity_flat_value=sensitivity_flat_value,
         max_segments=max_segments,
-        subset_to=(10, 100_000),  # TODO allow indicating this.
+        subset_to=subset_to,
     )
 
     generated_filenames = processor_helper.process_day(date)
