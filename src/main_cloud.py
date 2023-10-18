@@ -92,7 +92,7 @@ def main():
     )
 
     subset_to_string = os.environ["SUBSET_TO"]
-    subset_to = tuple(float(val.strip()) for val in subset_to_string.split(","))
+    subset_to = tuple(int(val.strip()) for val in subset_to_string.split(","))
     assert len(subset_to) == 2
 
     # Convenience for testing (0 means no restriction)
@@ -155,13 +155,13 @@ def main():
         subset_to=subset_to,
     )
 
-    generated_filenames = processor_helper.process_day(date)
+    result = processor_helper.process_day(date)
 
-    if generated_filenames is None:
+    if result is None:
         warn(f"No NetDF file was generated.  ({date=})")
         return
 
-    info(f"Generated files: {generated_filenames}")
+    info(f"Generated files: {result.generated_filenames}")
 
     if output_bucket is not None:
 
@@ -171,7 +171,7 @@ def main():
             ok = s3_client.upload_file(filename, output_bucket, filename_out)
             info(f"Upload result: {ok}")
 
-        for generated_filename in generated_filenames:
+        for generated_filename in result.generated_filenames:
             upload(generated_filename)
 
         # result of uploading the log itself won't of course show up there

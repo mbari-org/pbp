@@ -1,4 +1,5 @@
 import pathlib
+from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from typing import Any, List, Optional, OrderedDict, Tuple
@@ -12,6 +13,20 @@ from src.file_helper import FileHelper
 from src.metadata import MetadataHelper, parse_attributes, replace_snippets
 from src.misc_helper import debug, error, gen_hour_minute_times, info, parse_date, warn
 from src.pypam_support import ProcessResult, PypamSupport
+
+
+@dataclass
+class ProcessDayResult:
+    """
+    The result returned from `process_day`.
+
+    Contains the list of paths to generated files
+    (NetCDF and others depending on given parameters)
+    as well as the generated dataset.
+    """
+
+    generated_filenames: list[str]
+    dataset: xr.Dataset
 
 
 class ProcessHelper:
@@ -127,16 +142,14 @@ class ProcessHelper:
             info(f"No '{what}' attributes URI given.")
         return None
 
-    def process_day(self, date: str) -> Optional[List[str]]:
+    def process_day(self, date: str) -> Optional[ProcessDayResult]:
         """
         Generates NetCDF file with the result of processing all segments of the given day.
 
         :param date:
             Date to process in YYYYMMDD format.
         :return:
-            List of paths to generated files (NetCDF in particular, but also others
-            like csv, depending on given construction parameters);
-            or None if no segments at all were processed for the day.
+            ProcessDayResult, or None if no segments at all were processed for the day.
         """
         year, month, day = parse_date(date)
         if not self.file_helper.select_day(year, month, day):
@@ -206,7 +219,7 @@ class ProcessHelper:
 
         self.file_helper.day_completed()
 
-        return generated_filenames
+        return ProcessDayResult(generated_filenames, ds_result)
 
     def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
         info(f"Processing {len(hour_and_minutes)} segments ...")
