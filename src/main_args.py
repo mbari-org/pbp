@@ -115,6 +115,21 @@ Examples:
     )
 
     parser.add_argument(
+        "--s3",
+        default=False,
+        action="store_true",
+        help="s3 access involved.",
+    )
+
+    parser.add_argument(
+        "--download-dir",
+        type=str,
+        metavar="dir",
+        default=None,
+        help="Directory for any downloads (e.g., when s3 is involved).",
+    )
+
+    parser.add_argument(
         "--gen-csv",
         default=False,
         action="store_true",

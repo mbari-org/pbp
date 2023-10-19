@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from dataclasses_json import config, dataclass_json
 from dateutil import parser as iso8601_parser
 
-from src.misc_helper import debug, get_logger, warn
+from src.logging_helper import PbpLogger
 
 
 def datetime_field():
@@ -42,7 +42,7 @@ def parse_json_contents(contents: str) -> Generator[JEntry, None, None]:
     for item in json.loads(contents):
         entry = JEntry.from_dict(item)  # type: ignore [attr-defined]
         if entry.uri in reported_uris:
-            warn(f"Skipping duplicate json entry: uri={entry.uri}")
+            print(f"warning: Skipping duplicate json entry: uri={entry.uri}")
             continue
         reported_uris.add(entry.uri)
         yield entry
@@ -64,6 +64,7 @@ class JEntryIntersection:
 
 
 def get_intersecting_entries(
+    logger: PbpLogger,
     json_entries: List[JEntry],
     year: int,
     month: int,
@@ -125,9 +126,9 @@ def get_intersecting_entries(
         f"year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
     )
 
-    if get_logger().isEnabledFor(logging.DEBUG):
+    if logger.is_enabled_for(logging.DEBUG):
         uris = [i.entry.uri for i in intersecting_entries]
         uris_str = "\n  ".join([f"[{e}] {uri}" for e, uri in enumerate(uris)])
-        debug(f"{time_spec}: intersection uris({len(uris)}):\n  {uris_str}")
+        logger.debug(f"{time_spec}: intersection uris({len(uris)}):\n  {uris_str}")
 
     return intersecting_entries

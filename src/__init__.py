@@ -2,11 +2,11 @@ import os
 
 import xarray as xr
 
-from src.misc_helper import error, info
+from src.logging_helper import PbpLogger
 
 
-def save_dataset_to_netcdf(ds: xr.Dataset, filename: str) -> bool:
-    info(f"  - saving dataset to: {filename}")
+def save_dataset_to_netcdf(logger: PbpLogger, ds: xr.Dataset, filename: str) -> bool:
+    logger.info(f"  - saving dataset to: {filename}")
     try:
         ds.to_netcdf(
             filename,
@@ -19,16 +19,16 @@ def save_dataset_to_netcdf(ds: xr.Dataset, filename: str) -> bool:
         )
         return True
     except Exception as e:  # pylint: disable=broad-exception-caught
-        error(f"Unable to save {filename}: {e}")
+        logger.error(f"Unable to save {filename}: {e}")
         return False
 
 
-def save_dataset_to_csv(ds: xr.Dataset, filename: str):
-    info(f"  - saving dataset to: {filename}")
+def save_dataset_to_csv(logger: PbpLogger, ds: xr.Dataset, filename: str):
+    logger.info(f"  - saving dataset to: {filename}")
     try:
         ds.to_pandas().to_csv(filename, float_format="%.1f")
     except Exception as e:  # pylint: disable=broad-exception-caught
-        error(f"Unable to save {filename}: {e}")
+        logger.error(f"Unable to save {filename}: {e}")
 
 
 def get_cpus_to_use(num_cpus: int) -> int:
