@@ -78,8 +78,9 @@ def create_logger(
     if name in _loggers:
         print(f"WARNING: Logger already exists for {name=}")
         # Add some random suffix to the name to avoid collisions
-        name += "_" + "".join(random.choices(string.ascii_letters, k=7))
+        name += str("_" + "".join(random.choices(string.ascii_letters, k=7)))
 
+    print(f"creating logger for {name=}")
     logger = PbpLogger(name, log_filename_and_level, console_level)
     _loggers[name] = logger
     return logger
