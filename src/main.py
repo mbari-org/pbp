@@ -17,7 +17,6 @@ def main(opts):
     from src.process_helper import ProcessHelper
 
     logger = create_logger(
-        name=opts.date,
         log_filename_and_level=(
             f"{opts.output_dir}/{opts.output_prefix}{opts.date}.log",
             logging.INFO,

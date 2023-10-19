@@ -110,7 +110,6 @@ def main():
 
     log_filename = f"{generated_dir}/{output_prefix}{date}.log"
     logger = create_logger(
-        name=date,
         log_filename_and_level=(log_filename, logging.INFO),
         console_level=logging.DEBUG,
     )

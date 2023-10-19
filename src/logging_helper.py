@@ -3,7 +3,7 @@ import os
 import random
 import string
 
-from typing import Dict, Optional, Tuple
+from typing import Optional, Tuple
 
 
 class PbpLogger:
@@ -67,21 +67,12 @@ class PbpLogger:
         self.logger.error(s)
 
 
-_loggers: Dict[str, PbpLogger] = {}
-
-
 def create_logger(
-    name: str,
     log_filename_and_level: Optional[Tuple[str, int]] = None,
     console_level: Optional[int] = None,
-):
-    if name in _loggers:
-        print(f"WARNING: Logger already exists for {name=}")
-        # Add some random suffix to the name to avoid collisions
-        name += "_" + "".join(random.choices(string.ascii_letters, k=7))
-
-    name = str(name)
-    print(f"creating logger for {name=}")
-    logger = PbpLogger(name, log_filename_and_level, console_level)
-    _loggers[name] = logger
-    return logger
+) -> PbpLogger:
+    """
+    Creates a logger. A random name is associated.
+    """
+    name = "_" + "".join(random.choices(string.ascii_letters, k=7))
+    return PbpLogger(name, log_filename_and_level, console_level)

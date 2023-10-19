@@ -21,7 +21,7 @@ def test_json_parsing(json_entries, snapshot):
 def test_get_intersecting_entries(json_entries, snapshot):
     year, month, day = 2022, 9, 2
 
-    logger = create_logger(f"test-{__name__}")
+    logger = create_logger()
 
     def do_test(segment_size_in_mins: int, at_hour: int, at_minute: int):
         intersecting_entries = get_intersecting_entries(
