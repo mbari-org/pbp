@@ -44,13 +44,14 @@
 #     "yes", the default, means that any downloaded files for a day
 #     will be removed after processing.
 
+import logging
 import os
 import pathlib
 
 import boto3
 
 from src.file_helper import FileHelper
-from src.misc_helper import info, set_logger, warn
+from src.logging_helper import create_logger
 from src.process_helper import ProcessHelper
 
 
@@ -101,6 +102,18 @@ def main():
     # workspace for downloads and generated files to be uploaded
     cloud_tmp_dir = os.getenv("CLOUD_TMP_DIR", "cloud_tmp")
 
+    download_dir = f"{cloud_tmp_dir}/downloads"
+    pathlib.Path(download_dir).mkdir(parents=True, exist_ok=True)
+
+    generated_dir = f"{cloud_tmp_dir}/generated"
+    pathlib.Path(generated_dir).mkdir(parents=True, exist_ok=True)
+
+    log_filename = f"{generated_dir}/{output_prefix}{date}.log"
+    logger = create_logger(
+        log_filename_and_level=(log_filename, logging.INFO),
+        console_level=logging.DEBUG,
+    )
+
     kwargs = {}
     aws_region = os.getenv("AWS_REGION")
     if aws_region is not None:
@@ -114,35 +127,28 @@ def main():
             b["Name"] == output_bucket for b in s3_client.list_buckets()["Buckets"]
         )
         if not found:
-            info(f"Creating bucket {output_bucket}")
+            logger.info(f"Creating bucket {output_bucket}")
             s3_client.create_bucket(
                 Bucket=output_bucket,
                 CreateBucketConfiguration={"LocationConstraint": aws_region},
             )
 
     else:
-        info("No output bucket specified. Output will not be uploaded.")
+        logger.info("No output bucket specified. Output will not be uploaded.")
 
     # --------------------------
     # Get working:
 
-    download_dir = f"{cloud_tmp_dir}/downloads"
-    pathlib.Path(download_dir).mkdir(parents=True, exist_ok=True)
-
-    generated_dir = f"{cloud_tmp_dir}/generated"
-    pathlib.Path(generated_dir).mkdir(parents=True, exist_ok=True)
-
-    log_filename = f"{generated_dir}/{output_prefix}{date}.log"
-    set_logger(log_filename)
-
     file_helper = FileHelper(
+        logger=logger,
         json_base_dir=json_bucket_prefix,
         s3_client=s3_client,
         download_dir=download_dir,
     )
 
-    processor_helper = ProcessHelper(
-        file_helper,
+    process_helper = ProcessHelper(
+        logger=logger,
+        file_helper=file_helper,
         output_dir=generated_dir,
         output_prefix=output_prefix,
         gen_csv=False,
@@ -155,21 +161,21 @@ def main():
         subset_to=subset_to,
     )
 
-    result = processor_helper.process_day(date)
+    result = process_helper.process_day(date)
 
     if result is None:
-        warn(f"No NetDF file was generated.  ({date=})")
+        logger.warn(f"No NetDF file was generated.  ({date=})")
         return
 
-    info(f"Generated files: {result.generated_filenames}")
+    logger.info(f"Generated files: {result.generated_filenames}")
 
     if output_bucket is not None:
 
         def upload(filename):
-            info(f"Uploading {filename} to {output_bucket}")
+            logger.info(f"Uploading {filename} to {output_bucket}")
             filename_out = pathlib.Path(filename).name
             ok = s3_client.upload_file(filename, output_bucket, filename_out)
-            info(f"Upload result: {ok}")
+            logger.info(f"Upload result: {ok}")
 
         for generated_filename in result.generated_filenames:
             upload(generated_filename)
@@ -178,7 +184,7 @@ def main():
         upload(log_filename)
 
     else:
-        info("No uploads attempted as output bucket was not given.")
+        logger.info("No uploads attempted as output bucket was not given.")
 
 
 if __name__ == "__main__":

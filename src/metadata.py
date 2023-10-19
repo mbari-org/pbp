@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 import xarray as xr
 import yaml
 
-from src.misc_helper import debug, error
+from src.logging_helper import PbpLogger
 
 
 def parse_attributes(contents: str, suffix: str) -> OrderedDict[str, Any]:
@@ -28,9 +28,11 @@ def parse_attributes(contents: str, suffix: str) -> OrderedDict[str, Any]:
 class MetadataHelper:
     def __init__(
         self,
+        logger: PbpLogger,
         global_attributes: Optional[OrderedDict[str, Any]] = None,
         variable_attributes: Optional[OrderedDict[str, Any]] = None,
     ):
+        self.logger = logger
         self._global_attrs: OrderedDict[str, Any] = global_attributes or OrderedDict()
         self._var_attrs: OrderedDict[str, Any] = variable_attributes or OrderedDict()
 
@@ -47,9 +49,11 @@ class MetadataHelper:
             for k, v in self._var_attrs[var_attribute_name].items():
                 da.attrs[k] = v
                 keys.append(k)
-            debug(f"For variable '{var_attribute_name}', added attributes: {keys}")
+            self.logger.debug(
+                f"For variable '{var_attribute_name}', added attributes: {keys}"
+            )
         else:
-            error(f"Unrecognized {var_attribute_name=}")
+            self.logger.error(f"Unrecognized {var_attribute_name=}")
 
 
 def replace_snippets(

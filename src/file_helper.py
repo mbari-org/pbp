@@ -11,7 +11,8 @@ import soundfile as sf
 from botocore.client import BaseClient, ClientError
 
 from src.json_support import get_intersecting_entries, JEntry, parse_json_contents
-from src.misc_helper import brief_list, debug, error, get_logger, info, map_prefix, warn
+from src.logging_helper import PbpLogger
+from src.misc_helper import brief_list, map_prefix
 
 
 @dataclass
@@ -26,6 +27,7 @@ class WavStatus:
 
     def __init__(
         self,
+        logger: PbpLogger,
         uri: str,
         audio_base_dir: Optional[str] = None,
         audio_path_map_prefix: str = "",
@@ -33,6 +35,8 @@ class WavStatus:
         s3_client: Optional[BaseClient] = None,
         download_dir: Optional[str] = None,
     ):
+        self.logger = logger
+
         self.uri = map_prefix(audio_path_map_prefix, uri)
         self.parsed_uri = urlparse(self.uri)
 
@@ -48,7 +52,7 @@ class WavStatus:
             self.error = "error getting wav filename"
             return
 
-        ai = _get_audio_info(self.wav_filename)
+        ai = self._get_audio_info(self.wav_filename)
         if ai is None:
             self.error = "error getting audio info"
             return
@@ -57,8 +61,16 @@ class WavStatus:
         self.sound_file = sf.SoundFile(self.wav_filename)
         self.age = 0  # see _get_wav_status.
 
+    def _get_audio_info(self, wav_filename: str) -> Optional[AudioInfo]:
+        try:
+            sfi = sf.info(wav_filename)
+            return AudioInfo(sfi.samplerate, sfi.channels, sfi.subtype)
+        except sf.LibsndfileError as e:
+            self.logger.error(f"{e}")
+            return None
+
     def _get_wav_filename(self) -> Optional[str]:
-        debug(f"_get_wav_filename: {self.uri=}")
+        self.logger.debug(f"_get_wav_filename: {self.uri=}")
         if self.parsed_uri.scheme == "s3":
             return self._get_wav_filename_s3()
 
@@ -73,25 +85,25 @@ class WavStatus:
         return wav_filename
 
     def _get_wav_filename_s3(self) -> Optional[str]:
-        return _download(self.parsed_uri, self.s3_client, self.download_dir)
+        return _download(self.logger, self.parsed_uri, self.s3_client, self.download_dir)
 
     def remove_downloaded_file(self):
         if not pathlib.Path(self.wav_filename).exists():
             return
 
         if self.s3_client is None or self.parsed_uri.scheme != "s3":
-            debug(f"No file download involved for {self.uri=}")
+            self.logger.debug(f"No file download involved for {self.uri=}")
             return
 
         try:
             os.remove(self.wav_filename)
-            debug(f"Removed cached file {self.wav_filename} for {self.uri=}")
+            self.logger.debug(f"Removed cached file {self.wav_filename} for {self.uri=}")
         except OSError as e:
-            error(f"Error removing file {self.wav_filename}: {e}")
+            self.logger.error(f"Error removing file {self.wav_filename}: {e}")
 
 
 def _download(
-    parsed_uri: ParseResult, s3_client: BaseClient, download_dir: str
+    logger: PbpLogger, parsed_uri: ParseResult, s3_client: BaseClient, download_dir: str
 ) -> Optional[str]:
     """
     Downloads the given S3 URI to the given download directory.
@@ -108,15 +120,15 @@ def _download(
         os.path.isfile(local_filename)
         and os.getenv("ASSUME_DOWNLOADED_FILES", "no") == "yes"
     ):
-        warn(f"ASSUMING already downloaded: {bucket=} {key=} to {local_filename}")
+        logger.info(f"ASSUMING ALREADY DOWNLOADED: {bucket=} {key=} to {local_filename}")
         return local_filename
 
-    info(f"Downloading {bucket=} {key=} to {local_filename}")
+    logger.info(f"Downloading {bucket=} {key=} to {local_filename}")
     try:
         s3_client.download_file(bucket, key, local_filename)
         return local_filename
     except ClientError as e:
-        error(f"Error downloading {bucket}/{key}: {e}")
+        logger.error(f"Error downloading {bucket}/{key}: {e}")
         return None
 
 
@@ -127,6 +139,7 @@ class FileHelper:
 
     def __init__(
         self,
+        logger: PbpLogger,
         json_base_dir: str,
         audio_base_dir: Optional[str] = None,
         audio_path_map_prefix: str = "",
@@ -154,7 +167,9 @@ class FileHelper:
         :param download_dir:
             Save downloaded S3 files here if given, otherwise, save in current directory.
         """
-        info(
+        self.logger = logger
+
+        self.logger.info(
             "Creating FileHelper:"
             f"\n    json_base_dir:         {json_base_dir}"
             f"\n    audio_base_dir:        {audio_base_dir}"
@@ -190,12 +205,12 @@ class FileHelper:
         :return:  True only if selection was successful
         """
 
-        info(f"Selecting day: {year:04}{month:02}{day:02}")
+        self.logger.info(f"Selecting day: {year:04}{month:02}{day:02}")
 
         json_uri = f"{self.json_base_dir}/{year:04}/{year:04}{month:02}{day:02}.json"
         json_contents = self._get_json(json_uri)
         if json_contents is None:
-            error(f"{json_uri}: file not found\n")
+            self.logger.error(f"{json_uri}: file not found\n")
             return False
 
         self.year = year
@@ -214,7 +229,7 @@ class FileHelper:
 
         parsed_uri = urlparse(uri)
         if parsed_uri.scheme == "s3":
-            return _download(parsed_uri, self.s3_client, self.download_dir)
+            return _download(self.logger, parsed_uri, self.s3_client, self.download_dir)
 
         return parsed_uri.path
 
@@ -227,9 +242,13 @@ class FileHelper:
             c_ws for c_ws in self.wav_cache.values() if c_ws.sound_file is not None
         ]
         if len(c_ws_files_open) > 0:
-            debug(f"day_completed: closing {len(c_ws_files_open)} wav files still open")
+            self.logger.debug(
+                f"day_completed: closing {len(c_ws_files_open)} wav files still open"
+            )
             for c_ws in c_ws_files_open:
-                debug(f"Closing sound file for cached {c_ws.uri=} {c_ws.age=}")
+                self.logger.debug(
+                    f"Closing sound file for cached {c_ws.uri=} {c_ws.age=}"
+                )
                 c_ws.sound_file.close()
 
         # remove any downloaded files (cloud case):
@@ -244,13 +263,15 @@ class FileHelper:
         if parsed_uri.scheme == "s3":
             return self._get_json_s3(parsed_uri)
         #  simply assume local file:
-        return _get_json_local(parsed_uri.path)
+        return self._get_json_local(parsed_uri.path)
 
     def _get_json_s3(self, parsed_uri: ParseResult) -> Optional[str]:
-        local_filename = _download(parsed_uri, self.s3_client, self.download_dir)
+        local_filename = _download(
+            self.logger, parsed_uri, self.s3_client, self.download_dir
+        )
         if local_filename is None:
             return None
-        return _get_json_local(local_filename)
+        return self._get_json_local(local_filename)
 
     def extract_audio_segment(
         self, at_hour: int, at_minute: int
@@ -268,6 +289,7 @@ class FileHelper:
         assert self.day is not None
 
         intersections = get_intersecting_entries(
+            self.logger,
             self.json_entries,
             self.year,
             self.month,
@@ -284,16 +306,18 @@ class FileHelper:
         prefix = f"({at_hour:02}h:{at_minute:02}m)"
         for intersection in intersections:
             if intersection.duration_secs == 0:
-                warn("No data from intersection")
+                self.logger.warn("No data from intersection")
                 continue
 
             ws = self._get_wav_status(intersection.entry.uri)
             if ws.error is not None:
                 return None
 
-            info(f"    {prefix} {intersection.duration_secs} secs from {ws.wav_filename}")
+            self.logger.info(
+                f"    {prefix} {intersection.duration_secs} secs from {ws.wav_filename}"
+            )
 
-            if audio_info is not None and not _check_audio_info(
+            if audio_info is not None and not self._check_audio_info(
                 audio_info, ws.audio_info
             ):
                 return None  # error!
@@ -312,10 +336,12 @@ class FileHelper:
                     audio_segment = ws.sound_file.read(num_samples)
                     if len(audio_segment) < num_samples:
                         # partial-data case.
-                        warn(f"!!! partial data: {len(audio_segment)} < {num_samples}")
+                        self.logger.warn(
+                            f"!!! partial data: {len(audio_segment)} < {num_samples}"
+                        )
 
             except sf.LibsndfileError as e:
-                error(f"{e}")
+                self.logger.error(f"{e}")
                 return None
 
             if aggregated_segment is None:
@@ -327,6 +353,24 @@ class FileHelper:
             assert audio_info is not None
             return audio_info, aggregated_segment
         return None
+
+    def _check_audio_info(self, ai1: AudioInfo, ai2: AudioInfo) -> bool:
+        if ai1.samplerate != ai2.samplerate:
+            self.logger.error(
+                f"UNEXPECTED: sample rate mismatch: {ai1.samplerate} vs {ai2.samplerate}"
+            )
+            return False
+        if ai1.channels != ai2.channels:
+            self.logger.error(
+                f"UNEXPECTED: channel count mismatch: {ai1.channels} vs {ai2.channels}"
+            )
+            return False
+        if ai1.subtype != ai2.subtype:
+            self.logger.error(
+                f"UNEXPECTED: subtype mismatch: {ai1.subtype} vs {ai2.subtype}"
+            )
+            return False
+        return True
 
     def _get_wav_status(self, uri: str) -> WavStatus:
         """
@@ -340,15 +384,16 @@ class FileHelper:
         :param uri:
         :return:
         """
-        debug(f"_get_wav_status: {uri=}")
+        self.logger.debug(f"_get_wav_status: {uri=}")
         ws = self.wav_cache.get(uri)
         if ws is None:
             # currently cached ones get a bit older:
             for c_ws in self.wav_cache.values():
                 c_ws.age += 1
 
-            debug(f"WavStatus: creating for {uri=}")
+            self.logger.debug(f"WavStatus: creating for {uri=}")
             ws = WavStatus(
+                self.logger,
                 uri,
                 self.audio_base_dir,
                 self.audio_path_map_prefix,
@@ -358,25 +403,35 @@ class FileHelper:
             )
             self.wav_cache[uri] = ws
         else:
-            debug(f"WavStatus: already available for {uri=}")
+            self.logger.debug(f"WavStatus: already available for {uri=}")
 
         # close and remove files in the cache that are not fresh enough in terms
         # of not being recently used
         for c_uri, c_ws in list(self.wav_cache.items()):
             if uri != c_uri and c_ws.age > 2 and c_ws.sound_file is not None:
-                debug(f"Closing sound file for cached uri={c_uri} age={c_ws.age}")
+                self.logger.debug(
+                    f"Closing sound file for cached uri={c_uri} age={c_ws.age}"
+                )
                 c_ws.sound_file.close()
                 c_ws.sound_file = None
                 if os.getenv("REMOVE_DOWNLOADED_FILES", "yes") == "yes":
                     c_ws.remove_downloaded_file()
 
-        if get_logger().isEnabledFor(logging.DEBUG):
+        if self.logger.is_enabled_for(logging.DEBUG):
             c_wss = self.wav_cache.values()
             open_files = len([c_ws for c_ws in c_wss if c_ws.sound_file])
             ages = [c_ws.age for c_ws in c_wss]
-            debug(f"{open_files=}  ages={brief_list(ages)}")
+            self.logger.debug(f"{open_files=}  ages={brief_list(ages)}")
 
         return ws
+
+    def _get_json_local(self, filename: str) -> Optional[str]:
+        try:
+            with open(filename, "r", encoding="UTF-8") as f:
+                return f.read()
+        except IOError as e:
+            self.logger.error(f"Error reading {filename}: {e}")
+            return None
 
 
 def get_bucket_key_simple(parsed_uri: ParseResult) -> Tuple[str, str, str]:
@@ -385,34 +440,3 @@ def get_bucket_key_simple(parsed_uri: ParseResult) -> Tuple[str, str, str]:
     simple = key.split("/")[-1] if "/" in key else key
     assert "/" not in simple, f"Unexpected simple_filename: '{simple}'"
     return bucket, key, simple
-
-
-def _get_json_local(filename: str) -> Optional[str]:
-    try:
-        with open(filename, "r", encoding="UTF-8") as f:
-            return f.read()
-    except IOError as e:
-        error(f"Error reading {filename}: {e}")
-        return None
-
-
-def _get_audio_info(wav_filename: str) -> Optional[AudioInfo]:
-    try:
-        sfi = sf.info(wav_filename)
-        return AudioInfo(sfi.samplerate, sfi.channels, sfi.subtype)
-    except sf.LibsndfileError as e:
-        error(f"{e}")
-        return None
-
-
-def _check_audio_info(ai1: AudioInfo, ai2: AudioInfo) -> bool:
-    if ai1.samplerate != ai2.samplerate:
-        error(f"UNEXPECTED: sample rate mismatch: {ai1.samplerate} vs {ai2.samplerate}")
-        return False
-    if ai1.channels != ai2.channels:
-        error(f"UNEXPECTED: channel count mismatch: {ai1.channels} vs {ai2.channels}")
-        return False
-    if ai1.subtype != ai2.subtype:
-        error(f"UNEXPECTED: subtype mismatch: {ai1.subtype} vs {ai2.subtype}")
-        return False
-    return True

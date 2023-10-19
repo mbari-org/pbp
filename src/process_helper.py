@@ -10,8 +10,9 @@ import xarray as xr
 from src import save_dataset_to_csv, save_dataset_to_netcdf
 
 from src.file_helper import FileHelper
+from src.logging_helper import PbpLogger
 from src.metadata import MetadataHelper, parse_attributes, replace_snippets
-from src.misc_helper import debug, error, gen_hour_minute_times, info, parse_date, warn
+from src.misc_helper import gen_hour_minute_times, parse_date
 from src.pypam_support import ProcessResult, PypamSupport
 
 
@@ -32,6 +33,7 @@ class ProcessDayResult:
 class ProcessHelper:
     def __init__(
         self,
+        logger: PbpLogger,
         file_helper: FileHelper,
         output_dir: str,
         output_prefix: str,
@@ -72,8 +74,9 @@ class ProcessHelper:
             Tuple of (lower, upper) frequency limits to use for the PSD,
             lower inclusive, upper exclusive.
         """
+        self.logger = logger
 
-        info(
+        self.logger.info(
             "Creating ProcessHelper:"
             + f"\n    output_dir:             {output_dir}"
             + f"\n    output_prefix:          {output_prefix}"
@@ -96,6 +99,7 @@ class ProcessHelper:
         self.gen_csv = gen_csv
 
         self.metadata_helper = MetadataHelper(
+            self.logger,
             self._load_attributes("global", global_attrs_uri),
             self._load_attributes("variable", variable_attrs_uri),
         )
@@ -112,18 +116,20 @@ class ProcessHelper:
             s_local_filename = file_helper.get_local_filename(sensitivity_uri)
             if s_local_filename is not None:
                 sensitivity_ds = xr.open_dataset(s_local_filename)
-                info(f"Will use loaded sensitivity from {s_local_filename=}")
+                self.logger.info(f"Will use loaded sensitivity from {s_local_filename=}")
                 self.sensitivity_da = sensitivity_ds.sensitivity
-                debug(f"{self.sensitivity_da=}")
+                self.logger.debug(f"{self.sensitivity_da=}")
             else:
-                error(
+                self.logger.error(
                     f"Unable to resolve sensitivity_uri: '{sensitivity_uri}'. Ignoring it."
                 )
 
         if self.sensitivity_da is None and self.sensitivity_flat_value is not None:
-            info(f"Will use given flat sensitivity value: {sensitivity_flat_value}")
+            self.logger.info(
+                f"Will use given flat sensitivity value: {sensitivity_flat_value}"
+            )
 
-        self.pypam_support = PypamSupport()
+        self.pypam_support = PypamSupport(self.logger)
 
         pathlib.Path(output_dir).mkdir(exist_ok=True)
 
@@ -131,15 +137,15 @@ class ProcessHelper:
         self, what: str, attrs_uri: Optional[str]
     ) -> Optional[OrderedDict[str, Any]]:
         if attrs_uri:
-            info(f"Loading {what} attributes from {attrs_uri=}")
+            self.logger.info(f"Loading {what} attributes from {attrs_uri=}")
             filename = self.file_helper.get_local_filename(attrs_uri)
             if filename is not None:
                 with open(filename, "r", encoding="UTF-8") as f:
                     return parse_attributes(f.read(), pathlib.Path(filename).suffix)
             else:
-                error(f"Unable to resolve '{attrs_uri=}'. Ignoring it.")
+                self.logger.error(f"Unable to resolve '{attrs_uri=}'. Ignoring it.")
         else:
-            info(f"No '{what}' attributes URI given.")
+            self.logger.info(f"No '{what}' attributes URI given.")
         return None
 
     def process_day(self, date: str) -> Optional[ProcessDayResult]:
@@ -161,7 +167,7 @@ class ProcessHelper:
 
         if self.max_segments > 0:
             at_hour_and_minutes = at_hour_and_minutes[: self.max_segments]
-            info(f"NOTE: Limiting to {len(at_hour_and_minutes)} segments ...")
+            self.logger.info(f"NOTE: Limiting to {len(at_hour_and_minutes)} segments ...")
 
         self.process_hours_minutes(at_hour_and_minutes)
 
@@ -170,7 +176,9 @@ class ProcessHelper:
         )
 
         if result is None:
-            warn(f"No segments processed, nothing to aggregate for day {date}.")
+            self.logger.warn(
+                f"No segments processed, nothing to aggregate for day {date}."
+            )
             return None
 
         psd_da = result.psd_da
@@ -210,11 +218,11 @@ class ProcessHelper:
 
         basename = f"{self.output_dir}/{self.output_prefix}{year:04}{month:02}{day:02}"
         nc_filename = f"{basename}.nc"
-        save_dataset_to_netcdf(ds_result, nc_filename)
+        save_dataset_to_netcdf(self.logger, ds_result, nc_filename)
         generated_filenames = [nc_filename]
         if self.gen_csv:
             csv_filename = f"{basename}.csv"
-            save_dataset_to_csv(ds_result, csv_filename)
+            save_dataset_to_csv(self.logger, ds_result, csv_filename)
             generated_filenames.append(csv_filename)
 
         self.file_helper.day_completed()
@@ -222,7 +230,7 @@ class ProcessHelper:
         return ProcessDayResult(generated_filenames, ds_result)
 
     def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
-        info(f"Processing {len(hour_and_minutes)} segments ...")
+        self.logger.info(f"Processing {len(hour_and_minutes)} segments ...")
         for at_hour, at_minute in hour_and_minutes:
             self.process_segment_at_hour_minute(at_hour, at_minute)
 
@@ -233,11 +241,13 @@ class ProcessHelper:
 
         dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
 
-        info(f"Segment at {at_hour:02}h:{at_minute:02}m ...")
-        info(f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:")
+        self.logger.info(f"Segment at {at_hour:02}h:{at_minute:02}m ...")
+        self.logger.info(
+            f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:"
+        )
         extraction = file_helper.extract_audio_segment(at_hour, at_minute)
         if extraction is None:
-            warn(f"cannot get audio segment at {at_hour:02}:{at_minute:02}")
+            self.logger.warn(f"cannot get audio segment at {at_hour:02}:{at_minute:02}")
             self.pypam_support.add_missing_segment(dt)
             return
 
@@ -245,12 +255,12 @@ class ProcessHelper:
 
         if self.pypam_support.parameters_set():
             if self.pypam_support.fs != audio_info.samplerate:
-                info(
+                self.logger.info(
                     f"ERROR: samplerate changed from {self.pypam_support.fs} to {audio_info.samplerate}"
                 )
                 return
         else:
-            info("Got audio parameters")
+            self.logger.info("Got audio parameters")
             self.pypam_support.set_parameters(
                 audio_info.samplerate,
                 subset_to=self.subset_to,

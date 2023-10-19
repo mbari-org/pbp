@@ -8,7 +8,8 @@ import pypam.signal as sig
 import xarray as xr
 from pypam import utils
 
-from src.misc_helper import brief_list, debug, info
+from src.logging_helper import PbpLogger
+from src.misc_helper import brief_list
 
 
 @dataclass
@@ -30,7 +31,7 @@ class _CapturedSegment:
 
 
 class PypamSupport:
-    def __init__(self) -> None:
+    def __init__(self, logger: PbpLogger) -> None:
         """
         Creates a helper to process audio segments for a given day,
         resulting in the aggregated hybrid millidecade PSD product.
@@ -51,6 +52,7 @@ class PypamSupport:
         When all segments have been captured, call `process_captured_segments`
         to get the result.
         """
+        self.logger = logger
 
         # to capture reported segments (missing and otherwise):
         self._captured_segments: List[_CapturedSegment] = []
@@ -89,7 +91,7 @@ class PypamSupport:
         self._subset_to = subset_to
         band = [0, self.fs / 2]  # for now.
 
-        debug(f"PypamSupport: {subset_to=} {band=}")
+        self.logger.debug(f"PypamSupport: {subset_to=} {band=}")
 
         self._bands_limits, self._bands_c = utils.get_hybrid_millidecade_limits(
             band=band, nfft=self._nfft
@@ -110,7 +112,7 @@ class PypamSupport:
             The datetime of the start of the missing segment.
         """
         self._captured_segments.append(_CapturedSegment(dt, 0, None))
-        info(f"  captured segment: {dt}  (NO DATA)")
+        self.logger.info(f"  captured segment: {dt}  (NO DATA)")
 
     def add_segment(self, dt: datetime, data: np.ndarray):
         """
@@ -131,7 +133,7 @@ class PypamSupport:
         num_secs = len(data) / self.fs
         self._captured_segments.append(_CapturedSegment(dt, num_secs, spectrum))
         self._num_actual_segments += 1
-        info(f"  captured segment: {dt}")
+        self.logger.info(f"  captured segment: {dt}")
 
     def process_captured_segments(
         self,
@@ -170,10 +172,10 @@ class PypamSupport:
             effort.append(np.float32(cs.num_secs))
 
             spectrum = nan_spectrum if cs.spectrum is None else cs.spectrum
-            info(f"  spectrum for: {cs.dt} (effort={cs.num_secs})")
+            self.logger.info(f"  spectrum for: {cs.dt} (effort={cs.num_secs})")
             spectra.append(spectrum)
 
-        info("Aggregating results ...")
+        self.logger.info("Aggregating results ...")
         psd_da = self._get_aggregated_milli_psd(
             times=times,
             spectra=spectra,
@@ -201,8 +203,8 @@ class PypamSupport:
         )
 
         psd_da = self._spectra_to_bands(psd_da)
-        debug(f"  {psd_da.frequency_bins=}")
-        psd_da = _apply_sensitivity(psd_da, sensitivity_da)
+        self.logger.debug(f"  {psd_da.frequency_bins=}")
+        psd_da = self._apply_sensitivity(psd_da, sensitivity_da)
 
         # just need single precision:
         psd_da = psd_da.astype(np.float32)
@@ -212,9 +214,32 @@ class PypamSupport:
         milli_psd = psd_da
         milli_psd.name = "psd"
 
-        info(f"Resulting milli_psd={milli_psd}")
+        self.logger.info(f"Resulting milli_psd={milli_psd}")
 
         return milli_psd
+
+    def _apply_sensitivity(
+        self,
+        psd_da: xr.DataArray,
+        sensitivity_da: Optional[xr.DataArray],
+    ) -> xr.DataArray:
+        psd_da = cast(xr.DataArray, 10 * np.log10(psd_da))
+
+        # NOTE: per slack discussion today 2023-05-23,
+        # apply _addition_ of the given sensitivity
+        # (previously, subtraction)
+        # 2023-06-12: Back to subtraction (as we're focusing on MARS data at the moment)
+        # TODO but this is still one pending aspect to finalize.
+        # 2023-08-03: sensitivity_flat_value is handled upstream now.
+
+        if sensitivity_da is not None:
+            freq_subset = sensitivity_da.interp(frequency=psd_da.frequency_bins)
+            self.logger.info(
+                f"  Applying sensitivity({len(freq_subset.values)})={freq_subset}"
+            )
+            psd_da -= freq_subset.values
+
+        return psd_da
 
     def _spectra_to_bands(self, psd_da: xr.DataArray) -> xr.DataArray:
         assert self.fs is not None
@@ -222,10 +247,12 @@ class PypamSupport:
 
         bands_limits, bands_c = self._bands_limits, self._bands_c
         if self._subset_to is not None:
-            bands_limits, bands_c = _adjust_limits(bands_limits, bands_c, self._subset_to)
+            bands_limits, bands_c = self._adjust_limits(
+                bands_limits, bands_c, self._subset_to
+            )
 
         def print_array(name: str, arr: List[float]):
-            info(f"{name} ({len(arr)}) = {brief_list(arr)}")
+            self.logger.info(f"{name} ({len(arr)}) = {brief_list(arr)}")
 
         print_array("       bands_c", bands_c)
         print_array("  bands_limits", bands_limits)
@@ -241,6 +268,24 @@ class PypamSupport:
         psd_da = psd_da.drop_vars(["lower_frequency", "upper_frequency"])
         return psd_da
 
+    def _adjust_limits(
+        self, bands_limits: List[float], bands_c: List[float], subset_to: Tuple[int, int]
+    ) -> Tuple[List[float], List[float]]:
+        start_hz, end_hz = subset_to
+        self.logger.info(f"Subsetting to [{start_hz:,}, {end_hz:,})Hz")
+
+        start_index = 0
+        while start_index < len(bands_c) and bands_c[start_index] < start_hz:
+            start_index += 1
+        end_index = start_index
+        while end_index < len(bands_c) and bands_c[end_index] < end_hz:
+            end_index += 1
+        bands_c = bands_c[start_index:end_index]
+        new_bands_c_len = len(bands_c)
+        bands_limits = bands_limits[start_index : start_index + new_bands_c_len + 1]
+
+        return bands_limits, bands_c
+
 
 def _get_spectrum(data: np.ndarray, fs: int, nfft: int) -> Tuple[np.ndarray, np.ndarray]:
     signal = sig.Signal(data, fs=fs)
@@ -249,43 +294,3 @@ def _get_spectrum(data: np.ndarray, fs: int, nfft: int) -> Tuple[np.ndarray, np.
         scaling="density", nfft=nfft, db=False, overlap=0.5, force_calc=True
     )
     return fbands, spectrum
-
-
-def _apply_sensitivity(
-    psd_da: xr.DataArray,
-    sensitivity_da: Optional[xr.DataArray],
-) -> xr.DataArray:
-    psd_da = cast(xr.DataArray, 10 * np.log10(psd_da))
-
-    # NOTE: per slack discussion today 2023-05-23,
-    # apply _addition_ of the given sensitivity
-    # (previously, subtraction)
-    # 2023-06-12: Back to subtraction (as we're focusing on MARS data at the moment)
-    # TODO but this is still one pending aspect to finalize.
-    # 2023-08-03: sensitivity_flat_value is handled upstream now.
-
-    if sensitivity_da is not None:
-        freq_subset = sensitivity_da.interp(frequency=psd_da.frequency_bins)
-        info(f"  Applying sensitivity({len(freq_subset.values)})={freq_subset}")
-        psd_da -= freq_subset.values
-
-    return psd_da
-
-
-def _adjust_limits(
-    bands_limits: List[float], bands_c: List[float], subset_to: Tuple[int, int]
-) -> Tuple[List[float], List[float]]:
-    start_hz, end_hz = subset_to
-    info(f"Subsetting to [{start_hz:,}, {end_hz:,})Hz")
-
-    start_index = 0
-    while start_index < len(bands_c) and bands_c[start_index] < start_hz:
-        start_index += 1
-    end_index = start_index
-    while end_index < len(bands_c) and bands_c[end_index] < end_hz:
-        end_index += 1
-    bands_c = bands_c[start_index:end_index]
-    new_bands_c_len = len(bands_c)
-    bands_limits = bands_limits[start_index : start_index + new_bands_c_len + 1]
-
-    return bands_limits, bands_c

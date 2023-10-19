@@ -75,17 +75,26 @@ main-gizo-multiple-days year month *days="":
     done
     wait
 
-# Run main (on my mac)
-main-mac *more_args="":
+# Replicate notebook
+main-mb05 *more_args="":
+    #!/usr/bin/env bash
+    #mkdir -p NB_SPACE/JSON/2022
+    mkdir -p NB_SPACE/DOWNLOADS
+    mkdir -p NB_SPACE/OUTPUT
+
     PYTHONPATH=. python src/main.py \
-                 --json-base-dir=tests/json \
-                 --audio-path-prefix=/Volumes \
-                 --date=20220902 \
-                 --voltage-multiplier=3 \
-                 --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
-                 --gen-csv \
-                 --subset-to 10 100000 \
-                 --output-dir=output \
+                 --date=20220812 \
+                 --json-base-dir=NB_SPACE/JSON \
+                 --voltage-multiplier=1 \
+                 --sensitivity-flat-value=1 \
+                 --global-attrs metadata/mb05/globalAttributes_MB05.yaml \
+                 --variable-attrs metadata/mb05/variableAttributes_MB05.yaml \
+                 --subset-to 10 24000 \
+                 --output-dir=NB_SPACE/OUTPUT \
+                 --output-prefix=MB05_ \
+                 --s3 \
+                 --download-dir=NB_SPACE/DOWNLOADS \
+                 --max-segments=1 \
                  {{more_args}}
 
 #                 --max-segments=5 \
