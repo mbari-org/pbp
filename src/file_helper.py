@@ -120,7 +120,7 @@ def _download(
         os.path.isfile(local_filename)
         and os.getenv("ASSUME_DOWNLOADED_FILES", "no") == "yes"
     ):
-        logger.warn(f"ASSUMING already downloaded: {bucket=} {key=} to {local_filename}")
+        logger.info(f"ASSUMING ALREADY DOWNLOADED: {bucket=} {key=} to {local_filename}")
         return local_filename
 
     logger.info(f"Downloading {bucket=} {key=} to {local_filename}")
