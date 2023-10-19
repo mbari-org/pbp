@@ -43,7 +43,7 @@ def main(opts):
         download_dir=opts.download_dir,
     )
 
-    processor_helper = ProcessHelper(
+    process_helper = ProcessHelper(
         logger=logger,
         file_helper=file_helper,
         output_dir=opts.output_dir,
@@ -58,7 +58,7 @@ def main(opts):
         subset_to=tuple(opts.subset_to) if opts.subset_to else None,
     )
     try:
-        processor_helper.process_day(opts.date)
+        process_helper.process_day(opts.date)
     except KeyboardInterrupt:
         logger.info("INTERRUPTED")
 

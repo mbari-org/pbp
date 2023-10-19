@@ -146,7 +146,7 @@ def main():
         download_dir=download_dir,
     )
 
-    processor_helper = ProcessHelper(
+    process_helper = ProcessHelper(
         logger=logger,
         file_helper=file_helper,
         output_dir=generated_dir,
@@ -161,7 +161,7 @@ def main():
         subset_to=subset_to,
     )
 
-    result = processor_helper.process_day(date)
+    result = process_helper.process_day(date)
 
     if result is None:
         logger.warn(f"No NetDF file was generated.  ({date=})")
