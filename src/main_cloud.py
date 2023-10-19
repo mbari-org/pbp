@@ -51,7 +51,7 @@ import pathlib
 import boto3
 
 from src.file_helper import FileHelper
-from src.logging_helper import PbpLogger
+from src.logging_helper import create_logger
 from src.process_helper import ProcessHelper
 
 
@@ -109,7 +109,7 @@ def main():
     pathlib.Path(generated_dir).mkdir(parents=True, exist_ok=True)
 
     log_filename = f"{generated_dir}/{output_prefix}{date}.log"
-    logger = PbpLogger(
+    logger = create_logger(
         name=date,
         log_filename_and_level=(log_filename, logging.INFO),
         console_level=logging.DEBUG,

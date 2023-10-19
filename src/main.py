@@ -13,10 +13,10 @@ from src.main_args import parse_arguments
 def main(opts):
     # pylint: disable=import-outside-toplevel
     from src.file_helper import FileHelper
-    from src.logging_helper import PbpLogger
+    from src.logging_helper import create_logger
     from src.process_helper import ProcessHelper
 
-    logger = PbpLogger(
+    logger = create_logger(
         name=opts.date,
         log_filename_and_level=(
             f"{opts.output_dir}/{opts.output_prefix}{opts.date}.log",

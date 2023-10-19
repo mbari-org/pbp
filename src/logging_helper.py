@@ -1,6 +1,9 @@
 import logging
 import os
-from typing import Optional, Tuple
+import random
+import string
+
+from typing import Dict, Optional, Tuple
 
 
 class PbpLogger:
@@ -14,7 +17,7 @@ class PbpLogger:
         Create a logger.
 
         :param name:
-            The name of the logger, tyically the date being processed.
+            The name of the logger, typically the date being processed.
         :param log_filename_and_level:
             (filename, level) tuple or None to disable file logging.
         :param console_level:
@@ -62,3 +65,21 @@ class PbpLogger:
 
     def error(self, s: str):
         self.logger.error(s)
+
+
+_loggers: Dict[str, PbpLogger] = {}
+
+
+def create_logger(
+    name: str,
+    log_filename_and_level: Optional[Tuple[str, int]] = None,
+    console_level: Optional[int] = None,
+):
+    if name in _loggers:
+        print(f"WARNING: Logger already exists for {name=}")
+        # Add some random suffix to the name to avoid collisions
+        name += "_" + "".join(random.choices(string.ascii_letters, k=7))
+
+    logger = PbpLogger(name, log_filename_and_level, console_level)
+    _loggers[name] = logger
+    return logger
