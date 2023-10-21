@@ -130,6 +130,20 @@ Examples:
     )
 
     parser.add_argument(
+        "--assume-downloaded-files",
+        default=False,
+        action="store_true",
+        help="If any destination file for a download exists, assume it was downloaded already.",
+    )
+
+    parser.add_argument(
+        "--retain-downloaded-files",
+        default=False,
+        action="store_true",
+        help="Do not remove any downloaded files after use.",
+    )
+
+    parser.add_argument(
         "--gen-csv",
         default=False,
         action="store_true",

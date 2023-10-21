@@ -41,6 +41,8 @@ def main(opts):
         audio_path_prefix=opts.audio_path_prefix,
         s3_client=s3_client,
         download_dir=opts.download_dir,
+        assume_downloaded_files=opts.assume_downloaded_files,
+        retain_downloaded_files=opts.retain_downloaded_files,
     )
 
     process_helper = ProcessHelper(

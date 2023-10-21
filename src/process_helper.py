@@ -92,6 +92,7 @@ class ProcessHelper:
                 else ""
             )
             + f"\n    subset_to:              {subset_to}"
+            + "\n"
         )
         self.file_helper = file_helper
         self.output_dir = output_dir

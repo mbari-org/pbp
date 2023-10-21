@@ -82,7 +82,8 @@ main-mb05 *more_args="":
     mkdir -p NB_SPACE/DOWNLOADS
     mkdir -p NB_SPACE/OUTPUT
 
-    PYTHONPATH=. python src/main.py \
+    PYTHONPATH=. EXCLUDE_LOG_TIME=yes \
+        python src/main.py \
                  --date=20220812 \
                  --json-base-dir=NB_SPACE/JSON \
                  --voltage-multiplier=1 \
@@ -94,6 +95,8 @@ main-mb05 *more_args="":
                  --output-prefix=MB05_ \
                  --s3 \
                  --download-dir=NB_SPACE/DOWNLOADS \
+                 --assume-downloaded-files \
+                 --retain-downloaded-files \
                  --max-segments=1 \
                  {{more_args}}
 
@@ -127,7 +130,7 @@ main-cloud-mars-basic-test date="20210901":
     export GLOBAL_ATTRS_URI="metadata/mars/globalAttributes.yaml"
     export VARIABLE_ATTRS_URI="metadata/mars/variableAttributes.yaml"
     export CLOUD_TMP_DIR="with_pypam_0.2.0"
-    export REMOVE_DOWNLOADED_FILES=no
+    export RETAIN_DOWNLOADED_FILES=yes
     export PYTHONPATH=.
     python src/main_cloud.py
 
@@ -158,7 +161,7 @@ main-cloud-chumash-basic-test date="20230108":
     export GLOBAL_ATTRS_URI="metadata/chumash/globalAttributes.yaml"
     export VARIABLE_ATTRS_URI="metadata/chumash/variableAttributes.yaml"
     export CLOUD_TMP_DIR="cloud_tmp_chumash"
-    export REMOVE_DOWNLOADED_FILES=no
+    export RETAIN_DOWNLOADED_FILES=yes
     export PYTHONPATH=.
     python src/main_cloud.py
 

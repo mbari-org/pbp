@@ -29,11 +29,12 @@ class WavStatus:
         self,
         logger: PbpLogger,
         uri: str,
-        audio_base_dir: Optional[str] = None,
-        audio_path_map_prefix: str = "",
-        audio_path_prefix: str = "",
-        s3_client: Optional[BaseClient] = None,
-        download_dir: Optional[str] = None,
+        audio_base_dir: Optional[str],
+        audio_path_map_prefix: str,
+        audio_path_prefix: str,
+        s3_client: Optional[BaseClient],
+        download_dir: Optional[str],
+        assume_downloaded_files: bool,
     ):
         self.logger = logger
 
@@ -44,6 +45,7 @@ class WavStatus:
         self.audio_path_prefix = audio_path_prefix
         self.s3_client = s3_client
         self.download_dir: str = download_dir if download_dir else "."
+        self.assume_downloaded_files = assume_downloaded_files
 
         self.error = None
 
@@ -85,7 +87,13 @@ class WavStatus:
         return wav_filename
 
     def _get_wav_filename_s3(self) -> Optional[str]:
-        return _download(self.logger, self.parsed_uri, self.s3_client, self.download_dir)
+        return _download(
+            self.logger,
+            self.parsed_uri,
+            self.s3_client,
+            self.download_dir,
+            self.assume_downloaded_files,
+        )
 
     def remove_downloaded_file(self):
         if not pathlib.Path(self.wav_filename).exists():
@@ -103,23 +111,24 @@ class WavStatus:
 
 
 def _download(
-    logger: PbpLogger, parsed_uri: ParseResult, s3_client: BaseClient, download_dir: str
+    logger: PbpLogger,
+    parsed_uri: ParseResult,
+    s3_client: BaseClient,
+    download_dir: str,
+    assume_downloaded_files: bool = False,
 ) -> Optional[str]:
     """
     Downloads the given S3 URI to the given download directory.
 
-    NOTE: For development/testing convenience, the `ASSUME_DOWNLOADED_FILES` environment variable
-    can be set to `yes` to skip downloading files that already exist in the download directory.
+    NOTE: `assume_downloaded_files` can be set to True to skip downloading files
+    that already exist in the download directory.
 
     :return: Downloaded filename or None if error
     """
     bucket, key, simple = get_bucket_key_simple(parsed_uri)
     local_filename = f"{download_dir}/{simple}"
 
-    if (
-        os.path.isfile(local_filename)
-        and os.getenv("ASSUME_DOWNLOADED_FILES", "no") == "yes"
-    ):
+    if os.path.isfile(local_filename) and assume_downloaded_files:
         logger.info(f"ASSUMING ALREADY DOWNLOADED: {bucket=} {key=} to {local_filename}")
         return local_filename
 
@@ -147,6 +156,8 @@ class FileHelper:
         segment_size_in_mins: int = 1,
         s3_client: Optional[BaseClient] = None,
         download_dir: Optional[str] = None,
+        assume_downloaded_files: bool = False,
+        retain_downloaded_files: bool = False,
     ):
         """
 
@@ -166,18 +177,37 @@ class FileHelper:
             If given, it will be used to handle `s3:` based uris.
         :param download_dir:
             Save downloaded S3 files here if given, otherwise, save in current directory.
+        :param assume_downloaded_files:
+            If True, skip downloading files that already exist in the download directory.
+        :param retain_downloaded_files:
+            If True, remove downloaded files after use.
         """
         self.logger = logger
 
         self.logger.info(
             "Creating FileHelper:"
-            f"\n    json_base_dir:         {json_base_dir}"
-            f"\n    audio_base_dir:        {audio_base_dir}"
-            f"\n    audio_path_map_prefix: '{audio_path_map_prefix}'"
-            f"\n    audio_path_prefix:     '{audio_path_prefix}'"
-            f"\n    segment_size_in_mins:  {segment_size_in_mins}"
-            f"\n    s3_client:             {s3_client}"
-            f"\n    download_dir:          {download_dir}"
+            + f"\n    json_base_dir:           {json_base_dir}"
+            + (
+                f"\n    audio_base_dir:          {audio_base_dir}"
+                if audio_base_dir
+                else ""
+            )
+            + (
+                f"\n    audio_path_map_prefix:   '{audio_path_map_prefix}'"
+                if audio_path_map_prefix
+                else ""
+            )
+            + (
+                f"\n    audio_path_prefix:       '{audio_path_prefix}'"
+                if audio_path_prefix
+                else ""
+            )
+            + f"\n    segment_size_in_mins:    {segment_size_in_mins}"
+            + f"\n    s3_client:               {'(given)' if s3_client else 'None'}"
+            + f"\n    download_dir:            {download_dir}"
+            + f"\n    assume_downloaded_files: {assume_downloaded_files}"
+            + f"\n    retain_downloaded_files: {retain_downloaded_files}"
+            + "\n"
         )
         self.json_base_dir = json_base_dir
         self.audio_base_dir = audio_base_dir
@@ -186,6 +216,8 @@ class FileHelper:
         self.segment_size_in_mins = segment_size_in_mins
         self.s3_client = s3_client
         self.download_dir: str = download_dir if download_dir else "."
+        self.assume_downloaded_files = assume_downloaded_files
+        self.retain_downloaded_files = retain_downloaded_files
 
         self.wav_cache: Dict[str, WavStatus] = {}
 
@@ -229,7 +261,13 @@ class FileHelper:
 
         parsed_uri = urlparse(uri)
         if parsed_uri.scheme == "s3":
-            return _download(self.logger, parsed_uri, self.s3_client, self.download_dir)
+            return _download(
+                self.logger,
+                parsed_uri,
+                self.s3_client,
+                self.download_dir,
+                self.assume_downloaded_files,
+            )
 
         return parsed_uri.path
 
@@ -252,7 +290,7 @@ class FileHelper:
                 c_ws.sound_file.close()
 
         # remove any downloaded files (cloud case):
-        if os.getenv("REMOVE_DOWNLOADED_FILES", "yes") == "yes":
+        if not self.retain_downloaded_files:
             for c_ws in self.wav_cache.values():
                 c_ws.remove_downloaded_file()
 
@@ -267,7 +305,11 @@ class FileHelper:
 
     def _get_json_s3(self, parsed_uri: ParseResult) -> Optional[str]:
         local_filename = _download(
-            self.logger, parsed_uri, self.s3_client, self.download_dir
+            self.logger,
+            parsed_uri,
+            self.s3_client,
+            self.download_dir,
+            self.assume_downloaded_files,
         )
         if local_filename is None:
             return None
@@ -393,13 +435,14 @@ class FileHelper:
 
             self.logger.debug(f"WavStatus: creating for {uri=}")
             ws = WavStatus(
-                self.logger,
-                uri,
-                self.audio_base_dir,
-                self.audio_path_map_prefix,
-                self.audio_path_prefix,
-                self.s3_client,
-                self.download_dir,
+                logger=self.logger,
+                uri=uri,
+                audio_base_dir=self.audio_base_dir,
+                audio_path_map_prefix=self.audio_path_map_prefix,
+                audio_path_prefix=self.audio_path_prefix,
+                s3_client=self.s3_client,
+                download_dir=self.download_dir,
+                assume_downloaded_files=self.assume_downloaded_files,
             )
             self.wav_cache[uri] = ws
         else:
@@ -414,7 +457,7 @@ class FileHelper:
                 )
                 c_ws.sound_file.close()
                 c_ws.sound_file = None
-                if os.getenv("REMOVE_DOWNLOADED_FILES", "yes") == "yes":
+                if not self.retain_downloaded_files:
                     c_ws.remove_downloaded_file()
 
         if self.logger.is_enabled_for(logging.DEBUG):

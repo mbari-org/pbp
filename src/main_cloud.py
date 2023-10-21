@@ -34,15 +34,23 @@
 #     of the `SENSITIVITY_*` environment variables above are given.
 #
 # Mainly for testing purposes, also these environment variables are inspected:
+#
 #  CLOUD_TMP_DIR: (Optional)
 #     Local workspace for downloads and for generated files to be uploaded.
 #     By default, "cloud_tmp".
+#
 #  MAX_SEGMENTS: (Optional)
 #     0, the default, means no restriction, that is, all segments for each day
 #     will be processed.
-#  REMOVE_DOWNLOADED_FILES: (Optional)
-#     "yes", the default, means that any downloaded files for a day
-#     will be removed after processing.
+#
+#  ASSUME_DOWNLOADED_FILES: (Optional)
+#     If "yes", then if any destination file for a download exists,
+#     it is assumed downloaded already.
+#     The default is that downloads are always performed.
+#
+#  RETAIN_DOWNLOADED_FILES: (Optional)
+#     If "yes", do not remove any downloaded files after use.
+#     The default is that any downloaded file is removed after use.
 
 import logging
 import os
@@ -144,6 +152,8 @@ def main():
         json_base_dir=json_bucket_prefix,
         s3_client=s3_client,
         download_dir=download_dir,
+        assume_downloaded_files=os.getenv("ASSUME_DOWNLOADED_FILES", "no") == "yes",
+        retain_downloaded_files=os.getenv("RETAIN_DOWNLOADED_FILES", "no") == "yes",
     )
 
     process_helper = ProcessHelper(
