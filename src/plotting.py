@@ -47,10 +47,10 @@ def plot_dataset_summary(
     seg = 0 * se  # 0 covers nighttime (black)
     # day (white)
     d = np.squeeze(np.where(se > 0))
-    seg[d] = 1
+    seg.iloc[d] = 1
     # dusk / dawn (gray range)
     d = np.squeeze(np.where(np.logical_and(se <= 0, se >= -12)))
-    seg[d] = 1 - abs(se[d] / max(abs(se[d])))
+    seg.iloc[d] = 1 - abs(se.iloc[d] / max(abs(se.iloc[d])))
     # Get the indices of the min and max
     seg1 = pd.Series.to_numpy(solpos.elevation)
     minidx = np.squeeze(np.where(seg1 == min(seg1)))
