@@ -8,7 +8,12 @@ from urllib.parse import ParseResult, urlparse
 
 import numpy as np
 import soundfile as sf
-from botocore.client import BaseClient, ClientError
+
+try:
+    from botocore.client import BaseClient, ClientError
+except ImportError:
+    BaseClient = None
+    ClientError = None
 
 from src.json_support import get_intersecting_entries, JEntry, parse_json_contents
 from src.logging_helper import PbpLogger
