@@ -161,7 +161,6 @@ def main():
         file_helper=file_helper,
         output_dir=generated_dir,
         output_prefix=output_prefix,
-        gen_csv=False,
         global_attrs_uri=global_attrs_uri,
         variable_attrs_uri=variable_attrs_uri,
         voltage_multiplier=voltage_multiplier,

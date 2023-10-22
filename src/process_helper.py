@@ -37,6 +37,7 @@ class ProcessHelper:
         file_helper: FileHelper,
         output_dir: str,
         output_prefix: str,
+        gen_netcdf: bool = True,
         gen_csv: bool = False,
         global_attrs_uri: Optional[str] = None,
         variable_attrs_uri: Optional[str] = None,
@@ -54,6 +55,8 @@ class ProcessHelper:
             Output directory.
         :param output_prefix:
             Output filename prefix.
+        :param gen_netcdf:
+            True to generate the netCDF file.
         :param gen_csv:
             True to also generate CSV version of the result.
         :param global_attrs_uri:
@@ -80,6 +83,7 @@ class ProcessHelper:
             "Creating ProcessHelper:"
             + f"\n    output_dir:             {output_dir}"
             + f"\n    output_prefix:          {output_prefix}"
+            + f"\n    gen_netcdf:             {gen_netcdf}"
             + f"\n    gen_csv:                {gen_csv}"
             + f"\n    global_attrs_uri:       {global_attrs_uri}"
             + f"\n    variable_attrs_uri:     {variable_attrs_uri}"
@@ -97,6 +101,7 @@ class ProcessHelper:
         self.file_helper = file_helper
         self.output_dir = output_dir
         self.output_prefix = output_prefix
+        self.gen_netcdf = gen_netcdf
         self.gen_csv = gen_csv
 
         self.metadata_helper = MetadataHelper(
@@ -217,10 +222,14 @@ class ProcessHelper:
             attrs=self._get_global_attributes(year, month, day),
         )
 
+        generated_filenames = []
         basename = f"{self.output_dir}/{self.output_prefix}{year:04}{month:02}{day:02}"
-        nc_filename = f"{basename}.nc"
-        save_dataset_to_netcdf(self.logger, ds_result, nc_filename)
-        generated_filenames = [nc_filename]
+
+        if self.gen_netcdf:
+            nc_filename = f"{basename}.nc"
+            save_dataset_to_netcdf(self.logger, ds_result, nc_filename)
+            generated_filenames.append(nc_filename)
+
         if self.gen_csv:
             csv_filename = f"{basename}.csv"
             save_dataset_to_csv(self.logger, ds_result, csv_filename)

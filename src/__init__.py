@@ -14,7 +14,7 @@ def save_dataset_to_netcdf(logger: PbpLogger, ds: xr.Dataset, filename: str) -> 
     wait_secs = 3
     # TODO similar re-attempt logic for the CSV (or other) output
 
-    for attempt in range(1, max_attempts):
+    for attempt in range(1, max_attempts + 1):
         try:
             ds.to_netcdf(
                 filename,
@@ -25,9 +25,14 @@ def save_dataset_to_netcdf(logger: PbpLogger, ds: xr.Dataset, filename: str) -> 
                     "sensitivity": {"_FillValue": None},
                 },
             )
+            logger.info(f"  - saved dataset to: {filename}   ({attempt=}")
             return True
         except Exception as e:  # pylint: disable=broad-exception-caught
-            error = f"Unable to save {filename}: {e}  (attempt {attempt} of {max_attempts})"
+            error = (
+                f"Unable to save {filename}:\n"
+                f" {e}\n"
+                f" (attempt {attempt} of {max_attempts})"
+            )
             logger.error(error)
             print(error)
             if attempt < max_attempts:
