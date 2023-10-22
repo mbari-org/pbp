@@ -254,7 +254,7 @@ class ProcessHelper:
 
         audio_info, audio_segment = extraction
 
-        if self.pypam_support.parameters_set():
+        if self.pypam_support.parameters_set:
             if self.pypam_support.fs != audio_info.samplerate:
                 self.logger.info(
                     f"ERROR: samplerate changed from {self.pypam_support.fs} to {audio_info.samplerate}"

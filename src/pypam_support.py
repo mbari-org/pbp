@@ -97,9 +97,10 @@ class PypamSupport:
             band=band, nfft=self._nfft
         )
 
+    @property
     def parameters_set(self) -> bool:
         """
-        Returns True if `set_parameters` has been called.
+        True if `set_parameters` has already been called.
         """
         return self.fs is not None
 
@@ -125,7 +126,7 @@ class PypamSupport:
         :param data:
             The audio data.
         """
-        assert self.parameters_set()
+        assert self.parameters_set
         assert self.fs is not None
         assert self._nfft is not None
 
@@ -143,14 +144,8 @@ class PypamSupport:
         Gets the resulting hybrid millidecade bands for all captured segments.
         At least one actual segment must have been captured, otherwise None is returned.
 
-        Calibration is done if either `sensitivity_da` or `sensitivity_flat_value` is given.
-        `sensitivity_da` has priority over `sensitivity_flat_value`.
-        No calibration is done if neither is given.
-
         :param sensitivity_da:
             If given, it will be used to calibrate the result.
-        :param sensitivity_flat_value:
-            If given, and sensitivity_da not given, it will be used to calibrate the result.
         :return:
             Result if at least an actual segment was captured, None otherwise.
         """
