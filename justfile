@@ -96,7 +96,7 @@ main-mb05 *more_args="":
                  --download-dir=NB_SPACE/DOWNLOADS \
                  --assume-downloaded-files \
                  --retain-downloaded-files \
-                 --max-segments=1 \
+                 --max-segments=5 \
                  {{more_args}}
 
 #                 --max-segments=5 \
