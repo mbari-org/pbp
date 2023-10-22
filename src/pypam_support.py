@@ -199,7 +199,7 @@ class PypamSupport:
 
         psd_da = self._spectra_to_bands(psd_da)
         self.logger.debug(f"  {psd_da.frequency_bins=}")
-        psd_da = self._apply_sensitivity(psd_da, sensitivity_da)
+        psd_da = self._apply_sensitivity_if_given(psd_da, sensitivity_da)
 
         # just need single precision:
         psd_da = psd_da.astype(np.float32)
@@ -213,7 +213,7 @@ class PypamSupport:
 
         return milli_psd
 
-    def _apply_sensitivity(
+    def _apply_sensitivity_if_given(
         self,
         psd_da: xr.DataArray,
         sensitivity_da: Optional[xr.DataArray],
