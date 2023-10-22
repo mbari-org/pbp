@@ -93,7 +93,6 @@ main-mb05 *more_args="":
                  --subset-to 10 24000 \
                  --output-dir=NB_SPACE/OUTPUT \
                  --output-prefix=MB05_ \
-                 --s3 \
                  --download-dir=NB_SPACE/DOWNLOADS \
                  --assume-downloaded-files \
                  --retain-downloaded-files \

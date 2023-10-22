@@ -1,8 +1,3 @@
-import logging
-import os
-
-import boto3
-
 from src.main_args import parse_arguments
 
 # Some imports, in particular involving data processing, cause a delay that is
@@ -12,6 +7,9 @@ from src.main_args import parse_arguments
 
 def main(opts):
     # pylint: disable=import-outside-toplevel
+    import logging
+    import os
+
     from src.file_helper import FileHelper
     from src.logging_helper import create_logger
     from src.process_helper import ProcessHelper
@@ -26,6 +24,9 @@ def main(opts):
 
     s3_client = None
     if opts.s3:
+        # pylint: disable=import-outside-toplevel
+        import boto3
+
         kwargs = {}
         aws_region = os.getenv("AWS_REGION")
         if aws_region is not None:
