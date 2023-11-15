@@ -1,0 +1,2 @@
+from .gen_soundtrap import SoundTrapMetadataGenerator
+from .gen_iclisten import IcListenMetadataGenerator
