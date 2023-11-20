@@ -50,6 +50,8 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
     def run(self):
         print(f'Generating metadata for {self.start} to {self.end}...')
 
+        is_s3, bucket_name = utils.is_s3(self.wav_loc)
+
         # Run for each day in the range
         for day in pd.date_range(self.start, self.end, freq='D'):
             try:
@@ -57,16 +59,23 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                 self.log.info(f'{self.log_prefix} Searching in {self.wav_loc}/*.wav for wav files that match the search pattern {self.search}* ...')
 
                 wav_files = []
-                is_s3 = re.match(r'^s3://', self.wav_loc)
-                # the bucket name will optionally have a * at the end
-                # keep only the bucket name before the *
-                bucket_core = re.sub(r'\*$', '', self.wav_loc)
-                bucket_core = re.sub(r'^s3://', '', bucket_core)
 
-                def check_file(f: str, f_start_dt: datetime, f_end_dt: datetime):
+                def check_file(f: str,
+                               f_start_dt: datetime,
+                               f_end_dt: datetime):
+                    """
+                    Check if the file matches the search pattern and is within the start and end dates
+                    :param f:
+                        The path to the file
+                    :param f_start_dt:
+                        The start date to check
+                    :param f_end_dt:
+                        The end date to check
+                    :return:
+                    """
 
                     f_path = Path(f)
-                    wav_dt = None
+                    f_wav_dt = None
 
                     for s in self.search:
                         # see if the file is a regexp match to search
@@ -78,14 +87,13 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                                 f_path_dt = datetime.strptime(f_path.stem, f'{s}_%Y%m%d_%H%M%S')
 
                                 if f_start_dt <= f_path_dt <= f_end_dt:
-                                    wc = utils.IcListenWavFile(f, f_path_dt)
-                                    wav_files.append(wc)
-                                    wav_dt = f_path_dt
+                                    wav_files.append(utils.IcListenWavFile(f, f_path_dt))
+                                    f_wav_dt = f_path_dt
                             except ValueError:
                                 self.log.error(f'{self.log_prefix} Could not parse {f_path.name}')
                                 return None
 
-                    return wav_dt
+                    return f_wav_dt
 
                 if not is_s3:
                     wav_path = Path(self.wav_loc)
@@ -96,15 +104,18 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                     # dates
                     client = boto3.client('s3')
 
-                    # Set the start and end dates to an hour before and after the start and end dates
+                    # Set the start and end dates to 30 minutes before and after the start and end dates
                     start_dt = day - timedelta(hours=1)
                     end_dt = day + timedelta(days=1)
-                    start_dt_hour = start_dt - timedelta(minutes=30)
-                    end_dt_hour = end_dt + timedelta(minutes=30)
+
+                    # set the window to 3x the expected duration of the wav file to account for any missing data
+                    minutes_window = int(self.seconds_per_file * 3 / 60)
+                    start_dt_hour = start_dt - timedelta(minutes=minutes_window)
+                    end_dt_hour = end_dt + timedelta(minutes=minutes_window)
 
                     for day_hour in pd.date_range(start=start_dt, end=end_dt, freq='H'):
 
-                        bucket = f'{bucket_core}-{day_hour.year:04d}'
+                        bucket = f'{bucket_name}-{day_hour.year:04d}'
                         prefix = f'{day_hour.month:02d}/MARS_{day_hour.year:04d}{day_hour.month:02d}{day_hour.day:02d}_{day_hour.hour:02d}'
                         paginator = client.get_paginator('list_objects')
 
