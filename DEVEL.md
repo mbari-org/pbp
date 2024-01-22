@@ -30,24 +30,24 @@ j all
 which includes type checking, testing, formatting, and pylint:
 ```text
 python -m mypy .
-Success: no issues found in 18 source files
+Success: no issues found in 23 source files
 python -m pytest
-==================================== test session starts ====================================
-platform darwin -- Python 3.9.17, pytest-7.4.0, pluggy-1.0.0
+==================================== test session starts =====================================
+platform darwin -- Python 3.9.17, pytest-7.4.4, pluggy-1.0.0
 ...
-plugins: syrupy-4.0.5
-collected 7 items
+plugins: anyio-4.0.0, syrupy-4.6.0, cov-4.1.0
+collected 9 items
 
-tests/test_file_helper.py .                                                           [ 14%]
-tests/test_json_support.py ...                                                        [ 57%]
-tests/test_metadata.py .                                                              [ 71%]
-tests/test_misc.py ..                                                                 [100%]
+tests/test_file_helper.py .                                                            [ 11%]
+tests/test_json_support.py ...                                                         [ 44%]
+tests/test_metadata.py ...                                                             [ 77%]
+tests/test_misc.py ..                                                                  [100%]
 
----------------------------------- snapshot report summary ----------------------------------
+---------------------------------- snapshot report summary -----------------------------------
 9 snapshots passed.
-===================================== 7 passed in 0.89s =====================================
+===================================== 9 passed in 0.66s ======================================
 python -m ufmt format .
-✨ 16 files already formatted ✨
+✨ 22 files already formatted ✨
 python -m pylint src
 
 --------------------------------------------------------------------

@@ -11,15 +11,6 @@ from dateutil import parser as iso8601_parser
 from src.logging_helper import PbpLogger
 
 
-def datetime_field():
-    return field(
-        metadata=config(
-            encoder=lambda dt: dt.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-            decoder=iso8601_parser.parse,
-        )
-    )
-
-
 @dataclass_json
 @dataclass
 class JEntry:
@@ -29,8 +20,12 @@ class JEntry:
 
     uri: str
     duration_secs: float
-    start: datetime = datetime_field()
-    # end: datetime = datetime_field()  -- not used
+    start: datetime = field(
+        metadata=config(
+            encoder=lambda dt: dt.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            decoder=iso8601_parser.parse,
+        )
+    )
 
     @property
     def path(self) -> str:
