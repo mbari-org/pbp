@@ -10,6 +10,8 @@ import numpy as np
 import soundfile as sf
 
 from botocore.client import BaseClient, ClientError
+from google.cloud.exceptions import NotFound as GsNotFound
+from google.cloud.storage import Client as GsClient
 
 from src.json_support import get_intersecting_entries, JEntry, parse_json_contents
 from src.logging_helper import PbpLogger
@@ -91,9 +93,9 @@ class WavStatus:
         return _download(
             self.logger,
             self.parsed_uri,
-            self.s3_client,
             self.download_dir,
             self.assume_downloaded_files,
+            self.s3_client,
         )
 
     def remove_downloaded_file(self):
@@ -114,15 +116,18 @@ class WavStatus:
 def _download(
     logger: PbpLogger,
     parsed_uri: ParseResult,
-    s3_client: BaseClient,
     download_dir: str,
     assume_downloaded_files: bool = False,
+    s3_client: Optional[BaseClient] = None,
+    gs_client: Optional[GsClient] = None,
 ) -> Optional[str]:
     """
-    Downloads the given S3 URI to the given download directory.
+    Downloads the given URI to the given download directory.
 
     NOTE: `assume_downloaded_files` can be set to True to skip downloading files
     that already exist in the download directory.
+
+    One of `s3_client` or `gs_client` must be given.
 
     :return: Downloaded filename or None if error
     """
@@ -133,13 +138,30 @@ def _download(
         logger.info(f"ASSUMING ALREADY DOWNLOADED: {bucket=} {key=} to {local_filename}")
         return local_filename
 
-    logger.info(f"Downloading {bucket=} {key=} to {local_filename}")
-    try:
-        s3_client.download_file(bucket, key, local_filename)
-        return local_filename
-    except ClientError as e:
-        logger.error(f"Error downloading {bucket}/{key}: {e}")
-        return None
+    scheme = parsed_uri.scheme
+    logger.info(f"Downloading {scheme=} {bucket=} {key=} to {local_filename}")
+
+    if scheme == "s3":
+        assert s3_client is not None
+        try:
+            s3_client.download_file(bucket, key, local_filename)
+            return local_filename
+        except ClientError as e:
+            logger.error(f"Error downloading {scheme=} {bucket}/{key}: {e}")
+            return None
+
+    if scheme == "gs":
+        assert gs_client is not None
+        gs_bucket = gs_client.bucket(bucket)
+        blob = gs_bucket.blob(key)
+        try:
+            blob.download_to_filename(local_filename)
+            return local_filename
+        except GsNotFound as e:
+            logger.error(f"Error downloading {scheme=} {bucket}/{key}: {e}")
+            return None
+
+    return None
 
 
 class FileHelper:
@@ -255,19 +277,19 @@ class FileHelper:
     def get_local_filename(self, uri: Optional[str]) -> Optional[str]:
         """
         Returns the local filename for the given URI, which will be that of
-        the downloaded file when the given uri is s3 based.
+        the downloaded file when the given uri is cloud based.
         """
         if uri is None:
             return None
 
         parsed_uri = urlparse(uri)
-        if parsed_uri.scheme == "s3":
+        if parsed_uri.scheme in ("s3", "gs"):
             return _download(
                 self.logger,
                 parsed_uri,
-                self.s3_client,
                 self.download_dir,
                 self.assume_downloaded_files,
+                self.s3_client,
             )
 
         return parsed_uri.path
@@ -308,9 +330,9 @@ class FileHelper:
         local_filename = _download(
             self.logger,
             parsed_uri,
-            self.s3_client,
             self.download_dir,
             self.assume_downloaded_files,
+            self.s3_client,
         )
         if local_filename is None:
             return None
