@@ -34,6 +34,14 @@ def main(opts):
 
         s3_client = boto3.client("s3", **kwargs)
 
+    gs_client = None
+    if opts.s3:
+        # pylint: disable=import-outside-toplevel
+        from google.cloud.storage import Client as GsClient
+
+        # TODO credentials; for now assuming only anonymous downloads
+        gs_client = GsClient.create_anonymous_client()
+
     file_helper = FileHelper(
         logger=logger,
         json_base_dir=opts.json_base_dir,
@@ -41,6 +49,7 @@ def main(opts):
         audio_path_map_prefix=opts.audio_path_map_prefix,
         audio_path_prefix=opts.audio_path_prefix,
         s3_client=s3_client,
+        gs_client=gs_client,
         download_dir=opts.download_dir,
         assume_downloaded_files=opts.assume_downloaded_files,
         retain_downloaded_files=opts.retain_downloaded_files,
