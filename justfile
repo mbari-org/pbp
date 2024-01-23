@@ -102,8 +102,9 @@ main-mb05 *more_args="":
 #                 --max-segments=5 \
 #                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
+# NOTE: ad hoc attribute files while the proper ones are available
 # Exercise program with `gs://` URIs
-main-google date='20200101' *more_args="--max-segments=5":
+main-google date='20200101' *more_args='':
     #!/usr/bin/env bash
     WS=noaa-passive-bioacoustic_nrs_11_2019-2021
     mkdir -p $WS/DOWNLOADS
@@ -113,14 +114,17 @@ main-google date='20200101' *more_args="--max-segments=5":
                  --date={{date}} \
                  --gs \
                  --json-base-dir=$WS \
-                 --voltage-multiplier=1 \
-                 --sensitivity-flat-value=1 \
+                 --global-attrs="metadata/chumash/globalAttributes.yaml" \
+                 --variable-attrs="metadata/chumash/variableAttributes.yaml" \
+                 --voltage-multiplier=2.5 \
+                 --sensitivity-uri=misc/NRS11_H5R6_sensitivity_hms5kHz.nc \
+                 --subset-to 10 2000 \
+                 --output-prefix=NRS11_ \
                  --output-dir=$WS/OUTPUT \
-                 --output-prefix=NRS_ \
                  --download-dir=$WS/DOWNLOADS \
                  --retain-downloaded-files \
+                 --assume-downloaded-files \
                  {{more_args}}
-#                 --assume-downloaded-files \
 
 # Basic test for cloud processing
 main-cloud-basic-test max_segments="1" date="20220902":
@@ -193,7 +197,7 @@ main *args="":
 
 # Generate summary plots
 plot *nc_files:
-    @python src/plot.py {{nc_files}}
+    python src/plot.py {{nc_files}}
 
 ##############
 # development:
