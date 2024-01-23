@@ -201,8 +201,8 @@ plot *nc_files:
 # A convenient recipe for development
 dev: check test format
 
-# As the dev recipe plus pylint; good to run before committing changes
-all: dev pylint
+# As the dev recipe plus lint; good to run before committing changes
+all: dev lint
 
 # Create virtual environment
 virtenv:
@@ -236,15 +236,11 @@ test *options="":
 
 # Format source code
 format:
-    python -m ufmt format .
+    ruff format .
 
-# Format source code using ruff
-ruff:
-    ruff --fix .
-
-# Run pylint
-pylint:
-    python -m pylint src
+# Lint source code
+lint:
+    ruff check --fix
 
 # With prior running of:
 #   python -m pip install --upgrade build

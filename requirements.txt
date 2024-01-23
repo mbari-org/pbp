@@ -20,7 +20,5 @@ pvlib==0.10.3
 ## dev dependencies
 mypy==1.8.0
 ruff==0.1.14
-ufmt==2.3.0
-pylint==3.0.3
 pytest==7.4.4
 syrupy==4.6.0
