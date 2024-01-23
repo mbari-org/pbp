@@ -35,9 +35,10 @@ class SoundStatus:
         audio_base_dir: Optional[str],
         audio_path_map_prefix: str,
         audio_path_prefix: str,
-        s3_client: Optional[BaseClient],
         download_dir: Optional[str],
         assume_downloaded_files: bool,
+        s3_client: Optional[BaseClient] = None,
+        gs_client: Optional[GsClient] = None,
     ):
         self.logger = logger
 
@@ -47,6 +48,7 @@ class SoundStatus:
         self.audio_base_dir = audio_base_dir
         self.audio_path_prefix = audio_path_prefix
         self.s3_client = s3_client
+        self.gs_client = gs_client
         self.download_dir: str = download_dir if download_dir else "."
         self.assume_downloaded_files = assume_downloaded_files
 
@@ -83,6 +85,7 @@ class SoundStatus:
                 self.download_dir,
                 self.assume_downloaded_files,
                 self.s3_client,
+                self.gs_client,
             )
 
         # otherwise assuming local file, so we only inspect the `path` attribute:
@@ -99,7 +102,9 @@ class SoundStatus:
         if not pathlib.Path(self.sound_filename).exists():
             return
 
-        if self.s3_client is None or self.parsed_uri.scheme != "s3":
+        if (
+            self.s3_client is None and self.gs_client is None
+        ) or self.parsed_uri.scheme not in ("s3", "gs"):
             self.logger.debug(f"No file download involved for {self.uri=}")
             return
 
@@ -294,6 +299,7 @@ class FileHelper:
                 self.download_dir,
                 self.assume_downloaded_files,
                 self.s3_client,
+                self.gs_client,
             )
 
         return parsed_uri.path
@@ -337,6 +343,7 @@ class FileHelper:
             self.download_dir,
             self.assume_downloaded_files,
             self.s3_client,
+            self.gs_client,
         )
         if local_filename is None:
             return None
@@ -467,9 +474,10 @@ class FileHelper:
                 audio_base_dir=self.audio_base_dir,
                 audio_path_map_prefix=self.audio_path_map_prefix,
                 audio_path_prefix=self.audio_path_prefix,
-                s3_client=self.s3_client,
                 download_dir=self.download_dir,
                 assume_downloaded_files=self.assume_downloaded_files,
+                s3_client=self.s3_client,
+                gs_client=self.gs_client,
             )
             self.sound_cache[uri] = ss
         else:

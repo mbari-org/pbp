@@ -35,7 +35,7 @@ def main(opts):
         s3_client = boto3.client("s3", **kwargs)
 
     gs_client = None
-    if opts.s3:
+    if opts.gs:
         # pylint: disable=import-outside-toplevel
         from google.cloud.storage import Client as GsClient
 

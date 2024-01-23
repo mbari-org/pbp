@@ -102,6 +102,26 @@ main-mb05 *more_args="":
 #                 --max-segments=5 \
 #                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
+# Exercise program with `gs://` URIs
+main-google date='20200101' *more_args="--max-segments=5":
+    #!/usr/bin/env bash
+    WS=noaa-passive-bioacoustic_nrs_11_2019-2021
+    mkdir -p $WS/DOWNLOADS
+    mkdir -p $WS/OUTPUT
+    PYTHONPATH=. EXCLUDE_LOG_TIME=yes \
+        python src/main.py \
+                 --date={{date}} \
+                 --gs \
+                 --json-base-dir=$WS \
+                 --voltage-multiplier=1 \
+                 --sensitivity-flat-value=1 \
+                 --output-dir=$WS/OUTPUT \
+                 --output-prefix=NRS_ \
+                 --download-dir=$WS/DOWNLOADS \
+                 --retain-downloaded-files \
+                 {{more_args}}
+#                 --assume-downloaded-files \
+
 # Basic test for cloud processing
 main-cloud-basic-test max_segments="1" date="20220902":
     #!/usr/bin/env bash
