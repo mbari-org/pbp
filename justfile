@@ -193,7 +193,7 @@ main *args="":
 
 # Generate summary plots
 plot *nc_files:
-    @python src/plotting.py {{nc_files}}
+    @python src/plot.py {{nc_files}}
 
 ##############
 # development:
