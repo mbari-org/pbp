@@ -103,27 +103,36 @@ main-mb05 *more_args="":
 #                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
 # Exercise program with `gs://` URIs
-main-google date='20200101' *more_args='':
+main-nrs11 date='20200101' *more_args='':
     #!/usr/bin/env bash
-    WS=noaa-passive-bioacoustic_nrs_11_2019-2021
+    WS=NRS11
     mkdir -p $WS/DOWNLOADS
     mkdir -p $WS/OUTPUT
     PYTHONPATH=. EXCLUDE_LOG_TIME=yes \
         python src/main.py \
                  --date={{date}} \
                  --gs \
-                 --json-base-dir=$WS \
-                 --global-attrs="metadata/NRS11/globalAttributes_NRS11.yaml" \
-                 --variable-attrs="metadata/NRS11/variableAttributes_NRS11.yaml" \
+                 --json-base-dir=$WS/noaa-passive-bioacoustic_nrs_11_2019-2021 \
+                 --global-attrs="$WS/globalAttributes_NRS11.yaml" \
+                 --variable-attrs="$WS/variableAttributes_NRS11.yaml" \
                  --voltage-multiplier=2.5 \
-                 --sensitivity-uri=misc/NRS11_H5R6_sensitivity_hms5kHz.nc \
+                 --sensitivity-uri="$WS/NRS11_H5R6_sensitivity_hms5kHz.nc" \
                  --subset-to 10 2000 \
                  --output-prefix=NRS11_ \
-                 --output-dir=$WS/OUTPUT \
-                 --download-dir=$WS/DOWNLOADS \
+                 --output-dir="$WS/OUTPUT" \
+                 --download-dir="$WS/DOWNLOADS" \
                  --retain-downloaded-files \
                  --assume-downloaded-files \
                  {{more_args}}
+
+# Plot NRS11 datasets
+plot-nrs11 *netcdfs='NRS11/OUTPUT/NRS11_20200101.nc':
+    python src/plot.py \
+      --ylim 10 2000 \
+      --cmlim 64 108 \
+      --latlon 37.88 -123.44 \
+      --title "NOAA Ocean Noise Reference Station NRS11, Cordell Bank National Marine Sanctuary:  37.88°N, 123.44°W" \
+      {{netcdfs}}
 
 # Basic test for cloud processing
 main-cloud-basic-test max_segments="1" date="20220902":
@@ -197,15 +206,6 @@ main *args="":
 # Generate summary plots
 plot *args:
     python src/plot.py {{args}}
-
-# Plot NRS11 datasets
-plot-nrs11 *netcdfs='noaa-passive-bioacoustic_nrs_11_2019-2021/OUTPUT/NRS11_20200101.nc':
-    python src/plot.py \
-      --ylim 10 2000 \
-      --cmlim 64 108 \
-      --latlon 37.88 -123.44 \
-      --title "NOAA Ocean Noise Reference Station NRS11, Cordell Bank National Marine Sanctuary:  37.88°N, 123.44°W" \
-      {{netcdfs}}
 
 ##############
 # development:
