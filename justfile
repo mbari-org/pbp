@@ -196,8 +196,17 @@ main *args="":
 # misc/utils:
 
 # Generate summary plots
-plot *nc_files:
-    python src/plot.py {{nc_files}}
+plot *args:
+    python src/plot.py {{args}}
+
+# Plot NRS11 datasets
+plot-nrs11 *netcdfs='noaa-passive-bioacoustic_nrs_11_2019-2021/OUTPUT/NRS11_20200101.nc':
+    python src/plot.py \
+      --ylim 10 2000 \
+      --cmlim 64 108 \
+      --latlon 37.88 -123.44 \
+      --title "NOAA Ocean Noise Reference Station NRS11, Cordell Bank National Marine Sanctuary:  37.88°N, 123.44°W" \
+      {{netcdfs}}
 
 ##############
 # development:

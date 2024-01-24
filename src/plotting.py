@@ -13,6 +13,7 @@ from src.plot_const import (
     DEFAULT_LAT_LON_FOR_SOLPOS,
     DEFAULT_TITLE,
     DEFAULT_YLIM,
+    DEFAULT_CMLIM,
 )
 
 
@@ -21,6 +22,7 @@ def plot_dataset_summary(
     lat_lon_for_solpos: tuple[float, float] = DEFAULT_LAT_LON_FOR_SOLPOS,
     title: str = DEFAULT_TITLE,
     ylim: tuple[int, int] = DEFAULT_YLIM,
+    cmlim: tuple[int, int] = DEFAULT_CMLIM,
     dpi: int = DEFAULT_DPI,
     jpeg_filename: Optional[str] = None,
     show: bool = False,
@@ -32,6 +34,7 @@ def plot_dataset_summary(
     :param lat_lon_for_solpos: Lat/Lon for solar position calculation.
     :param title: Title for the plot.
     :param ylim: Limits for the y-axis.
+    :param cmlim: Limits passed to pcolormesh.
     :param dpi: DPI to use for the plot.
     :param jpeg_filename: If given, filename to save the plot to.
     :param show: Whether to show the plot.
@@ -90,8 +93,9 @@ def plot_dataset_summary(
 
     # Spectrogram
     ax0 = fig.add_subplot(spec[2])
+    vmin, vmax = cmlim
     sg = plt.pcolormesh(
-        ds.time, ds.frequency, da, shading="nearest", cmap="rainbow", vmin=32, vmax=108
+        ds.time, ds.frequency, da, shading="nearest", cmap="rainbow", vmin=vmin, vmax=vmax
     )
     plt.yscale("log")
     plt.ylim(list(ylim))
