@@ -102,7 +102,6 @@ main-mb05 *more_args="":
 #                 --max-segments=5 \
 #                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
-# NOTE: ad hoc attribute files while the proper ones are available
 # Exercise program with `gs://` URIs
 main-google date='20200101' *more_args='':
     #!/usr/bin/env bash
@@ -114,8 +113,8 @@ main-google date='20200101' *more_args='':
                  --date={{date}} \
                  --gs \
                  --json-base-dir=$WS \
-                 --global-attrs="metadata/chumash/globalAttributes.yaml" \
-                 --variable-attrs="metadata/chumash/variableAttributes.yaml" \
+                 --global-attrs="metadata/NRS11/globalAttributes_NRS11.yaml" \
+                 --variable-attrs="metadata/NRS11/variableAttributes_NRS11.yaml" \
                  --voltage-multiplier=2.5 \
                  --sensitivity-uri=misc/NRS11_H5R6_sensitivity_hms5kHz.nc \
                  --subset-to 10 2000 \
