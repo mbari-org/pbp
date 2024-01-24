@@ -44,7 +44,8 @@ def plot_dataset_summary(
 
     # get solar elevation
     # Estimate the solar position with a specific SPA defined with the argument 'method'
-    solpos = pvlib.solarposition.get_solarposition(ds.time, *lat_lon_for_solpos)
+    latitude, longitude = lat_lon_for_solpos
+    solpos = pvlib.solarposition.get_solarposition(ds.time, latitude=latitude, longitude=longitude)
     se = solpos.elevation  # isolate solar elevation
     # map elevation to gray scale
     seg = 0 * se  # 0 covers nighttime (black)
