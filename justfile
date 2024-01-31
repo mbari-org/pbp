@@ -208,6 +208,16 @@ plot *args:
     python src/plot.py {{args}}
 
 ##############
+# docker:
+
+dockerize-for-notebooks:
+    docker build -f docker/Dockerfile -t mbari/pbp .
+
+run-docker-for-notebooks:
+    docker run -it --rm -p 8899:8899  mbari/pbp
+
+
+##############
 # development:
 
 # A convenient recipe for development
