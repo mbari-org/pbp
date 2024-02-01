@@ -210,11 +210,11 @@ plot *args:
 ##############
 # docker:
 
-dockerize-for-notebooks:
-    docker build -f docker/Dockerfile -t mbari/pbp .
+dockerize-for-notebooks dockerfile='docker/Dockerfile-minimal':
+    docker build -f {{dockerfile}} -t mbari/pbp .
 
-run-docker-for-notebooks:
-    docker run -it --rm -p 8899:8899  mbari/pbp
+run-docker-for-notebooks dir='notebooks':
+    docker run -it --rm -p 8899:8899 -v {{dir}}:/opt/pbp/notebooks mbari/pbp
 
 
 ##############
