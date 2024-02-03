@@ -214,7 +214,7 @@ dockerize-for-notebooks dockerfile='docker/Dockerfile-minimal':
     docker build -f {{dockerfile}} -t mbari/pbp .
 
 run-docker-for-notebooks dir='notebooks':
-    docker run -it --rm -p 8899:8899 mbari/pbp:1.0.1
+    docker run -it --rm -p 8899:8899 mbari/pbp:1.0.3
 
 
 ##############

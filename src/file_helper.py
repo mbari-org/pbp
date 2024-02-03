@@ -135,6 +135,9 @@ def _download(
 
     :return: Downloaded filename or None if error
     """
+
+    pathlib.Path(download_dir).mkdir(parents=True, exist_ok=True)
+
     bucket, key, simple = get_bucket_key_simple(parsed_uri)
     local_filename = f"{download_dir}/{simple}"
 
