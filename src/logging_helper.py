@@ -2,6 +2,7 @@ import logging
 import os
 import random
 import string
+import pathlib
 
 from typing import Optional, Tuple
 
@@ -40,6 +41,9 @@ class PbpLogger:
 
         if log_filename_and_level is not None:
             log_filename, log_level = log_filename_and_level
+            # create log_filename's parent directory if needed:
+            parent_dir = pathlib.Path(log_filename).parent
+            pathlib.Path(parent_dir).mkdir(parents=True, exist_ok=True)
             file_handler = logging.FileHandler(log_filename, mode="w")
             file_handler.setFormatter(formatter)
             file_handler.setLevel(log_level)
