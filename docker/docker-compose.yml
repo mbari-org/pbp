@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  pbp:
+    container_name: pbp
+    image: mbari/pbp:1.0
+    ports: ['8899:8899']
+
+    # No volume mappings yet while we refine our docker image
+
+    restart: unless-stopped
