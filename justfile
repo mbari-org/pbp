@@ -125,6 +125,33 @@ main-nrs11 date='20200101' *more_args='':
                  --assume-downloaded-files \
                  {{more_args}}
 
+# E.g., all January 2020 days: 2020 1 $(seq 1 31)
+main-nrs11-multiple-days year month *days="":
+    #!/usr/bin/env bash
+    WS=NRS11
+    mkdir -p $WS/DOWNLOADS  $WS/OUTPUT
+    echo "Running: year={{year}} month={{month}} days={{days}}"
+    export PYTHONPATH=.
+    for day in {{days}}; do
+      date=$(printf "%04d%02d%02d" {{year}} {{month}} "$day")
+      python src/main.py \
+             --date="$date" \
+             --gs \
+             --json-base-dir=$WS/noaa-passive-bioacoustic_nrs_11_2019-2021 \
+             --global-attrs="$WS/globalAttributes_NRS11.yaml" \
+             --variable-attrs="$WS/variableAttributes_NRS11.yaml" \
+             --voltage-multiplier=2.5 \
+             --sensitivity-uri="$WS/NRS11_H5R6_sensitivity_hms5kHz.nc" \
+             --subset-to 10 2000 \
+             --output-prefix=NRS11_ \
+             --output-dir="$WS/OUTPUT" \
+             --download-dir="$WS/DOWNLOADS" \
+             --retain-downloaded-files \
+             --assume-downloaded-files \
+            > "$WS/OUTPUT/NRS11_$date.out" 2>&1 &
+    done
+    wait
+
 # Plot NRS11 datasets
 plot-nrs11 *netcdfs='NRS11/OUTPUT/NRS11_20200101.nc':
     python src/plot.py \
