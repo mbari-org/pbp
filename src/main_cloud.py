@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+#
+# TODO Adjustments for GS as this script is still only focused on S3.
+#
+
 # Script for cloud based processing. By this, we basically mean the ability
 # to get input files (json and wav) from S3 and write output files to S3.
 #
@@ -151,6 +155,7 @@ def main():
         logger=logger,
         json_base_dir=json_bucket_prefix,
         s3_client=s3_client,
+        gs_client=None,  # TODO
         download_dir=download_dir,
         assume_downloaded_files=os.getenv("ASSUME_DOWNLOADED_FILES", "no") == "yes",
         retain_downloaded_files=os.getenv("RETAIN_DOWNLOADED_FILES", "no") == "yes",

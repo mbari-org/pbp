@@ -5,7 +5,7 @@ to generate _hybrid millidecade band spectra_ for soundscape data.
 
 **Status**: Functional version, including support for S3-based cloud based processing.
 
-- [x] Timekeeping based on given JSON indicating start and duration of every available `.wav` file
+- [x] Timekeeping based on given JSON indicating start and duration of every available (recognized) sound file
 - [x] Audio file processing
     - [x] Frequency and psd array output
     - [x] Concatenation of processed 1-minute segments for daily product

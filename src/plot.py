@@ -5,6 +5,7 @@ from src.plot_const import (
     DEFAULT_LAT_LON_FOR_SOLPOS,
     DEFAULT_TITLE,
     DEFAULT_YLIM,
+    DEFAULT_CMLIM,
 )
 
 
@@ -37,6 +38,15 @@ def parse_arguments():
         default=DEFAULT_YLIM,
         metavar=("lower", "upper"),
         help="Limits for the y-axis. Default: %(default)s",
+    )
+
+    parser.add_argument(
+        "--cmlim",
+        type=int,
+        nargs=2,
+        default=DEFAULT_CMLIM,
+        metavar=("vmin", "vmax"),
+        help="Parameters passed to pcolormesh. Default: %(default)s",
     )
 
     parser.add_argument(
@@ -82,6 +92,7 @@ def main(opts):
             lat_lon_for_solpos=opts.latlon,
             title=opts.title,
             ylim=opts.ylim,
+            cmlim=opts.cmlim,
             dpi=opts.dpi,
             jpeg_filename=jpeg_filename,
             show=show,

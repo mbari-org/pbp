@@ -11,15 +11,6 @@ from dateutil import parser as iso8601_parser
 from src.logging_helper import PbpLogger
 
 
-def datetime_field():
-    return field(
-        metadata=config(
-            encoder=lambda dt: dt.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-            decoder=iso8601_parser.parse,
-        )
-    )
-
-
 @dataclass_json
 @dataclass
 class JEntry:
@@ -29,8 +20,12 @@ class JEntry:
 
     uri: str
     duration_secs: float
-    start: datetime = datetime_field()
-    # end: datetime = datetime_field()  -- not used
+    start: datetime = field(
+        metadata=config(
+            encoder=lambda dt: dt.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            decoder=iso8601_parser.parse,
+        )
+    )
 
     @property
     def path(self) -> str:
@@ -77,6 +72,8 @@ def get_intersecting_entries(
     Gets the list of intersecting entries for the UTC "start minute"
     given by (year, month, day, at_hour, at_minute).
 
+    :param logger:
+        The logger to be used
     :param json_entries:
         JSON entries for the day
     :param year:
@@ -95,6 +92,12 @@ def get_intersecting_entries(
     :return:
         The list of intersecting entries
     """
+    # for logging purposes:
+    time_spec = (
+        f"year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
+    )
+    logger.debug(f"get_intersecting_entries: {time_spec} {len(json_entries)=}")
+
     # the requested start minute as datetime:
     dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
     # the start of the requested start minute in seconds:
@@ -121,14 +124,14 @@ def get_intersecting_entries(
             )
             tot_duration_secs += duration_secs
 
-    # for logging purposes:
-    time_spec = (
-        f"year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
-    )
-
-    if logger.is_enabled_for(logging.DEBUG):
+    warning = 0 == len(intersecting_entries)
+    if warning or logger.is_enabled_for(logging.DEBUG):
         uris = [i.entry.uri for i in intersecting_entries]
         uris_str = "\n  ".join([f"[{e}] {uri}" for e, uri in enumerate(uris)])
-        logger.debug(f"{time_spec}: intersection uris({len(uris)}):\n  {uris_str}")
+        msg = f"{time_spec}: intersection uris({len(uris)}):\n  {uris_str}"
+        if warning:
+            logger.warn(msg)
+        else:
+            logger.debug(msg)
 
     return intersecting_entries

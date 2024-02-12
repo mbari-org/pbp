@@ -1,4 +1,6 @@
-from typing import Any, Generator, Tuple
+from typing import Any, Generator, Tuple, Union
+
+import numpy as np
 
 
 def parse_date(date: str) -> Tuple[int, int, int]:
@@ -46,25 +48,18 @@ def map_prefix(prefix_map: str, s: str) -> str:
     return s
 
 
-# This:
-# def brief_list(l: Union[List, np.ndarray[Any, Any]], max_items: int = 6) -> str:
-# is causing trouble on gizo:
-#   File "/PAM_Analysis/pypam-space/processing_our_data/pypam-based-processing/src/misc_helper.py", line 88, in <module>
-#     def brief_list(l: Union[List, np.ndarray[Any, Any]], max_items: int = 6) -> str:
-# TypeError: Type subscription requires python >= 3.9
-# Disappointing that a type spec is not being just skipped at runtime! :(
-# So, let's simplify like this for now:'
-def brief_list(l: Any, max_items: int = 6) -> str:
+# Using Union as `X | Y syntax for unions requires Python 3.10`
+def brief_list(lst: Union[list, np.ndarray[Any, Any]], max_items: int = 6) -> str:
     """
     Helper to format a list as a string, with a maximum number of items.
-    :param l:  The list to format.
+    :param lst:  The list to format.
     :param max_items:  The maximum number of items to show.
     :return:  The formatted string.
     """
-    if len(l) > max_items:
+    if len(lst) > max_items:
         half = max_items // 2
         rest = max_items - half
-        prefix = ", ".join(str(x) for x in l[:half])
-        postfix = ", ".join(str(x) for x in l[-rest:])
+        prefix = ", ".join(str(x) for x in lst[:half])
+        postfix = ", ".join(str(x) for x in lst[-rest:])
         return f"[{prefix}, ..., {postfix}]"
-    return str(l)
+    return str(lst)

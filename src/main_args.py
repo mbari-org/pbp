@@ -61,7 +61,7 @@ Examples:
         type=str,
         metavar="dir",
         default="",
-        help="Ad hoc path prefix for wav location, for example, /Volumes."
+        help="Ad hoc path prefix for sound file location, for example, /Volumes."
         " By default, no prefix applied.",
     )
 
@@ -122,11 +122,18 @@ Examples:
     )
 
     parser.add_argument(
+        "--gs",
+        default=False,
+        action="store_true",
+        help="gs access involved.",
+    )
+
+    parser.add_argument(
         "--download-dir",
         type=str,
         metavar="dir",
         default=None,
-        help="Directory for any downloads (e.g., when s3 is involved).",
+        help="Directory for any downloads (e.g., when s3 or gs is involved).",
     )
 
     parser.add_argument(

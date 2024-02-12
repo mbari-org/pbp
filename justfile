@@ -102,6 +102,65 @@ main-mb05 *more_args="":
 #                 --max-segments=5 \
 #                 --output-dir=/Volumes/PAM_Analysis/pypam-space/test_output \
 
+# Exercise program with `gs://` URIs
+main-nrs11 date='20200101' *more_args='':
+    #!/usr/bin/env bash
+    WS=NRS11
+    mkdir -p $WS/DOWNLOADS
+    mkdir -p $WS/OUTPUT
+    PYTHONPATH=. EXCLUDE_LOG_TIME=yes \
+        python src/main.py \
+                 --date={{date}} \
+                 --gs \
+                 --json-base-dir=$WS/noaa-passive-bioacoustic_nrs_11_2019-2021 \
+                 --global-attrs="$WS/globalAttributes_NRS11.yaml" \
+                 --variable-attrs="$WS/variableAttributes_NRS11.yaml" \
+                 --voltage-multiplier=2.5 \
+                 --sensitivity-uri="$WS/NRS11_H5R6_sensitivity_hms5kHz.nc" \
+                 --subset-to 10 2000 \
+                 --output-prefix=NRS11_ \
+                 --output-dir="$WS/OUTPUT" \
+                 --download-dir="$WS/DOWNLOADS" \
+                 --retain-downloaded-files \
+                 --assume-downloaded-files \
+                 {{more_args}}
+
+# E.g., all January 2020 days: 2020 1 $(seq 1 31)
+main-nrs11-multiple-days year month *days="":
+    #!/usr/bin/env bash
+    WS=NRS11
+    mkdir -p $WS/DOWNLOADS  $WS/OUTPUT
+    echo "Running: year={{year}} month={{month}} days={{days}}"
+    export PYTHONPATH=.
+    for day in {{days}}; do
+      date=$(printf "%04d%02d%02d" {{year}} {{month}} "$day")
+      python src/main.py \
+             --date="$date" \
+             --gs \
+             --json-base-dir=$WS/noaa-passive-bioacoustic_nrs_11_2019-2021 \
+             --global-attrs="$WS/globalAttributes_NRS11.yaml" \
+             --variable-attrs="$WS/variableAttributes_NRS11.yaml" \
+             --voltage-multiplier=2.5 \
+             --sensitivity-uri="$WS/NRS11_H5R6_sensitivity_hms5kHz.nc" \
+             --subset-to 10 2000 \
+             --output-prefix=NRS11_ \
+             --output-dir="$WS/OUTPUT" \
+             --download-dir="$WS/DOWNLOADS" \
+             --retain-downloaded-files \
+             --assume-downloaded-files \
+            > "$WS/OUTPUT/NRS11_$date.out" 2>&1 &
+    done
+    wait
+
+# Plot NRS11 datasets
+plot-nrs11 *netcdfs='NRS11/OUTPUT/NRS11_20200101.nc':
+    python src/plot.py \
+      --ylim 10 2000 \
+      --cmlim 64 108 \
+      --latlon 37.88 -123.44 \
+      --title "NOAA Ocean Noise Reference Station NRS11, Cordell Bank National Marine Sanctuary:  37.88°N, 123.44°W" \
+      {{netcdfs}}
+
 # Basic test for cloud processing
 main-cloud-basic-test max_segments="1" date="20220902":
     #!/usr/bin/env bash
@@ -172,8 +231,18 @@ main *args="":
 # misc/utils:
 
 # Generate summary plots
-plot *nc_files:
-    @python src/plotting.py {{nc_files}}
+plot *args:
+    python src/plot.py {{args}}
+
+##############
+# docker:
+
+dockerize-for-notebooks dockerfile='docker/Dockerfile-minimal':
+    docker build -f {{dockerfile}} -t mbari/pbp .
+
+run-docker-for-notebooks dir='notebooks':
+    docker run -it --rm -p 8899:8899 mbari/pbp:1
+
 
 ##############
 # development:
@@ -181,8 +250,8 @@ plot *nc_files:
 # A convenient recipe for development
 dev: check test format
 
-# As the dev recipe plus pylint; good to run before committing changes
-all: dev pylint
+# As the dev recipe plus lint; good to run before committing changes
+all: dev lint
 
 # Create virtual environment
 virtenv:
@@ -216,15 +285,11 @@ test *options="":
 
 # Format source code
 format:
-    python -m ufmt format .
+    ruff format .
 
-# Format source code using ruff
-ruff:
-    ruff --fix .
-
-# Run pylint
-pylint:
-    python -m pylint src
+# Lint source code
+lint:
+    ruff check --fix
 
 # With prior running of:
 #   python -m pip install --upgrade build

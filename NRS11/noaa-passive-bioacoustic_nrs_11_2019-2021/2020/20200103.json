@@ -1,0 +1,51 @@
+[
+    {
+        "uri": "gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio/NRS11_20200102_230958.flac",
+        "start": "2020-01-02T23:09:58Z",
+        "end": "2020-01-03T03:09:58Z",
+        "duration_secs": 14400.0,
+        "channels": 1
+    },
+    {
+        "uri": "gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio/NRS11_20200103_031005.flac",
+        "start": "2020-01-03T03:10:05Z",
+        "end": "2020-01-03T07:10:05Z",
+        "duration_secs": 14400.0,
+        "channels": 1
+    },
+    {
+        "uri": "gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio/NRS11_20200103_071012.flac",
+        "start": "2020-01-03T07:10:12Z",
+        "end": "2020-01-03T11:10:12Z",
+        "duration_secs": 14400.0,
+        "channels": 1
+    },
+    {
+        "uri": "gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio/NRS11_20200103_111019.flac",
+        "start": "2020-01-03T11:10:19Z",
+        "end": "2020-01-03T15:10:19Z",
+        "duration_secs": 14400.0,
+        "channels": 1
+    },
+    {
+        "uri": "gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio/NRS11_20200103_151025.flac",
+        "start": "2020-01-03T15:10:25Z",
+        "end": "2020-01-03T19:10:25Z",
+        "duration_secs": 14400.0,
+        "channels": 1
+    },
+    {
+        "uri": "gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio/NRS11_20200103_191032.flac",
+        "start": "2020-01-03T19:10:32Z",
+        "end": "2020-01-03T23:10:32Z",
+        "duration_secs": 14400.0,
+        "channels": 1
+    },
+    {
+        "uri": "gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio/NRS11_20200103_231039.flac",
+        "start": "2020-01-03T23:10:39Z",
+        "end": "2020-01-04T03:10:39Z",
+        "duration_secs": 14400.0,
+        "channels": 1
+    }
+]
