@@ -5,7 +5,6 @@
 import datetime
 from datetime import timedelta
 
-import logger
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -16,6 +15,8 @@ import time
 import re
 import json
 from urllib.parse import urlparse
+
+from src import PbpLogger
 
 
 class MetadataCorrector:
@@ -44,7 +45,7 @@ class MetadataCorrector:
             The number of seconds in each file; not used for sound trap files
         """
         self.correct_df = correct_df
-        self.metadata_path = json_path_out
+        self.json_base_dir = json_path_out
         self.day = day
         self.sound_trap = sound_trap
         self.seconds_per_file = seconds_per_file
@@ -53,26 +54,22 @@ class MetadataCorrector:
     def run(self):
         """Run the corrector"""
 
-        is_s3 = False
-        if re.match(r'^s3://', self.metadata_path):
-            is_s3 = True
-
         try:
 
             # Soundtrap files can be variable
             if self.sound_trap:
                 files_per_day = None
                 # Filter the metadata to the day, starting 6 hours before the day starts to capture overlap
-                df = self.correct_df[(self.correct_df['start'] >= day - timedelta(hours=6)) & (self.correct_df['start'] < day + timedelta(days=1))]
+                df = self.correct_df[(self.correct_df['start'] >= self.day - timedelta(hours=6)) & (self.correct_df['start'] < self.day + timedelta(days=1))]
             else: # ICListen files fixed, but may be missing or incomplete if the system was down
                 files_per_day = int(86400 / self.seconds_per_file)
                 # Filter the metadata to the day, starting 10 minutes before the day starts to capture overlap
-                df = self.correct_df[(self.correct_df['start'] >= day - timedelta(minutes=10)) & (self.correct_df['start'] < day + timedelta(days=1))]
+                df = self.correct_df[(self.correct_df['start'] >= self.day - timedelta(minutes=10)) & (self.correct_df['start'] < self.day + timedelta(days=1))]
 
-            self.log.debug(f'Creating metadata for day {day}')
+            self.log.debug(f'Creating metadata for day {self.day}')
 
             if len(df) == 0:
-                self.log.warn(f'No metadata found for day {day}')
+                self.log.warn(f'No metadata found for day {self.day}')
                 return
 
             # convert the start and end times to datetime
@@ -82,17 +79,17 @@ class MetadataCorrector:
             df['end'] = pd.to_datetime(df['end'])
 
             # get the file list that covers the requested day
-            self.log.info(f'Found {len(df)} files from day {day}, starting {df.iloc[0]["start"]} ending {df.iloc[-1]["end"]}')
+            self.log.info(f'Found {len(df)} files from day {self.day}, starting {df.iloc[0]["start"]} ending {df.iloc[-1]["end"]}')
 
             # if there are no files, then return
             if len(df) == 0:
-                self.log.warn(f'No files found for {day}')
+                self.log.warn(f'No files found for {self.day}')
                 return
 
             day_process = df
 
             if self.sound_trap:
-                self.log.info(f'Soundtrap files for {day} are variable. Skipping duration check')
+                self.log.info(f'Soundtrap files for {self.day} are variable. Skipping duration check')
                 for index, row in day_process.iterrows():
                     self.log.debug(f'File {row["uri"]} duration {row["duration_secs"]} ')
             else:
@@ -112,13 +109,13 @@ class MetadataCorrector:
                      and len(day_process['duration_secs'].unique()) == 1 \
                      and day_process.iloc[0]['duration_secs'] == self.seconds_per_file):
 
-                self.log.info(f'{len(day_process)} files available for {day}')
+                self.log.info(f'{len(day_process)} files available for {self.day}')
 
                 # check whether the differences are all the same
                 if len(day_process['start'].diff().unique()) == 1 or self.sound_trap:
-                    self.log.warn(f'No drift for {day}')
+                    self.log.warn(f'No drift for {self.day}')
                 else:
-                    self.log.info(f'Correcting drift for {day}')
+                    self.log.info(f'Correcting drift for {self.day}')
 
                     # correct the metadata
                     jitter = 0
@@ -147,7 +144,7 @@ class MetadataCorrector:
                         # set the times for the next files
                         start = end
             else:
-                day_process = self.no_jitter(day, day_process)
+                day_process = self.no_jitter(self.day, day_process)
 
             # drop any rows with duplicate uri times, keeping the first
             # duplicates can be caused by the jitter correction
@@ -157,12 +154,12 @@ class MetadataCorrector:
             day_process['start'] = day_process['start'].dt.tz_localize('UTC')
             day_process['end'] = day_process['end'].dt.tz_localize('UTC')
 
-            self.save_day(day, day_process, is_s3)
+            self.save_day(self.day, day_process)
 
         except Exception as e:
-            self.log.exception(f'Error correcting metadata for  {day}. {e}')
+            self.log.exception(f'Error correcting metadata for  {self.day}. {e}')
         finally:
-            self.log.debug(f'Done correcting metadata for {day}')
+            self.log.debug(f'Done correcting metadata for {self.day}')
 
     def no_jitter(
             self,
@@ -177,7 +174,7 @@ class MetadataCorrector:
         :return:
             The corrected dataframe
         """
-        self.log.warn(f'Cannot correct {day}. Using file start times as is, setting jitter to 0 and using '
+        self.log.warn(f'Cannot correct {self.day}. Using file start times as is, setting jitter to 0 and using '
                       f'calculated end times.')
         # calculate the difference between each row start time and save as diff in a copy of the dataframe
         day_process = day_process.copy()
@@ -191,7 +188,6 @@ class MetadataCorrector:
             self,
             day: datetime,
             day_process: pd.DataFrame,
-            is_s3: bool,
             prefix: str = None):
         """
         Save the day's metadata to a single json file either locally or to s3
@@ -201,8 +197,6 @@ class MetadataCorrector:
             The dataframe containing the metadata for the day
         :param prefix:
             An optional prefix for the filename
-        :param is_s3:
-            True if saving to s3
         :return:
         """
         # if the exception column is empty, then drop it
@@ -241,23 +235,7 @@ class MetadataCorrector:
             with open(temp_metadata.as_posix(), 'w', encoding='utf-8') as f:
                 json.dump(dict_records, f, ensure_ascii=True, indent=4)
 
-            # if a s3 url then upload the file and retry if it fails
-            if is_s3:
-                client = boto3.client('s3')
-                for retry in range(10):
-                    try:
-                        with open(temp_metadata.as_posix(), 'rb') as data:
-                            p = urlparse(self.metadata_path.rstrip('/'))
-                            self.log.info(f"Uploading to s3://{p.netloc}/{p.path.lstrip('/')}")
-                            if prefix:
-                                client.upload_fileobj(data, p.netloc,
-                                                      f"{p.path.lstrip('/')}/{prefix}_{day:%Y%m%d}.json")
-                            else:
-                                client.upload_fileobj(data, p.netloc, f"{p.path.lstrip('/')}/{day:%Y/%Y%m%d}.json")
-                            break
-                    except Exception as e:
-                        self.log.exception(f'Exception {e} on retry {retry}')
-                        time.sleep(60)
-            else:
-                # copy the file to a local metadata directory
-                shutil.copy2(temp_metadata.as_posix(), self.metadata_path.as_posix())
+            # copy the file to a local metadata directory with year subdirectory
+            output_path = Path(self.json_base_dir, str(day.year))
+            output_path.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(temp_metadata.as_posix(), output_path)

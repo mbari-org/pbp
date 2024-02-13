@@ -1,34 +1,36 @@
 # pypam-based-processing
 # Filename: metadata/generator/gen_abstract.py
 # Description:  Abstract class that captures sound wav metadata
+import logging
 
-import pathlib
+import re
+
 from datetime import datetime
-from pathlib import Path
 
 import pandas as pd
-import logger
-import utils as utils
-from src.logging_helper import PbpLogger
+
+from src.json_generator import utils
+from src.logging_helper import PbpLogger, create_logger
 
 
 class MetadataGeneratorAbstract(object):
     def __init__(self,
-                 pbp_logger: PbpLogger,
+                 logger: PbpLogger,
                  wav_loc: str,
-                 metadata_loc: str,
+                 json_base_dir: str,
                  search: [str],
                  start: datetime,
                  end: datetime,
-                 seconds_per_file: float = 0.):
+                 seconds_per_file: float = 0.,
+                 **kwargs):
         """
         Abstract class for capturing sound wav metadata
-        :param pbp_logger:
+        :param logger:
             The logger
         :param wav_loc:
             The local directory or S3 bucket that contains the wav files
-        :param metadata_loc:
-            The local directory or S3 bucket to store the metadata
+        :param json_base_dir:
+            The local directory to write the json files to
         :param search:
             The search pattern to match the wav files, e.g. 'MARS'
         :param start:
@@ -41,22 +43,21 @@ class MetadataGeneratorAbstract(object):
         """
         try:
             self.wav_loc = wav_loc
-            self.metadata_path = metadata_loc
+            self.json_base_dir = json_base_dir
             self.df = pd.DataFrame()
             self.start = start
             self.end = end
             self.search = search
-            self.seconds_per_file = None if seconds_per_file == 0 else seconds_per_file
-            self._log = pbp_logger
-            self.cache_path = Path(log_dir) / 's3cache' / f'{self.__class__.__name__}'
-            self.cache_path.mkdir(parents=True, exist_ok=True)
+            self._seconds_per_file = None if seconds_per_file == 0 else seconds_per_file
+            self.logger = logger
         except Exception as e:
-            self._log.err(f'Could not initialize {self.__class__.__name__} for {start:%Y%m%d}')
             raise e
 
-
-
-    def search(self):
+    def setup(self):
+        """
+        Setup by first getting the bucket name and checking if it is an S3 bucket
+        :return:
+        """
         self.log.info(
             f'{self.log_prefix} Searching in {self.wav_loc}/*.wav for wav files that match the search pattern {self.search}* ...')
 
@@ -65,9 +66,7 @@ class MetadataGeneratorAbstract(object):
         # keep only the bucket name before the *
         bucket_core = re.sub(r'\*$', '', self.wav_loc)
         bucket_core = re.sub(r'^s3://', '', bucket_core)
-        return bucket_core, is_s3, wav_files
-
-
+        return bucket_core, is_s3
 
     @staticmethod
     def raw(path_or_url: str):
@@ -80,11 +79,11 @@ class MetadataGeneratorAbstract(object):
 
     @property
     def log(self):
-        return self._log
+        return self.logger
 
     @property
     def seconds_per_file(self):
-        return self.seconds_per_file
+        return self._seconds_per_file
 
     @property
     def correct_df(self):
@@ -93,3 +92,4 @@ class MetadataGeneratorAbstract(object):
     # abstract run method
     def run(self):
         pass
+

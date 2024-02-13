@@ -1,3 +1,6 @@
+import re
+
+
 def  is_s3(wav_loc: str) -> (bool, str):
     """
     Check if the wav_loc is a s3 bucket, and return the bucket name

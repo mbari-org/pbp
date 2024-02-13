@@ -1,5 +1,5 @@
 # pypam-based-processing, Apache License 2.0
-# Filename: metadata/utils/wavfile.py
+# Filename: json_generator/wavfile.py
 # Description:  wav file metadata reader. Supports SoundTrap and icListen wav files
 
 from logging import exception, warning
