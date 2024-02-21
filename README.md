@@ -29,7 +29,6 @@ TODO more details
 ### Install dependencies
 
     pip3 install -r requirements.txt
-    pip3 install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ lifewatch-pypam==0.2.0
 
 ### Programs
 
