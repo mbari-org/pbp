@@ -290,6 +290,10 @@ format:
 lint:
     ruff check --fix
 
+# List git tags
+tags:
+    git tag -l | sort -V | tail
+
 # With prior running of:
 #   python -m pip install --upgrade build
 # Create dist
