@@ -40,6 +40,18 @@ Examples:
     )
 
     parser.add_argument(
+        "--set-global-attr",
+        type=str,
+        nargs=2,
+        default=None,
+        metavar=("key", "value"),
+        dest="set_global_attrs",
+        action="append",
+        help="Replace {{key}} with the given value for every occurrence of {{key}}"
+             " in the global attrs file.",
+    )
+
+    parser.add_argument(
         "--variable-attrs",
         type=str,
         metavar="uri",

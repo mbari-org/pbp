@@ -114,6 +114,7 @@ main-nrs11 date='20200101' *more_args='':
                  --gs \
                  --json-base-dir=$WS/noaa-passive-bioacoustic_nrs_11_2019-2021 \
                  --global-attrs="$WS/globalAttributes_NRS11.yaml" \
+                 --set-global-attr serial_number "000000" \
                  --variable-attrs="$WS/variableAttributes_NRS11.yaml" \
                  --voltage-multiplier=2.5 \
                  --sensitivity-uri="$WS/NRS11_H5R6_sensitivity_hms5kHz.nc" \
@@ -139,6 +140,7 @@ main-nrs11-multiple-days year month *days="":
              --gs \
              --json-base-dir=$WS/noaa-passive-bioacoustic_nrs_11_2019-2021 \
              --global-attrs="$WS/globalAttributes_NRS11.yaml" \
+             --set-global-attr serial_number "000000" \
              --variable-attrs="$WS/variableAttributes_NRS11.yaml" \
              --voltage-multiplier=2.5 \
              --sensitivity-uri="$WS/NRS11_H5R6_sensitivity_hms5kHz.nc" \

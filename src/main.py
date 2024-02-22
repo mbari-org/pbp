@@ -62,6 +62,7 @@ def main(opts):
         output_prefix=opts.output_prefix,
         gen_csv=opts.gen_csv,
         global_attrs_uri=opts.global_attrs,
+        set_global_attrs=opts.set_global_attrs,
         variable_attrs_uri=opts.variable_attrs,
         voltage_multiplier=opts.voltage_multiplier,
         sensitivity_uri=opts.sensitivity_uri,

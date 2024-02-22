@@ -40,6 +40,7 @@ class ProcessHelper:
         gen_netcdf: bool = True,
         gen_csv: bool = False,
         global_attrs_uri: Optional[str] = None,
+        set_global_attrs: Optional[list[list[str]]] = None,
         variable_attrs_uri: Optional[str] = None,
         voltage_multiplier: Optional[float] = None,
         sensitivity_uri: Optional[str] = None,
@@ -61,6 +62,8 @@ class ProcessHelper:
             True to also generate CSV version of the result.
         :param global_attrs_uri:
             URI of JSON file with global attributes to be added to the NetCDF file.
+        :param set_global_attrs:
+            List of [key, value] pairs to be considered for the global attributes.
         :param variable_attrs_uri:
             URI of JSON file with variable attributes to be added to the NetCDF file.
         :param voltage_multiplier:
@@ -86,6 +89,7 @@ class ProcessHelper:
             + f"\n    gen_netcdf:             {gen_netcdf}"
             + f"\n    gen_csv:                {gen_csv}"
             + f"\n    global_attrs_uri:       {global_attrs_uri}"
+            + f"\n    set_global_attrs:       {set_global_attrs}"
             + f"\n    variable_attrs_uri:     {variable_attrs_uri}"
             + f"\n    voltage_multiplier:     {voltage_multiplier}"
             + f"\n    sensitivity_uri:        {sensitivity_uri}"
@@ -106,7 +110,7 @@ class ProcessHelper:
 
         self.metadata_helper = MetadataHelper(
             self.logger,
-            self._load_attributes("global", global_attrs_uri),
+            self._load_attributes("global", global_attrs_uri, set_global_attrs),
             self._load_attributes("variable", variable_attrs_uri),
         )
 
@@ -140,14 +144,20 @@ class ProcessHelper:
         pathlib.Path(output_dir).mkdir(exist_ok=True)
 
     def _load_attributes(
-        self, what: str, attrs_uri: Optional[str]
+        self,
+        what: str,
+        attrs_uri: Optional[str],
+        set_attrs: Optional[list[list[str]]] = None,
     ) -> Optional[OrderedDict[str, Any]]:
         if attrs_uri:
             self.logger.info(f"Loading {what} attributes from {attrs_uri=}")
             filename = self.file_helper.get_local_filename(attrs_uri)
             if filename is not None:
                 with open(filename, "r", encoding="UTF-8") as f:
-                    return parse_attributes(f.read(), pathlib.Path(filename).suffix)
+                    res = parse_attributes(f.read(), pathlib.Path(filename).suffix)
+                    for k, v in set_attrs or []:
+                        res[k] = v
+                    return res
             else:
                 self.logger.error(f"Unable to resolve '{attrs_uri=}'. Ignoring it.")
         else:
@@ -287,15 +297,18 @@ class ProcessHelper:
 
     def _get_global_attributes(self, year: int, month: int, day: int):
         coverage_date = f"{year:04}-{month:02}-{day:02}"
+        global_attrs = {
+            "time_coverage_start": f"{coverage_date} 00:00:00Z",
+            "time_coverage_end": f"{coverage_date} 23:59:00Z",
+            "date_created": datetime.utcnow().strftime("%Y-%m-%d"),
+        }
         md_helper = self.metadata_helper
-        md_helper.set_some_global_attributes(
-            {
-                "time_coverage_start": f"{coverage_date} 00:00:00Z",
-                "time_coverage_end": f"{coverage_date} 23:59:00Z",
-                "date_created": datetime.utcnow().strftime("%Y-%m-%d"),
-            }
-        )
+        md_helper.set_some_global_attributes(global_attrs)
         # TODO get PyPAM version from somewhere
-        snippets = {"{{PyPAM_version}}": "0.2.0"}
+        snippets = {"{{PyPAM_version}}": "0.3.0"}
         global_attrs = md_helper.get_global_attributes()
+        # for each, key, have the {{key}} snippet for replacement
+        # in case it is used in any values:
+        for k, v in global_attrs.items():
+            snippets["{{" + k + "}}"] = v
         return replace_snippets(global_attrs, snippets)
