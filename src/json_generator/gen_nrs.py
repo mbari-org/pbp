@@ -131,7 +131,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                 if i % 100 == 0:
                     self.log.info(f'{i} files processed')
                     time.sleep(1)
-                if flac_dt is None or flac_dt > start_dt or flac_dt < end_dt:
+                if flac_dt > end_dt:
                     break
 
         self.log.info(f'Found {len(flac_files)} files to process that cover the period {start_dt} - {end_dt}')
@@ -180,7 +180,7 @@ if __name__ == '__main__':
     )
 
     start = datetime(2019, 10, 24, 0, 0, 0)
-    end = datetime(2019, 10, 24, 0, 0, 0)
+    end = datetime(2019, 11, 1, 0, 0, 0)
 
     generator = NRSMetadataGenerator(pbp_logger=logger,
                                      sound_loc='gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio',
