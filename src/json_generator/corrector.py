@@ -1,6 +1,6 @@
 # pypam-based-processing, Apache License 2.0
 # Filename: metadata/utils/corrector.py
-# Description: Correct metadata for wav files and saves the results to a json file. Results are optionally uploaded to S3.
+# Description: Correct metadata for wav files and saves the results to a json file.
 
 import datetime
 from datetime import timedelta
@@ -9,12 +9,8 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 import shutil
-import boto3
 import tempfile
-import time
-import re
 import json
-from urllib.parse import urlparse
 
 from src import PbpLogger
 
@@ -27,8 +23,8 @@ class MetadataCorrector:
             correct_df: pd.DataFrame,
             json_path_out: str,
             day: datetime,
-            sound_trap: bool,
-            seconds_per_file: float):
+            variable_duration: bool = False,
+            seconds_per_file: float = -1):
         """
         Correct the metadata for a day and save to a json file
         :param logger:
@@ -39,15 +35,15 @@ class MetadataCorrector:
             The path to save the corrected metadata json file
         :param day:
             The day to correct
-        :param sound_trap:
-            True if the files are from a sound trap
+        :param variable_duration:
+            True if the files vary in duration
         :param seconds_per_file:
             The number of seconds in each file; not used for sound trap files
         """
         self.correct_df = correct_df
         self.json_base_dir = json_path_out
         self.day = day
-        self.sound_trap = sound_trap
+        self.variable_duration = variable_duration
         self.seconds_per_file = seconds_per_file
         self.log = logger
 
@@ -56,15 +52,15 @@ class MetadataCorrector:
 
         try:
 
-            # Soundtrap files can be variable
-            if self.sound_trap:
+            if self.variable_duration:
                 files_per_day = None
                 # Filter the metadata to the day, starting 6 hours before the day starts to capture overlap
                 df = self.correct_df[(self.correct_df['start'] >= self.day - timedelta(hours=6)) & (self.correct_df['start'] < self.day + timedelta(days=1))]
-            else: # ICListen files fixed, but may be missing or incomplete if the system was down
+            else: # ICListen/NRS files fixed, but may be missing or incomplete if the system was down
                 files_per_day = int(86400 / self.seconds_per_file)
-                # Filter the metadata to the day, starting 10 minutes before the day starts to capture overlap
-                df = self.correct_df[(self.correct_df['start'] >= self.day - timedelta(minutes=10)) & (self.correct_df['start'] < self.day + timedelta(days=1))]
+                minutes_per_file = int(1.1*self.seconds_per_file / 60)
+                # Filter the metadata to the day, starting 1 file before the day starts to capture overlap
+                df = self.correct_df[(self.correct_df['start'] >= self.day - timedelta(minutes=minutes_per_file)) & (self.correct_df['start'] < self.day + timedelta(days=1))]
 
             self.log.debug(f'Creating metadata for day {self.day}')
 
@@ -88,7 +84,7 @@ class MetadataCorrector:
 
             day_process = df
 
-            if self.sound_trap:
+            if self.variable_duration:
                 self.log.info(f'Soundtrap files for {self.day} are variable. Skipping duration check')
                 for index, row in day_process.iterrows():
                     self.log.debug(f'File {row["uri"]} duration {row["duration_secs"]} ')
@@ -104,15 +100,15 @@ class MetadataCorrector:
             # This is only reliable for full days of data contained in complete files
             day_process['jitter_secs'] = 0
 
-            if self.sound_trap or \
-                    (len(day_process) == files_per_day + 1 \
-                     and len(day_process['duration_secs'].unique()) == 1 \
+            if self.variable_duration or \
+                    (len(day_process) == files_per_day + 1
+                     and len(day_process['duration_secs'].unique()) == 1
                      and day_process.iloc[0]['duration_secs'] == self.seconds_per_file):
 
                 self.log.info(f'{len(day_process)} files available for {self.day}')
 
                 # check whether the differences are all the same
-                if len(day_process['start'].diff().unique()) == 1 or self.sound_trap:
+                if len(day_process['start'].diff().unique()) == 1 or self.variable_duration:
                     self.log.warn(f'No drift for {self.day}')
                 else:
                     self.log.info(f'Correcting drift for {self.day}')
@@ -135,7 +131,7 @@ class MetadataCorrector:
                         day_process.loc[index, 'end'] = end
                         day_process.loc[index, 'jitter_secs'] = jitter
 
-                        if self.sound_trap:
+                        if self.variable_duration:
                             end = row.end
                         else:
                             end = start + timedelta(seconds=self.seconds_per_file)
@@ -148,7 +144,10 @@ class MetadataCorrector:
 
             # drop any rows with duplicate uri times, keeping the first
             # duplicates can be caused by the jitter correction
-            day_process = day_process.drop_duplicates(subset=['uri'], keep='first')
+            if 'uri' in day_process.columns:
+                day_process = day_process.drop_duplicates(subset=['uri'], keep='first')
+            if 'url' in day_process.columns:
+                day_process = day_process.drop_duplicates(subset=['url'], keep='first')
 
             # save explicitly as UTC by setting the timezone in the start and end times
             day_process['start'] = day_process['start'].dt.tz_localize('UTC')
@@ -159,7 +158,7 @@ class MetadataCorrector:
         except Exception as e:
             self.log.exception(f'Error correcting metadata for  {self.day}. {e}')
         finally:
-            self.log.debug(f'Done correcting metadata for {self.day}')
+            self.log.debug(f'Done correcting metadata for {self.day}. Saved to {self.json_base_dir}')
 
     def no_jitter(
             self,

@@ -1,3 +1,8 @@
+# pypam-based-processing
+# Filename: tests/test_json_generator.py
+# Description:  Test fixtures for the json generator classes.
+# Tests the ability to generate metadata for soundtrap, iclisten, and nrs recording files.
+
 import json
 
 import boto3
@@ -10,13 +15,13 @@ import logging
 
 from pathlib import Path
 
-from json_generator.gen_iclisten import IcListenMetadataGenerator
+from json_generator.gen_nrs import NRSMetadataGenerator
 from src.logging_helper import create_logger
 from src.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
 from src.json_generator.gen_iclisten import IcListenMetadataGenerator
 
 
-def get_account() -> str:
+def get_aws_account() -> str | None:
     """
     Get the account number associated with this user
     :return:
@@ -35,10 +40,12 @@ def get_account() -> str:
         print(e)
         return None
 
+
 # Check if an AWS account is configured by checking if it can access the model with the default credentials
 AWS_AVAILABLE = False
-if get_account():
+if get_aws_account():
     AWS_AVAILABLE = True
+
 
 @pytest.mark.skipif(not AWS_AVAILABLE,
                     reason="This test is excluded because it requires a valid AWS account")
@@ -64,8 +71,8 @@ def test_soundtrap_json_generator():
 
     start = datetime(2023, 7, 18)
     end = datetime(2023, 7, 19)
-    gen = SoundTrapMetadataGenerator(logger=logger,
-                                     wav_loc='s3://pacific-sound-ch01',
+    gen = SoundTrapMetadataGenerator(pbp_logger=logger,
+                                     audio_loc='s3://pacific-sound-ch01',
                                      json_base_dir=json_dir.as_posix(),
                                      search=["7000"],
                                      start=start,
@@ -78,14 +85,15 @@ def test_soundtrap_json_generator():
     assert Path('tests/json/soundtrap/2023/20230718.json').exists()
     assert Path('tests/json/soundtrap/2023/20230719.json').exists()
 
+
 @pytest.mark.skipif(not AWS_AVAILABLE,
                     reason="This test is excluded because it requires a valid AWS account")
 def test_iclisten_json_generator():
     """
     Test fixture for IcListenMetadataGenerator.
     Tests the IcListenMetadataGenerator class ability to generate metadata for soundtrap recording files.
-    One files should be generated in the json directory for the date specified. Note this currently
-    only works for MBARI MARS data
+    One file should be generated in the json directory for the date specified. Note this currently
+    only works for MBARI MARS ICListen data
     :return:
     """
 
@@ -96,7 +104,7 @@ def test_iclisten_json_generator():
 
     logger = create_logger(
         log_filename_and_level=(
-            f"{log_dir}/test_soundtrap_metadata_generator.log",
+            f"{log_dir}/test_mars_metadata_generator.log",
             logging.INFO,
         ),
         console_level=logging.INFO,
@@ -106,8 +114,8 @@ def test_iclisten_json_generator():
     end = datetime(2023, 7, 18, 0, 0, 0)
 
     # If only running one day, use a single generator
-    generator = IcListenMetadataGenerator(logger=logger,
-                                          wav_loc='s3://pacific-sound-256khz',
+    generator = IcListenMetadataGenerator(pbp_logger=logger,
+                                          audio_loc='s3://pacific-sound-256khz',
                                           json_base_dir=json_dir.as_posix(),
                                           search=['MARS'],
                                           start=start,
@@ -123,4 +131,47 @@ def test_iclisten_json_generator():
     with open('tests/json/mars/2023/20230718.json') as f:
         json_objcts = json.load(f)
         if len(json_objcts) != 145:
+            assert False
+
+
+def test_nrs_json_generator():
+    """
+    Test fixture for NRSMetadataGenerator.
+    Tests the NRSMetadataGenerator class ability to generate metadata for NRS recording files.
+    One files should be generated in the json directory for the date specified.
+    :return:
+    """
+    log_dir = Path('tests/log')
+    json_dir = Path('tests/json/nrs')
+    log_dir.mkdir(exist_ok=True, parents=True)
+    json_dir.mkdir(exist_ok=True, parents=True)
+
+    logger = create_logger(
+        log_filename_and_level=(
+            f"{log_dir}/test_nrs_metadata_generator.log",
+            logging.INFO,
+        ),
+        console_level=logging.INFO,
+    )
+
+    start = datetime(2019, 10, 24, 0, 0, 0)
+    end = datetime(2019, 10, 24, 0, 0, 0)
+
+    generator = NRSMetadataGenerator(pbp_logger=logger,
+                                     sound_loc='gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio',
+                                     json_base_dir=json_dir.as_posix(),
+                                     search=['NRS11'],
+                                     start=start,
+                                     end=end,
+                                     seconds_per_file=14400.0)
+    generator.run()
+    # There should be one files in the json directory named 20230718.json, and it should have 1 json objects
+    json_files = list(Path('tests/json/nrs/').rglob('*.json'))
+    assert len(json_files) == 1
+    assert Path('tests/json/nrs/2019/20191024.json').exists()
+
+    # Read the file and check the number of json objects
+    with open('tests/json/nrs/2019/20191024.json') as f:
+        json_objcts = json.load(f)
+        if len(json_objcts) != 1:
             assert False

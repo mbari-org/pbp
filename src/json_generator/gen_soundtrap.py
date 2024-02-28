@@ -15,8 +15,9 @@ from progressbar import progressbar
 
 from src import PbpLogger
 from src.json_generator.gen_abstract import MetadataGeneratorAbstract
-from src.json_generator.wavfile import SoundTrapWavFile
+from src.json_generator.metadata_extractor import SoundTrapWavFile
 from src.json_generator.corrector import MetadataCorrector
+from src.json_generator.utils import parse_s3_or_gcp_url
 
 
 class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
@@ -28,20 +29,18 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
     start = datetime.now(pytz.utc)
     end = datetime.now(pytz.utc)
 
-    log_prefix = None
-
     def __init__(
             self,
-            logger: PbpLogger,
-            wav_loc: str,
+            pbp_logger: PbpLogger,
+            audio_loc: str,
             json_base_dir: str,
             search: [str],
             start: datetime,
             end: datetime):
         """
-        :param logger:
+        :param pbp_logger:
             The logger
-        :param wav_loc:
+        :param audio_loc:
             The local directory or S3 bucket that contains the wav files
         :param json_base_dir:
             The local directory to write the json files to
@@ -55,56 +54,59 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             The number of seconds per file expected in a wav file to check for missing data. If missing, then no check is done.
         :return:
         """
-        super().__init__(logger, wav_loc, json_base_dir, search, start, end, 0.)
-
-        # Add a prefix to the log messages to differentiate between the different metadata generators running by date
-        # This is useful when running multiple metadata generators in parallel
-        self.log_prefix = f'{self.__class__.__name__} {self.start:%Y%m%d}'
+        super().__init__(pbp_logger, audio_loc, json_base_dir, search, start, end, 0.)
 
     def run(self):
         try:
             xml_cache_path = Path(self.json_base_dir) / 'xml_cache'
             xml_cache_path.mkdir(exist_ok=True, parents=True)
             wav_files = []
-            bucket_core, is_s3 = self.setup()
 
-            def check_file(xml_file: str) -> bool:
+            self.log.info(
+                f'Searching in {self.audio_loc}/*.wav for wav files that match the search pattern {self.search}* ...')
+
+            bucket, prefix, scheme = parse_s3_or_gcp_url(self.audio_loc)
+            # This does not work for GCS
+            if scheme == 'gs':
+                self.log.error(f'GS not supported for SoundTrap')
+                return
+
+            def get_file_date(xml_file: str) -> datetime | None:
                 """
-                Check if the xml file is in the cache directory
+                Check if the xml file is in the search pattern and is within the start and end dates
                 :param xml_file:
                     The xml file with the metadata
                 :return: 
-                    True if the file is within the start and end dates
+                    Record starting datetime if the file is within the start and end dates; otherwise, return None
                 """
-                wav_files = []
-                f_path = Path(xml_file)
+                xml_file = Path(xml_file)
                 # see if the file is a regexp match to self.search
                 for s in self.search:
-                    rc = re.search(s, f_path.stem)
+                    rc = re.search(s, xml_file.stem)
 
                     if rc and rc.group(0):
                         try:
                             # If a SoundTrap file, then the date is in the filename XXXX.YYYYMMDDHHMMSS.xml
-                            f_path_dt = datetime.strptime(f_path.stem.split('.')[1], '%y%m%d%H%M%S')
+                            f_path_dt = datetime.strptime(xml_file.stem.split('.')[1], '%y%m%d%H%M%S')
                             if self.start <= f_path_dt <= self.end:
-                                return True
+                                return f_path_dt
                         except ValueError:
-                            self.log.error(f'{self.log_prefix} Could not parse {f_path.name}')
+                            self.log.error(f'Could not parse {xml_file.name}')
+                return None
 
-            if not is_s3:
-                wav_path = Path(self.wav_loc)
+            if scheme == 'file':
+                wav_path = Path(self.audio_loc)
                 for filename in progressbar(sorted(wav_path.rglob('*.xml')), prefix='Searching : '):
                     wav_path = filename.parent / f'{filename.stem}.wav'
-                    if check_file(filename):
-                        wav_files.append(SoundTrapWavFile(wav_path, filename))
+                    start_dt = get_file_date(filename)
+                    if start_dt:
+                        wav_files.append(SoundTrapWavFile(wav_path.as_posix(), filename, start_dt))
             else:
-                # if the wav_loc is a s3 url, then we need to list the files in buckets that cover the start and end
+                # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
                 # dates
-                self.log.info(f'{self.log_prefix} Searching between {self.start} and {self.end}')
+                self.log.info(f'Searching between {self.start} and {self.end}')
 
                 client = boto3.client('s3')
-
-                bucket = f'{bucket_core}'
                 paginator = client.get_paginator('list_objects')
 
                 operation_parameters = {'Bucket': bucket}
@@ -117,19 +119,21 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                     for obj in page['Contents']:
                         key = obj['Key']
 
-                        if '.xml' in key and check_file(key):
+                        if '.xml' in key and get_file_date(key):
                             xml_path = xml_cache_path / key
                             wav_uri = f's3://{bucket}/{key}'.replace('log.xml', 'wav')
 
                             # Check if the xml file is in the cache directory
                             if not xml_path.exists():
                                 # Download the xml file to a temporary directory
-                                self.log.info(f'{self.log_prefix}  Downloading {key} ...')
+                                self.log.info(f'Downloading {key} ...')
                                 client.download_file(bucket, key, xml_path)
-                            wav_files.append(SoundTrapWavFile(wav_uri, xml_path))
 
-            self.log.info(
-                f'{self.log_prefix} Found {len(wav_files)} files to process that cover the period {self.start} - {self.end}')
+                            start_dt = get_file_date(wav_uri)
+                            if start_dt:
+                                wav_files.append(SoundTrapWavFile(wav_uri, xml_path, start_dt))
+
+            self.log.info(f'Found {len(wav_files)} files to process that cover the period {self.start} - {self.end}')
 
             if len(wav_files) == 0:
                 return
@@ -139,7 +143,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
 
             # create a dataframe from the wav files
             self.log.info(
-                f'{self.log_prefix} Creating dataframe from {len(wav_files)} files spanning {wav_files[0].start} to {wav_files[-1].start}...')
+                f'Creating dataframe from {len(wav_files)} files spanning {wav_files[0].start} to {wav_files[-1].start}...')
             for wc in wav_files:
                 df_wav = wc.to_df()
 
@@ -155,21 +159,21 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             days = (self.end - self.start).days + 1
 
             if len(self.df) == 0:
-                self.log.info(f'{self.log_prefix} No data found between {self.start} and {self.end}')
+                self.log.info(f'No data found between {self.start} and {self.end}')
                 return
 
             # Correct the metadata for each day
             for day in range(days):
                 day_start = self.start + timedelta(days=day)
-                self.log.debug(f'{self.log_prefix}  Running metadata corrector for {day_start}')
-                soundtrap = True
-                corrector = MetadataCorrector(self.log, self.df, self.json_base_dir, day_start, soundtrap, 0)
+                self.log.debug(f'Running metadata corrector for {day_start}')
+                variable_duration = True
+                corrector = MetadataCorrector(self.log, self.df, self.json_base_dir, day_start, variable_duration, 0)
                 corrector.run()
 
 
 if __name__ == '__main__':
     from src.logging_helper import PbpLogger, create_logger
-    from generator import SoundTrapMetadataGenerator
+
     log_dir = Path('tests/log')
     json_dir = Path('tests/json/soundtrap')
     log_dir.mkdir(exist_ok=True, parents=True)

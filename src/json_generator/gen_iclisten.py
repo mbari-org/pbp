@@ -12,18 +12,18 @@ from pathlib import Path
 from progressbar import progressbar
 import json_generator.utils as utils
 from json_generator.corrector import MetadataCorrector
-from json_generator.wavfile import IcListenWavFile
+from json_generator.metadata_extractor import IcListenWavFile
 from src import PbpLogger
 from src.json_generator.gen_abstract import MetadataGeneratorAbstract
 
-class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
+class IcListenMetadataGenerator(MetadataGeneratorAbstract):
     log_prefix = None
 
-    def __int__(
+    def __init__(
             self,
             pbp_logger: PbpLogger,
-            wav_loc: str,
+            audio_loc: str,
             json_base_dir: str,
             start: datetime,
             end: datetime,
@@ -33,7 +33,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
         Captures ICListen wav metadata in a pandas dataframe from either a local directory or S3 bucket.
         :param pbp_logger:
             The logger
-        :param wav_loc:
+        :param audio_loc:
             The local directory or S3 bucket that contains the wav files
         :param json_base_dir:
             The local directory to store the metadata
@@ -47,19 +47,25 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             The number of seconds per file expected in a wav file to check for missing data. If 0, then no check is done.
         :return:
         """
-        super().__init__(pbp_logger, wav_loc, json_base_dir, search, start, end, seconds_per_file)
+        super().__init__(pbp_logger, audio_loc, json_base_dir, search, start, end, seconds_per_file)
         self.log_prefix = f'{self.__class__.__name__} {start:%Y%m%d}'
 
     def run(self):
         self.log.info(f'Generating metadata for {self.start} to {self.end}...')
 
-        is_s3, bucket_name = utils.is_s3(self.wav_loc)
+        bucket_name, prefix, scheme = utils.parse_s3_or_gcp_url(self.audio_loc)
+
+        # gs is not supported for icListen
+        if scheme == 'gs':
+            self.log.error(f'{self.log_prefix} GS is not supported for icListen audio files')
+            return
 
         # Run for each day in the range
         for day in pd.date_range(self.start, self.end, freq='D'):
             try:
                 self.df = None
-                self.log.info(f'{self.log_prefix} Searching in {self.wav_loc}/*.wav for wav files that match the search pattern {self.search}* ...')
+                self.log.info(
+                    f'{self.log_prefix} Searching in {self.audio_loc}/*.wav for wav files that match the search pattern {self.search}* ...')
 
                 wav_files = []
 
@@ -90,6 +96,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                                 f_path_dt = datetime.strptime(f_path.stem, f'{s}_%Y%m%d_%H%M%S')
 
                                 if f_start_dt <= f_path_dt <= f_end_dt:
+                                    self.log.info(f'{self.log_prefix} Found {f_path.name} to process')
                                     wav_files.append(IcListenWavFile(f, f_path_dt))
                                     f_wav_dt = f_path_dt
                             except ValueError:
@@ -98,24 +105,21 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
                     return f_wav_dt
 
-                if not is_s3:
-                    wav_path = Path(self.wav_loc)
+                # Set the start and end dates to 30 minutes before and after the start and end dates
+                start_dt = day - timedelta(hours=1)
+                end_dt = day + timedelta(days=1)
+
+                # set the window to 3x the expected duration of the wav file to account for any missing data
+                minutes_window = int(self.seconds_per_file * 3 / 60)
+                start_dt_hour = start_dt - timedelta(minutes=minutes_window)
+                end_dt_hour = end_dt + timedelta(minutes=minutes_window)
+
+                if scheme == 'file':
+                    wav_path = Path(self.audio_loc)
                     for filename in progressbar(sorted(wav_path.rglob('*.wav')), prefix='Searching : '):
-                        check_file(filename, start_dt, end_dt)
-                else:
-                    # if the wav_loc is a s3 url, then we need to list the files in buckets that cover the start and end
-                    # dates
+                        check_file(filename.as_posix(), start_dt, end_dt)
+                if scheme == 's3':
                     client = boto3.client('s3')
-
-                    # Set the start and end dates to 30 minutes before and after the start and end dates
-                    start_dt = day - timedelta(hours=1)
-                    end_dt = day + timedelta(days=1)
-
-                    # set the window to 3x the expected duration of the wav file to account for any missing data
-                    minutes_window = int(self.seconds_per_file * 3 / 60)
-                    start_dt_hour = start_dt - timedelta(minutes=minutes_window)
-                    end_dt_hour = end_dt + timedelta(minutes=minutes_window)
-
                     for day_hour in pd.date_range(start=start_dt, end=end_dt, freq='h'):
 
                         bucket = f'{bucket_name}-{day_hour.year:04d}'
@@ -168,7 +172,6 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 if __name__ == '__main__':
     import logging
     from src.logging_helper import PbpLogger, create_logger
-    from src.json_generator.gen_iclisten import IcListenMetadataGenerator
 
     log_dir = Path('tests/log')
     json_dir = Path('tests/json/mars')
@@ -177,22 +180,21 @@ if __name__ == '__main__':
 
     logger = create_logger(
         log_filename_and_level=(
-            f"{log_dir}/test_soundtrap_metadata_generator.log",
+            f"{log_dir}/test_iclisten_metadata_generator.log",
             logging.INFO,
         ),
         console_level=logging.INFO,
     )
 
-
     start = datetime(2023, 7, 18, 0, 0, 0)
     end = datetime(2023, 7, 18, 0, 0, 0)
 
     # If only running one day, use a single generator
-    generator = IcListenMetadataGenerator(logger=logger,
-                                            wav_loc='s3://pacific-sound-256khz',
-                                            json_base_dir=json_dir.as_posix(),
-                                            search=['MARS'],
-                                            start=start,
-                                            end=end,
-                                            seconds_per_file=300)
+    generator = IcListenMetadataGenerator(pbp_logger=logger,
+                                          audio_loc='s3://pacific-sound-256khz',
+                                          json_base_dir=json_dir.as_posix(),
+                                          search=['MARS'],
+                                          start=start,
+                                          end=end,
+                                          seconds_per_file=300)
     generator.run()
