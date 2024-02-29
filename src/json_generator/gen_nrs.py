@@ -11,8 +11,8 @@ from google.cloud import storage
 import pandas as pd
 from pathlib import Path
 from progressbar import progressbar
-from json_generator.corrector import MetadataCorrector
-from json_generator.metadata_extractor import FlacFile
+from src.json_generator.corrector import MetadataCorrector
+from src.json_generator.metadata_extractor import FlacFile
 from src import PbpLogger
 from src.json_generator.gen_abstract import MetadataGeneratorAbstract
 from src.json_generator.utils import parse_s3_or_gcp_url

@@ -10,9 +10,9 @@ import boto3
 import pandas as pd
 from pathlib import Path
 from progressbar import progressbar
-import json_generator.utils as utils
-from json_generator.corrector import MetadataCorrector
-from json_generator.metadata_extractor import IcListenWavFile
+import src.json_generator.utils as utils
+from src.json_generator.corrector import MetadataCorrector
+from src.json_generator.metadata_extractor import IcListenWavFile
 from src import PbpLogger
 from src.json_generator.gen_abstract import MetadataGeneratorAbstract
 

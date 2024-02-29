@@ -15,7 +15,7 @@ import logging
 
 from pathlib import Path
 
-from json_generator.gen_nrs import NRSMetadataGenerator
+from src.json_generator.gen_nrs import NRSMetadataGenerator
 from src.logging_helper import create_logger
 from src.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
 from src.json_generator.gen_iclisten import IcListenMetadataGenerator
@@ -165,7 +165,7 @@ def test_nrs_json_generator():
                                      end=end,
                                      seconds_per_file=14400.0)
     generator.run()
-    # There should be one files in the json directory named 20230718.json, and it should have 1 json objects
+    # There should be one files in the json directory named 20230718.json, and it should have 7 json objects
     json_files = list(Path('tests/json/nrs/').rglob('*.json'))
     assert len(json_files) == 1
     assert Path('tests/json/nrs/2019/20191024.json').exists()
@@ -173,5 +173,5 @@ def test_nrs_json_generator():
     # Read the file and check the number of json objects
     with open('tests/json/nrs/2019/20191024.json') as f:
         json_objcts = json.load(f)
-        if len(json_objcts) != 1:
+        if len(json_objcts) != 7:
             assert False
