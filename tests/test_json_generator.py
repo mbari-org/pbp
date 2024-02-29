@@ -21,7 +21,7 @@ from src.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
 from src.json_generator.gen_iclisten import IcListenMetadataGenerator
 
 
-def get_aws_account() -> str | None:
+def get_aws_account() -> str:
     """
     Get the account number associated with this user
     :return:
