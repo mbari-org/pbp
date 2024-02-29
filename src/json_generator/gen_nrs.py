@@ -59,7 +59,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             self.log.error(f'S3 is not supported for NRS audio files')
             return
 
-        def parse_filename(f: str) -> datetime | None:
+        def parse_filename(f: str) -> datetime:
             """
             Check if the file matches the search pattern and is within the start and end dates
             :param f:
