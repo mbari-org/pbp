@@ -11,7 +11,7 @@ class MetadataGeneratorAbstract(object):
                  logger: PbpLogger,
                  audio_loc: str,
                  json_base_dir: str,
-                 search: [str],
+                 prefix: [str],
                  start: datetime,
                  end: datetime,
                  seconds_per_file: float = 0.,
@@ -24,7 +24,7 @@ class MetadataGeneratorAbstract(object):
             The local directory or cloud bucket that contains the wav files
         :param json_base_dir:
             The local directory to write the json files to
-        :param search:
+        :param prefix:
             The search pattern to match the wav files, e.g. 'MARS'
         :param start:
             The start date to search for wav files
@@ -40,7 +40,7 @@ class MetadataGeneratorAbstract(object):
             self.df = pd.DataFrame()
             self.start = start
             self.end = end
-            self.search = search
+            self.prefix = prefix
             self._seconds_per_file = None if seconds_per_file == 0 else seconds_per_file
             self.logger = logger
         except Exception as e:

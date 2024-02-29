@@ -23,17 +23,17 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
     def __init__(
             self,
             pbp_logger: PbpLogger,
-            sound_loc: str,
+            uri: str,
             json_base_dir: str,
             start: datetime,
             end: datetime,
-            search: [str],
+            prefix: [str],
             seconds_per_file: float = 14400.0):
         """
         Captures NRS audio metadata in a pandas dataframe from either a local directory or GS bucket.
         :param pbp_logger:
             The logger
-        :param sound_loc:
+        :param uri:
             The local directory or GCP bucket that contains the audio files
         :param json_base_dir:
             The local directory to store the metadata
@@ -41,13 +41,13 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             The start date to search for flac files
         :param end:
             The end date to search for flac files
-        :param search:
+        :param prefix:
             The search pattern to match the flac files, e.g. 'MARS' for MARS_YYYYMMDD_HHMMSS.flac
         :param seconds_per_file:
             The number of seconds per file expected in a flac file to check for missing data. If 0, then no check is done.
         :return:
         """
-        super().__init__(pbp_logger, sound_loc, json_base_dir, search, start, end, seconds_per_file)
+        super().__init__(pbp_logger, uri, json_base_dir, prefix, start, end, seconds_per_file)
 
     def run(self):
         self.log.info(f'Generating metadata for {self.start} to {self.end}...')
@@ -69,7 +69,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             f_path = Path(f)
             f_flac_dt = None
 
-            for s in self.search:
+            for s in self.prefix:
                 # see if the file is a regexp match to search
                 rc = re.search(s, f_path.stem)
 
@@ -97,7 +97,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
         flac_files = []
         self.df = None
         self.log.info(
-            f'Searching in {self.audio_loc}/ for files that match the search pattern {self.search}* ...')
+            f'Searching in {self.audio_loc}/ for files that match the search pattern {self.prefix}* ...')
 
         # set the window to 1 flac file to account for any missing data
         minutes_window = int(self.seconds_per_file / 60)
@@ -183,9 +183,9 @@ if __name__ == '__main__':
     end = datetime(2019, 11, 1, 0, 0, 0)
 
     generator = NRSMetadataGenerator(pbp_logger=logger,
-                                     sound_loc='gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio',
+                                     uri='gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio',
                                      json_base_dir=json_dir.as_posix(),
-                                     search=['NRS11'],
+                                     prefix=['NRS11'],
                                      start=start,
                                      end=end)
     generator.run()

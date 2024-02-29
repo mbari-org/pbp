@@ -72,9 +72,9 @@ def test_soundtrap_json_generator():
     start = datetime(2023, 7, 18)
     end = datetime(2023, 7, 19)
     gen = SoundTrapMetadataGenerator(pbp_logger=logger,
-                                     audio_loc='s3://pacific-sound-ch01',
+                                     uri='s3://pacific-sound-ch01',
                                      json_base_dir=json_dir.as_posix(),
-                                     search=["7000"],
+                                     prefix=["7000"],
                                      start=start,
                                      end=end)
     gen.run()
@@ -115,9 +115,9 @@ def test_iclisten_json_generator():
 
     # If only running one day, use a single generator
     generator = IcListenMetadataGenerator(pbp_logger=logger,
-                                          audio_loc='s3://pacific-sound-256khz',
+                                          uri='s3://pacific-sound-256khz',
                                           json_base_dir=json_dir.as_posix(),
-                                          search=['MARS'],
+                                          prefix=['MARS'],
                                           start=start,
                                           end=end,
                                           seconds_per_file=300)
@@ -158,9 +158,9 @@ def test_nrs_json_generator():
     end = datetime(2019, 10, 24, 0, 0, 0)
 
     generator = NRSMetadataGenerator(pbp_logger=logger,
-                                     sound_loc='gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio',
+                                     uri='gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio',
                                      json_base_dir=json_dir.as_posix(),
-                                     search=['NRS11'],
+                                     prefix=['NRS11'],
                                      start=start,
                                      end=end,
                                      seconds_per_file=14400.0)

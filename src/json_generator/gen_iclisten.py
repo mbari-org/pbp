@@ -23,17 +23,17 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
     def __init__(
             self,
             pbp_logger: PbpLogger,
-            audio_loc: str,
+            uri: str,
             json_base_dir: str,
             start: datetime,
             end: datetime,
-            search: [str],
-            seconds_per_file: float):
+            prefix: [str],
+            seconds_per_file: float = 300.):
         """
         Captures ICListen wav metadata in a pandas dataframe from either a local directory or S3 bucket.
         :param pbp_logger:
             The logger
-        :param audio_loc:
+        :param uri:
             The local directory or S3 bucket that contains the wav files
         :param json_base_dir:
             The local directory to store the metadata
@@ -41,13 +41,13 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             The start date to search for wav files
         :param end:
             The end date to search for wav files
-        :param search:
+        :param prefix:
             The search pattern to match the wav files, e.g. 'MARS' for MARS_YYYYMMDD_HHMMSS.wav
         :param seconds_per_file:
             The number of seconds per file expected in a wav file to check for missing data. If 0, then no check is done.
         :return:
         """
-        super().__init__(pbp_logger, audio_loc, json_base_dir, search, start, end, seconds_per_file)
+        super().__init__(pbp_logger, uri, json_base_dir, prefix, start, end, seconds_per_file)
         self.log_prefix = f'{self.__class__.__name__} {start:%Y%m%d}'
 
     def run(self):
@@ -65,7 +65,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             try:
                 self.df = None
                 self.log.info(
-                    f'{self.log_prefix} Searching in {self.audio_loc}/*.wav for wav files that match the search pattern {self.search}* ...')
+                    f'{self.log_prefix} Searching in {self.audio_loc}/*.wav for wav files that match the search pattern {self.prefix}* ...')
 
                 wav_files = []
 
@@ -86,7 +86,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                     f_path = Path(f)
                     f_wav_dt = None
 
-                    for s in self.search:
+                    for s in self.prefix:
                         # see if the file is a regexp match to search
                         rc = re.search(s, f_path.stem)
 
@@ -191,9 +191,9 @@ if __name__ == '__main__':
 
     # If only running one day, use a single generator
     generator = IcListenMetadataGenerator(pbp_logger=logger,
-                                          audio_loc='s3://pacific-sound-256khz',
+                                          uri='s3://pacific-sound-256khz',
                                           json_base_dir=json_dir.as_posix(),
-                                          search=['MARS'],
+                                          prefix=['MARS'],
                                           start=start,
                                           end=end,
                                           seconds_per_file=300)

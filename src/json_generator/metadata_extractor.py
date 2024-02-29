@@ -31,6 +31,13 @@ class AudioFile:
         """
         self.start = start
         self.path_or_url = path_or_url
+        self.end = start
+        self.duration_secs = -1
+        self.fs = -1
+        self.frames = -1
+        self.channels = -1
+        self.subtype = ''
+        self.exception = np.NAN
 
     def has_exception(self):
         return True if len(self.exception) > 0 else False
@@ -215,6 +222,7 @@ class FlacFile(AudioFile):
                 self.frames = info.frames if info.frames else 0
             if scheme == 'file' or scheme == '':
                 info = sf.info(path_or_url)
+                length_microseconds = int(info.frames * 1e6 / info.samplerate)
                 self.duration_secs = int(length_microseconds / 1e6)
                 self.end = self.start + timedelta(microseconds=length_microseconds)
                 self.fs = info.samplerate

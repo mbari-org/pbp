@@ -5,6 +5,7 @@ to generate _hybrid millidecade band spectra_ for soundscape data.
 
 **Status**: Functional version, including support for S3-based cloud based processing.
 
+- [x] JSON generation of timekeeping
 - [x] Timekeeping based on given JSON indicating start and duration of every available (recognized) sound file
 - [x] Audio file processing
     - [x] Frequency and psd array output
@@ -39,7 +40,8 @@ TODO more details
    All parameters passed via environment variables, see source file.
 
 - `src/plot.py` - Plotting program: `python src/plot.py --help`.
-
+ 
+- `src/main_json_generator.py` - Main CLI program to generate JSONS with audio metadata, run `python src/main_json_gen.py --help` for usage.
 
 ## Refs
 

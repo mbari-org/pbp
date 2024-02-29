@@ -32,19 +32,19 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
     def __init__(
             self,
             pbp_logger: PbpLogger,
-            audio_loc: str,
+            uri: str,
             json_base_dir: str,
-            search: [str],
+            prefix: [str],
             start: datetime,
             end: datetime):
         """
         :param pbp_logger:
             The logger
-        :param audio_loc:
+        :param uri:
             The local directory or S3 bucket that contains the wav files
         :param json_base_dir:
             The local directory to write the json files to
-        :param search:
+        :param prefix:
             The search pattern to match the wav files, e.g. 'MARS'
         :param start:
             The start date to search for wav files
@@ -54,7 +54,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             The number of seconds per file expected in a wav file to check for missing data. If missing, then no check is done.
         :return:
         """
-        super().__init__(pbp_logger, audio_loc, json_base_dir, search, start, end, 0.)
+        super().__init__(pbp_logger, uri, json_base_dir, prefix, start, end, 0.)
 
     def run(self):
         try:
@@ -63,7 +63,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             wav_files = []
 
             self.log.info(
-                f'Searching in {self.audio_loc}/*.wav for wav files that match the search pattern {self.search}* ...')
+                f'Searching in {self.audio_loc}/*.wav for wav files that match the prefix {self.prefix}* ...')
 
             bucket, prefix, scheme = parse_s3_or_gcp_url(self.audio_loc)
             # This does not work for GCS
@@ -80,8 +80,8 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                     Record starting datetime if the file is within the start and end dates; otherwise, return None
                 """
                 xml_file = Path(xml_file)
-                # see if the file is a regexp match to self.search
-                for s in self.search:
+                # see if the file is a regexp match to self.prefix
+                for s in self.prefix:
                     rc = re.search(s, xml_file.stem)
 
                     if rc and rc.group(0):

@@ -85,7 +85,7 @@ class MetadataCorrector:
             day_process = df
 
             if self.variable_duration:
-                self.log.info(f'Soundtrap files for {self.day} are variable. Skipping duration check')
+                self.log.info(f'Files for {self.day} are variable. Skipping duration check')
                 for index, row in day_process.iterrows():
                     self.log.debug(f'File {row["uri"]} duration {row["duration_secs"]} ')
             else:
@@ -97,15 +97,13 @@ class MetadataCorrector:
 
             # check whether there is a discrepancy between the number of seconds in the file and the number
             # of seconds in the metadata. If there is a discrepancy, then correct the metadata
-            # This is only reliable for full days of data contained in complete files
+            # This is only reliable for full days of data contained in complete files for IcListen data
             day_process['jitter_secs'] = 0
 
             if self.variable_duration or \
                     (len(day_process) == files_per_day + 1
                      and len(day_process['duration_secs'].unique()) == 1
                      and day_process.iloc[0]['duration_secs'] == self.seconds_per_file):
-
-                self.log.info(f'{len(day_process)} files available for {self.day}')
 
                 # check whether the differences are all the same
                 if len(day_process['start'].diff().unique()) == 1 or self.variable_duration:
@@ -238,3 +236,4 @@ class MetadataCorrector:
             output_path = Path(self.json_base_dir, str(day.year))
             output_path.mkdir(parents=True, exist_ok=True)
             shutil.copy2(temp_metadata.as_posix(), output_path)
+            self.log.info(f'Wrote {output_path}/{temp_metadata.name}')
