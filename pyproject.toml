@@ -13,9 +13,6 @@ exclude = [
     'src/plotting\.py',
 ]
 
-[tool.black]
-line-length = 90
-
 [tool.ruff]
 line-length = 90
 exclude = [
