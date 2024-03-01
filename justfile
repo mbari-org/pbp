@@ -263,6 +263,9 @@ virtenv:
 setup:
     pip3 install -r requirements.txt
     mypy --install-types
+    pip3 install types-PyYAML
+    pip3 install types-python-dateutil
+
 
 # Install updated dependencies
 update-deps:
