@@ -5,6 +5,14 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
+[tool.mypy]
+show_error_codes = true
+ignore_missing_imports = true
+exclude = [
+    'examples/',
+    'src/plotting\.py',
+]
+
 [tool.black]
 line-length = 90
 
