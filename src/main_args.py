@@ -48,7 +48,7 @@ Examples:
         dest="set_global_attrs",
         action="append",
         help="Replace {{key}} with the given value for every occurrence of {{key}}"
-             " in the global attrs file.",
+        " in the global attrs file.",
     )
 
     parser.add_argument(
