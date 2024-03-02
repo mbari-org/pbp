@@ -36,3 +36,10 @@ jobs:
       - name: test
         run:
           python -m pytest
+
+      - name: Check source formatting
+        run:
+          ruff format --check
+      - name: Source code linting
+        run:
+          ruff check
