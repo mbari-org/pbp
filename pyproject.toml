@@ -11,6 +11,8 @@ ignore_missing_imports = true
 exclude = [
     'examples/',
     'src/plotting\.py',
+    'src/json_generator/',
+    'tests/test_json_generator.py',
 ]
 
 [tool.ruff]
