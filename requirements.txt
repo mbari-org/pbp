@@ -5,8 +5,10 @@ google-cloud-storage==2.14.0
 dataclasses-json==0.6.4
 python-dateutil==2.8.2
 pyyaml==6.0.1
+progressbar2==3.53.1
 marshmallow==3.20.2
 soundfile==0.12.1
+Pyarrow==15.0.0
 
 # quickly tried it but got: AttributeError: module 'xarray_extras' has no attribute 'csv'
 # xarray-extras==0.5.0

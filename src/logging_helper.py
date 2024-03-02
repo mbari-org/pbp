@@ -70,6 +70,8 @@ class PbpLogger:
     def error(self, s: str):
         self.logger.error(s)
 
+    def exception(self, s: str):
+        self.logger.exception(s)
 
 def create_logger(
     log_filename_and_level: Optional[Tuple[str, int]] = None,
