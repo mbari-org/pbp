@@ -26,8 +26,8 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
     """
 
     # Set the start and end dates to the current time in UTC
-    start = datetime.now(pytz.utc)
-    end = datetime.now(pytz.utc)
+    start = datetime.datetime.now(pytz.utc)
+    end = datetime.datetime.now(pytz.utc)
 
     def __init__(
         self,
