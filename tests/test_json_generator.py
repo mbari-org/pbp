@@ -33,8 +33,8 @@ def get_aws_account() -> str:
     except ClientError as e:
         print(e)
         msg = (
-            f"Could not get account number from AWS. Check your config.ini file. "
-            f"Account number is not set in the config.ini file and AWS credentials are not configured."
+            "Could not get account number from AWS. Check your config.ini file. "
+            "Account number is not set in the config.ini file and AWS credentials are not configured."
         )
         print(msg)
         return None

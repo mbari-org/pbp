@@ -9,7 +9,7 @@ import pandas as pd
 import re
 import pytz
 
-from datetime import timedelta, datetime
+from datetime import timedelta
 from pathlib import Path
 from progressbar import progressbar
 
@@ -70,7 +70,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             bucket, prefix, scheme = parse_s3_or_gcp_url(self.audio_loc)
             # This does not work for GCS
             if scheme == "gs":
-                self.log.error(f"GS not supported for SoundTrap")
+                self.log.error("GS not supported for SoundTrap")
                 return
 
             def get_file_date(xml_file: str) -> datetime | None:

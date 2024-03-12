@@ -144,7 +144,6 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                         )
                         # list the objects in the bucket
                         # loop through the objects and check if they match the search pattern
-                        num_found = 0
                         for page in page_iterator:
                             if "Contents" not in page:
                                 self.log.info(

@@ -5,7 +5,6 @@
 import re
 from datetime import timedelta, datetime
 import time
-from datetime import datetime
 from google.cloud import storage
 
 import pandas as pd
@@ -58,7 +57,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
 
         # S3 is not supported for NRS
         if scheme == "s3":
-            self.log.error(f"S3 is not supported for NRS audio files")
+            self.log.error("S3 is not supported for NRS audio files")
             return
 
         def parse_filename(f: str) -> datetime:
