@@ -28,34 +28,40 @@ def main(opts):
     json_dir = Path(opts.json_base_dir)
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
-    start = datetime.strptime(opts.start, '%Y%m%d')
-    end = datetime.strptime(opts.end, '%Y%m%d')
+    start = datetime.strptime(opts.start, "%Y%m%d")
+    end = datetime.strptime(opts.end, "%Y%m%d")
 
     try:
-        if opts.recorder == 'NRS':
-            generator = NRSMetadataGenerator(pbp_logger=logger,
-                                             uri=opts.uri,
-                                             json_base_dir=json_dir.as_posix(),
-                                             prefix=opts.prefix,
-                                             start=start,
-                                             end=end)
+        if opts.recorder == "NRS":
+            generator = NRSMetadataGenerator(
+                pbp_logger=logger,
+                uri=opts.uri,
+                json_base_dir=json_dir.as_posix(),
+                prefix=opts.prefix,
+                start=start,
+                end=end,
+            )
             generator.run()
-        if opts.recorder == 'ICLISTEN':
-            generator = IcListenMetadataGenerator(pbp_logger=logger,
-                                                  uri=opts.uri,
-                                                  json_base_dir=json_dir.as_posix(),
-                                                  prefix=opts.prefix,
-                                                  start=start,
-                                                  end=end)
+        if opts.recorder == "ICLISTEN":
+            generator = IcListenMetadataGenerator(
+                pbp_logger=logger,
+                uri=opts.uri,
+                json_base_dir=json_dir.as_posix(),
+                prefix=opts.prefix,
+                start=start,
+                end=end,
+            )
             generator.run()
             # TODO: add multiprocessing here for speed-up
-        if opts.recorder == 'SOUNDTRAP':
-            generator = SoundTrapMetadataGenerator(pbp_logger=logger,
-                                                   uri=opts.uri,
-                                                   json_base_dir=json_dir.as_posix(),
-                                                   prefix=opts.prefix,
-                                                   start=start,
-                                                   end=end)
+        if opts.recorder == "SOUNDTRAP":
+            generator = SoundTrapMetadataGenerator(
+                pbp_logger=logger,
+                uri=opts.uri,
+                json_base_dir=json_dir.as_posix(),
+                prefix=opts.prefix,
+                start=start,
+                end=end,
+            )
             generator.run()
     except KeyboardInterrupt:
         logger.info("INTERRUPTED")

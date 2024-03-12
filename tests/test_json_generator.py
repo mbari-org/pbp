@@ -27,13 +27,15 @@ def get_aws_account() -> str:
     :return:
     """
     try:
-        account_number = boto3.client('sts').get_caller_identity()['Account']
-        print(f'Found account {account_number}')
+        account_number = boto3.client("sts").get_caller_identity()["Account"]
+        print(f"Found account {account_number}")
         return account_number
     except ClientError as e:
         print(e)
-        msg = f'Could not get account number from AWS. Check your config.ini file. ' \
-              f'Account number is not set in the config.ini file and AWS credentials are not configured.'
+        msg = (
+            f"Could not get account number from AWS. Check your config.ini file. "
+            f"Account number is not set in the config.ini file and AWS credentials are not configured."
+        )
         print(msg)
         return None
     except botocore.exceptions.NoCredentialsError as e:
@@ -47,8 +49,10 @@ if get_aws_account():
     AWS_AVAILABLE = True
 
 
-@pytest.mark.skipif(not AWS_AVAILABLE,
-                    reason="This test is excluded because it requires a valid AWS account")
+@pytest.mark.skipif(
+    not AWS_AVAILABLE,
+    reason="This test is excluded because it requires a valid AWS account",
+)
 def test_soundtrap_json_generator():
     """
     Test fixture for SoundTrapMetadataGenerator.
@@ -56,8 +60,8 @@ def test_soundtrap_json_generator():
     Two files should be generated in the json directory for the dates specified.
     :return:
     """
-    log_dir = Path('tests/log')
-    json_dir = Path('tests/json/soundtrap')
+    log_dir = Path("tests/log")
+    json_dir = Path("tests/json/soundtrap")
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
 
@@ -71,23 +75,27 @@ def test_soundtrap_json_generator():
 
     start = datetime(2023, 7, 18)
     end = datetime(2023, 7, 19)
-    gen = SoundTrapMetadataGenerator(pbp_logger=logger,
-                                     uri='s3://pacific-sound-ch01',
-                                     json_base_dir=json_dir.as_posix(),
-                                     prefix=["7000"],
-                                     start=start,
-                                     end=end)
+    gen = SoundTrapMetadataGenerator(
+        pbp_logger=logger,
+        uri="s3://pacific-sound-ch01",
+        json_base_dir=json_dir.as_posix(),
+        prefix=["7000"],
+        start=start,
+        end=end,
+    )
     gen.run()
 
     # There should be two files in the json directory named 20230718.json and 20230719.json
-    json_files = list(Path('tests/json/soundtrap').rglob('*.json'))
+    json_files = list(Path("tests/json/soundtrap").rglob("*.json"))
     assert len(json_files) == 2
-    assert Path('tests/json/soundtrap/2023/20230718.json').exists()
-    assert Path('tests/json/soundtrap/2023/20230719.json').exists()
+    assert Path("tests/json/soundtrap/2023/20230718.json").exists()
+    assert Path("tests/json/soundtrap/2023/20230719.json").exists()
 
 
-@pytest.mark.skipif(not AWS_AVAILABLE,
-                    reason="This test is excluded because it requires a valid AWS account")
+@pytest.mark.skipif(
+    not AWS_AVAILABLE,
+    reason="This test is excluded because it requires a valid AWS account",
+)
 def test_iclisten_json_generator():
     """
     Test fixture for IcListenMetadataGenerator.
@@ -97,8 +105,8 @@ def test_iclisten_json_generator():
     :return:
     """
 
-    log_dir = Path('tests/log')
-    json_dir = Path('tests/json/mars')
+    log_dir = Path("tests/log")
+    json_dir = Path("tests/json/mars")
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
 
@@ -114,21 +122,23 @@ def test_iclisten_json_generator():
     end = datetime(2023, 7, 18, 0, 0, 0)
 
     # If only running one day, use a single generator
-    generator = IcListenMetadataGenerator(pbp_logger=logger,
-                                          uri='s3://pacific-sound-256khz',
-                                          json_base_dir=json_dir.as_posix(),
-                                          prefix=['MARS'],
-                                          start=start,
-                                          end=end,
-                                          seconds_per_file=300)
+    generator = IcListenMetadataGenerator(
+        pbp_logger=logger,
+        uri="s3://pacific-sound-256khz",
+        json_base_dir=json_dir.as_posix(),
+        prefix=["MARS"],
+        start=start,
+        end=end,
+        seconds_per_file=300,
+    )
     generator.run()
     # There should be one files in the json directory named 20230718.json and it should have 145 json objects
-    json_files = list(Path('tests/json/mars/').rglob('*.json'))
+    json_files = list(Path("tests/json/mars/").rglob("*.json"))
     assert len(json_files) == 1
-    assert Path('tests/json/mars/2023/20230718.json').exists()
+    assert Path("tests/json/mars/2023/20230718.json").exists()
 
     # Read the file and check the number of json objects
-    with open('tests/json/mars/2023/20230718.json') as f:
+    with open("tests/json/mars/2023/20230718.json") as f:
         json_objcts = json.load(f)
         if len(json_objcts) != 145:
             assert False
@@ -141,8 +151,8 @@ def test_nrs_json_generator():
     One files should be generated in the json directory for the date specified.
     :return:
     """
-    log_dir = Path('tests/log')
-    json_dir = Path('tests/json/nrs')
+    log_dir = Path("tests/log")
+    json_dir = Path("tests/json/nrs")
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
 
@@ -157,21 +167,23 @@ def test_nrs_json_generator():
     start = datetime(2019, 10, 24, 0, 0, 0)
     end = datetime(2019, 10, 24, 0, 0, 0)
 
-    generator = NRSMetadataGenerator(pbp_logger=logger,
-                                     uri='gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio',
-                                     json_base_dir=json_dir.as_posix(),
-                                     prefix=['NRS11'],
-                                     start=start,
-                                     end=end,
-                                     seconds_per_file=14400.0)
+    generator = NRSMetadataGenerator(
+        pbp_logger=logger,
+        uri="gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio",
+        json_base_dir=json_dir.as_posix(),
+        prefix=["NRS11"],
+        start=start,
+        end=end,
+        seconds_per_file=14400.0,
+    )
     generator.run()
     # There should be one files in the json directory named 20230718.json, and it should have 7 json objects
-    json_files = list(Path('tests/json/nrs/').rglob('*.json'))
+    json_files = list(Path("tests/json/nrs/").rglob("*.json"))
     assert len(json_files) == 1
-    assert Path('tests/json/nrs/2019/20191024.json').exists()
+    assert Path("tests/json/nrs/2019/20191024.json").exists()
 
     # Read the file and check the number of json objects
-    with open('tests/json/nrs/2019/20191024.json') as f:
+    with open("tests/json/nrs/2019/20191024.json") as f:
         json_objcts = json.load(f)
         if len(json_objcts) != 7:
             assert False

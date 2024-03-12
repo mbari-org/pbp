@@ -7,15 +7,17 @@ from src.logging_helper import PbpLogger
 
 
 class MetadataGeneratorAbstract(object):
-    def __init__(self,
-                 logger: PbpLogger,
-                 audio_loc: str,
-                 json_base_dir: str,
-                 prefix: [str],
-                 start: datetime,
-                 end: datetime,
-                 seconds_per_file: float = 0.,
-                 **kwargs):
+    def __init__(
+        self,
+        logger: PbpLogger,
+        audio_loc: str,
+        json_base_dir: str,
+        prefix: [str],
+        start: datetime,
+        end: datetime,
+        seconds_per_file: float = 0.0,
+        **kwargs,
+    ):
         """
         Abstract class for capturing sound wav metadata
         :param logger:
@@ -61,4 +63,3 @@ class MetadataGeneratorAbstract(object):
     # abstract run method
     def run(self):
         pass
-

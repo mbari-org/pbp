@@ -11,5 +11,5 @@ def parse_s3_or_gcp_url(url) -> (str, str, str):
     """
     parsed_url = urlparse(url)
     bucket = parsed_url.netloc
-    prefix = parsed_url.path.lstrip('/')
+    prefix = parsed_url.path.lstrip("/")
     return bucket, prefix, parsed_url.scheme
