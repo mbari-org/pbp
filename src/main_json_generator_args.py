@@ -2,8 +2,10 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 
 
 def parse_arguments():
-    description = ("PyPAM based processing. Generates JSONs with audio metadata for NRS flac files, "
-                   "IcListen wav files, and Soundtrap wav files from either a local directory or gs/s3 bucket.")
+    description = (
+        "PyPAM based processing. Generates JSONs with audio metadata for NRS flac files, "
+        "IcListen wav files, and Soundtrap wav files from either a local directory or gs/s3 bucket."
+    )
     example = """
 Examples:
     src/main_json_gen.py  \\
@@ -21,15 +23,16 @@ Examples:
     )
 
     class InstrumentType:
-        NRS = 'NRS'
-        ICLISTEN = 'ICLISTEN'
-        SOUNDTRAP = 'SOUNDTRAP'
+        NRS = "NRS"
+        ICLISTEN = "ICLISTEN"
+        SOUNDTRAP = "SOUNDTRAP"
 
     parser.add_argument(
         "--recorder",
         choices=[InstrumentType.NRS, InstrumentType.ICLISTEN, InstrumentType.SOUNDTRAP],
         required=True,
-        help="Choose the audio instrument type",)
+        help="Choose the audio instrument type",
+    )
 
     parser.add_argument(
         "--json-base-dir",
@@ -76,9 +79,9 @@ Examples:
         "--prefix",
         type=str,
         required=True,
-        nargs='+',
+        nargs="+",
         help="Prefix for search to match the audio files. Assumption is the prefix is separated by an "
-             "underscore, e.g. 'MARS_'.",
+        "underscore, e.g. 'MARS_'.",
     )
 
     return parser.parse_args()
