@@ -22,21 +22,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-versions }}
-
       - uses: extractions/setup-just@v1
-      - name: Install dependencies
-        run: |
-          sudo apt-get install libsndfile1
-          just install-poetry
-          poetry install
+      - run: sudo apt-get install libsndfile1
+      - run: just install-poetry
+      - run: poetry install
 
-      - name: test
-        run:
-          poetry run pytest
-
-      - name: Check source formatting
-        run:
-          ruff format --check
-      - name: Source code linting
-        run:
-          ruff check
+      - run: PYTHONPATH=. poetry run pytest
+      - run: ruff format --check
+      - run: ruff check
