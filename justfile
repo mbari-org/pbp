@@ -256,9 +256,13 @@ dev: check test format
 all: dev lint
 
 # Install dependencies
-setup:
+setup: install-poetry
     poetry install
     just install-types
+
+# Install poetry
+install-poetry:
+    curl -sSL https://install.python-poetry.org | python3 -
 
 # Install updated dependencies
 update-deps:

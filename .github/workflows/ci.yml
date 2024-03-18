@@ -23,10 +23,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-versions }}
 
+      - uses: extractions/setup-just@v1
       - name: Install dependencies
         run: |
           sudo apt-get install libsndfile1
-          poetry install
+          just setup
 
       - name: test
         run:
