@@ -28,5 +28,5 @@ jobs:
       - run: poetry install
 
       - run: PYTHONPATH=. poetry run pytest
-      - run: ruff format --check
-      - run: ruff check
+      - run: just format-check
+      - run: just lint-check

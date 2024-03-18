@@ -287,11 +287,19 @@ test *options="":
 
 # Format source code
 format:
-    ruff format .
+    poetry run ruff format .
+
+# Check source formatting
+format-check:
+    poetry run ruff format --check
 
 # Lint source code
 lint:
-    ruff check --fix
+    poetry run ruff check --fix
+
+# Lint source code
+lint-check:
+    poetry run ruff check
 
 # List git tags
 tags:
