@@ -25,17 +25,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # https://github.com/mbari-org/pypam-based-processing/actions/runs/4327554890/jobs/7556425585
-          # maybe skip this for now:
-          # sudo apt-get update && sudo apt-get upgrade -y
-          
           sudo apt-get install libsndfile1
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          poetry install
 
       - name: test
         run:
-          python -m pytest
+          poetry run pytest
 
       - name: Check source formatting
         run:
