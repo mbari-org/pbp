@@ -27,7 +27,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install libsndfile1
-          just setup
+          just install-poetry
+          poetry install
 
       - name: test
         run:
