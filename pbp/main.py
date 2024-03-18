@@ -1,4 +1,4 @@
-from src.main_args import parse_arguments
+from pbp.main_args import parse_arguments
 
 # Some imports, in particular involving data processing, cause a delay that is
 # noticeable when just running the --help option. We get around this issue by
@@ -10,9 +10,9 @@ def main(opts):
     import logging
     import os
 
-    from src.file_helper import FileHelper
-    from src.logging_helper import create_logger
-    from src.process_helper import ProcessHelper
+    from pbp.file_helper import FileHelper
+    from pbp.logging_helper import create_logger
+    from pbp.process_helper import ProcessHelper
 
     logger = create_logger(
         log_filename_and_level=(

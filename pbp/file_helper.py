@@ -13,9 +13,9 @@ from botocore.client import BaseClient, ClientError
 from google.cloud.exceptions import NotFound as GsNotFound
 from google.cloud.storage import Client as GsClient
 
-from src.json_support import get_intersecting_entries, JEntry, parse_json_contents
-from src.logging_helper import PbpLogger
-from src.misc_helper import brief_list, map_prefix
+from pbp.json_support import get_intersecting_entries, JEntry, parse_json_contents
+from pbp.logging_helper import PbpLogger
+from pbp.misc_helper import brief_list, map_prefix
 
 
 @dataclass

@@ -45,8 +45,8 @@ show_error_codes = true
 ignore_missing_imports = true
 exclude = [
     'examples/',
-    'src/plotting\.py',
-    'src/json_generator/',
+    'pbp/plotting\.py',
+    'pbp/json_generator/',
     'tests/test_json_generator.py',
 ]
 

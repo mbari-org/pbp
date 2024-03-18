@@ -62,9 +62,9 @@ import pathlib
 
 import boto3
 
-from src.file_helper import FileHelper
-from src.logging_helper import create_logger
-from src.process_helper import ProcessHelper
+from pbp.file_helper import FileHelper
+from pbp.logging_helper import create_logger
+from pbp.process_helper import ProcessHelper
 
 
 def main():

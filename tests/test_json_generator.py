@@ -15,10 +15,10 @@ import logging
 
 from pathlib import Path
 
-from src.json_generator.gen_nrs import NRSMetadataGenerator
-from src.logging_helper import create_logger
-from src.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
-from src.json_generator.gen_iclisten import IcListenMetadataGenerator
+from pbp.json_generator.gen_nrs import NRSMetadataGenerator
+from pbp.logging_helper import create_logger
+from pbp.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
+from pbp.json_generator.gen_iclisten import IcListenMetadataGenerator
 
 
 def get_aws_account() -> str:

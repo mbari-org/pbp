@@ -10,11 +10,11 @@ import boto3
 import pandas as pd
 from pathlib import Path
 from progressbar import progressbar
-import src.json_generator.utils as utils
-from src.json_generator.corrector import MetadataCorrector
-from src.json_generator.metadata_extractor import IcListenWavFile
-from src import PbpLogger
-from src.json_generator.gen_abstract import MetadataGeneratorAbstract
+import pbp.json_generator.utils as utils
+from pbp.json_generator.corrector import MetadataCorrector
+from pbp.json_generator.metadata_extractor import IcListenWavFile
+from pbp import PbpLogger
+from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
 
 
 class IcListenMetadataGenerator(MetadataGeneratorAbstract):
@@ -192,7 +192,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
 if __name__ == "__main__":
     import logging
-    from src.logging_helper import PbpLogger, create_logger
+    from pbp.logging_helper import PbpLogger, create_logger
 
     log_dir = Path("tests/log")
     json_dir = Path("tests/json/mars")

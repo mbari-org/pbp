@@ -5,7 +5,7 @@ def parse_arguments():
     description = "PyPAM based processing of Pacific Sound data."
     example = """
 Examples:
-    src/main.py  --json-base-dir=tests/json \\
+    pbp/main.py  --json-base-dir=tests/json \\
                  --audio-base-dir=tests/wav \\
                  --date=20220902 \\
                  --output-dir=output
