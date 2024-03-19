@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "0.3.0beta1"
+version = "0.3.0b2"
 # for now, pbp version "aligned" (not necessarily exactly) with that of lifewatch-pypam.
 description = "PyPAM based Processing"
 authors = [
@@ -13,6 +13,7 @@ authors = [
 ]
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/mbari-org/pbp"
 packages = [{include = "pbp"}]
 
 [tool.poetry.scripts]
