@@ -255,52 +255,56 @@ dev: check test format
 # As the dev recipe plus lint; good to run before committing changes
 all: dev lint
 
-# Create virtual environment
-virtenv:
-    python3.9 -m venv virtenv
-
 # Install dependencies
-setup:
-    pip3 install -r requirements.txt
-    mypy --install-types
-    pip3 install types-PyYAML
-    pip3 install types-python-dateutil
+setup: install-poetry
+    poetry install
+    just install-types
 
+# Install poetry
+install-poetry:
+    curl -sSL https://install.python-poetry.org | python3 -
 
 # Install updated dependencies
 update-deps:
-    pip3 install -r requirements.txt
+    poetry update
+    poetry install
 
 # Do static type checking (not very strict)
 check:
-    python -m mypy .
+    poetry run mypy .
 
 # Install std types for mypy
 install-types:
-    python -m mypy --install-types
+    poetry run mypy --install-types
 
 # Do snapshot-update
 snapshot-update:
-    python -m pytest --snapshot-update
+    poetry run pytest --snapshot-update
 
 # Run tests
 test *options="":
-    python -m pytest {{options}}
+    poetry run pytest {{options}}
 
 # Format source code
 format:
-    ruff format .
+    poetry run ruff format .
+
+# Check source formatting
+format-check:
+    poetry run ruff format --check
 
 # Lint source code
 lint:
-    ruff check --fix
+    poetry run ruff check --fix
+
+# Lint source code
+lint-check:
+    poetry run ruff check
 
 # List git tags
 tags:
     git tag -l | sort -V | tail
 
-# With prior running of:
-#   python -m pip install --upgrade build
 # Create dist
 dist:
-    python -m build
+    poetry build

@@ -3,7 +3,7 @@
 This package uses [PyPAM](https://github.com/lifewatch/pypam/)
 to generate _hybrid millidecade band spectra_ for soundscape data.
 
-**Status**: Functional version, including support for S3-based cloud based processing.
+**Status**: Functional version, including support for cloud based processing.
 
 - [x] JSON generation of timekeeping
 - [x] Timekeeping based on given JSON indicating start and duration of every available (recognized) sound file
@@ -16,31 +16,31 @@ to generate _hybrid millidecade band spectra_ for soundscape data.
     - [x] NetCDF with metadata
     - [x] CSV (optional)
     - [x] Summary plot (optional)
-- [x] Cloud processing (inputs downloaded from, and generated products uploaded to S3)
+- [x] Cloud processing
+    - [x] Inputs can be downloaded from S3
+    - [x] Outputs can be uploaded to S3
+    - [x] Inputs can be downloaded from public GCS bucket
+    - [ ] Outputs can be uploaded to GCS
 
 TODO more details
 
 ## Setup
 
-### Create and activate virtual environment
+### Install PBP
 
-    python3.9 -m venv virtenv
-    source virtenv/bin/activate
-
-### Install dependencies
-
-    pip3 install -r requirements.txt
+    pip install mbari-pbp
 
 ### Programs
 
-- `src/main.py` - Main CLI program, run `python src/main.py --help` for usage.
+- `pbp` - Main PBP program, run `pbp --help` for usage.
 
-- `src/main_cloud.py` - Main program for cloud based processing. 
+- `pbp-cloud` - Program for cloud based processing. 
    All parameters passed via environment variables, see source file.
 
-- `src/plot.py` - Plotting program: `python src/plot.py --help`.
+- `pbp-plot` - Plotting program: `pbp-plot.py --help`.
  
-- `src/main_json_generator.py` - Main CLI program to generate JSONS with audio metadata, run `python src/main_json_gen.py --help` for usage.
+- `pbp-json-gen` - Program to generate JSONs with audio metadata,
+  run `pbp-json-gen --help` for usage.
 
 ## Refs
 
@@ -56,4 +56,4 @@ TODO more details
 
 ## Development
 
-See [DEVEL.md](DEVEL.md) for details.
+See [DEVELOPMENT.md](https://github.com/mbari-org/pypam-based-processing/blob/main/DEVEL.md) for details.

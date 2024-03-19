@@ -7,13 +7,13 @@ from typing import Any, List, Optional, OrderedDict, Tuple
 import numpy as np
 import xarray as xr
 
-from src import save_dataset_to_csv, save_dataset_to_netcdf
+from pbp import save_dataset_to_csv, save_dataset_to_netcdf
 
-from src.file_helper import FileHelper
-from src.logging_helper import PbpLogger
-from src.metadata import MetadataHelper, parse_attributes, replace_snippets
-from src.misc_helper import gen_hour_minute_times, parse_date
-from src.pypam_support import ProcessResult, PypamSupport
+from pbp.file_helper import FileHelper
+from pbp.logging_helper import PbpLogger
+from pbp.metadata import MetadataHelper, parse_attributes, replace_snippets
+from pbp.misc_helper import gen_hour_minute_times, parse_date
+from pbp.pypam_support import ProcessResult, PypamSupport
 
 
 @dataclass

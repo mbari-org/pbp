@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 import xarray as xr
 import yaml
 
-from src.logging_helper import PbpLogger
+from pbp.logging_helper import PbpLogger
 
 
 def parse_attributes(contents: str, suffix: str) -> OrderedDict[str, Any]:

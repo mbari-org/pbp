@@ -8,7 +8,7 @@ def parse_arguments():
     )
     example = """
 Examples:
-    src/main_json_gen.py  \\
+    pbp-json-gen \\
                  --json-base-dir=tests/json/nrs \\
                  --output-dir=output \\
                  --uri=s3://pacific-sound-ch01 \\

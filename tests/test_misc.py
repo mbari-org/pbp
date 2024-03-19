@@ -1,4 +1,4 @@
-from src.misc_helper import gen_hour_minute_times, map_prefix
+from pbp.misc_helper import gen_hour_minute_times, map_prefix
 
 
 def test_gen_hour_minute_times(snapshot):

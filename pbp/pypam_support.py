@@ -8,8 +8,8 @@ import pypam.signal as sig
 import xarray as xr
 from pypam import utils
 
-from src.logging_helper import PbpLogger
-from src.misc_helper import brief_list
+from pbp.logging_helper import PbpLogger
+from pbp.misc_helper import brief_list
 
 
 @dataclass
