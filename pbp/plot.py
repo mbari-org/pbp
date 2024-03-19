@@ -76,7 +76,8 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def main(opts):
+def main():
+    opts = parse_arguments()
     # pylint: disable=import-outside-toplevel
     import xarray as xr
 
@@ -102,4 +103,4 @@ def main(opts):
 
 
 if __name__ == "__main__":
-    main(parse_arguments())
+    main()

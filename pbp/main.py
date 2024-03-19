@@ -5,7 +5,9 @@ from pbp.main_args import parse_arguments
 # postponing the imports until actually needed. See the main() function.
 
 
-def main(opts):
+def main():
+    opts = parse_arguments()
+
     # pylint: disable=import-outside-toplevel
     import logging
     import os
@@ -77,4 +79,4 @@ def main(opts):
 
 
 if __name__ == "__main__":
-    main(parse_arguments())
+    main()

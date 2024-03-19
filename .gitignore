@@ -1,6 +1,7 @@
 .env
 output*/
 cloud_tmp*/
+NRS11/
 virtenv/
 __pycache__
 HASH

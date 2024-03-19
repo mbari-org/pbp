@@ -22,25 +22,21 @@ TODO more details
 
 ## Setup
 
-### Create and activate virtual environment
+### Install PBP
 
-    python3.9 -m venv virtenv
-    source virtenv/bin/activate
-
-### Install dependencies
-
-    pip3 install -r requirements.txt
+    pip install mbari-pbp
 
 ### Programs
 
-- `src/main.py` - Main CLI program, run `python src/main.py --help` for usage.
+- `pbp` - Main CLI program, run `pbp --help` for usage.
 
-- `src/main_cloud.py` - Main program for cloud based processing. 
+- `pbp-cloud` - Main program for cloud based processing. 
    All parameters passed via environment variables, see source file.
 
-- `src/plot.py` - Plotting program: `python src/plot.py --help`.
+- `pbp-plot` - Plotting program: `pbp-plot.py --help`.
  
-- `src/main_json_generator.py` - Main CLI program to generate JSONS with audio metadata, run `python src/main_json_gen.py --help` for usage.
+- `pbp-json-gen` - Main CLI program to generate JSONS with audio metadata,
+  run `pbp-json-gen --help` for usage.
 
 ## Refs
 

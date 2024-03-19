@@ -3,7 +3,6 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-#package-mode = false  # for now.
 name = "mbari-pbp"
 version = "0.3.0"
 # for now, pbp version "aligned" (not necessarily exactly) with that of lifewatch-pypam.
@@ -15,6 +14,12 @@ authors = [
 license = "MIT"
 readme = "README.md"
 packages = [{include = "pbp"}]
+
+[tool.poetry.scripts]
+pbp = "pbp.main:main"
+pbp-cloud = "pbp.main_cloud:main"
+pbp-plot = "pbp.plot:main"
+pbp-json-gen = "pbp.main_json_generator:main"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12.0"
