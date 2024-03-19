@@ -36,7 +36,6 @@ class ProcessHelper:
         output_dir: str,
         output_prefix: str,
         gen_netcdf: bool = True,
-        gen_csv: bool = False,
         global_attrs_uri: Optional[str] = None,
         set_global_attrs: Optional[list[list[str]]] = None,
         variable_attrs_uri: Optional[str] = None,
@@ -56,8 +55,6 @@ class ProcessHelper:
             Output filename prefix.
         :param gen_netcdf:
             True to generate the netCDF file.
-        :param gen_csv:
-            True to also generate CSV version of the result.
         :param global_attrs_uri:
             URI of JSON file with global attributes to be added to the NetCDF file.
         :param set_global_attrs:
@@ -85,7 +82,6 @@ class ProcessHelper:
             + f"\n    output_dir:             {output_dir}"
             + f"\n    output_prefix:          {output_prefix}"
             + f"\n    gen_netcdf:             {gen_netcdf}"
-            + f"\n    gen_csv:                {gen_csv}"
             + f"\n    global_attrs_uri:       {global_attrs_uri}"
             + f"\n    set_global_attrs:       {set_global_attrs}"
             + f"\n    variable_attrs_uri:     {variable_attrs_uri}"
@@ -104,7 +100,6 @@ class ProcessHelper:
         self.output_dir = output_dir
         self.output_prefix = output_prefix
         self.gen_netcdf = gen_netcdf
-        self.gen_csv = gen_csv
 
         self.metadata_helper = MetadataHelper(
             self.logger,
@@ -238,11 +233,6 @@ class ProcessHelper:
             save_dataset_to_netcdf(self.logger, ds_result, nc_filename)
             generated_filenames.append(nc_filename)
 
-        if self.gen_csv:
-            csv_filename = f"{basename}.csv"
-            save_dataset_to_csv(self.logger, ds_result, csv_filename)
-            generated_filenames.append(csv_filename)
-
         self.file_helper.day_completed()
 
         return ProcessDayResult(generated_filenames, ds_result)
@@ -330,11 +320,3 @@ def save_dataset_to_netcdf(logger: PbpLogger, ds: xr.Dataset, filename: str) -> 
         logger.error(error)
         print(error)
         return False
-
-
-def save_dataset_to_csv(logger: PbpLogger, ds: xr.Dataset, filename: str):
-    logger.info(f"  - saving dataset to: {filename}")
-    try:
-        ds.to_pandas().to_csv(filename, float_format="%.1f")
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        logger.error(f"Unable to save {filename}: {e}")

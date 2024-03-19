@@ -5,7 +5,7 @@ from pbp import get_pbp_version
 
 def parse_arguments():
     description = (
-        "PyPAM based processing. Generates JSONs with audio metadata for NRS flac files, "
+        "Generate JSONs with audio metadata for NRS flac files, "
         "IcListen wav files, and Soundtrap wav files from either a local directory or gs/s3 bucket."
     )
     example = """

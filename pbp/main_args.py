@@ -5,7 +5,7 @@ from pbp import get_pbp_version
 
 
 def parse_arguments():
-    description = "PyPAM based processing of Pacific Sound data."
+    description = "Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM."
     example = """
 Examples:
     pbp --json-base-dir=tests/json \\
@@ -169,13 +169,6 @@ Examples:
         default=False,
         action="store_true",
         help="Do not remove any downloaded files after use.",
-    )
-
-    parser.add_argument(
-        "--gen-csv",
-        default=False,
-        action="store_true",
-        help="Also generate CSV version of the result.",
     )
 
     parser.add_argument(

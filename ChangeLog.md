@@ -2,6 +2,7 @@
 
 2024-03
 
+- removed `--gen-csv` option (not really used/needed)
 - added `--version` option to the programs
 - minor code reorg
 - enabled poetry
