@@ -1,7 +1,8 @@
 # PyPAM based data processing
 
-This package uses [PyPAM](https://github.com/lifewatch/pypam/)
-to generate _hybrid millidecade band spectra_ for soundscape data.
+The [`mbari-pbp`](https://pypi.org/project/mbari-pbp/) package allows to
+process ocean audio data archives to daily analysis products of hybrid millidecade spectra using
+[PyPAM](https://github.com/lifewatch/pypam/).
 
 **Status**: Functional version, including support for cloud based processing.
 
