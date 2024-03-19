@@ -10,11 +10,11 @@ from google.cloud import storage
 import pandas as pd
 from pathlib import Path
 from progressbar import progressbar
-from src.json_generator.corrector import MetadataCorrector
-from src.json_generator.metadata_extractor import FlacFile
-from src import PbpLogger
-from src.json_generator.gen_abstract import MetadataGeneratorAbstract
-from src.json_generator.utils import parse_s3_or_gcp_url
+from pbp.json_generator.corrector import MetadataCorrector
+from pbp.json_generator.metadata_extractor import FlacFile
+from pbp import PbpLogger
+from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
+from pbp.json_generator.utils import parse_s3_or_gcp_url
 
 
 class NRSMetadataGenerator(MetadataGeneratorAbstract):
@@ -183,7 +183,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
 
 if __name__ == "__main__":
     import logging
-    from src.logging_helper import PbpLogger, create_logger
+    from pbp.logging_helper import PbpLogger, create_logger
 
     log_dir = Path("tests/log")
     json_dir = Path("tests/json/nrs")

@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from dataclasses_json import config, dataclass_json
 from dateutil import parser as iso8601_parser
 
-from src.logging_helper import PbpLogger
+from pbp.logging_helper import PbpLogger
 
 
 @dataclass_json

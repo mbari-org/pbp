@@ -22,24 +22,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-versions }}
+      - uses: extractions/setup-just@v1
+      - run: sudo apt-get install libsndfile1
+      - run: just install-poetry
+      - run: poetry install
 
-      - name: Install dependencies
-        run: |
-          # https://github.com/mbari-org/pypam-based-processing/actions/runs/4327554890/jobs/7556425585
-          # maybe skip this for now:
-          # sudo apt-get update && sudo apt-get upgrade -y
-          
-          sudo apt-get install libsndfile1
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-
-      - name: test
-        run:
-          python -m pytest
-
-      - name: Check source formatting
-        run:
-          ruff format --check
-      - name: Source code linting
-        run:
-          ruff check
+      - run: PYTHONPATH=. poetry run pytest
+      - run: just format-check
+      - run: just lint-check

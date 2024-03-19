@@ -1,6 +1,6 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from src.plot_const import (
+from pbp.plot_const import (
     DEFAULT_DPI,
     DEFAULT_LAT_LON_FOR_SOLPOS,
     DEFAULT_TITLE,
@@ -76,11 +76,12 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def main(opts):
+def main():
+    opts = parse_arguments()
     # pylint: disable=import-outside-toplevel
     import xarray as xr
 
-    from src.plotting import plot_dataset_summary
+    from pbp.plotting import plot_dataset_summary
 
     show = opts.show or opts.only_show
     for nc_filename in opts.netcdf:
@@ -102,4 +103,4 @@ def main(opts):
 
 
 if __name__ == "__main__":
-    main(parse_arguments())
+    main()

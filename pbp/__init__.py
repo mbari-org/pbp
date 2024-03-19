@@ -2,7 +2,7 @@ import os
 
 import xarray as xr
 
-from src.logging_helper import PbpLogger
+from pbp.logging_helper import PbpLogger
 
 
 def save_dataset_to_netcdf(logger: PbpLogger, ds: xr.Dataset, filename: str) -> bool:

@@ -1,20 +1,22 @@
 from datetime import datetime
 from pathlib import Path
 
-from src.json_generator.gen_nrs import NRSMetadataGenerator
-from src.json_generator.gen_iclisten import IcListenMetadataGenerator
-from src.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
-from src.main_json_generator_args import parse_arguments
+from pbp.json_generator.gen_nrs import NRSMetadataGenerator
+from pbp.json_generator.gen_iclisten import IcListenMetadataGenerator
+from pbp.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
+from pbp.main_json_generator_args import parse_arguments
 
 # Some imports, in particular involving data processing, cause a delay that is
 # noticeable when just running the --help option. We get around this issue by
 # postponing the imports until actually needed. See the main() function.
 
 
-def main(opts):
+def main():
+    opts = parse_arguments()
+
     # pylint: disable=import-outside-toplevel
     import logging
-    from src.logging_helper import create_logger
+    from pbp.logging_helper import create_logger
 
     logger = create_logger(
         log_filename_and_level=(
@@ -68,4 +70,4 @@ def main(opts):
 
 
 if __name__ == "__main__":
-    main(parse_arguments())
+    main()

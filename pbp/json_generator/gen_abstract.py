@@ -3,7 +3,7 @@
 # Description:  Abstract class that captures sound wav metadata
 from datetime import datetime
 import pandas as pd
-from src.logging_helper import PbpLogger
+from pbp.logging_helper import PbpLogger
 
 
 class MetadataGeneratorAbstract(object):

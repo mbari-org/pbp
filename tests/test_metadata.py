@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from src.metadata import parse_attributes, replace_snippets
+from pbp.metadata import parse_attributes, replace_snippets
 
 
 def test_parse_attributes_json():
