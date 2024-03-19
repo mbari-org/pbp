@@ -7,12 +7,19 @@ from pbp.plot_const import (
     DEFAULT_YLIM,
     DEFAULT_CMLIM,
 )
+from pbp import get_pbp_version
 
 
 def parse_arguments():
     description = "Generate summary plots for given netcdf files."
 
     parser = ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=get_pbp_version(),
+    )
 
     parser.add_argument(
         "--latlon",

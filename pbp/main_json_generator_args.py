@@ -1,5 +1,7 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 
+from pbp import get_pbp_version
+
 
 def parse_arguments():
     description = (
@@ -20,6 +22,12 @@ Examples:
 
     parser = ArgumentParser(
         description=description, epilog=example, formatter_class=RawTextHelpFormatter
+    )
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=get_pbp_version(),
     )
 
     class InstrumentType:

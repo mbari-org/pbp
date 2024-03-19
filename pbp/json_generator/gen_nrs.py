@@ -12,7 +12,7 @@ from pathlib import Path
 from progressbar import progressbar
 from pbp.json_generator.corrector import MetadataCorrector
 from pbp.json_generator.metadata_extractor import FlacFile
-from pbp import PbpLogger
+from pbp.logging_helper import PbpLogger
 from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
 from pbp.json_generator.utils import parse_s3_or_gcp_url
 

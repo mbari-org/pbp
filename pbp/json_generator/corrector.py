@@ -12,7 +12,7 @@ import shutil
 import tempfile
 import json
 
-from pbp import PbpLogger
+from pbp.logging_helper import PbpLogger
 
 
 class MetadataCorrector:

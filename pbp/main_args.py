@@ -1,6 +1,9 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 
+from pbp import get_pbp_version
+
+
 def parse_arguments():
     description = "PyPAM based processing of Pacific Sound data."
     example = """
@@ -13,6 +16,12 @@ Examples:
 
     parser = ArgumentParser(
         description=description, epilog=example, formatter_class=RawTextHelpFormatter
+    )
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=get_pbp_version(),
     )
 
     parser.add_argument(

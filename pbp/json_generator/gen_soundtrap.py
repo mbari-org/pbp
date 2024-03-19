@@ -13,7 +13,7 @@ from datetime import timedelta
 from pathlib import Path
 from progressbar import progressbar
 
-from pbp import PbpLogger
+from pbp.logging_helper import PbpLogger
 from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
 from pbp.json_generator.metadata_extractor import SoundTrapWavFile
 from pbp.json_generator.corrector import MetadataCorrector

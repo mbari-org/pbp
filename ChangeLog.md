@@ -2,6 +2,8 @@
 
 2024-03
 
+- added `--version` option to the programs
+- minor code reorg
 - enabled poetry
     - now packaging and publishing to PyPI 
     - TODO ongoing: README/justfile adjustments, etc. 

@@ -7,8 +7,6 @@ from typing import Any, List, Optional, OrderedDict, Tuple
 import numpy as np
 import xarray as xr
 
-from pbp import save_dataset_to_csv, save_dataset_to_netcdf
-
 from pbp.file_helper import FileHelper
 from pbp.logging_helper import PbpLogger
 from pbp.metadata import MetadataHelper, parse_attributes, replace_snippets
@@ -312,3 +310,31 @@ class ProcessHelper:
         for k, v in global_attrs.items():
             snippets["{{" + k + "}}"] = v
         return replace_snippets(global_attrs, snippets)
+
+
+def save_dataset_to_netcdf(logger: PbpLogger, ds: xr.Dataset, filename: str) -> bool:
+    logger.info(f"  - saving dataset to: {filename}")
+    try:
+        ds.to_netcdf(
+            filename,
+            engine="h5netcdf",
+            encoding={
+                "effort": {"_FillValue": None},
+                "frequency": {"_FillValue": None},
+                "sensitivity": {"_FillValue": None},
+            },
+        )
+        return True
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        error = f"Unable to save {filename}: {e}"
+        logger.error(error)
+        print(error)
+        return False
+
+
+def save_dataset_to_csv(logger: PbpLogger, ds: xr.Dataset, filename: str):
+    logger.info(f"  - saving dataset to: {filename}")
+    try:
+        ds.to_pandas().to_csv(filename, float_format="%.1f")
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logger.error(f"Unable to save {filename}: {e}")

@@ -13,7 +13,7 @@ from progressbar import progressbar
 import pbp.json_generator.utils as utils
 from pbp.json_generator.corrector import MetadataCorrector
 from pbp.json_generator.metadata_extractor import IcListenWavFile
-from pbp import PbpLogger
+from pbp.logging_helper import PbpLogger
 from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
 
 
