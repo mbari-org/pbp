@@ -24,7 +24,7 @@ pbp-json-gen = "pbp.main_json_generator:main"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12.0"
-lifewatch-pypam = "0.3.0" # though it's pyproject.toml still has 0.2.0.
+lifewatch-pypam = "0.3.0"
 boto3 = "1.34.47"
 google-cloud-storage = "2.14.0"
 dataclasses-json = "0.6.4"
