@@ -28,7 +28,7 @@ tgz:
 
 # Run main (on gizo)
 main-gizo date="20220902" output_dir="/PAM_Analysis/pypam-space/test_output/daily":
-    PYTHONPATH=. python src/main.py \
+    PYTHONPATH=. poetry run python pbp/main.py \
                  --json-base-dir=json \
                  --date={{date}} \
                  --voltage-multiplier=3 \
@@ -39,7 +39,7 @@ main-gizo date="20220902" output_dir="/PAM_Analysis/pypam-space/test_output/dail
 
 # Run main (on gizo) with some initial test jsons
 main-gizo-test *more_args="":
-    PYTHONPATH=. python src/main.py \
+    PYTHONPATH=. poetry run python pbp/main.py \
                  --json-base-dir=tests/json \
                  --date=20220902 \
                  --voltage-multiplier=3 \
@@ -63,7 +63,7 @@ main-gizo-multiple-days year month *days="":
       base="$output_dir/milli_psd_$date"
       out="$base.out"
       echo "running: day=$day output_dir=$output_dir"
-      python src/main.py \
+      poetry run python pbp/main.py \
              --json-base-dir=json \
              --date="$date" \
              --voltage-multiplier=3 \
@@ -83,7 +83,7 @@ main-mb05 *more_args="":
     mkdir -p NB_SPACE/OUTPUT
 
     PYTHONPATH=. EXCLUDE_LOG_TIME=yes \
-        python src/main.py \
+        poetry run python pbp/main.py \
                  --date=20220812 \
                  --json-base-dir=NB_SPACE/JSON \
                  --voltage-multiplier=1 \
@@ -109,7 +109,7 @@ main-nrs11 date='20200101' *more_args='':
     mkdir -p $WS/DOWNLOADS
     mkdir -p $WS/OUTPUT
     PYTHONPATH=. EXCLUDE_LOG_TIME=yes \
-        python src/main.py \
+        poetry run python pbp/main.py \
                  --date={{date}} \
                  --gs \
                  --json-base-dir=$WS/noaa-passive-bioacoustic_nrs_11_2019-2021 \
@@ -135,7 +135,7 @@ main-nrs11-multiple-days year month *days="":
     export PYTHONPATH=.
     for day in {{days}}; do
       date=$(printf "%04d%02d%02d" {{year}} {{month}} "$day")
-      python src/main.py \
+      poetry run python pbp/main.py \
              --date="$date" \
              --gs \
              --json-base-dir=$WS/noaa-passive-bioacoustic_nrs_11_2019-2021 \
@@ -156,7 +156,7 @@ main-nrs11-multiple-days year month *days="":
 
 # Plot NRS11 datasets
 plot-nrs11 *netcdfs='NRS11/OUTPUT/NRS11_20200101.nc':
-    python src/plot.py \
+    poetry run python pbp/plot.py \
       --ylim 10 2000 \
       --cmlim 64 108 \
       --latlon 37.88 -123.44 \
@@ -172,7 +172,7 @@ main-cloud-basic-test max_segments="1" date="20220902":
     export SENSITIVITY_NETCDF_URI=misc/icListen1689_sensitivity_hms256kHz.nc
     export MAX_SEGMENTS={{max_segments}}
     export PYTHONPATH=.
-    python src/main_cloud.py
+    poetry run python pbp/main_cloud.py
 
 # dev/test conveniences:
 #    export EXCLUDE_LOG_TIME=yes
@@ -192,7 +192,7 @@ main-cloud-mars-basic-test date="20210901":
     export CLOUD_TMP_DIR="with_pypam_0.2.0"
     export RETAIN_DOWNLOADED_FILES=yes
     export PYTHONPATH=.
-    python src/main_cloud.py
+    poetry run python pbp/main_cloud.py
 
 # Process multiple days for MARS data
 main-cloud-mars-multiple-days year="2022" month="9" *days="5 7 8 9":
@@ -223,18 +223,18 @@ main-cloud-chumash-basic-test date="20230108":
     export CLOUD_TMP_DIR="cloud_tmp_chumash"
     export RETAIN_DOWNLOADED_FILES=yes
     export PYTHONPATH=.
-    python src/main_cloud.py
+    poetry run python pbp/main_cloud.py
 
 # Run main
 main *args="":
-    PYTHONPATH=. python src/main.py {{args}}
+    PYTHONPATH=. poetry run python pbp/main.py {{args}}
 
 ##############
 # misc/utils:
 
 # Generate summary plots
 plot *args:
-    python src/plot.py {{args}}
+    poetry run python pbp/plot.py {{args}}
 
 ##############
 # docker:
