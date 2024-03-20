@@ -2,6 +2,9 @@
 
 2024-03
 
+- For global attributes, now resolving the `{{PyPAM_version}}` snippet against the
+  actual version number (according to `importlib.metadata`).
+  Also added a `{{PBP_version}}` snippet in case we eventually want to use it.
 - removed `--gen-csv` option (not really used/needed)
 - added `--version` option to the programs
 - minor code reorg

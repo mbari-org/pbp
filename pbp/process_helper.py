@@ -7,6 +7,7 @@ from typing import Any, List, Optional, OrderedDict, Tuple
 import numpy as np
 import xarray as xr
 
+from pbp import get_pbp_version, get_pypam_version
 from pbp.file_helper import FileHelper
 from pbp.logging_helper import PbpLogger
 from pbp.metadata import MetadataHelper, parse_attributes, replace_snippets
@@ -292,8 +293,10 @@ class ProcessHelper:
         }
         md_helper = self.metadata_helper
         md_helper.set_some_global_attributes(global_attrs)
-        # TODO get PyPAM version from somewhere
-        snippets = {"{{PyPAM_version}}": "0.3.0"}
+        snippets = {
+            "{{PBP_version}}": get_pbp_version(),
+            "{{PyPAM_version}}": get_pypam_version(),
+        }
         global_attrs = md_helper.get_global_attributes()
         # for each, key, have the {{key}} snippet for replacement
         # in case it is used in any values:
