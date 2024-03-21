@@ -15,7 +15,6 @@ process ocean audio data archives to daily analysis products of hybrid millideca
     - [x] Calibration with given flat sensitivity value
 - [x] Data products
     - [x] NetCDF with metadata
-    - [x] CSV (optional)
     - [x] Summary plot (optional)
 - [x] Cloud processing
     - [x] Inputs can be downloaded from S3
@@ -33,15 +32,14 @@ TODO more details
 
 ### Programs
 
-- `pbp` - Main PBP program, run `pbp --help` for usage.
+The package includes the following CLI programs:
 
-- `pbp-cloud` - Program for cloud based processing. 
-   All parameters passed via environment variables, see source file.
-
-- `pbp-plot` - Plotting program: `pbp-plot.py --help`.
- 
-- `pbp-json-gen` - Program to generate JSONs with audio metadata,
-  run `pbp-json-gen --help` for usage.
+| Program | Description                                    |
+| ------- |------------------------------------------------|
+| [`pbp-json-gen`](pbp-json-gen/) | Generate JSON files with audio metadata.       |
+| [`pbp`](pbp/) | Main HMB generation program.                   |
+| [`pbp-cloud`](pbp-cloud/) | Program for cloud based processing.            |
+| [`pbp-plot`](pbp-plot/) | Utility program to plot resulting HMB product. |
 
 ## Refs
 
