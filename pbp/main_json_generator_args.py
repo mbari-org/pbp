@@ -16,7 +16,7 @@ Examples:
                  --uri=s3://pacific-sound-ch01 \\
                  --start=20220902 \\
                  --end=20220902 \\
-                 --search=MARS \\
+                 --prefix=MARS \\
                  --recorder=NRS
     """
 
