@@ -4,6 +4,7 @@
 
 from logging import exception, warning, debug
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 from six.moves.urllib.request import urlopen
@@ -27,7 +28,7 @@ class AudioFile:
         """
         self.start = start
         self.path_or_url = path_or_url
-        self.end = start
+        self.end: Optional[datetime] = None
         self.duration_secs = -1
         self.fs = -1
         self.frames = -1
@@ -192,7 +193,7 @@ class FlacFile(AudioFile):
         super().__init__(path_or_url, start)
         self.path_or_url = path_or_url
         self.start = start
-        self.end = start
+        self.end: Optional[datetime] = None
         self.duration_secs = -1
         self.fs = -1
         self.frames = -1

@@ -168,7 +168,13 @@ class MetadataCorrector:
 
             # save explicitly as UTC by setting the timezone in the start and end times
             day_process["start"] = day_process["start"].dt.tz_localize("UTC")
-            day_process["end"] = day_process["end"].dt.tz_localize("UTC")
+            # Note: as day_process["start"] coming from upstream seems to become incorrect
+            # (except for the first entry in the JSON), that is, with `end` becoming equal to `start`,
+            # directly assigning it here based on day_process["start"]:
+            day_process["end"] = day_process["start"] + timedelta(
+                seconds=self.seconds_per_file
+            )
+            # TODO(Danelle): review/confirm the above.
 
             self.save_day(self.day, day_process)
 

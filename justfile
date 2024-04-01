@@ -9,6 +9,10 @@ list:
 ####################
 # some conveniences:
 
+# Run pbp/main_json_generator.py
+json-gen *args="":
+  poetry run python pbp/main_json_generator.py {{args}}
+
 # ssh to gizo
 ssh-gizo user="carueda" server="gizo.shore.mbari.org":
     ssh {{user}}@{{server}}
