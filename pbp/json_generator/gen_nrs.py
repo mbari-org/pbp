@@ -151,6 +151,11 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
 
         # sort the files by start time
         flac_files.sort(key=lambda x: x.start)
+        for wc in flac_files:
+            df_flac = wc.to_df()
+
+            # concatenate the metadata to the dataframe
+            self.df = pd.concat([self.df, df_flac], axis=0)
 
         # correct each day in the range
         for day in pd.date_range(self.start, self.end, freq="D"):
@@ -160,11 +165,6 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                     f"Creating dataframe from {len(flac_files)} "
                     f"files spanning {flac_files[0].start} to {flac_files[-1].start} in self.json_base_dir..."
                 )
-                for wc in flac_files:
-                    df_flac = wc.to_df()
-
-                    # concatenate the metadata to the dataframe
-                    self.df = pd.concat([self.df, df_flac], axis=0)
 
                 self.log.debug(f" Running metadata corrector for {day}")
                 corrector = MetadataCorrector(
