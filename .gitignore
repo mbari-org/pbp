@@ -6,3 +6,4 @@ virtenv/
 __pycache__
 HASH
 *.tgz
+tests/json_generator_tmp/

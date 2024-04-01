@@ -3,6 +3,8 @@
 # Description:  Test fixtures for the json generator classes.
 # Tests the ability to generate metadata for soundtrap, iclisten, and nrs recording files.
 
+from typing import Union
+
 import json
 
 import boto3
@@ -16,12 +18,34 @@ import logging
 from pathlib import Path
 
 from pbp.json_generator.gen_nrs import NRSMetadataGenerator
-from pbp.logging_helper import create_logger
+from pbp.logging_helper import create_logger, PbpLogger
 from pbp.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
 from pbp.json_generator.gen_iclisten import IcListenMetadataGenerator
 
 
-def get_aws_account() -> str:
+# which is .gitignore'ed
+OUT_BASE_DIR = Path("tests/json_generator_tmp")
+
+
+def create_test_logger(name: str) -> PbpLogger:
+    log_dir = OUT_BASE_DIR / "log"
+    log_dir.mkdir(exist_ok=True, parents=True)
+    return create_logger(
+        log_filename_and_level=(
+            f"{log_dir}/{name}.log",
+            logging.INFO,
+        ),
+        console_level=logging.INFO,
+    )
+
+
+def create_json_dir(name: str) -> Path:
+    json_dir = OUT_BASE_DIR / name
+    json_dir.mkdir(exist_ok=True, parents=True)
+    return json_dir
+
+
+def get_aws_account() -> Union[str, None]:
     """
     Get the account number associated with this user
     :return:
@@ -60,18 +84,8 @@ def test_soundtrap_json_generator():
     Two files should be generated in the json directory for the dates specified.
     :return:
     """
-    log_dir = Path("tests/log")
-    json_dir = Path("tests/json/soundtrap")
-    log_dir.mkdir(exist_ok=True, parents=True)
-    json_dir.mkdir(exist_ok=True, parents=True)
-
-    logger = create_logger(
-        log_filename_and_level=(
-            f"{log_dir}/test_soundtrap_metadata_generator.log",
-            logging.INFO,
-        ),
-        console_level=logging.INFO,
-    )
+    logger = create_test_logger("test_soundtrap_metadata_generator")
+    json_dir = create_json_dir("soundtrap")
 
     start = datetime(2023, 7, 18)
     end = datetime(2023, 7, 19)
@@ -104,19 +118,8 @@ def test_iclisten_json_generator():
     only works for MBARI MARS ICListen data
     :return:
     """
-
-    log_dir = Path("tests/log")
-    json_dir = Path("tests/json/mars")
-    log_dir.mkdir(exist_ok=True, parents=True)
-    json_dir.mkdir(exist_ok=True, parents=True)
-
-    logger = create_logger(
-        log_filename_and_level=(
-            f"{log_dir}/test_mars_metadata_generator.log",
-            logging.INFO,
-        ),
-        console_level=logging.INFO,
-    )
+    logger = create_test_logger("test_mars_metadata_generator")
+    json_dir = create_json_dir("mars")
 
     start = datetime(2023, 7, 18, 0, 0, 0)
     end = datetime(2023, 7, 18, 0, 0, 0)
@@ -151,18 +154,8 @@ def test_nrs_json_generator():
     One files should be generated in the json directory for the date specified.
     :return:
     """
-    log_dir = Path("tests/log")
-    json_dir = Path("tests/json/nrs")
-    log_dir.mkdir(exist_ok=True, parents=True)
-    json_dir.mkdir(exist_ok=True, parents=True)
-
-    logger = create_logger(
-        log_filename_and_level=(
-            f"{log_dir}/test_nrs_metadata_generator.log",
-            logging.INFO,
-        ),
-        console_level=logging.INFO,
-    )
+    logger = create_test_logger("test_nrs_metadata_generator")
+    json_dir = create_json_dir("nrs")
 
     start = datetime(2019, 10, 24, 0, 0, 0)
     end = datetime(2019, 10, 24, 0, 0, 0)
