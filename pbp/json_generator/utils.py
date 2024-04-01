@@ -1,7 +1,8 @@
+from typing import Tuple
 from urllib.parse import urlparse
 
 
-def parse_s3_or_gcp_url(url) -> (str, str, str):
+def parse_s3_or_gcp_url(url) -> Tuple[str, str, str]:
     """
     Parse the S3, GS of local file url
     :param url:

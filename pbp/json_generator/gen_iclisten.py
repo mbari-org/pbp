@@ -5,6 +5,8 @@
 import re
 from datetime import timedelta
 from datetime import datetime
+from typing import List
+
 import boto3
 
 import pandas as pd
@@ -27,7 +29,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
         json_base_dir: str,
         start: datetime,
         end: datetime,
-        prefix: [str],
+        prefix: List[str],
         seconds_per_file: float = 300.0,
     ):
         """

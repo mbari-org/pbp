@@ -5,6 +5,8 @@
 import re
 from datetime import timedelta, datetime
 import time
+from typing import List
+
 from google.cloud import storage
 
 import pandas as pd
@@ -25,7 +27,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
         json_base_dir: str,
         start: datetime,
         end: datetime,
-        prefix: [str],
+        prefix: List[str],
         seconds_per_file: float = 14400.0,
     ):
         """

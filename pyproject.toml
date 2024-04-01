@@ -52,8 +52,10 @@ ignore_missing_imports = true
 exclude = [
     'examples/',
     'pbp/plotting\.py',
-    'pbp/json_generator/',
-    'tests/test_json_generator.py',
+    'pbp/json_generator/metadata.*\.py',
+    'pbp/json_generator/corrector\.py',
+    'pbp/json_generator/gen_soundtrap\.py',
+    'pbp/json_generator/gen_nrs\.py',
 ]
 
 [tool.ruff]

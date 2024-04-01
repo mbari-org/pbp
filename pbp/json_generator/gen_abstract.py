@@ -2,6 +2,8 @@
 # Filename: metadata/generator/gen_abstract.py
 # Description:  Abstract class that captures sound wav metadata
 from datetime import datetime
+from typing import List
+
 import pandas as pd
 from pbp.logging_helper import PbpLogger
 
@@ -12,7 +14,7 @@ class MetadataGeneratorAbstract(object):
         logger: PbpLogger,
         audio_loc: str,
         json_base_dir: str,
-        prefix: [str],
+        prefix: List[str],
         start: datetime,
         end: datetime,
         seconds_per_file: float = 0.0,

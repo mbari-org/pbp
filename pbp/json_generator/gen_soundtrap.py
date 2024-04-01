@@ -2,6 +2,7 @@
 # Filename: json_generator/gen_soundtrap.py
 # Description:  Captures SoundTrap metadata either from a local directory of S3 bucket
 import logging
+from typing import List
 
 import boto3
 import datetime
@@ -34,7 +35,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
         pbp_logger: PbpLogger,
         uri: str,
         json_base_dir: str,
-        prefix: [str],
+        prefix: List[str],
         start: datetime,
         end: datetime,
     ):
