@@ -100,10 +100,10 @@ def test_soundtrap_json_generator():
     gen.run()
 
     # There should be two files in the json directory named 20230718.json and 20230719.json
-    json_files = list(Path("tests/json/soundtrap").rglob("*.json"))
+    json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 2
-    assert Path("tests/json/soundtrap/2023/20230718.json").exists()
-    assert Path("tests/json/soundtrap/2023/20230719.json").exists()
+    assert (json_dir / "2023/20230718.json").exists()
+    assert (json_dir / "2023/20230719.json").exists()
 
 
 @pytest.mark.skipif(
@@ -136,15 +136,15 @@ def test_iclisten_json_generator():
     )
     generator.run()
     # There should be one files in the json directory named 20230718.json and it should have 145 json objects
-    json_files = list(Path("tests/json/mars/").rglob("*.json"))
+    json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 1
-    assert Path("tests/json/mars/2023/20230718.json").exists()
+    json_file = json_dir / "2023/20230718.json"
+    assert json_file.exists()
 
     # Read the file and check the number of json objects
-    with open("tests/json/mars/2023/20230718.json") as f:
-        json_objcts = json.load(f)
-        if len(json_objcts) != 145:
-            assert False
+    with open(json_file) as f:
+        json_objects = json.load(f)
+        assert len(json_objects) == 145
 
 
 def test_nrs_json_generator():
@@ -170,13 +170,13 @@ def test_nrs_json_generator():
         seconds_per_file=14400.0,
     )
     generator.run()
-    # There should be one files in the json directory named 20230718.json, and it should have 7 json objects
-    json_files = list(Path("tests/json/nrs/").rglob("*.json"))
+    # There should be one file in the json directory and with number of objects as indicated
+    json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 1
-    assert Path("tests/json/nrs/2019/20191024.json").exists()
+    json_file = json_dir / "2019/20191024.json"
+    assert json_file.exists()
 
     # Read the file and check the number of json objects
-    with open("tests/json/nrs/2019/20191024.json") as f:
-        json_objcts = json.load(f)
-        if len(json_objcts) != 7:
-            assert False
+    with open(json_file) as f:
+        json_objects = json.load(f)
+        assert len(json_objects) == 7
