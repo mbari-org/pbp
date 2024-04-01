@@ -6,31 +6,40 @@ process ocean audio data archives to daily analysis products of hybrid millideca
 
 **Status**: Functional version, including support for cloud based processing.
 
-- [x] JSON generation of timekeeping
-- [x] Timekeeping based on given JSON indicating start and duration of every available (recognized) sound file
+- [x] JSON generation of timekeeping with indication of start and duration of recognized sound files
 - [x] Audio file processing
     - [x] Frequency and psd array output
     - [x] Concatenation of processed 1-minute segments for daily product
-    - [x] Calibration with given sensitivity file (NetCDF)
-    - [x] Calibration with given flat sensitivity value
+    - [x] Calibration with given sensitivity file (NetCDF), or flat sensitivity value
 - [x] Data products
     - [x] NetCDF with metadata
-    - [x] Summary plot (optional)
+    - [x] Summary plot
 - [x] Cloud processing
-    - [x] Inputs can be downloaded from S3
-    - [x] Outputs can be uploaded to S3
+    - [x] Inputs can be downloaded from and uploaded to S3
     - [x] Inputs can be downloaded from public GCS bucket
     - [ ] Outputs can be uploaded to GCS
 
 TODO more details
 
-## Setup
+## Installation
 
-### Install PBP
+The only requirement is Python 3.9, 3.10, or 3.11 on your environment.[^1]
+You can run `python3 --version` to check the version of Python installed.
 
-    pip install mbari-pbp
+[^1]: As currently [required by PyPAM](https://github.com/lifewatch/pypam/blob/29e82f0c5c6ce43b457d76963cb9d82392740654/pyproject.toml#L16).
 
-### Programs
+As a general practice, it is recommended to use a virtual environment for the installation.
+```shell
+python3.9 -m venv virtenv
+source virtenv/bin/activate
+```
+
+Install the package:
+```shell
+pip install mbari-pbp
+```
+
+## Programs
 
 The package includes the following CLI programs:
 
@@ -41,7 +50,7 @@ The package includes the following CLI programs:
 | [`pbp-cloud`](pbp-cloud/) | Program for cloud based processing.            |
 | [`pbp-plot`](pbp-plot/) | Utility program to plot resulting HMB product. |
 
-## Refs
+## References
 
 - PyPAM - Python tool for Passive Acoustic Monitoring –
   <https://doi.org/10.5281/zenodo.6044593>
