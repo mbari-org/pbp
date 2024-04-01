@@ -60,14 +60,16 @@ class MetadataCorrector:
                 ]
             else:  # ICListen/NRS files fixed, but may be missing or incomplete if the system was down
                 files_per_day = int(86400 / self.seconds_per_file)
-                minutes_per_file = int(1.1 * self.seconds_per_file / 60)
                 # Filter the metadata to the day, starting 1 file before the day starts to capture overlap
                 df = self.correct_df[
                     (
-                        self.correct_df["start"]
-                        >= self.day - timedelta(minutes=minutes_per_file)
+                        (self.correct_df["start"] >= self.day)
+                        & (self.correct_df["start"] < self.day + timedelta(days=1))
                     )
-                    & (self.correct_df["start"] < self.day + timedelta(days=1))
+                    | (
+                        (self.correct_df["end"] >= self.day)
+                        & (self.correct_df["start"] < self.day)
+                    )
                 ]
 
             self.log.debug(f"Creating metadata for day {self.day}")
