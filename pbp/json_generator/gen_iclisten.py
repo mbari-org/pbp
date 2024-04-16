@@ -15,7 +15,6 @@ from progressbar import progressbar
 import pbp.json_generator.utils as utils
 from pbp.json_generator.corrector import MetadataCorrector
 from pbp.json_generator.metadata_extractor import IcListenWavFile
-from pbp.logging_helper import PbpLogger
 from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
 
 
@@ -24,7 +23,6 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
     def __init__(
         self,
-        pbp_logger: PbpLogger,
         uri: str,
         json_base_dir: str,
         start: datetime,
@@ -34,8 +32,6 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
     ):
         """
         Captures ICListen wav metadata in a pandas dataframe from either a local directory or S3 bucket.
-        :param pbp_logger:
-            The logger
         :param uri:
             The local directory or S3 bucket that contains the wav files
         :param json_base_dir:
@@ -50,28 +46,24 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             The number of seconds per file expected in a wav file to check for missing data. If 0, then no check is done.
         :return:
         """
-        super().__init__(
-            pbp_logger, uri, json_base_dir, prefix, start, end, seconds_per_file
-        )
+        super().__init__(uri, json_base_dir, prefix, start, end, seconds_per_file)
         self.log_prefix = f"{self.__class__.__name__} {start:%Y%m%d}"
 
     def run(self):
-        self.log.info(f"Generating metadata for {self.start} to {self.end}...")
+        log.info(f"Generating metadata for {self.start} to {self.end}...")
 
         bucket_name, prefix, scheme = utils.parse_s3_or_gcp_url(self.audio_loc)
 
         # gs is not supported for icListen
         if scheme == "gs":
-            self.log.error(
-                f"{self.log_prefix} GS is not supported for icListen audio files"
-            )
+            log.error(f"{self.log_prefix} GS is not supported for icListen audio files")
             return
 
         # Run for each day in the range
         for day in pd.date_range(self.start, self.end, freq="D"):
             try:
                 self.df = None
-                self.log.info(
+                log.info(
                     f"{self.log_prefix} Searching in {self.audio_loc}/*.wav for wav files that match the search pattern {self.prefix}* ..."
                 )
 
@@ -104,13 +96,13 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                                 )
 
                                 if f_start_dt <= f_path_dt <= f_end_dt:
-                                    self.log.info(
+                                    log.info(
                                         f"{self.log_prefix} Found {f_path.name} to process"
                                     )
                                     wav_files.append(IcListenWavFile(f, f_path_dt))
                                     f_wav_dt = f_path_dt
                             except ValueError:
-                                self.log.error(
+                                log.error(
                                     f"{self.log_prefix} Could not parse {f_path.name}"
                                 )
                                 return None
@@ -141,16 +133,14 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
                         operation_parameters = {"Bucket": bucket, "Prefix": prefix}
                         page_iterator = paginator.paginate(**operation_parameters)
-                        self.log.info(
+                        log.info(
                             f"{self.log_prefix}  Searching in bucket: {bucket} prefix: {prefix}"
                         )
                         # list the objects in the bucket
                         # loop through the objects and check if they match the search pattern
                         for page in page_iterator:
                             if "Contents" not in page:
-                                self.log.info(
-                                    f"{self.log_prefix}  No data found in {bucket}"
-                                )
+                                log.info(f"{self.log_prefix}  No data found in {bucket}")
                                 break
 
                             for obj in page["Contents"]:
@@ -165,7 +155,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                                 if wav_dt < start_dt_hour:
                                     break
 
-                self.log.info(
+                log.info(
                     f"{self.log_prefix}  Found {len(wav_files)} files to process that cover the period {start_dt} - {end_dt}"
                 )
 
@@ -173,7 +163,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                 wav_files.sort(key=lambda x: x.start)
 
                 # create a dataframe from the wav files
-                self.log.info(
+                log.info(
                     f"{self.log_prefix}  Creating dataframe from {len(wav_files)} files spanning {wav_files[0].start} to {wav_files[-1].start}..."
                 )
                 for wc in wav_files:
@@ -182,31 +172,30 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                     # concatenate the metadata to the dataframe
                     self.df = pd.concat([self.df, df_wav], axis=0)
 
-                self.log.debug(f"{self.log_prefix}  Running metadata corrector for {day}")
+                log.debug(f"{self.log_prefix}  Running metadata corrector for {day}")
                 corrector = MetadataCorrector(
-                    self.log, self.df, self.json_base_dir, day, False, 600.0
+                    self.df, self.json_base_dir, day, False, 600.0
                 )
                 corrector.run()
 
             except Exception as ex:
-                self.log.exception(str(ex))
+                log.exception(str(ex))
 
 
 if __name__ == "__main__":
-    import logging
-    from pbp.logging_helper import PbpLogger, create_logger
+    from pbp.logging_helper import create_logger
 
     log_dir = Path("tests/log")
     json_dir = Path("tests/json/mars")
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
 
-    logger = create_logger(
+    log = create_logger(
         log_filename_and_level=(
             f"{log_dir}/test_iclisten_metadata_generator.log",
-            logging.INFO,
+            "INFO",
         ),
-        console_level=logging.INFO,
+        console_level="INFO",
     )
 
     start = datetime(2023, 7, 18, 0, 0, 0)
@@ -214,7 +203,6 @@ if __name__ == "__main__":
 
     # If only running one day, use a single generator
     generator = IcListenMetadataGenerator(
-        pbp_logger=logger,
         uri="s3://pacific-sound-256khz",
         json_base_dir=json_dir.as_posix(),
         prefix=["MARS"],

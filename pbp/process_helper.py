@@ -9,7 +9,7 @@ import xarray as xr
 
 from pbp import get_pbp_version, get_pypam_version
 from pbp.file_helper import FileHelper
-from pbp.logging_helper import PbpLogger
+from loguru import logger as log
 from pbp.metadata import MetadataHelper, parse_attributes, replace_snippets
 from pbp.misc_helper import gen_hour_minute_times, parse_date
 from pbp.pypam_support import ProcessResult, PypamSupport
@@ -32,7 +32,6 @@ class ProcessDayResult:
 class ProcessHelper:
     def __init__(
         self,
-        logger: PbpLogger,
         file_helper: FileHelper,
         output_dir: str,
         output_prefix: str,
@@ -76,9 +75,8 @@ class ProcessHelper:
             Tuple of (lower, upper) frequency limits to use for the PSD,
             lower inclusive, upper exclusive.
         """
-        self.logger = logger
 
-        self.logger.info(
+        log.info(
             "Creating ProcessHelper:"
             + f"\n    output_dir:             {output_dir}"
             + f"\n    output_prefix:          {output_prefix}"
@@ -103,7 +101,6 @@ class ProcessHelper:
         self.gen_netcdf = gen_netcdf
 
         self.metadata_helper = MetadataHelper(
-            self.logger,
             self._load_attributes("global", global_attrs_uri, set_global_attrs),
             self._load_attributes("variable", variable_attrs_uri),
         )
@@ -120,20 +117,18 @@ class ProcessHelper:
             s_local_filename = file_helper.get_local_filename(sensitivity_uri)
             if s_local_filename is not None:
                 sensitivity_ds = xr.open_dataset(s_local_filename)
-                self.logger.info(f"Will use loaded sensitivity from {s_local_filename=}")
+                log.info(f"Will use loaded sensitivity from {s_local_filename=}")
                 self.sensitivity_da = sensitivity_ds.sensitivity
-                self.logger.debug(f"{self.sensitivity_da=}")
+                log.debug(f"{self.sensitivity_da=}")
             else:
-                self.logger.error(
+                log.error(
                     f"Unable to resolve sensitivity_uri: '{sensitivity_uri}'. Ignoring it."
                 )
 
         if self.sensitivity_da is None and self.sensitivity_flat_value is not None:
-            self.logger.info(
-                f"Will use given flat sensitivity value: {sensitivity_flat_value}"
-            )
+            log.info(f"Will use given flat sensitivity value: {sensitivity_flat_value}")
 
-        self.pypam_support = PypamSupport(self.logger)
+        self.pypam_support = PypamSupport()
 
         pathlib.Path(output_dir).mkdir(exist_ok=True)
 
@@ -144,7 +139,7 @@ class ProcessHelper:
         set_attrs: Optional[list[list[str]]] = None,
     ) -> Optional[OrderedDict[str, Any]]:
         if attrs_uri:
-            self.logger.info(f"Loading {what} attributes from {attrs_uri=}")
+            log.info(f"Loading {what} attributes from {attrs_uri=}")
             filename = self.file_helper.get_local_filename(attrs_uri)
             if filename is not None:
                 with open(filename, "r", encoding="UTF-8") as f:
@@ -153,9 +148,9 @@ class ProcessHelper:
                         res[k] = v
                     return res
             else:
-                self.logger.error(f"Unable to resolve '{attrs_uri=}'. Ignoring it.")
+                log.error(f"Unable to resolve '{attrs_uri=}'. Ignoring it.")
         else:
-            self.logger.info(f"No '{what}' attributes URI given.")
+            log.info(f"No '{what}' attributes URI given.")
         return None
 
     def process_day(self, date: str) -> Optional[ProcessDayResult]:
@@ -177,7 +172,7 @@ class ProcessHelper:
 
         if self.max_segments > 0:
             at_hour_and_minutes = at_hour_and_minutes[: self.max_segments]
-            self.logger.info(f"NOTE: Limiting to {len(at_hour_and_minutes)} segments ...")
+            log.info(f"NOTE: Limiting to {len(at_hour_and_minutes)} segments ...")
 
         self.process_hours_minutes(at_hour_and_minutes)
 
@@ -186,9 +181,7 @@ class ProcessHelper:
         )
 
         if result is None:
-            self.logger.warn(
-                f"No segments processed, nothing to aggregate for day {date}."
-            )
+            log.warning(f"No segments processed, nothing to aggregate for day {date}.")
             return None
 
         psd_da = result.psd_da
@@ -231,7 +224,7 @@ class ProcessHelper:
 
         if self.gen_netcdf:
             nc_filename = f"{basename}.nc"
-            save_dataset_to_netcdf(self.logger, ds_result, nc_filename)
+            save_dataset_to_netcdf(ds_result, nc_filename)
             generated_filenames.append(nc_filename)
 
         self.file_helper.day_completed()
@@ -239,7 +232,7 @@ class ProcessHelper:
         return ProcessDayResult(generated_filenames, ds_result)
 
     def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
-        self.logger.info(f"Processing {len(hour_and_minutes)} segments ...")
+        log.info(f"Processing {len(hour_and_minutes)} segments ...")
         for at_hour, at_minute in hour_and_minutes:
             self.process_segment_at_hour_minute(at_hour, at_minute)
 
@@ -250,13 +243,13 @@ class ProcessHelper:
 
         dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
 
-        self.logger.debug(
+        log.debug(
             f"Segment at {at_hour:02}h:{at_minute:02}m ...\n"
             + f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:"
         )
         extraction = file_helper.extract_audio_segment(at_hour, at_minute)
         if extraction is None:
-            self.logger.warn(f"cannot get audio segment at {at_hour:02}:{at_minute:02}")
+            log.warning(f"cannot get audio segment at {at_hour:02}:{at_minute:02}")
             self.pypam_support.add_missing_segment(dt)
             return
 
@@ -264,12 +257,12 @@ class ProcessHelper:
 
         if self.pypam_support.parameters_set:
             if self.pypam_support.fs != audio_info.samplerate:
-                self.logger.info(
+                log.info(
                     f"ERROR: samplerate changed from {self.pypam_support.fs} to {audio_info.samplerate}"
                 )
                 return
         else:
-            self.logger.info("Got audio parameters")
+            log.info("Got audio parameters")
             self.pypam_support.set_parameters(
                 audio_info.samplerate,
                 subset_to=self.subset_to,
@@ -305,8 +298,8 @@ class ProcessHelper:
         return replace_snippets(global_attrs, snippets)
 
 
-def save_dataset_to_netcdf(logger: PbpLogger, ds: xr.Dataset, filename: str) -> bool:
-    logger.info(f"  - saving dataset to: {filename}")
+def save_dataset_to_netcdf(ds: xr.Dataset, filename: str) -> bool:
+    log.info(f"  - saving dataset to: {filename}")
     try:
         ds.to_netcdf(
             filename,
@@ -320,6 +313,6 @@ def save_dataset_to_netcdf(logger: PbpLogger, ds: xr.Dataset, filename: str) -> 
         return True
     except Exception as e:  # pylint: disable=broad-exception-caught
         error = f"Unable to save {filename}: {e}"
-        logger.error(error)
+        log.error(error)
         print(error)
         return False

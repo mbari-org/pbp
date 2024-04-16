@@ -15,15 +15,14 @@ def main():
     opts = parse_arguments()
 
     # pylint: disable=import-outside-toplevel
-    import logging
     from pbp.logging_helper import create_logger
 
-    logger = create_logger(
+    log = create_logger(
         log_filename_and_level=(
             f"{opts.output_dir}/{opts.recorder}{opts.start}_{opts.end}.log",
-            logging.INFO,
+            "INFO",
         ),
-        console_level=logging.INFO,
+        console_level="INFO",
     )
 
     log_dir = Path(opts.output_dir)
@@ -36,7 +35,6 @@ def main():
     try:
         if opts.recorder == "NRS":
             generator = NRSMetadataGenerator(
-                pbp_logger=logger,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
                 prefix=opts.prefix,
@@ -46,7 +44,6 @@ def main():
             generator.run()
         if opts.recorder == "ICLISTEN":
             generator = IcListenMetadataGenerator(
-                pbp_logger=logger,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
                 prefix=opts.prefix,
@@ -57,7 +54,6 @@ def main():
             # TODO: add multiprocessing here for speed-up
         if opts.recorder == "SOUNDTRAP":
             generator = SoundTrapMetadataGenerator(
-                pbp_logger=logger,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
                 prefix=opts.prefix,
@@ -66,7 +62,7 @@ def main():
             )
             generator.run()
     except KeyboardInterrupt:
-        logger.info("INTERRUPTED")
+        log.info("INTERRUPTED")
 
 
 if __name__ == "__main__":

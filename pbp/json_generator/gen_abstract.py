@@ -5,13 +5,11 @@ from datetime import datetime
 from typing import List
 
 import pandas as pd
-from pbp.logging_helper import PbpLogger
 
 
 class MetadataGeneratorAbstract(object):
     def __init__(
         self,
-        logger: PbpLogger,
         audio_loc: str,
         json_base_dir: str,
         prefix: List[str],
@@ -22,8 +20,6 @@ class MetadataGeneratorAbstract(object):
     ):
         """
         Abstract class for capturing sound wav metadata
-        :param logger:
-            The logger
         :param audio_loc:
             The local directory or cloud bucket that contains the wav files
         :param json_base_dir:
@@ -46,13 +42,8 @@ class MetadataGeneratorAbstract(object):
             self.end = end
             self.prefix = prefix
             self._seconds_per_file = None if seconds_per_file == 0 else seconds_per_file
-            self.logger = logger
         except Exception as e:
             raise e
-
-    @property
-    def log(self):
-        return self.logger
 
     @property
     def seconds_per_file(self):

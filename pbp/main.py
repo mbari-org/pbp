@@ -9,19 +9,18 @@ def main():
     opts = parse_arguments()
 
     # pylint: disable=import-outside-toplevel
-    import logging
     import os
 
     from pbp.file_helper import FileHelper
     from pbp.logging_helper import create_logger
     from pbp.process_helper import ProcessHelper
 
-    logger = create_logger(
+    log = create_logger(
         log_filename_and_level=(
             f"{opts.output_dir}/{opts.output_prefix}{opts.date}.log",
-            logging.INFO,
+            "DEBUG",
         ),
-        console_level=logging.INFO,
+        console_level="INFO",
     )
 
     s3_client = None
@@ -45,7 +44,6 @@ def main():
         gs_client = GsClient.create_anonymous_client()
 
     file_helper = FileHelper(
-        logger=logger,
         json_base_dir=opts.json_base_dir,
         audio_base_dir=opts.audio_base_dir,
         audio_path_map_prefix=opts.audio_path_map_prefix,
@@ -58,7 +56,6 @@ def main():
     )
 
     process_helper = ProcessHelper(
-        logger=logger,
         file_helper=file_helper,
         output_dir=opts.output_dir,
         output_prefix=opts.output_prefix,
@@ -74,7 +71,7 @@ def main():
     try:
         process_helper.process_day(opts.date)
     except KeyboardInterrupt:
-        logger.info("INTERRUPTED")
+        log.info("INTERRUPTED")
 
 
 if __name__ == "__main__":

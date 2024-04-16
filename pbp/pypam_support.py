@@ -8,7 +8,7 @@ import pypam.signal as sig
 import xarray as xr
 from pypam import utils
 
-from pbp.logging_helper import PbpLogger
+from loguru import logger as log
 from pbp.misc_helper import brief_list
 
 
@@ -31,7 +31,7 @@ class _CapturedSegment:
 
 
 class PypamSupport:
-    def __init__(self, logger: PbpLogger) -> None:
+    def __init__(self) -> None:
         """
         Creates a helper to process audio segments for a given day,
         resulting in the aggregated hybrid millidecade PSD product.
@@ -52,7 +52,6 @@ class PypamSupport:
         When all segments have been captured, call `process_captured_segments`
         to get the result.
         """
-        self.logger = logger
 
         # to capture reported segments (missing and otherwise):
         self._captured_segments: List[_CapturedSegment] = []
@@ -91,7 +90,7 @@ class PypamSupport:
         self._subset_to = subset_to
         band = [0, self.fs / 2]  # for now.
 
-        self.logger.debug(f"PypamSupport: {subset_to=} {band=}")
+        log.debug(f"PypamSupport: {subset_to=} {band=}")
 
         self._bands_limits, self._bands_c = utils.get_hybrid_millidecade_limits(
             band=band, nfft=self._nfft
@@ -113,7 +112,7 @@ class PypamSupport:
             The datetime of the start of the missing segment.
         """
         self._captured_segments.append(_CapturedSegment(dt, 0, None))
-        self.logger.debug(f"  captured segment: {dt}  (NO DATA)")
+        log.debug(f"  captured segment: {dt}  (NO DATA)")
 
     def add_segment(self, dt: datetime, data: np.ndarray):
         """
@@ -134,7 +133,7 @@ class PypamSupport:
         num_secs = len(data) / self.fs
         self._captured_segments.append(_CapturedSegment(dt, num_secs, spectrum))
         self._num_actual_segments += 1
-        self.logger.debug(f"  captured segment: {dt}")
+        log.debug(f"  captured segment: {dt}")
 
     def process_captured_segments(
         self,
@@ -167,10 +166,10 @@ class PypamSupport:
             effort.append(np.float32(cs.num_secs))
 
             spectrum = nan_spectrum if cs.spectrum is None else cs.spectrum
-            self.logger.debug(f"  spectrum for: {cs.dt} (effort={cs.num_secs})")
+            log.debug(f"  spectrum for: {cs.dt} (effort={cs.num_secs})")
             spectra.append(spectrum)
 
-        self.logger.info("Aggregating results ...")
+        log.info("Aggregating results ...")
         psd_da = self._get_aggregated_milli_psd(
             times=times,
             spectra=spectra,
@@ -198,7 +197,7 @@ class PypamSupport:
         )
 
         psd_da = self._spectra_to_bands(psd_da)
-        self.logger.debug(f"  {psd_da.frequency_bins=}")
+        log.debug(f"  {psd_da.frequency_bins=}")
         psd_da = self._apply_sensitivity_if_given(psd_da, sensitivity_da)
 
         # just need single precision:
@@ -209,7 +208,7 @@ class PypamSupport:
         milli_psd = psd_da
         milli_psd.name = "psd"
 
-        self.logger.info(f"Resulting milli_psd={milli_psd}")
+        log.info(f"Resulting milli_psd={milli_psd}")
 
         return milli_psd
 
@@ -229,9 +228,7 @@ class PypamSupport:
 
         if sensitivity_da is not None:
             freq_subset = sensitivity_da.interp(frequency=psd_da.frequency_bins)
-            self.logger.info(
-                f"  Applying sensitivity({len(freq_subset.values)})={freq_subset}"
-            )
+            log.info(f"  Applying sensitivity({len(freq_subset.values)})={freq_subset}")
             psd_da -= freq_subset.values
 
         return psd_da
@@ -247,7 +244,7 @@ class PypamSupport:
             )
 
         def print_array(name: str, arr: List[float]):
-            self.logger.info(f"{name} ({len(arr)}) = {brief_list(arr)}")
+            log.info(f"{name} ({len(arr)}) = {brief_list(arr)}")
 
         print_array("       bands_c", bands_c)
         print_array("  bands_limits", bands_limits)
@@ -267,7 +264,7 @@ class PypamSupport:
         self, bands_limits: List[float], bands_c: List[float], subset_to: Tuple[int, int]
     ) -> Tuple[List[float], List[float]]:
         start_hz, end_hz = subset_to
-        self.logger.info(f"Subsetting to [{start_hz:,}, {end_hz:,})Hz")
+        log.info(f"Subsetting to [{start_hz:,}, {end_hz:,})Hz")
 
         start_index = 0
         while start_index < len(bands_c) and bands_c[start_index] < start_hz:

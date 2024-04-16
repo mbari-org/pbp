@@ -4,7 +4,7 @@
 
 import datetime
 from datetime import timedelta
-
+from loguru import logger as log
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -12,13 +12,10 @@ import shutil
 import tempfile
 import json
 
-from pbp.logging_helper import PbpLogger
-
 
 class MetadataCorrector:
     def __init__(
         self,
-        logger: PbpLogger,
         correct_df: pd.DataFrame,
         json_path_out: str,
         day: datetime,
@@ -27,8 +24,6 @@ class MetadataCorrector:
     ):
         """
         Correct the metadata for a day and save to a json file
-        :param logger:
-            The logger to use
         :param correct_df:
             The dataframe containing the metadata to correct
         :param json_path_out:
@@ -45,7 +40,6 @@ class MetadataCorrector:
         self.day = day
         self.variable_duration = variable_duration
         self.seconds_per_file = seconds_per_file
-        self.log = logger
 
     def run(self):
         """Run the corrector"""
@@ -72,10 +66,10 @@ class MetadataCorrector:
                     )
                 ]
 
-            self.log.debug(f"Creating metadata for day {self.day}")
+            log.debug(f"Creating metadata for day {self.day}")
 
             if len(df) == 0:
-                self.log.warn(f"No metadata found for day {self.day}")
+                log.warning(f"No metadata found for day {self.day}")
                 return
 
             # convert the start and end times to datetime
@@ -85,28 +79,26 @@ class MetadataCorrector:
             df["end"] = pd.to_datetime(df["end"])
 
             # get the file list that covers the requested day
-            self.log.info(
+            log.info(
                 f'Found {len(df)} files from day {self.day}, starting {df.iloc[0]["start"]} ending {df.iloc[-1]["end"]}'
             )
 
             # if there are no files, then return
             if len(df) == 0:
-                self.log.warn(f"No files found for {self.day}")
+                log.warning(f"No files found for {self.day}")
                 return
 
             day_process = df
 
             if self.variable_duration:
-                self.log.info(
-                    f"Files for {self.day} are variable. Skipping duration check"
-                )
+                log.info(f"Files for {self.day} are variable. Skipping duration check")
                 for index, row in day_process.iterrows():
-                    self.log.debug(f'File {row["uri"]} duration {row["duration_secs"]} ')
+                    log.debug(f'File {row["uri"]} duration {row["duration_secs"]} ')
             else:
                 for index, row in day_process.iterrows():
                     # if the duration_secs is not seconds per file, then the file is not complete
                     if row["duration_secs"] != self.seconds_per_file:
-                        self.log.warn(
+                        log.warning(
                             f'File {row["duration_secs"]}  != {self.seconds_per_file}. File is not complete'
                         )
                         continue
@@ -126,9 +118,9 @@ class MetadataCorrector:
                     len(day_process["start"].diff().unique()) == 1
                     or self.variable_duration
                 ):
-                    self.log.warn(f"No drift for {self.day}")
+                    log.warning(f"No drift for {self.day}")
                 else:
-                    self.log.info(f"Correcting drift for {self.day}")
+                    log.info(f"Correcting drift for {self.day}")
 
                     # correct the metadata
                     jitter = 0
@@ -179,9 +171,9 @@ class MetadataCorrector:
             self.save_day(self.day, day_process)
 
         except Exception as e:
-            self.log.exception(f"Error correcting metadata for  {self.day}. {e}")
+            log.exception(f"Error correcting metadata for  {self.day}. {e}")
         finally:
-            self.log.debug(
+            log.debug(
                 f"Done correcting metadata for {self.day}. Saved to {self.json_base_dir}"
             )
 
@@ -195,7 +187,7 @@ class MetadataCorrector:
         :return:
             The corrected dataframe
         """
-        self.log.warn(
+        log.warning(
             f"Cannot correct {self.day}. Using file start times as is, setting jitter to 0 and using "
             f"calculated end times."
         )
@@ -250,7 +242,7 @@ class MetadataCorrector:
                 date_format="iso",
                 date_unit="s",
             )
-            self.log.debug(f"Wrote {temp_metadata.as_posix()}")
+            log.debug(f"Wrote {temp_metadata.as_posix()}")
 
             # read the file back in using records format with json
             with open(temp_metadata.as_posix(), "r") as f:
@@ -264,4 +256,4 @@ class MetadataCorrector:
             output_path = Path(self.json_base_dir, str(day.year))
             output_path.mkdir(parents=True, exist_ok=True)
             shutil.copy2(temp_metadata.as_posix(), output_path)
-            self.log.info(f"Wrote {output_path}/{temp_metadata.name}")
+            log.info(f"Wrote {output_path}/{temp_metadata.name}")

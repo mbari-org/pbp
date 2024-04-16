@@ -12,13 +12,10 @@ import botocore
 import pytest
 from botocore.exceptions import ClientError
 from datetime import datetime
-
-import logging
-
 from pathlib import Path
 
+from pbp.logging_helper import create_logger
 from pbp.json_generator.gen_nrs import NRSMetadataGenerator
-from pbp.logging_helper import create_logger, PbpLogger
 from pbp.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
 from pbp.json_generator.gen_iclisten import IcListenMetadataGenerator
 
@@ -27,15 +24,15 @@ from pbp.json_generator.gen_iclisten import IcListenMetadataGenerator
 OUT_BASE_DIR = Path("tests/json_generator_tmp")
 
 
-def create_test_logger(name: str) -> PbpLogger:
+def create_test_logger(name: str):
     log_dir = OUT_BASE_DIR / "log"
     log_dir.mkdir(exist_ok=True, parents=True)
     return create_logger(
         log_filename_and_level=(
             f"{log_dir}/{name}.log",
-            logging.INFO,
+            "INFO",
         ),
-        console_level=logging.INFO,
+        console_level="INFO",
     )
 
 
@@ -84,13 +81,12 @@ def test_soundtrap_json_generator():
     Two files should be generated in the json directory for the dates specified.
     :return:
     """
-    logger = create_test_logger("test_soundtrap_metadata_generator")
+    create_test_logger("test_soundtrap_metadata_generator")
     json_dir = create_json_dir("soundtrap")
 
     start = datetime(2023, 7, 18)
     end = datetime(2023, 7, 19)
     gen = SoundTrapMetadataGenerator(
-        pbp_logger=logger,
         uri="s3://pacific-sound-ch01",
         json_base_dir=json_dir.as_posix(),
         prefix=["7000"],
@@ -118,7 +114,7 @@ def test_iclisten_json_generator():
     only works for MBARI MARS ICListen data
     :return:
     """
-    logger = create_test_logger("test_mars_metadata_generator")
+    create_test_logger("test_mars_metadata_generator")
     json_dir = create_json_dir("mars")
 
     start = datetime(2023, 7, 18, 0, 0, 0)
@@ -126,7 +122,6 @@ def test_iclisten_json_generator():
 
     # If only running one day, use a single generator
     generator = IcListenMetadataGenerator(
-        pbp_logger=logger,
         uri="s3://pacific-sound-256khz",
         json_base_dir=json_dir.as_posix(),
         prefix=["MARS"],
@@ -154,14 +149,13 @@ def test_nrs_json_generator():
     One files should be generated in the json directory for the date specified.
     :return:
     """
-    logger = create_test_logger("test_nrs_metadata_generator")
+    create_test_logger("test_nrs_metadata_generator")
     json_dir = create_json_dir("nrs")
 
     start = datetime(2019, 10, 24, 0, 0, 0)
     end = datetime(2019, 10, 24, 0, 0, 0)
 
     generator = NRSMetadataGenerator(
-        pbp_logger=logger,
         uri="gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio",
         json_base_dir=json_dir.as_posix(),
         prefix=["NRS11"],

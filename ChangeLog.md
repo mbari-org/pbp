@@ -2,6 +2,9 @@
 
 2024-04
 
+- Use loguru for logging.
+  Main reason is that separate configuration of the console and the file outputs continued proving tricky
+  with the standard logging, which resulted in unexpected log levels when running in notebooks.
 - Adjusted logging to be less verbose
 
 2024-03

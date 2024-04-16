@@ -7,6 +7,7 @@ from datetime import timedelta, datetime
 import time
 from typing import List
 
+from loguru import logger as log
 from google.cloud import storage
 
 import pandas as pd
@@ -14,7 +15,6 @@ from pathlib import Path
 from progressbar import progressbar
 from pbp.json_generator.corrector import MetadataCorrector
 from pbp.json_generator.metadata_extractor import FlacFile
-from pbp.logging_helper import PbpLogger
 from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
 from pbp.json_generator.utils import parse_s3_or_gcp_url
 
@@ -22,7 +22,6 @@ from pbp.json_generator.utils import parse_s3_or_gcp_url
 class NRSMetadataGenerator(MetadataGeneratorAbstract):
     def __init__(
         self,
-        pbp_logger: PbpLogger,
         uri: str,
         json_base_dir: str,
         start: datetime,
@@ -32,8 +31,6 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
     ):
         """
         Captures NRS audio metadata in a pandas dataframe from either a local directory or GS bucket.
-        :param pbp_logger:
-            The logger
         :param uri:
             The local directory or GCP bucket that contains the audio files
         :param json_base_dir:
@@ -48,18 +45,16 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             The number of seconds per file expected in a flac file to check for missing data. If 0, then no check is done.
         :return:
         """
-        super().__init__(
-            pbp_logger, uri, json_base_dir, prefix, start, end, seconds_per_file
-        )
+        super().__init__(uri, json_base_dir, prefix, start, end, seconds_per_file)
 
     def run(self):
-        self.log.info(f"Generating metadata for {self.start} to {self.end}...")
+        log.info(f"Generating metadata for {self.start} to {self.end}...")
 
         bucket, prefix, scheme = parse_s3_or_gcp_url(self.audio_loc)
 
         # S3 is not supported for NRS
         if scheme == "s3":
-            self.log.error("S3 is not supported for NRS audio files")
+            log.error("S3 is not supported for NRS audio files")
             return
 
         def parse_filename(f: str) -> datetime:
@@ -92,14 +87,14 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                         f_path_dt = datetime.strptime(f_parts, "%Y%m%d%H%M%S")
                         return f_path_dt
                     except ValueError:
-                        self.log.error(f"Could not parse {f_path.name}")
+                        log.error(f"Could not parse {f_path.name}")
                         return None
 
             return f_flac_dt
 
         flac_files = []
         self.df = None
-        self.log.info(
+        log.info(
             f"Searching in {self.audio_loc}/ for files that match the search pattern {self.prefix}* ..."
         )
 
@@ -121,7 +116,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             ):
                 flac_dt = parse_filename(filename)
                 if start_dt <= flac_dt <= end_dt:
-                    self.log.info(f"Found file {filename} with timestamp {flac_dt}")
+                    log.info(f"Found file {filename} with timestamp {flac_dt}")
                     flac_files.append(FlacFile(filename, flac_dt))
         if scheme == "gs":
             client = storage.Client.create_anonymous_client()
@@ -131,20 +126,20 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             # data is organized in a flat filesystem, so there are no optimizations here for querying
             blobs = bucket_obj.list_blobs(prefix=prefix)
             for i, blob in enumerate(blobs):
-                self.log.info(f"Processing {blob.name}")
+                log.info(f"Processing {blob.name}")
                 f_path = f"gs://{bucket}/{blob.name}"
                 flac_dt = parse_filename(f_path)
                 if start_dt <= flac_dt <= end_dt:
-                    self.log.info(f"Found file {blob.name} with timestamp {flac_dt}")
+                    log.info(f"Found file {blob.name} with timestamp {flac_dt}")
                     flac_files.append(FlacFile(f_path, flac_dt))
                 # delay to avoid 400 error
                 if i % 100 == 0:
-                    self.log.info(f"{i} files processed")
+                    log.info(f"{i} files processed")
                     time.sleep(1)
                 if flac_dt > end_dt:
                     break
 
-        self.log.info(
+        log.info(
             f"Found {len(flac_files)} files to process that cover the period {start_dt} - {end_dt}"
         )
 
@@ -163,14 +158,13 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
         for day in pd.date_range(self.start, self.end, freq="D"):
             try:
                 # create a dataframe from the flac files
-                self.log.info(
+                log.info(
                     f"Creating dataframe from {len(flac_files)} "
                     f"files spanning {flac_files[0].start} to {flac_files[-1].start} in self.json_base_dir..."
                 )
 
-                self.log.debug(f" Running metadata corrector for {day}")
+                log.debug(f" Running metadata corrector for {day}")
                 corrector = MetadataCorrector(
-                    self.log,
                     self.df,
                     self.json_base_dir,
                     day,
@@ -180,31 +174,29 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                 corrector.run()
 
             except Exception as ex:
-                self.log.exception(str(ex))
+                log.exception(str(ex))
 
 
 if __name__ == "__main__":
-    import logging
-    from pbp.logging_helper import PbpLogger, create_logger
+    from pbp.logging_helper import create_logger
 
     log_dir = Path("tests/log")
     json_dir = Path("tests/json/nrs")
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
 
-    logger = create_logger(
+    log = create_logger(
         log_filename_and_level=(
             f"{log_dir}/test_nrs_metadata_generator.log",
-            logging.INFO,
+            "INFO",
         ),
-        console_level=logging.INFO,
+        console_level="INFO",
     )
 
     start = datetime(2019, 10, 24, 0, 0, 0)
     end = datetime(2019, 11, 1, 0, 0, 0)
 
     generator = NRSMetadataGenerator(
-        pbp_logger=logger,
         uri="gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio",
         json_base_dir=json_dir.as_posix(),
         prefix=["NRS11"],

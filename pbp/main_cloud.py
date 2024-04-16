@@ -56,7 +56,6 @@
 #     If "yes", do not remove any downloaded files after use.
 #     The default is that any downloaded file is removed after use.
 
-import logging
 import os
 import pathlib
 
@@ -121,9 +120,9 @@ def main():
     pathlib.Path(generated_dir).mkdir(parents=True, exist_ok=True)
 
     log_filename = f"{generated_dir}/{output_prefix}{date}.log"
-    logger = create_logger(
-        log_filename_and_level=(log_filename, logging.INFO),
-        console_level=logging.DEBUG,
+    log = create_logger(
+        log_filename_and_level=(log_filename, "INFO"),
+        console_level="DEBUG",
     )
 
     kwargs = {}
@@ -139,20 +138,19 @@ def main():
             b["Name"] == output_bucket for b in s3_client.list_buckets()["Buckets"]
         )
         if not found:
-            logger.info(f"Creating bucket {output_bucket}")
+            log.info(f"Creating bucket {output_bucket}")
             s3_client.create_bucket(
                 Bucket=output_bucket,
                 CreateBucketConfiguration={"LocationConstraint": aws_region},
             )
 
     else:
-        logger.info("No output bucket specified. Output will not be uploaded.")
+        log.info("No output bucket specified. Output will not be uploaded.")
 
     # --------------------------
     # Get working:
 
     file_helper = FileHelper(
-        logger=logger,
         json_base_dir=json_bucket_prefix,
         s3_client=s3_client,
         gs_client=None,  # TODO
@@ -162,7 +160,6 @@ def main():
     )
 
     process_helper = ProcessHelper(
-        logger=logger,
         file_helper=file_helper,
         output_dir=generated_dir,
         output_prefix=output_prefix,
@@ -178,18 +175,18 @@ def main():
     result = process_helper.process_day(date)
 
     if result is None:
-        logger.warn(f"No NetDF file was generated.  ({date=})")
+        log.warning(f"No NetDF file was generated.  ({date=})")
         return
 
-    logger.info(f"Generated files: {result.generated_filenames}")
+    log.info(f"Generated files: {result.generated_filenames}")
 
     if output_bucket is not None:
 
         def upload(filename):
-            logger.info(f"Uploading {filename} to {output_bucket}")
+            log.info(f"Uploading {filename} to {output_bucket}")
             filename_out = pathlib.Path(filename).name
             ok = s3_client.upload_file(filename, output_bucket, filename_out)
-            logger.info(f"Upload result: {ok}")
+            log.info(f"Upload result: {ok}")
 
         for generated_filename in result.generated_filenames:
             upload(generated_filename)
@@ -198,7 +195,7 @@ def main():
         upload(log_filename)
 
     else:
-        logger.info("No uploads attempted as output bucket was not given.")
+        log.info("No uploads attempted as output bucket was not given.")
 
 
 if __name__ == "__main__":

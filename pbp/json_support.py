@@ -1,14 +1,11 @@
 import json
-import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Generator, List
 from urllib.parse import urlparse
-
 from dataclasses_json import config, dataclass_json
 from dateutil import parser as iso8601_parser
-
-from pbp.logging_helper import PbpLogger
+from loguru import logger as log
 
 
 @dataclass_json
@@ -59,7 +56,6 @@ class JEntryIntersection:
 
 
 def get_intersecting_entries(
-    logger: PbpLogger,
     json_entries: List[JEntry],
     year: int,
     month: int,
@@ -72,8 +68,6 @@ def get_intersecting_entries(
     Gets the list of intersecting entries for the UTC "start minute"
     given by (year, month, day, at_hour, at_minute).
 
-    :param logger:
-        The logger to be used
     :param json_entries:
         JSON entries for the day
     :param year:
@@ -96,7 +90,7 @@ def get_intersecting_entries(
     time_spec = (
         f"year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
     )
-    logger.debug(f"get_intersecting_entries: {time_spec} {len(json_entries)=}")
+    log.debug(f"get_intersecting_entries: {time_spec} {len(json_entries)=}")
 
     # the requested start minute as datetime:
     dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
@@ -125,13 +119,15 @@ def get_intersecting_entries(
             tot_duration_secs += duration_secs
 
     warning = 0 == len(intersecting_entries)
-    if warning or logger.is_enabled_for(logging.DEBUG):
+
+    def log_msg():
         uris = [i.entry.uri for i in intersecting_entries]
         uris_str = "\n  ".join([f"[{e}] {uri}" for e, uri in enumerate(uris)])
-        msg = f"{time_spec}: intersection uris({len(uris)}):\n  {uris_str}"
-        if warning:
-            logger.warn(msg)
-        else:
-            logger.debug(msg)
+        return f"{time_spec}: intersection uris({len(uris)}):\n  {uris_str}"
+
+    if warning:
+        log.opt(lazy=True).warning("get_intersecting_entries: {}", log_msg)
+    else:
+        log.opt(lazy=True).debug("get_intersecting_entries: {}", log_msg)
 
     return intersecting_entries
