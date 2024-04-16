@@ -392,7 +392,7 @@ class FileHelper:
             if ss.error is not None:
                 return None
 
-            self.logger.info(
+            self.logger.debug(
                 f"    {prefix} {intersection.duration_secs} secs from {ss.sound_filename}"
             )
 

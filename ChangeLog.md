@@ -1,5 +1,9 @@
 # PBP – PyPAM based processing
 
+2024-04
+
+- Adjusted logging to be less verbose
+
 2024-03
 
 - For global attributes, now resolving the `{{PyPAM_version}}` snippet against the

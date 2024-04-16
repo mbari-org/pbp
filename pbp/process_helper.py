@@ -250,9 +250,9 @@ class ProcessHelper:
 
         dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
 
-        self.logger.info(f"Segment at {at_hour:02}h:{at_minute:02}m ...")
-        self.logger.info(
-            f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:"
+        self.logger.debug(
+            f"Segment at {at_hour:02}h:{at_minute:02}m ...\n"
+            + f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:"
         )
         extraction = file_helper.extract_audio_segment(at_hour, at_minute)
         if extraction is None:

@@ -113,7 +113,7 @@ class PypamSupport:
             The datetime of the start of the missing segment.
         """
         self._captured_segments.append(_CapturedSegment(dt, 0, None))
-        self.logger.info(f"  captured segment: {dt}  (NO DATA)")
+        self.logger.debug(f"  captured segment: {dt}  (NO DATA)")
 
     def add_segment(self, dt: datetime, data: np.ndarray):
         """
@@ -134,7 +134,7 @@ class PypamSupport:
         num_secs = len(data) / self.fs
         self._captured_segments.append(_CapturedSegment(dt, num_secs, spectrum))
         self._num_actual_segments += 1
-        self.logger.info(f"  captured segment: {dt}")
+        self.logger.debug(f"  captured segment: {dt}")
 
     def process_captured_segments(
         self,
@@ -167,7 +167,7 @@ class PypamSupport:
             effort.append(np.float32(cs.num_secs))
 
             spectrum = nan_spectrum if cs.spectrum is None else cs.spectrum
-            self.logger.info(f"  spectrum for: {cs.dt} (effort={cs.num_secs})")
+            self.logger.debug(f"  spectrum for: {cs.dt} (effort={cs.num_secs})")
             spectra.append(spectrum)
 
         self.logger.info("Aggregating results ...")
