@@ -154,7 +154,7 @@ main-nrs11-multiple-days year month *days="":
              --download-dir="$WS/DOWNLOADS" \
              --retain-downloaded-files \
              --assume-downloaded-files \
-            > "$WS/OUTPUT/NRS11_$date.out" 2>&1 &
+             &
     done
     wait
 
