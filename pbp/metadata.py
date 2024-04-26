@@ -5,8 +5,6 @@ from typing import Any, Dict, Optional
 import xarray as xr
 import yaml
 
-from loguru import logger as log
-
 
 def parse_attributes(contents: str, suffix: str) -> OrderedDict[str, Any]:
     """
@@ -28,9 +26,11 @@ def parse_attributes(contents: str, suffix: str) -> OrderedDict[str, Any]:
 class MetadataHelper:
     def __init__(
         self,
+        log,  # : loguru.Logger,
         global_attributes: Optional[OrderedDict[str, Any]] = None,
         variable_attributes: Optional[OrderedDict[str, Any]] = None,
     ):
+        self.log = log
         self._global_attrs: OrderedDict[str, Any] = global_attributes or OrderedDict()
         self._var_attrs: OrderedDict[str, Any] = variable_attributes or OrderedDict()
 
@@ -47,9 +47,11 @@ class MetadataHelper:
             for k, v in self._var_attrs[var_attribute_name].items():
                 da.attrs[k] = v
                 keys.append(k)
-            log.debug(f"For variable '{var_attribute_name}', added attributes: {keys}")
+            self.log.debug(
+                f"For variable '{var_attribute_name}', added attributes: {keys}"
+            )
         else:
-            log.error(f"Unrecognized {var_attribute_name=}")
+            self.log.error(f"Unrecognized {var_attribute_name=}")
 
 
 def replace_snippets(

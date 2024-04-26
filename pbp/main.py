@@ -18,9 +18,9 @@ def main():
     log = create_logger(
         log_filename_and_level=(
             f"{opts.output_dir}/{opts.output_prefix}{opts.date}.log",
-            "DEBUG",
+            "INFO",
         ),
-        console_level="INFO",
+        console_level="WARNING",
     )
 
     s3_client = None
@@ -44,6 +44,7 @@ def main():
         gs_client = GsClient.create_anonymous_client()
 
     file_helper = FileHelper(
+        log=log,
         json_base_dir=opts.json_base_dir,
         audio_base_dir=opts.audio_base_dir,
         audio_path_map_prefix=opts.audio_path_map_prefix,
@@ -56,6 +57,7 @@ def main():
     )
 
     process_helper = ProcessHelper(
+        log=log,
         file_helper=file_helper,
         output_dir=opts.output_dir,
         output_prefix=opts.output_prefix,

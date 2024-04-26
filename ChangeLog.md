@@ -2,6 +2,9 @@
 
 2024-04
 
+- make sure loggers are independent of each other (one per processing day).
+  Annoyingly, `loguru.Logger` type hint is not recognized when running in the command line,
+  so commenting out that for now. 
 - Use loguru for logging.
   Main reason is that separate configuration of the console and the file outputs continued proving tricky
   with the standard logging, which resulted in unexpected log levels when running in notebooks.

@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from math import ceil, floor
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
-from loguru import logger as log
+
+# import loguru
 import numpy as np
 import soundfile as sf
 
@@ -28,6 +29,7 @@ class SoundStatus:
 
     def __init__(
         self,
+        log,  # : loguru.Logger,
         uri: str,
         audio_base_dir: Optional[str],
         audio_path_map_prefix: str,
@@ -37,6 +39,7 @@ class SoundStatus:
         s3_client: Optional[BaseClient] = None,
         gs_client: Optional[GsClient] = None,
     ):
+        self.log = log
         self.uri = map_prefix(audio_path_map_prefix, uri)
         self.parsed_uri = urlparse(self.uri)
 
@@ -68,13 +71,14 @@ class SoundStatus:
             sfi = sf.info(sound_filename)
             return AudioInfo(sfi.samplerate, sfi.channels, sfi.subtype)
         except sf.LibsndfileError as e:
-            log.error(f"{e}")
+            self.log.error(f"{e}")
             return None
 
     def _get_sound_filename(self) -> Optional[str]:
-        log.debug(f"_get_sound_filename: {self.uri=}")
+        self.log.debug(f"_get_sound_filename: {self.uri=}")
         if self.parsed_uri.scheme in ("s3", "gs"):
             return _download(
+                self.log,
                 self.parsed_uri,
                 self.download_dir,
                 self.assume_downloaded_files,
@@ -99,17 +103,18 @@ class SoundStatus:
         if (
             self.s3_client is None and self.gs_client is None
         ) or self.parsed_uri.scheme not in ("s3", "gs"):
-            log.debug(f"No file download involved for {self.uri=}")
+            self.log.debug(f"No file download involved for {self.uri=}")
             return
 
         try:
             os.remove(self.sound_filename)
-            log.debug(f"Removed cached file {self.sound_filename} for {self.uri=}")
+            self.log.debug(f"Removed cached file {self.sound_filename} for {self.uri=}")
         except OSError as e:
-            log.error(f"Error removing file {self.sound_filename}: {e}")
+            self.log.error(f"Error removing file {self.sound_filename}: {e}")
 
 
 def _download(
+    log,  # : loguru.Logger,
     parsed_uri: ParseResult,
     download_dir: str,
     assume_downloaded_files: bool = False,
@@ -169,6 +174,7 @@ class FileHelper:
 
     def __init__(
         self,
+        log,  # : loguru.Logger,
         json_base_dir: str,
         audio_base_dir: Optional[str] = None,
         audio_path_map_prefix: str = "",
@@ -182,8 +188,8 @@ class FileHelper:
     ):
         """
 
-        :param json_base_dir:
-          Directory containing the `YYYYMMDD.json` json files
+        :param log:
+          Logger
         :param audio_base_dir:
           If given, it will be used as base directory for any relative (not starting with a slash)
           `path` attribute in the json entries.
@@ -205,7 +211,9 @@ class FileHelper:
         :param retain_downloaded_files:
             If True, remove downloaded files after use.
         """
-        log.info(
+        self.log = log
+
+        self.log.info(
             "Creating FileHelper:"
             + f"\n    json_base_dir:           {json_base_dir}"
             + (
@@ -260,12 +268,12 @@ class FileHelper:
         :return:  True only if selection was successful
         """
 
-        log.info(f"Selecting day: {year:04}{month:02}{day:02}")
+        self.log.info(f"Selecting day: {year:04}{month:02}{day:02}")
 
         json_uri = f"{self.json_base_dir}/{year:04}/{year:04}{month:02}{day:02}.json"
         json_contents = self._get_json(json_uri)
         if json_contents is None:
-            log.error(f"{json_uri}: file not found\n")
+            self.log.error(f"{json_uri}: file not found\n")
             return False
 
         self.year = year
@@ -285,6 +293,7 @@ class FileHelper:
         parsed_uri = urlparse(uri)
         if parsed_uri.scheme in ("s3", "gs"):
             return _download(
+                self.log,
                 parsed_uri,
                 self.download_dir,
                 self.assume_downloaded_files,
@@ -303,11 +312,11 @@ class FileHelper:
             c_ss for c_ss in self.sound_cache.values() if c_ss.sound_file is not None
         ]
         if len(sound_files_open) > 0:
-            log.debug(
+            self.log.debug(
                 f"day_completed: closing {len(sound_files_open)} sound files still open"
             )
             for c_ss in sound_files_open:
-                log.debug(f"Closing sound file for cached {c_ss.uri=} {c_ss.age=}")
+                self.log.debug(f"Closing sound file for cached {c_ss.uri=} {c_ss.age=}")
                 c_ss.sound_file.close()
 
         # remove any downloaded files (cloud case):
@@ -326,6 +335,7 @@ class FileHelper:
 
     def _get_json_s3(self, parsed_uri: ParseResult) -> Optional[str]:
         local_filename = _download(
+            self.log,
             parsed_uri,
             self.download_dir,
             self.assume_downloaded_files,
@@ -352,6 +362,7 @@ class FileHelper:
         assert self.day is not None
 
         intersections = get_intersecting_entries(
+            self.log,
             self.json_entries,
             self.year,
             self.month,
@@ -368,14 +379,14 @@ class FileHelper:
         prefix = f"({at_hour:02}h:{at_minute:02}m)"
         for intersection in intersections:
             if intersection.duration_secs == 0:
-                log.warning("No data from intersection")
+                self.log.warning("No data from intersection")
                 continue
 
             ss = self._get_sound_status(intersection.entry.uri)
             if ss.error is not None:
                 return None
 
-            log.debug(
+            self.log.debug(
                 f"    {prefix} {intersection.duration_secs} secs from {ss.sound_filename}"
             )
 
@@ -398,12 +409,12 @@ class FileHelper:
                     audio_segment = ss.sound_file.read(num_samples)
                     if len(audio_segment) < num_samples:
                         # partial-data case.
-                        log.warning(
+                        self.log.warning(
                             f"!!! partial data: {len(audio_segment)} < {num_samples}"
                         )
 
             except sf.LibsndfileError as e:
-                log.error(f"{e}")
+                self.log.error(f"{e}")
                 return None
 
             if aggregated_segment is None:
@@ -418,17 +429,19 @@ class FileHelper:
 
     def _check_audio_info(self, ai1: AudioInfo, ai2: AudioInfo) -> bool:
         if ai1.samplerate != ai2.samplerate:
-            log.error(
+            self.log.error(
                 f"UNEXPECTED: sample rate mismatch: {ai1.samplerate} vs {ai2.samplerate}"
             )
             return False
         if ai1.channels != ai2.channels:
-            log.error(
+            self.log.error(
                 f"UNEXPECTED: channel count mismatch: {ai1.channels} vs {ai2.channels}"
             )
             return False
         if ai1.subtype != ai2.subtype:
-            log.error(f"UNEXPECTED: subtype mismatch: {ai1.subtype} vs {ai2.subtype}")
+            self.log.error(
+                f"UNEXPECTED: subtype mismatch: {ai1.subtype} vs {ai2.subtype}"
+            )
             return False
         return True
 
@@ -444,15 +457,16 @@ class FileHelper:
         :param uri:
         :return:
         """
-        log.debug(f"_get_sound_status: {uri=}")
+        self.log.debug(f"_get_sound_status: {uri=}")
         ss = self.sound_cache.get(uri)
         if ss is None:
             # currently cached ones get a bit older:
             for c_ss in self.sound_cache.values():
                 c_ss.age += 1
 
-            log.debug(f"SoundStatus: creating for {uri=}")
+            self.log.debug(f"SoundStatus: creating for {uri=}")
             ss = SoundStatus(
+                log=self.log,
                 uri=uri,
                 audio_base_dir=self.audio_base_dir,
                 audio_path_map_prefix=self.audio_path_map_prefix,
@@ -464,13 +478,15 @@ class FileHelper:
             )
             self.sound_cache[uri] = ss
         else:
-            log.debug(f"SoundStatus: already available for {uri=}")
+            self.log.debug(f"SoundStatus: already available for {uri=}")
 
         # close and remove files in the cache that are not fresh enough in terms
         # of not being recently used
         for c_uri, c_ss in list(self.sound_cache.items()):
             if uri != c_uri and c_ss.age > 2 and c_ss.sound_file is not None:
-                log.debug(f"Closing sound file for cached uri={c_uri} age={c_ss.age}")
+                self.log.debug(
+                    f"Closing sound file for cached uri={c_uri} age={c_ss.age}"
+                )
                 c_ss.sound_file.close()
                 c_ss.sound_file = None
                 if not self.retain_downloaded_files:
@@ -482,7 +498,7 @@ class FileHelper:
             ages = [c_ss.age for c_ss in c_sss]
             return f"{open_files=}  ages={brief_list(ages)}"
 
-        log.opt(lazy=True).debug("_get_sound_status: {}", log_msg)
+        self.log.opt(lazy=True).debug("_get_sound_status: {}", log_msg)
 
         return ss
 
@@ -491,7 +507,7 @@ class FileHelper:
             with open(filename, "r", encoding="UTF-8") as f:
                 return f.read()
         except IOError as e:
-            log.error(f"Error reading {filename}: {e}")
+            self.log.error(f"Error reading {filename}: {e}")
             return None
 
 

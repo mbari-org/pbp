@@ -5,7 +5,6 @@ from typing import Generator, List
 from urllib.parse import urlparse
 from dataclasses_json import config, dataclass_json
 from dateutil import parser as iso8601_parser
-from loguru import logger as log
 
 
 @dataclass_json
@@ -56,6 +55,7 @@ class JEntryIntersection:
 
 
 def get_intersecting_entries(
+    log,  # : loguru.Logger,
     json_entries: List[JEntry],
     year: int,
     month: int,
@@ -68,6 +68,8 @@ def get_intersecting_entries(
     Gets the list of intersecting entries for the UTC "start minute"
     given by (year, month, day, at_hour, at_minute).
 
+    :param log:
+        Logger
     :param json_entries:
         JSON entries for the day
     :param year:
