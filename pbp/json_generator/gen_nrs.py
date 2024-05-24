@@ -168,7 +168,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                     self.df,
                     self.json_base_dir,
                     day,
-                    False,
+                    True,
                     self.seconds_per_file,
                 )
                 corrector.run()

@@ -52,7 +52,7 @@ class MetadataCorrector:
                     (self.correct_df["start"] >= self.day - timedelta(hours=6))
                     & (self.correct_df["start"] < self.day + timedelta(days=1))
                 ]
-            else:  # ICListen/NRS files fixed, but may be missing or incomplete if the system was down
+            else:  # files are fixed, but may be missing or incomplete if the system was down
                 files_per_day = int(86400 / self.seconds_per_file)
                 # Filter the metadata to the day, starting 1 file before the day starts to capture overlap
                 df = self.correct_df[
