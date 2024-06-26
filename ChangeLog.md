@@ -1,5 +1,10 @@
 # PBP – PyPAM based processing
 
+2024-06
+
+- did the pending "pypam-based-processing" to "pbp" renaming.
+  The ones related with docker may need review.
+
 2024-04
 
 - added `scripts/nrs11.py`, basically as in the batch notebook.
