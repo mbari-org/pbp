@@ -64,4 +64,4 @@ The package includes the following CLI programs:
 
 ## Development
 
-See [DEVELOPMENT.md](https://github.com/mbari-org/pypam-based-processing/blob/main/DEVEL.md) for details.
+See [DEVELOPMENT.md](./DEVELOPMENT.md) for details.
