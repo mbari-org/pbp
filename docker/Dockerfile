@@ -4,12 +4,9 @@ WORKDIR /opt/pbp
 
 RUN apt-get update && apt-get install -y libsox-fmt-all libsox-dev
 
-# TODO PBP should be installed from published package.
-#  For now, grabbing the latest from their repos.
-RUN git clone https://github.com/mbari-org/pbp.git \
- && cd pbp \
- && pip install -r requirements.txt \
- && /opt/conda/bin/conda install jupyter -y --quiet
+# Note: tentative adjustments
+RUN /opt/conda/bin/conda install jupyter -y --quiet
+RUN pip install mbari-pbp==0.3.0b18
 
 ENV PYTHONPATH /opt/pbp:/opt/pbp/pbp
 EXPOSE 8899

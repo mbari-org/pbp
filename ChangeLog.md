@@ -2,6 +2,8 @@
 
 2024-06
 
+- did new pypi release to fix links, etc., and in preparation to
+  generate corresponding new version of docker image.
 - did the pending "pypam-based-processing" to "pbp" renaming.
   The ones related with docker may need review.
 
