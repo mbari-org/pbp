@@ -47,7 +47,7 @@ The package includes the following CLI programs:
 
 | Program | Description                                    |
 | ------- |------------------------------------------------|
-| [`pbp-json-gen`](https://docs.mbari.org/pbp/pbp-json-gen//) | Generate JSON files with audio metadata.       |
+| [`pbp-json-gen`](https://docs.mbari.org/pbp/pbp-json-gen/) | Generate JSON files with audio metadata.       |
 | [`pbp`](https://docs.mbari.org/pbp/pbp/) | Main HMB generation program.                   |
 | [`pbp-cloud`](https://docs.mbari.org/pbp/pbp-cloud/) | Program for cloud based processing.            |
 | [`pbp-plot`](https://docs.mbari.org/pbp/pbp-plot/) | Utility program to plot resulting HMB product. |
