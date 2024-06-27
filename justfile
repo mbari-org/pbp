@@ -301,11 +301,11 @@ format-check:
 lint:
     poetry run ruff check --fix
 
-# Lint source code
+# Check linting of source code
 lint-check:
     poetry run ruff check
 
-# List git tags
+# List most recent git tags
 tags:
     git tag -l | sort -V | tail
 

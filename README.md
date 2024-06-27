@@ -1,6 +1,6 @@
 # PyPAM based data processing
 
-The [`mbari-pbp`](https://pypi.org/project/mbari-pbp/) package allows to
+The [mbari-pbp](https://pypi.org/project/mbari-pbp/) package allows to
 process ocean audio data archives to daily analysis products of hybrid millidecade spectra using
 [PyPAM](https://github.com/lifewatch/pypam/).
 
@@ -19,7 +19,9 @@ process ocean audio data archives to daily analysis products of hybrid millideca
     - [x] Inputs can be downloaded from public GCS bucket
     - [ ] Outputs can be uploaded to GCS
 
-TODO more details
+## Documentation
+
+[docs.mbari.org/pbp](https://docs.mbari.org/pbp/).
 
 ## Installation
 
