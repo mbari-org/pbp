@@ -7,7 +7,6 @@ from datetime import timedelta, datetime
 import time
 from typing import List
 
-from loguru import logger as log
 from google.cloud import storage
 
 import pandas as pd
@@ -16,12 +15,13 @@ from progressbar import progressbar
 from pbp.json_generator.corrector import MetadataCorrector
 from pbp.json_generator.metadata_extractor import FlacFile
 from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
-from pbp.json_generator.utils import parse_s3_or_gcp_url
+from pbp.json_generator.utils import parse_s3_or_gcp_url, InstrumentType
 
 
 class NRSMetadataGenerator(MetadataGeneratorAbstract):
     def __init__(
         self,
+        log,  # : loguru.Logger,
         uri: str,
         json_base_dir: str,
         start: datetime,
@@ -45,7 +45,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             The number of seconds per file expected in a flac file to check for missing data. If 0, then no check is done.
         :return:
         """
-        super().__init__(uri, json_base_dir, prefix, start, end, seconds_per_file)
+        super().__init__(log, uri, json_base_dir, prefix, start, end, seconds_per_file)
 
     def run(self):
         log.info(f"Generating metadata for {self.start} to {self.end}...")
@@ -158,17 +158,19 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
         for day in pd.date_range(self.start, self.end, freq="D"):
             try:
                 # create a dataframe from the flac files
-                log.info(
+                self.log.info(
                     f"Creating dataframe from {len(flac_files)} "
                     f"files spanning {flac_files[0].start} to {flac_files[-1].start} in self.json_base_dir..."
                 )
 
-                log.debug(f" Running metadata corrector for {day}")
+                self.log.debug(f" Running metadata corrector for {day}")
                 corrector = MetadataCorrector(
+                    self.log,
                     self.df,
                     self.json_base_dir,
                     day,
-                    True,
+                    InstrumentType.NRS,
+                    False,
                     self.seconds_per_file,
                 )
                 corrector.run()

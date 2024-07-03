@@ -2,6 +2,12 @@ from typing import Tuple
 from urllib.parse import urlparse
 
 
+class InstrumentType:
+    NRS = "NRS"
+    ICLISTEN = "ICLISTEN"
+    SOUNDTRAP = "SOUNDTRAP"
+
+
 def parse_s3_or_gcp_url(url) -> Tuple[str, str, str]:
     """
     Parse the S3, GS of local file url

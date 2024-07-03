@@ -1,8 +1,7 @@
 # pypam-based-processing, Apache License 2.0
-# Filename: json_generator/wavfile.py
-# Description:  wav file metadata reader. Supports SoundTrap and icListen wav files
+# Filename: json_generator/metadata_extractor.py
+# Description: Utilities for wav file metadata reading. Supports SoundTrap, NRS and and icListen audio files
 
-from logging import exception, warning, debug
 from pathlib import Path
 from typing import Optional
 
@@ -34,7 +33,7 @@ class AudioFile:
         self.frames = -1
         self.channels = -1
         self.subtype = ""
-        self.exception = np.NAN
+        self.exception = np.nan
 
     def has_exception(self):
         return True if len(self.exception) > 0 else False
@@ -121,15 +120,16 @@ class SoundTrapWavFile(AudioFile):
         self.frames = sample_count
         self.channels = 1
         self.subtype = "SoundTrap"
-        self.exception = np.NAN  # no exceptions for SoundTrap  files
+        self.exception = np.nan  # no exceptions for SoundTrap  files
 
 
 class IcListenWavFile(AudioFile):
     """IcListenWavFile uses the metadata from the wav file itself,
     but only grabs the needed metadata from the header in S3"""
 
-    def __init__(self, path_or_url: str, start: datetime):
+    def __init__(self, log, path_or_url: str, start: datetime):
         super().__init__(path_or_url, start)
+        self.log = log
         self.path_or_url = path_or_url
         self.start = start
         self.duration_secs = -1
@@ -137,7 +137,7 @@ class IcListenWavFile(AudioFile):
         self.frames = -1
         self.channels = -1
         self.subtype = ""
-        self.exception = np.NAN
+        self.exception = np.nan
         self.path_or_url = path_or_url
         bytes_per_sec = (
             3 * 256e3
@@ -199,7 +199,7 @@ class FlacFile(AudioFile):
         self.frames = -1
         self.channels = -1
         self.subtype = ""
-        self.exception = np.NAN
+        self.exception = np.nan
         self.path_or_url = path_or_url
 
         try:
@@ -212,7 +212,6 @@ class FlacFile(AudioFile):
 
                 # get the duration from the extra_info data field which stores the duration in total bytes
                 fields = info.extra_info.split(":")
-                debug("\n".join(fields))
                 sample_rate = int(fields[3].split("\n")[0])
                 channels = int(fields[2].split("\n")[0])
                 length_microseconds = int(info.frames * 1e6 / info.samplerate)
