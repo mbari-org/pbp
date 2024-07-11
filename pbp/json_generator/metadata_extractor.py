@@ -1,4 +1,4 @@
-# pypam-based-processing, Apache License 2.0
+# pbp, Apache License 2.0
 # Filename: json_generator/metadata_extractor.py
 # Description: Utilities for wav file metadata reading. Supports SoundTrap, NRS and and icListen audio files
 
@@ -174,9 +174,7 @@ class IcListenWavFile(AudioFile):
                 info = sf.info(path_or_url)
                 self.duration_secs = info.duration
 
-            self.end = self.start + timedelta(
-                microseconds=int(info.frames * 1e6 / info.samplerate)
-            )
+            self.end = self.start + timedelta(microseconds=int(self.duration_secs * 1e6))
             self.fs = info.samplerate
             self.frames = info.frames
             self.channels = info.channels
@@ -221,7 +219,8 @@ class FlacFile(AudioFile):
                 # files are in the format NRS11_20191231_230836.flac'
                 # extract the timestamp from the file name
                 f = Path(file_name).stem.split("_")
-                # If the last two digits of the timestamp are 60, subtract 1 seconds
+                # If the last two digits of the timestamp are 60, subtract 1 second
+                # This is a bug in the FlacFile name
                 if f[2][-2:] == "60":
                     f = f[1] + f[2]
                     # Make the last two digits 59

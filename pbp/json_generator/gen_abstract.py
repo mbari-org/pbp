@@ -1,4 +1,4 @@
-# pypam-based-processing
+# pbp, Apache License 2.0
 # Filename: metadata/generator/gen_abstract.py
 # Description:  Abstract class that captures sound wav metadata
 from datetime import datetime

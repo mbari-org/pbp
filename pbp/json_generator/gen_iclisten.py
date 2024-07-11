@@ -1,4 +1,4 @@
-# pypam-based-processing, Apache License 2.0
+# pbp, Apache License 2.0
 # Filename: metadata/generator/gen_iclisten.py
 # Description:  Captures ICListen wav metadata in a pandas dataframe from either a local directory or S3 bucket.
 
@@ -51,13 +51,17 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
         self.log_prefix = f"{self.__class__.__name__} {start:%Y%m%d}"
 
     def run(self):
-        self.log.info(f"Generating metadata for {self.start} to {self.end}...")
+        self.log.info(
+            f"{self.log_prefix} Generating metadata for {self.start} to {self.end}..."
+        )
 
         bucket_name, prefix, scheme = utils.parse_s3_or_gcp_url(self.audio_loc)
 
         # gs is not supported for icListen
         if scheme == "gs":
-            self.log.error(f"{self.log_prefix} GS is not supported for icListen audio files")
+            self.log.error(
+                f"{self.log_prefix} GS is not supported for icListen audio files"
+            )
             return
 
         # Run for each day in the range
@@ -100,7 +104,9 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                                     self.log.info(
                                         f"{self.log_prefix} Found {f_path.name} to process"
                                     )
-                                    wav_files.append(IcListenWavFile(self.log, f, f_path_dt))
+                                    wav_files.append(
+                                        IcListenWavFile(self.log, f, f_path_dt)
+                                    )
                                     f_wav_dt = f_path_dt
                             except ValueError:
                                 self.log.error(
@@ -113,11 +119,6 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                 # Set the start and end dates to 1 hour before and after the start and end dates
                 start_dt = day - timedelta(hours=1)
                 end_dt = day + timedelta(days=1)
-
-                # set the window to 3x the expected duration of the wav file to account for any missing data
-                minutes_window = int(self.seconds_per_file * 3 / 60)
-                start_dt_hour = start_dt - timedelta(minutes=minutes_window)
-                end_dt_hour = end_dt + timedelta(minutes=minutes_window)
 
                 if scheme == "file":
                     wav_path = Path(self.audio_loc)
@@ -141,7 +142,9 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                         # loop through the objects and check if they match the search pattern
                         for page in page_iterator:
                             if "Contents" not in page:
-                                self.log.info(f"{self.log_prefix}  No data found in {bucket}")
+                                self.log.info(
+                                    f"{self.log_prefix}  No data found in {bucket}"
+                                )
                                 break
 
                             for obj in page["Contents"]:
@@ -151,9 +154,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                                 )
                                 if wav_dt is None:
                                     continue
-                                if wav_dt > end_dt_hour:
-                                    break
-                                if wav_dt < start_dt_hour:
+                                if wav_dt > end_dt or wav_dt < start_dt:
                                     break
 
                 self.log.info(
@@ -216,6 +217,6 @@ if __name__ == "__main__":
         prefix=["MARS"],
         start=start,
         end=end,
-        seconds_per_file=300,
+        seconds_per_file=600,
     )
     generator.run()

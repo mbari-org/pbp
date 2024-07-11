@@ -70,36 +70,36 @@ if get_aws_account():
     AWS_AVAILABLE = True
 
 
-# @pytest.mark.skipif(
-#     not AWS_AVAILABLE,
-#     reason="This test is excluded because it requires a valid AWS account",
-# )
-# def test_soundtrap_json_generator():
-#     """
-#     Test fixture for SoundTrapMetadataGenerator.
-#     Tests the SoundTrapMetadataGenerator class ability to generate metadata for soundtrap recording files.
-#     Two files should be generated in the json directory for the dates specified.
-#     :return:
-#     """
-#     log = create_test_logger("test_soundtrap_metadata_generator")
-#     json_dir = create_json_dir("soundtrap")
-#
-#     start = datetime(2023, 7, 18)
-#     end = datetime(2023, 7, 19)
-#     gen = SoundTrapMetadataGenerator(
-#         log=log,
-#         uri="s3://pacific-sound-ch01",
-#         json_base_dir=json_dir.as_posix(),
-#         prefix=["7000"],
-#         start=start,
-#         end=end,
-#     )
-#     gen.run()
-#
-#     # There should be two files in the json directory named 20230718.json and 20230719.json
-#     json_files = list(json_dir.rglob("*.json"))
-#     assert len(json_files) == 1
-#     assert (json_dir / "2023/20230718.json").exists()
+@pytest.mark.skipif(
+    not AWS_AVAILABLE,
+    reason="This test is excluded because it requires a valid AWS account",
+)
+def test_soundtrap_json_generator():
+    """
+    Test fixture for SoundTrapMetadataGenerator.
+    Tests the SoundTrapMetadataGenerator class ability to generate metadata for soundtrap recording files.
+    Two files should be generated in the json directory for the dates specified.
+    :return:
+    """
+    log = create_test_logger("test_soundtrap_metadata_generator")
+    json_dir = create_json_dir("soundtrap")
+
+    start = datetime(2023, 7, 18)
+    end = datetime(2023, 7, 19)
+    gen = SoundTrapMetadataGenerator(
+        log=log,
+        uri="s3://pacific-sound-ch01",
+        json_base_dir=json_dir.as_posix(),
+        prefix=["7000"],
+        start=start,
+        end=end,
+    )
+    gen.run()
+
+    # There should be two files in the json directory named 20230718.json and 20230719.json
+    json_files = list(json_dir.rglob("*.json"))
+    assert len(json_files) == 1
+    assert (json_dir / "2023/20230718.json").exists()
 
 
 @pytest.mark.skipif(
@@ -142,37 +142,37 @@ def test_iclisten_json_generator():
         json_objects = json.load(f)
         assert len(json_objects) == 145
 
-#
-# def test_nrs_json_generator():
-#     """
-#     Test fixture for NRSMetadataGenerator.
-#     Tests the NRSMetadataGenerator class ability to generate metadata for NRS recording files.
-#     One files should be generated in the json directory for the date specified.
-#     :return:
-#     """
-#     log = create_test_logger("test_nrs_metadata_generator")
-#     json_dir = create_json_dir("nrs")
-#
-#     start = datetime(2019, 10, 24, 0, 0, 0)
-#     end = datetime(2019, 10, 24, 0, 0, 0)
-#
-#     generator = NRSMetadataGenerator(
-#         log=log,
-#         uri="gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio",
-#         json_base_dir=json_dir.as_posix(),
-#         prefix=["NRS11"],
-#         start=start,
-#         end=end,
-#         seconds_per_file=14400.0,
-#     )
-#     generator.run()
-#     # There should be one file in the json directory and with number of objects as indicated
-#     json_files = list(json_dir.rglob("*.json"))
-#     assert len(json_files) == 1
-#     json_file = json_dir / "2019/20191024.json"
-#     assert json_file.exists()
-#
-#     # Read the file and check the number of json objects
-#     with open(json_file) as f:
-#         json_objects = json.load(f)
-#         assert len(json_objects) == 7
+
+def test_nrs_json_generator():
+    """
+    Test fixture for NRSMetadataGenerator.
+    Tests the NRSMetadataGenerator class ability to generate metadata for NRS recording files.
+    One files should be generated in the json directory for the date specified.
+    :return:
+    """
+    log = create_test_logger("test_nrs_metadata_generator")
+    json_dir = create_json_dir("nrs")
+
+    start = datetime(2019, 10, 24, 0, 0, 0)
+    end = datetime(2019, 10, 24, 0, 0, 0)
+
+    generator = NRSMetadataGenerator(
+        log=log,
+        uri="gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio",
+        json_base_dir=json_dir.as_posix(),
+        prefix=["NRS11"],
+        start=start,
+        end=end,
+        seconds_per_file=14400.0,
+    )
+    generator.run()
+    # There should be one file in the json directory and with number of objects as indicated
+    json_files = list(json_dir.rglob("*.json"))
+    assert len(json_files) == 1
+    json_file = json_dir / "2019/20191024.json"
+    assert json_file.exists()
+
+    # Read the file and check the number of json objects
+    with open(json_file) as f:
+        json_objects = json.load(f)
+        assert len(json_objects) == 7

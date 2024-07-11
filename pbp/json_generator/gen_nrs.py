@@ -1,4 +1,4 @@
-# pypam-based-processing, Apache License 2.0
+# pbp, Apache License 2.0
 # Filename: metadata/generator/gen_nrs.py
 # Description:  Captures NRS flac metadata in a pandas dataframe from either a local directory or gs bucket.
 
@@ -48,13 +48,13 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
         super().__init__(log, uri, json_base_dir, prefix, start, end, seconds_per_file)
 
     def run(self):
-        log.info(f"Generating metadata for {self.start} to {self.end}...")
+        self.log.info(f"Generating metadata for {self.start} to {self.end}...")
 
         bucket, prefix, scheme = parse_s3_or_gcp_url(self.audio_loc)
 
         # S3 is not supported for NRS
         if scheme == "s3":
-            log.error("S3 is not supported for NRS audio files")
+            self.log.error("S3 is not supported for NRS audio files")
             return
 
         def parse_filename(f: str) -> datetime:
@@ -87,26 +87,22 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                         f_path_dt = datetime.strptime(f_parts, "%Y%m%d%H%M%S")
                         return f_path_dt
                     except ValueError:
-                        log.error(f"Could not parse {f_path.name}")
+                        self.log.error(f"Could not parse {f_path.name}")
                         return None
 
             return f_flac_dt
 
         flac_files = []
         self.df = None
-        log.info(
+        self.log.info(
             f"Searching in {self.audio_loc}/ for files that match the search pattern {self.prefix}* ..."
         )
 
         # set the window to 1 flac file to account for any missing data
         minutes_window = int(self.seconds_per_file / 60)
 
-        # set the start and end dates to 1 hour before and after the start and end dates
-        start_dt = (
-            self.start
-            - timedelta(minutes=minutes_window)
-            - timedelta(minutes=minutes_window)
-        )
+        # pad the start and end dates to account for any missing data
+        start_dt = self.start - timedelta(minutes=minutes_window)
         end_dt = self.end + timedelta(days=1)
 
         if scheme == "file" or scheme == "":
@@ -116,7 +112,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             ):
                 flac_dt = parse_filename(filename)
                 if start_dt <= flac_dt <= end_dt:
-                    log.info(f"Found file {filename} with timestamp {flac_dt}")
+                    self.log.info(f"Found file {filename} with timestamp {flac_dt}")
                     flac_files.append(FlacFile(filename, flac_dt))
         if scheme == "gs":
             client = storage.Client.create_anonymous_client()
@@ -126,20 +122,20 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             # data is organized in a flat filesystem, so there are no optimizations here for querying
             blobs = bucket_obj.list_blobs(prefix=prefix)
             for i, blob in enumerate(blobs):
-                log.info(f"Processing {blob.name}")
+                self.log.info(f"Processing {blob.name}")
                 f_path = f"gs://{bucket}/{blob.name}"
                 flac_dt = parse_filename(f_path)
                 if start_dt <= flac_dt <= end_dt:
-                    log.info(f"Found file {blob.name} with timestamp {flac_dt}")
+                    self.log.info(f"Found file {blob.name} with timestamp {flac_dt}")
                     flac_files.append(FlacFile(f_path, flac_dt))
                 # delay to avoid 400 error
                 if i % 100 == 0:
-                    log.info(f"{i} files processed")
+                    self.log.info(f"{i} files processed")
                     time.sleep(1)
                 if flac_dt > end_dt:
                     break
 
-        log.info(
+        self.log.info(
             f"Found {len(flac_files)} files to process that cover the period {start_dt} - {end_dt}"
         )
 
@@ -176,7 +172,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                 corrector.run()
 
             except Exception as ex:
-                log.exception(str(ex))
+                self.log.exception(str(ex))
 
 
 if __name__ == "__main__":

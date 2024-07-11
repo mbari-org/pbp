@@ -1,4 +1,4 @@
-# pypam-based-processing
+# pbp, Apache License 2.0
 # Filename: json_generator/gen_soundtrap.py
 # Description:  Captures SoundTrap metadata either from a local directory of S3 bucket
 from typing import List
@@ -124,7 +124,9 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
 
                         if ".xml" in key and get_file_date(key):
                             xml_path = xml_cache_path / key
-                            wav_uri = f"s3://{bucket}/{key}".replace("self.log.xml", "wav")
+                            wav_uri = f"s3://{bucket}/{key}".replace(
+                                "self.log.xml", "wav"
+                            )
 
                             # Check if the xml file is in the cache directory
                             if not xml_path.exists():
@@ -175,7 +177,12 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                 day_start = self.start + timedelta(days=day)
                 self.log.debug(f"Running metadata corrector for {day_start}")
                 corrector = MetadataCorrector(
-                    self.log, self.df, self.json_base_dir, day_start, InstrumentType.NRS, False
+                    self.log,
+                    self.df,
+                    self.json_base_dir,
+                    day_start,
+                    InstrumentType.NRS,
+                    False,
                 )
                 corrector.run()
 

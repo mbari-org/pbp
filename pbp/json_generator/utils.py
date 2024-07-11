@@ -1,3 +1,6 @@
+# pbp, Apache License 2.0
+# Filename: json_generator/utils.py
+# Description:  Utility functions for parsing S3, GS or local file urls and defining sound instrument types for metadata generation
 from typing import Tuple
 from urllib.parse import urlparse
 
