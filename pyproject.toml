@@ -38,6 +38,7 @@ pvlib = "0.10.3"
 Pyarrow = "15.0.0"
 loguru = {extras = ["mypy"], version = "^0.7.2"}
 loguru-mypy = "^0.0.4"
+awscli = "^1.33.20"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.8.0"

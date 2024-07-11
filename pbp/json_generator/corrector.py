@@ -1,10 +1,9 @@
-# pypam-based-processing, Apache License 2.0
+# pbp, Apache License 2.0
 # Filename: metadata/utils/corrector.py
 # Description: Correct metadata for wav files and saves the results to a json file.
 
 import datetime
 from datetime import timedelta
-from loguru import logger as log
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -12,122 +11,121 @@ import shutil
 import tempfile
 import json
 
+from pbp.json_generator.utils import InstrumentType
+
 
 class MetadataCorrector:
     def __init__(
         self,
-        correct_df: pd.DataFrame,
+        log,  # : loguru.Logger,
+        raw_df: pd.DataFrame,
         json_path_out: str,
         day: datetime,
-        variable_duration: bool = False,
+        instrument_type: InstrumentType,
+        time_correct: bool = False,
         seconds_per_file: float = -1,
     ):
         """
         Correct the metadata for a day and save to a json file
-        :param correct_df:
-            The dataframe containing the metadata to correct
+        :param raw_df:
+            The dataframe containing the raw metadata to correct
         :param json_path_out:
             The path to save the corrected metadata json file
         :param day:
             The day to correct
-        :param variable_duration:
-            True if the files vary in duration
+        :param instrument_type:
+            The type of instrument the metadata is coming from: NRS, ICLISTEN, SOUNDTRAP
+        :param time_correct:
+            True if need to adjust the time stamp based only supported for ICLISTEN
         :param seconds_per_file:
-            The number of seconds in each file; not used for sound trap files
+            (optional) number of seconds in each file
         """
-        self.correct_df = correct_df
+        self.instrument_type = instrument_type
+        self.raw_df = raw_df
         self.json_base_dir = json_path_out
         self.day = day
-        self.variable_duration = variable_duration
+        self.log = log
+        self.time_correct = time_correct
         self.seconds_per_file = seconds_per_file
+        self.files_per_day = None
+        # Must have seconds per file for ICLISTEN to correct for drift conditional check
+        if self.instrument_type == InstrumentType.ICLISTEN:
+            if self.seconds_per_file == -1:
+                self.log.exception("No seconds per file provided for ICLISTEN")
+                return
+            self.files_per_day = int(86400 / self.seconds_per_file)
+            self.log.debug(
+                f"Metadata corrector for {self.instrument_type} with {self.seconds_per_file} seconds per file"
+            )
 
     def run(self):
         """Run the corrector"""
 
         try:
-            if self.variable_duration:
-                files_per_day = None
-                # Filter the metadata to the day, starting 6 hours before the day starts to capture overlap
-                df = self.correct_df[
-                    (self.correct_df["start"] >= self.day - timedelta(hours=6))
-                    & (self.correct_df["start"] < self.day + timedelta(days=1))
-                ]
-            else:  # files are fixed, but may be missing or incomplete if the system was down
-                files_per_day = int(86400 / self.seconds_per_file)
-                # Filter the metadata to the day, starting 1 file before the day starts to capture overlap
-                df = self.correct_df[
-                    (
-                        (self.correct_df["start"] >= self.day)
-                        & (self.correct_df["start"] < self.day + timedelta(days=1))
-                    )
-                    | (
-                        (self.correct_df["end"] >= self.day)
-                        & (self.correct_df["start"] < self.day)
-                    )
-                ]
+            # Filter the metadata to the day capturing the files both immediately
+            # before and after the day
+            next_day = self.day + timedelta(days=1)
+            day_df = self.raw_df[
+                ((self.raw_df["start"] >= self.day) & (self.raw_df["end"] <= next_day))
+                | ((self.raw_df["end"] >= self.day) & (self.raw_df["start"] < self.day))
+                | ((self.raw_df["end"] > next_day) & (self.raw_df["start"] >= self.day))
+            ]
 
-            log.debug(f"Creating metadata for day {self.day}")
+            self.log.debug(
+                f"Creating metadata for day {self.day} from {len(day_df)} files..."
+            )
 
-            if len(df) == 0:
-                log.warning(f"No metadata found for day {self.day}")
+            if len(day_df) == 0:
+                self.log.warning(f"No metadata found for day {self.day}")
                 return
 
             # convert the start and end times to datetime
-            df = df.copy()
-
-            df["start"] = pd.to_datetime(df["start"])
-            df["end"] = pd.to_datetime(df["end"])
+            day_df = day_df.copy()
+            day_df["start"] = pd.to_datetime(day_df["start"])
+            day_df["end"] = pd.to_datetime(day_df["end"])
 
             # get the file list that covers the requested day
-            log.info(
-                f'Found {len(df)} files from day {self.day}, starting {df.iloc[0]["start"]} ending {df.iloc[-1]["end"]}'
+            self.log.info(
+                f'Found {len(day_df)} files from day {self.day}, starting {day_df.iloc[0]["start"]} ending {day_df.iloc[-1]["end"]}'
             )
 
             # if there are no files, then return
-            if len(df) == 0:
-                log.warning(f"No files found for {self.day}")
+            if len(day_df) == 0:
+                self.log.warning(f"No files found for {self.day}")
                 return
 
-            day_process = df
-
-            if self.variable_duration:
-                log.info(f"Files for {self.day} are variable. Skipping duration check")
-                for index, row in day_process.iterrows():
-                    log.debug(f'File {row["uri"]} duration {row["duration_secs"]} ')
-            else:
-                for index, row in day_process.iterrows():
-                    # if the duration_secs is not seconds per file, then the file is not complete
-                    if row["duration_secs"] != self.seconds_per_file:
-                        log.warning(
-                            f'File {row["duration_secs"]}  != {self.seconds_per_file}. File is not complete'
-                        )
-                        continue
+            for index, row in day_df.iterrows():
+                self.log.debug(f'File {row["uri"]} duration {row["duration_secs"]} ')
+                if (
+                    self.seconds_per_file > 0
+                    and row["duration_secs"] != self.seconds_per_file
+                ):
+                    self.log.warning(
+                        f'File {row["duration_secs"]}  != {self.seconds_per_file}. File is not complete'
+                    )
 
             # check whether there is a discrepancy between the number of seconds in the file and the number
             # of seconds in the metadata. If there is a discrepancy, then correct the metadata
             # This is only reliable for full days of data contained in complete files for IcListen data
-            day_process["jitter_secs"] = 0
+            day_df["jitter_secs"] = 0
 
-            if self.variable_duration or (
-                len(day_process) == files_per_day + 1
-                and len(day_process["duration_secs"].unique()) == 1
-                and day_process.iloc[0]["duration_secs"] == self.seconds_per_file
+            if self.instrument_type == InstrumentType.ICLISTEN and (
+                len(day_df) == self.files_per_day + 1
+                and len(day_df["duration_secs"].unique()) == 1
+                and day_df.iloc[0]["duration_secs"] == self.seconds_per_file
             ):
                 # check whether the differences are all the same
-                if (
-                    len(day_process["start"].diff().unique()) == 1
-                    or self.variable_duration
-                ):
-                    log.warning(f"No drift for {self.day}")
+                if len(day_df["start"].diff().unique()) == 1 or self.time_correct:
+                    self.log.warning(f"No drift for {self.day}")
                 else:
-                    log.info(f"Correcting drift for {self.day}")
+                    self.log.info(f"Correcting drift for {self.day}")
 
                     # correct the metadata
                     jitter = 0
-                    start = day_process.iloc[0]["start"]
+                    start = day_df.iloc[0]["start"]
                     end = start + timedelta(seconds=self.seconds_per_file)
 
-                    for index, row in day_process.iterrows():
+                    for index, row in day_df.iterrows():
                         # jitter is the difference between the expected start time and the actual start time
                         # jitter is 0 for the first file
                         if row.start == start:
@@ -136,11 +134,11 @@ class MetadataCorrector:
                             jitter = int(jitter / np.timedelta64(1, "s"))
 
                         # correct the start and end times
-                        day_process.loc[index, "start"] = start
-                        day_process.loc[index, "end"] = end
-                        day_process.loc[index, "jitter_secs"] = jitter
+                        day_df.loc[index, "start"] = start
+                        day_df.loc[index, "end"] = end
+                        day_df.loc[index, "jitter_secs"] = jitter
 
-                        if self.variable_duration:
+                        if self.time_correct:
                             end = row.end
                         else:
                             end = start + timedelta(seconds=self.seconds_per_file)
@@ -149,85 +147,77 @@ class MetadataCorrector:
                         # set the times for the next files
                         start = end
             else:
-                day_process = self.no_jitter(self.day, day_process)
+                day_df = self.no_jitter(self.day, day_df)
 
             # drop any rows with duplicate uri times, keeping the first
             # duplicates can be caused by the jitter correction
-            if "uri" in day_process.columns:
-                day_process = day_process.drop_duplicates(subset=["uri"], keep="first")
-            if "url" in day_process.columns:
-                day_process = day_process.drop_duplicates(subset=["url"], keep="first")
+            if "uri" in day_df.columns:
+                day_df = day_df.drop_duplicates(subset=["uri"], keep="first")
 
             # save explicitly as UTC by setting the timezone in the start and end times
-            day_process["start"] = day_process["start"].dt.tz_localize("UTC")
-            # Note: as day_process["end"] coming from upstream seems to become incorrect
-            # (except for the first entry in the JSON), that is, with `end` becoming equal to `start`,
-            # directly assigning it here based on day_process["start"]:
-            day_process["end"] = day_process["start"] + timedelta(
-                seconds=self.seconds_per_file
-            )
-            # TODO(Danelle): review/confirm the above.
+            day_df["start"] = day_df["start"].dt.tz_localize("UTC")
+            day_df["end"] = day_df["end"].dt.tz_localize("UTC")
 
-            self.save_day(self.day, day_process)
+            self.save_day(self.day, day_df)
 
         except Exception as e:
-            log.exception(f"Error correcting metadata for  {self.day}. {e}")
+            self.log.exception(f"Error correcting metadata for  {self.day}. {e}")
         finally:
-            log.debug(
+            self.log.debug(
                 f"Done correcting metadata for {self.day}. Saved to {self.json_base_dir}"
             )
 
-    def no_jitter(self, day: datetime, day_process: pd.DataFrame) -> pd.DataFrame:
+    def no_jitter(self, day: datetime, day_df: pd.DataFrame) -> pd.DataFrame:
         """
         Set the jitter to 0 and calculate the end time from the start time and the duration
         :param day:
             The day being processed
-        :param day_process:
+        :param day_df:
             The dataframe to correct
         :return:
             The corrected dataframe
         """
-        log.warning(
+        self.log.warning(
             f"Cannot correct {self.day}. Using file start times as is, setting jitter to 0 and using "
             f"calculated end times."
         )
         # calculate the difference between each row start time and save as diff in a copy of the dataframe
-        day_process = day_process.copy()
-        day_process["diff"] = day_process["start"].diff()
-        day_process["jitter_secs"] = 0
+        day_df = day_df.copy()
+        day_df["diff"] = day_df["start"].diff()
+        day_df["jitter_secs"] = 0
         # calculate the end time which is the start time plus the number of seconds in the file
-        day_process["end"] = day_process["start"] + pd.to_timedelta(
-            day_process["duration_secs"], unit="s"
+        day_df["end"] = day_df["start"] + pd.to_timedelta(
+            day_df["duration_secs"], unit="s"
         )
-        return day_process
+        return day_df
 
-    def save_day(self, day: datetime, day_process: pd.DataFrame, prefix: str = None):
+    def save_day(self, day: datetime, day_df: pd.DataFrame, prefix: str = None):
         """
         Save the day's metadata to a single json file either locally or to s3
         :param day:
             The day to save
-        :param day_process:
+        :param day_df:
             The dataframe containing the metadata for the day
         :param prefix:
             An optional prefix for the filename
         :return:
         """
         # if the exception column is empty, then drop it
-        if day_process["exception"].isnull().all():
-            day_process.drop(columns=["exception"], inplace=True)
+        if day_df["exception"].isnull().all():
+            day_df.drop(columns=["exception"], inplace=True)
         else:
             # replace the NaN with an empty string
-            day_process["exception"].fillna("", inplace=True)
+            day_df["exception"].fillna("", inplace=True)
 
         # drop the pcm, fs, subtype, etc. columns
-        day_process.drop(columns=["fs", "subtype", "jitter_secs"], inplace=True)
+        day_df.drop(columns=["fs", "subtype", "jitter_secs"], inplace=True)
 
         # if there is a diff column, then drop it
-        if "diff" in day_process.columns:
-            day_process.drop(columns=["diff"], inplace=True)
+        if "diff" in day_df.columns:
+            day_df.drop(columns=["diff"], inplace=True)
 
         # Save with second accuracy to a temporary file formatted with ISO date format
-        df_final = day_process.sort_values(by=["start"])
+        df_final = day_df.sort_values(by=["start"])
 
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_path = Path(tmpdir)
@@ -242,7 +232,7 @@ class MetadataCorrector:
                 date_format="iso",
                 date_unit="s",
             )
-            log.debug(f"Wrote {temp_metadata.as_posix()}")
+            self.log.debug(f"Wrote {temp_metadata.as_posix()}")
 
             # read the file back in using records format with json
             with open(temp_metadata.as_posix(), "r") as f:
@@ -256,4 +246,4 @@ class MetadataCorrector:
             output_path = Path(self.json_base_dir, str(day.year))
             output_path.mkdir(parents=True, exist_ok=True)
             shutil.copy2(temp_metadata.as_posix(), output_path)
-            log.info(f"Wrote {output_path}/{temp_metadata.name}")
+            self.log.info(f"Wrote {output_path}/{temp_metadata.name}")

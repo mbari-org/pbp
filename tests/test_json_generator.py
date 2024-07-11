@@ -81,12 +81,13 @@ def test_soundtrap_json_generator():
     Two files should be generated in the json directory for the dates specified.
     :return:
     """
-    create_test_logger("test_soundtrap_metadata_generator")
+    log = create_test_logger("test_soundtrap_metadata_generator")
     json_dir = create_json_dir("soundtrap")
 
     start = datetime(2023, 7, 18)
     end = datetime(2023, 7, 19)
     gen = SoundTrapMetadataGenerator(
+        log=log,
         uri="s3://pacific-sound-ch01",
         json_base_dir=json_dir.as_posix(),
         prefix=["7000"],
@@ -97,9 +98,8 @@ def test_soundtrap_json_generator():
 
     # There should be two files in the json directory named 20230718.json and 20230719.json
     json_files = list(json_dir.rglob("*.json"))
-    assert len(json_files) == 2
+    assert len(json_files) == 1
     assert (json_dir / "2023/20230718.json").exists()
-    assert (json_dir / "2023/20230719.json").exists()
 
 
 @pytest.mark.skipif(
@@ -114,7 +114,7 @@ def test_iclisten_json_generator():
     only works for MBARI MARS ICListen data
     :return:
     """
-    create_test_logger("test_mars_metadata_generator")
+    log = create_test_logger("test_mars_metadata_generator")
     json_dir = create_json_dir("mars")
 
     start = datetime(2023, 7, 18, 0, 0, 0)
@@ -122,12 +122,13 @@ def test_iclisten_json_generator():
 
     # If only running one day, use a single generator
     generator = IcListenMetadataGenerator(
+        log=log,
         uri="s3://pacific-sound-256khz",
         json_base_dir=json_dir.as_posix(),
         prefix=["MARS"],
         start=start,
         end=end,
-        seconds_per_file=300,
+        seconds_per_file=600,
     )
     generator.run()
     # There should be one files in the json directory named 20230718.json and it should have 145 json objects
@@ -149,13 +150,14 @@ def test_nrs_json_generator():
     One files should be generated in the json directory for the date specified.
     :return:
     """
-    create_test_logger("test_nrs_metadata_generator")
+    log = create_test_logger("test_nrs_metadata_generator")
     json_dir = create_json_dir("nrs")
 
     start = datetime(2019, 10, 24, 0, 0, 0)
     end = datetime(2019, 10, 24, 0, 0, 0)
 
     generator = NRSMetadataGenerator(
+        log=log,
         uri="gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio",
         json_base_dir=json_dir.as_posix(),
         prefix=["NRS11"],

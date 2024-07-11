@@ -1,4 +1,4 @@
-# pypam-based-processing
+# pbp, Apache License 2.0
 # Filename: metadata/generator/gen_abstract.py
 # Description:  Abstract class that captures sound wav metadata
 from datetime import datetime
@@ -10,6 +10,7 @@ import pandas as pd
 class MetadataGeneratorAbstract(object):
     def __init__(
         self,
+        log,  # : loguru.Logger,
         audio_loc: str,
         json_base_dir: str,
         prefix: List[str],
@@ -41,6 +42,7 @@ class MetadataGeneratorAbstract(object):
             self.start = start
             self.end = end
             self.prefix = prefix
+            self._log = log
             self._seconds_per_file = None if seconds_per_file == 0 else seconds_per_file
         except Exception as e:
             raise e
@@ -50,8 +52,8 @@ class MetadataGeneratorAbstract(object):
         return self._seconds_per_file
 
     @property
-    def correct_df(self):
-        return self.df
+    def log(self):
+        return self._log
 
     # abstract run method
     def run(self):

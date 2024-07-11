@@ -35,6 +35,7 @@ def main():
     try:
         if opts.recorder == "NRS":
             generator = NRSMetadataGenerator(
+                log=log,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
                 prefix=opts.prefix,
@@ -44,6 +45,7 @@ def main():
             generator.run()
         if opts.recorder == "ICLISTEN":
             generator = IcListenMetadataGenerator(
+                log=log,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
                 prefix=opts.prefix,
@@ -54,6 +56,7 @@ def main():
             # TODO: add multiprocessing here for speed-up
         if opts.recorder == "SOUNDTRAP":
             generator = SoundTrapMetadataGenerator(
+                log=log,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
                 prefix=opts.prefix,

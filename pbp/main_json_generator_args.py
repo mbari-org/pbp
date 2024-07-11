@@ -1,6 +1,7 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 from pbp import get_pbp_version
+from pbp.json_generator.utils import InstrumentType
 
 
 def parse_arguments():
@@ -29,11 +30,6 @@ Examples:
         action="version",
         version=get_pbp_version(),
     )
-
-    class InstrumentType:
-        NRS = "NRS"
-        ICLISTEN = "ICLISTEN"
-        SOUNDTRAP = "SOUNDTRAP"
 
     parser.add_argument(
         "--recorder",

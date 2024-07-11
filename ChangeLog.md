@@ -33,6 +33,13 @@
 - added this ChangeLog.
 
 
+2024-07
+
+- Fixed the issue with the  migration to `loguru` which broke the json generation code
+- Added missing logic to capture a file overlapping the end day boundary which was lost in code changes in April 2024
+- Fixed the ending time calculation for ICListen wav files which was incorrectly being set to the start time of the same file 
+- Other minor renames and code cleanup for clarity in the json generation code
+
 ----
 
 See git commit history for details.
