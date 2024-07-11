@@ -57,7 +57,7 @@ class AudioFile:
         else:
             df = pd.DataFrame(
                 {
-                    "url": "file://" + self.path_or_url,
+                    "uri": "file://" + self.path_or_url,
                     "start": self.start,
                     "end": self.end,
                     "fs": self.fs,

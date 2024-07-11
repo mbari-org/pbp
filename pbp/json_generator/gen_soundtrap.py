@@ -1,6 +1,7 @@
 # pbp, Apache License 2.0
 # Filename: json_generator/gen_soundtrap.py
 # Description:  Captures SoundTrap metadata either from a local directory of S3 bucket
+import urllib
 from typing import List
 
 import boto3
@@ -11,6 +12,7 @@ import pytz
 
 from datetime import timedelta
 from pathlib import Path
+
 from progressbar import progressbar
 
 from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
@@ -82,10 +84,19 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
 
                     if rc and rc.group(0):
                         try:
-                            # If a SoundTrap file, then the date is in the filename XXXX.YYYYMMDDHHMMSS.xml
-                            f_path_dt = datetime.datetime.strptime(
-                                xml_file.stem.split(".")[1], "%y%m%d%H%M%S"
-                            )
+                            pattern_date1 = re.compile(
+                                r"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})"
+                            )  # 20161025T184500Z
+                            if pattern_date1.search(xml_file.stem):
+                                match = pattern_date1.search(xml_file.stem).groups()
+                                year, month, day, hour, minute, second = map(int, match)
+                                f_path_dt = datetime.datetime(
+                                    year, month, day, hour, minute, second
+                                )
+                            else:
+                                f_path_dt = datetime.datetime.strptime(
+                                    xml_file.stem.split(".")[1], "%y%m%d%H%M%S"
+                                )
                             if self.start <= f_path_dt <= self.end:
                                 return f_path_dt
                         except ValueError:
@@ -93,7 +104,8 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                 return None
 
             if scheme == "file":
-                wav_path = Path(self.audio_loc)
+                parsed_uri = urllib.parse.urlparse(self.audio_loc)
+                wav_path = Path(parsed_uri.path)
                 for filename in progressbar(
                     sorted(wav_path.rglob("*.xml")), prefix="Searching : "
                 ):

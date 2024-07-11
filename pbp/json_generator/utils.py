@@ -20,4 +20,7 @@ def parse_s3_or_gcp_url(url) -> Tuple[str, str, str]:
     parsed_url = urlparse(url)
     bucket = parsed_url.netloc
     prefix = parsed_url.path.lstrip("/")
+    if parsed_url.scheme == "file":
+        bucket = ""
+        prefix = parsed_url.path
     return bucket, prefix, parsed_url.scheme
