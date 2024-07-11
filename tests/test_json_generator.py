@@ -65,7 +65,7 @@ def get_aws_account() -> Union[str, None]:
 
 
 # Check if an AWS account is configured by checking if it can access the model with the default credentials
-AWS_AVAILABLE = True
+AWS_AVAILABLE = False
 if get_aws_account():
     AWS_AVAILABLE = True
 
