@@ -169,7 +169,7 @@ class IcListenWavFile(AudioFile):
                     # header which is 44 bytes. Round the duration to the nearest second since the recording is
                     # always in 1 second increments
                     self.duration_secs = round(content_length - 44) / bytes_per_sec
-                    warning(self.exception)
+                    self.log.warning(self.exception)
             else:
                 info = sf.info(path_or_url)
                 self.duration_secs = info.duration
@@ -182,7 +182,7 @@ class IcListenWavFile(AudioFile):
             self.channels = info.channels
             self.subtype = info.subtype if info.subtype else ""
         except Exception as ex:
-            exception(f"Corrupt file {path_or_url}. {ex}")
+            self.log.exception(f"Corrupt file {path_or_url}. {ex}")
 
 
 class FlacFile(AudioFile):
@@ -247,4 +247,4 @@ class FlacFile(AudioFile):
                 self.channels = info.channels
                 self.subtype = info.subtype if info.subtype else ""
         except Exception as ex:
-            exception(f"Corrupt file {path_or_url}. {ex}")
+            self.log.exception(f"Corrupt file {path_or_url}. {ex}")
