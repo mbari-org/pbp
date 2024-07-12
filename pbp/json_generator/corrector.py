@@ -189,7 +189,7 @@ class MetadataCorrector:
         )
         return day_df
 
-    def save_day(self, day: datetime.datetime, day_df: pd.DataFrame, prefix: str):
+    def save_day(self, day: datetime.datetime, day_df: pd.DataFrame, prefix: str = ""):
         """
         Save the day's metadata to a single json file either locally or to s3
         :param day:
@@ -200,12 +200,9 @@ class MetadataCorrector:
             An optional prefix for the filename
         :return:
         """
-        # if the exception column is empty, then drop it
-        if day_df["exception"].isnull().all():
+        # if the exception column is full of empty strings, then drop it
+        if "exception" in day_df.columns and day_df["exception"].str.len().sum() == 0:
             day_df.drop(columns=["exception"], inplace=True)
-        else:
-            # replace the NaN with an empty string
-            day_df["exception"].fillna("", inplace=True)
 
         # drop the pcm, fs, subtype, etc. columns
         day_df.drop(columns=["fs", "subtype", "jitter_secs"], inplace=True)
