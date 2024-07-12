@@ -123,8 +123,8 @@ class SoundTrapWavFile(AudioFile):
         self.exception = np.nan  # no exceptions for SoundTrap  files
 
 
-class IcListenWavFile(AudioFile):
-    """IcListenWavFile uses the metadata from the wav file itself,
+class GenericWavFile(AudioFile):
+    """GenericWavFile uses the metadata from the wav file itself,
     but only grabs the needed metadata from the header in S3"""
 
     def __init__(self, log, path_or_url: str, start: datetime):
@@ -187,8 +187,9 @@ class FlacFile(AudioFile):
     """FlacFile uses the metadata from the flac file itself,
     but only grabs the needed metadata from the header in gs or local file system."""
 
-    def __init__(self, path_or_url: str, start: datetime):
+    def __init__(self, log, path_or_url: str, start: datetime):
         super().__init__(path_or_url, start)
+        self.log = log
         self.path_or_url = path_or_url
         self.start = start
         self.end: Optional[datetime] = None

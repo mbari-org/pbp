@@ -1,6 +1,6 @@
 # pbp, Apache License 2.0
 # Filename: metadata/generator/gen_nrs.py
-# Description:  Captures NRS flac metadata in a pandas dataframe from either a local directory or gs bucket.
+# Description:  Captures NRS recorded metadata in a pandas dataframe from either a local directory or gs bucket.
 
 import re
 from datetime import timedelta, datetime
@@ -13,7 +13,7 @@ import pandas as pd
 from pathlib import Path
 from progressbar import progressbar
 from pbp.json_generator.corrector import MetadataCorrector
-from pbp.json_generator.metadata_extractor import FlacFile
+from pbp.json_generator.metadata_extractor import FlacFile, GenericWavFile as WavFile
 from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
 from pbp.json_generator.utils import parse_s3_or_gcp_url, InstrumentType
 
@@ -42,7 +42,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
         :param prefix:
             The search pattern to match the flac files, e.g. 'MARS' for MARS_YYYYMMDD_HHMMSS.flac
         :param seconds_per_file:
-            The number of seconds per file expected in a flac file to check for missing data. If 0, then no check is done.
+            The number of seconds per file expected in a flac/wav file to check for missing data. If 0, then no check is done.
         :return:
         """
         super().__init__(log, uri, json_base_dir, prefix, start, end, seconds_per_file)
@@ -65,7 +65,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             :return: The beginning recording time of the file
             """
             f_path = Path(f)
-            f_flac_dt = None
+            f_path_dt = None
 
             for s in self.prefix:
                 # see if the file is a regexp match to search
@@ -73,26 +73,26 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
 
                 if rc and rc.group(0):
                     try:
-                        # files are in the format NRS11_20191231_230836.flac'
-                        # extract the timestamp from the file name into the format YYYYMMDDHHMMSS
-                        f_parts = f_path.stem.split("_")
-                        # If the last two digits of the timestamp are 60, subtract 1 second
-                        if f_parts[2][-2:] == "60":
-                            f_parts = f_parts[1] + f_parts[2]
-                            # Make the last two digits 59
-                            f_parts = f_parts[:-2] + "59"
+                        pattern_date = re.compile(
+                            r"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})"
+                        )  # 20191231_230836
+                        if pattern_date.search(f_path.stem):
+                            match = pattern_date.search(f_path.stem).groups()
+                            year, month, day, hour, minute, second = map(int, match)
+                            if second == 60:  # this is a bug in the flac files names
+                                second = 59
+                            f_path_dt = datetime(year, month, day, hour, minute, second)
+                            return f_path_dt
                         else:
-                            f_parts = f_parts[1] + f_parts[2]
-
-                        f_path_dt = datetime.strptime(f_parts, "%Y%m%d%H%M%S")
-                        return f_path_dt
+                            self.log.error(f"Could not parse {f_path.name}")
+                            return None
                     except ValueError:
                         self.log.error(f"Could not parse {f_path.name}")
                         return None
 
-            return f_flac_dt
+            return f_path_dt
 
-        flac_files = []
+        sound_files = []
         self.df = None
         self.log.info(
             f"Searching in {self.audio_loc}/ for files that match the search pattern {self.prefix}* ..."
@@ -106,14 +106,24 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
         end_dt = self.end + timedelta(days=1)
 
         if scheme == "file" or scheme == "":
-            flac_path = Path(f"/{bucket}/{prefix}")
+            sound_path = Path(f"/{bucket}/{prefix}")
+            # First search for flac files
             for filename in progressbar(
-                sorted(flac_path.rglob("*.flac")), prefix="Searching : "
+                sorted(sound_path.rglob("*.flac")), prefix="Searching : "
             ):
                 flac_dt = parse_filename(filename)
                 if start_dt <= flac_dt <= end_dt:
                     self.log.info(f"Found file {filename} with timestamp {flac_dt}")
-                    flac_files.append(FlacFile(filename, flac_dt))
+                    sound_files.append(FlacFile(self.log, str(filename), flac_dt))
+            # Next search for wav files
+            for filename in progressbar(
+                sorted(sound_path.rglob("*.wav")), prefix="Searching : "
+            ):
+                wav_dt = parse_filename(filename)
+                if start_dt <= wav_dt <= end_dt:
+                    self.log.info(f"Found file {filename} with timestamp {wav_dt}")
+                    sound_files.append(WavFile(self.log, str(filename), wav_dt))
+
         if scheme == "gs":
             client = storage.Client.create_anonymous_client()
             bucket_obj = client.get_bucket(bucket)
@@ -124,27 +134,27 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             for i, blob in enumerate(blobs):
                 self.log.info(f"Processing {blob.name}")
                 f_path = f"gs://{bucket}/{blob.name}"
-                flac_dt = parse_filename(f_path)
-                if start_dt <= flac_dt <= end_dt:
-                    self.log.info(f"Found file {blob.name} with timestamp {flac_dt}")
-                    flac_files.append(FlacFile(f_path, flac_dt))
+                f_dt = parse_filename(f_path)
+                if start_dt <= f_dt <= end_dt:
+                    self.log.info(f"Found file {blob.name} with timestamp {f_dt}")
+                    sound_files.append(FlacFile(self.log, f_path, f_dt))
                 # delay to avoid 400 error
                 if i % 100 == 0:
                     self.log.info(f"{i} files processed")
                     time.sleep(1)
-                if flac_dt > end_dt:
+                if f_dt > end_dt:
                     break
 
         self.log.info(
-            f"Found {len(flac_files)} files to process that cover the period {start_dt} - {end_dt}"
+            f"Found {len(sound_files)} files to process that cover the period {start_dt} - {end_dt}"
         )
 
-        if len(flac_files) == 0:
+        if len(sound_files) == 0:
             return
 
         # sort the files by start time
-        flac_files.sort(key=lambda x: x.start)
-        for wc in flac_files:
+        sound_files.sort(key=lambda x: x.start)
+        for wc in sound_files:
             df_flac = wc.to_df()
 
             # concatenate the metadata to the dataframe
@@ -155,8 +165,8 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             try:
                 # create a dataframe from the flac files
                 self.log.info(
-                    f"Creating dataframe from {len(flac_files)} "
-                    f"files spanning {flac_files[0].start} to {flac_files[-1].start} in self.json_base_dir..."
+                    f"Creating dataframe from {len(sound_files)} "
+                    f"files spanning {sound_files[0].start} to {sound_files[-1].start} in self.json_base_dir..."
                 )
 
                 self.log.debug(f" Running metadata corrector for {day}")

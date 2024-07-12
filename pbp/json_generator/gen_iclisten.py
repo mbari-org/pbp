@@ -14,7 +14,7 @@ from pathlib import Path
 from progressbar import progressbar
 import pbp.json_generator.utils as utils
 from pbp.json_generator.corrector import MetadataCorrector
-from pbp.json_generator.metadata_extractor import IcListenWavFile
+from pbp.json_generator.metadata_extractor import GenericWavFile
 from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
 
 
@@ -105,7 +105,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                                         f"{self.log_prefix} Found {f_path.name} to process"
                                     )
                                     wav_files.append(
-                                        IcListenWavFile(self.log, f, f_path_dt)
+                                        GenericWavFile(self.log, f, f_path_dt)
                                     )
                                     f_wav_dt = f_path_dt
                             except ValueError:
