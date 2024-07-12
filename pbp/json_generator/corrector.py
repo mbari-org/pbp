@@ -66,9 +66,9 @@ class MetadataCorrector:
             # before and after the day
             next_day = self.day + timedelta(days=1)
             day_df = self.raw_df[
-                ((self.raw_df["start"] >= self.day) & (self.raw_df["end"] <= next_day))
+                ((self.raw_df["start"] >= self.day) & (self.raw_df["start"] <= next_day))
                 | ((self.raw_df["end"] >= self.day) & (self.raw_df["start"] < self.day))
-                | ((self.raw_df["end"] > next_day) & (self.raw_df["start"] >= self.day))
+                | ((self.raw_df["end"] > next_day) & (self.raw_df["start"] < self.day))
             ]
 
             self.log.debug(
