@@ -20,7 +20,7 @@ class MetadataCorrector:
         log,  # : loguru.Logger,
         raw_df: pd.DataFrame,
         json_path_out: str,
-        day: datetime,
+        day: datetime.datetime,
         instrument_type: InstrumentType,
         time_correct: bool = False,
         seconds_per_file: float = -1,
@@ -147,7 +147,7 @@ class MetadataCorrector:
                         # set the times for the next files
                         start = end
             else:
-                day_df = self.no_jitter(self.day, day_df)
+                day_df = self.no_jitter(day_df)
 
             # drop any rows with duplicate uri times, keeping the first
             # duplicates can be caused by the jitter correction
@@ -167,11 +167,9 @@ class MetadataCorrector:
                 f"Done correcting metadata for {self.day}. Saved to {self.json_base_dir}"
             )
 
-    def no_jitter(self, day: datetime, day_df: pd.DataFrame) -> pd.DataFrame:
+    def no_jitter(self, day_df: pd.DataFrame) -> pd.DataFrame:
         """
         Set the jitter to 0 and calculate the end time from the start time and the duration
-        :param day:
-            The day being processed
         :param day_df:
             The dataframe to correct
         :return:
@@ -191,7 +189,7 @@ class MetadataCorrector:
         )
         return day_df
 
-    def save_day(self, day: datetime, day_df: pd.DataFrame, prefix: str = None):
+    def save_day(self, day: datetime.datetime, day_df: pd.DataFrame, prefix: str):
         """
         Save the day's metadata to a single json file either locally or to s3
         :param day:

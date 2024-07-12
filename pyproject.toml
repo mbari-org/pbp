@@ -54,11 +54,7 @@ show_error_codes = true
 ignore_missing_imports = true
 exclude = [
     'examples/',
-    'pbp/plotting\.py',
-    'pbp/json_generator/metadata.*\.py',
-    'pbp/json_generator/corrector\.py',
-    'pbp/json_generator/gen_soundtrap\.py',
-    'pbp/json_generator/gen_nrs\.py',
+    'pbp/plotting\.py'
 ]
 
 [tool.ruff]

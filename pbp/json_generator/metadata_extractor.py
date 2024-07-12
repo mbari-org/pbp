@@ -5,7 +5,6 @@
 from pathlib import Path
 from typing import Optional
 
-import numpy as np
 from six.moves.urllib.request import urlopen
 import io
 import re
@@ -28,12 +27,12 @@ class AudioFile:
         self.start = start
         self.path_or_url = path_or_url
         self.end: Optional[datetime] = None
-        self.duration_secs = -1
+        self.duration_secs = 0.0
         self.fs = -1
         self.frames = -1
         self.channels = -1
         self.subtype = ""
-        self.exception = np.nan
+        self.exception = ""
 
     def has_exception(self):
         return True if len(self.exception) > 0 else False
@@ -120,7 +119,7 @@ class SoundTrapWavFile(AudioFile):
         self.frames = sample_count
         self.channels = 1
         self.subtype = "SoundTrap"
-        self.exception = np.nan  # no exceptions for SoundTrap  files
+        self.exception = ""  # no exceptions for SoundTrap  files
 
 
 class GenericWavFile(AudioFile):
@@ -132,12 +131,12 @@ class GenericWavFile(AudioFile):
         self.log = log
         self.path_or_url = path_or_url
         self.start = start
-        self.duration_secs = -1
+        self.duration_secs = 0
         self.fs = -1
         self.frames = -1
         self.channels = -1
         self.subtype = ""
-        self.exception = np.nan
+        self.exception = ""
         self.path_or_url = path_or_url
         bytes_per_sec = (
             3 * 256e3
@@ -193,12 +192,12 @@ class FlacFile(AudioFile):
         self.path_or_url = path_or_url
         self.start = start
         self.end: Optional[datetime] = None
-        self.duration_secs = -1
+        self.duration_secs = 0
         self.fs = -1
         self.frames = -1
         self.channels = -1
         self.subtype = ""
-        self.exception = np.nan
+        self.exception = ""
         self.path_or_url = path_or_url
 
         try:
@@ -223,13 +222,13 @@ class FlacFile(AudioFile):
                 # If the last two digits of the timestamp are 60, subtract 1 second
                 # This is a bug in the FlacFile name
                 if f[2][-2:] == "60":
-                    f = f[1] + f[2]
+                    f_c = f[1] + f[2]
                     # Make the last two digits 59
-                    f = f[:-2] + "59"
+                    f_c = f_c[:-2] + "59"
                 else:
-                    f = f[1] + f[2]
+                    f_c = f[1] + f[2]
                 # convert the timestamp to a datetime object
-                timestamp = datetime.strptime(f, "%Y%m%d%H%M%S")
+                timestamp = datetime.strptime(f_c, "%Y%m%d%H%M%S")
                 self.start = timestamp
                 self.end = self.start + timedelta(microseconds=length_microseconds)
                 self.duration_secs = int(length_microseconds / 1e6)

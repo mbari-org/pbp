@@ -57,7 +57,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             self.log.error("S3 is not supported for NRS audio files")
             return
 
-        def parse_filename(f: str) -> datetime:
+        def parse_filename(f: str) -> datetime or None:
             """
             Check if the file matches the search pattern and is within the start and end dates
             :param f:
@@ -76,8 +76,9 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                         pattern_date = re.compile(
                             r"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})"
                         )  # 20191231_230836
-                        if pattern_date.search(f_path.stem):
-                            match = pattern_date.search(f_path.stem).groups()
+                        search = pattern_date.search(f_path.stem)
+                        if search:
+                            match = search.groups()
                             year, month, day, hour, minute, second = map(int, match)
                             if second == 60:  # this is a bug in the flac files names
                                 second = 59
@@ -205,6 +206,7 @@ if __name__ == "__main__":
     end = datetime(2019, 11, 1, 0, 0, 0)
 
     generator = NRSMetadataGenerator(
+        log,
         uri="gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio",
         json_base_dir=json_dir.as_posix(),
         prefix=["NRS11"],

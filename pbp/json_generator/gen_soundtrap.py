@@ -35,8 +35,8 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
         uri: str,
         json_base_dir: str,
         prefix: List[str],
-        start: START,
-        end: END,
+        start: datetime.datetime = START,
+        end: datetime.datetime = END,
     ):
         """
         :param uri:
@@ -77,30 +77,31 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                 :return:
                     Record starting datetime if the file is within the start and end dates; otherwise, return None
                 """
-                xml_file = Path(xml_file)
+                xml_file_path = Path(xml_file)
                 # see if the file is a regexp match to self.prefix
                 for s in self.prefix:
-                    rc = re.search(s, xml_file.stem)
+                    rc = re.search(s, xml_file_path.stem)
 
                     if rc and rc.group(0):
                         try:
                             pattern_date1 = re.compile(
                                 r"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})"
                             )  # 20161025T184500Z
-                            if pattern_date1.search(xml_file.stem):
-                                match = pattern_date1.search(xml_file.stem).groups()
+                            search = pattern_date1.search(xml_file_path.stem)
+                            if search:
+                                match = search.groups()
                                 year, month, day, hour, minute, second = map(int, match)
                                 f_path_dt = datetime.datetime(
                                     year, month, day, hour, minute, second
                                 )
                             else:
                                 f_path_dt = datetime.datetime.strptime(
-                                    xml_file.stem.split(".")[1], "%y%m%d%H%M%S"
+                                    xml_file_path.stem.split(".")[1], "%y%m%d%H%M%S"
                                 )
                             if self.start <= f_path_dt <= self.end:
                                 return f_path_dt
                         except ValueError:
-                            self.log.error(f"Could not parse {xml_file.name}")
+                            self.log.error(f"Could not parse {xml_file_path.name}")
                 return None
 
             if scheme == "file":
@@ -215,8 +216,8 @@ if __name__ == "__main__":
         console_level="INFO",
     )
 
-    start = datetime(2023, 7, 18)
-    end = datetime(2023, 7, 19)
+    start = datetime.datetime(2023, 7, 18)
+    end = datetime.datetime(2023, 7, 19)
     gen = SoundTrapMetadataGenerator(
         log, "s3://pacific-sound-ch01", json_dir.as_posix(), ["7000"], start, end
     )
