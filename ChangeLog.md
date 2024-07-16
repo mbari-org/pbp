@@ -1,5 +1,9 @@
 # PBP – PyPAM based processing
 
+2024-07
+
+- fixed mypy issues by adding types-six and types-pytz to the dependencies
+
 2024-06
 
 - did new pypi release to fix links, etc., and in preparation to

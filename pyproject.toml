@@ -39,6 +39,8 @@ Pyarrow = "15.0.0"
 loguru = {extras = ["mypy"], version = "^0.7.2"}
 loguru-mypy = "^0.0.4"
 awscli = "^1.33.20"
+types-six = "^1.16.21.20240513"
+types-pytz = "^2024.1.0.20240417"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.8.0"
