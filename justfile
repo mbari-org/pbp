@@ -254,7 +254,7 @@ run-docker-for-notebooks dir='notebooks':
 # development:
 
 # A convenient recipe for development
-dev: check test format
+dev: mypy test format
 
 # As the dev recipe plus lint; good to run before committing changes
 all: dev lint
@@ -274,7 +274,7 @@ update-deps:
     poetry install
 
 # Do static type checking (not very strict)
-check:
+mypy:
     poetry run mypy .
 
 # Install std types for mypy
