@@ -2,6 +2,8 @@
 
 2024-07
 
+- new release, with 1.0.8 for both the package and the docker image.
+  We will keep these two aligned (at least to the minor version).
 - new package release 0.3.0b19 (`just publish`)
   and git tagging (v1.0.7) for corresponding docker image release.
   TODO: as probably already mentioned somewhere, we should harmonize the versioning.
