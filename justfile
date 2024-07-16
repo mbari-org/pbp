@@ -251,6 +251,13 @@ run-docker-for-notebooks dir='notebooks':
 
 
 ##############
+# package build/publishing:
+
+# A convenient recipe for development
+publish:
+    poetry publish --build
+
+##############
 # development:
 
 # A convenient recipe for development

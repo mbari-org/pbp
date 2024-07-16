@@ -2,6 +2,11 @@
 
 2024-07
 
+- new package release 0.3.0b19 (`just publish`)
+  and git tagging (v1.0.7) for corresponding docker image release.
+  TODO: as probably already mentioned somewhere, we should harmonize the versioning.
+  We could simply continue with our own versioning, independent of that of PyPAM. 
+ 
 - fixed mypy issues by adding types-six and types-pytz to the dependencies
 - Fixed the issue with the  migration to `loguru` which broke the json generation code
 - Added missing logic to capture a file overlapping the end day boundary which was lost in code changes in April 2024
