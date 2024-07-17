@@ -243,6 +243,9 @@ plot *args:
 ##############
 # docker:
 
+dockerize-for-mybinder dockerfile='docker/min.dockerfile':
+    docker build -f {{dockerfile}} -t mbari/pbp-mybinder .
+
 dockerize-for-notebooks dockerfile='docker/Dockerfile-minimal':
     docker build -f {{dockerfile}} -t mbari/pbp .
 
