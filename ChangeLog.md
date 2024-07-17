@@ -2,8 +2,6 @@
 
 2024-07
 
-- added dockerfile for potential use in mybinder.org
-
 - new release, with 1.0.8 for both the package and the docker image.
   We will keep these two aligned (at least to the minor version).
 - new package release 0.3.0b19 (`just publish`)
