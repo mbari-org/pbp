@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "0.3.0b18"
+version = "1.0.8"
 # for now, pbp version "aligned" (not necessarily exactly) with that of lifewatch-pypam.
 description = "PyPAM based Processing"
 authors = [
@@ -47,6 +47,8 @@ pytest = "7.4.4"  # not upgraded due to conflict with pypam 0.3.0
 syrupy = "4.6.1"
 types-python-dateutil = "2.8.2"
 types-PyYAML = "6.0.1"
+types-six = "^1.16.21.20240513"
+types-pytz = "^2024.1.0.20240417"
 
 
 [tool.mypy]
@@ -54,11 +56,7 @@ show_error_codes = true
 ignore_missing_imports = true
 exclude = [
     'examples/',
-    'pbp/plotting\.py',
-    'pbp/json_generator/metadata.*\.py',
-    'pbp/json_generator/corrector\.py',
-    'pbp/json_generator/gen_soundtrap\.py',
-    'pbp/json_generator/gen_nrs\.py',
+    'pbp/plotting\.py'
 ]
 
 [tool.ruff]

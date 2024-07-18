@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-versions }}
-      - uses: extractions/setup-just@v1
+      - uses: extractions/setup-just@v2
       - run: sudo apt-get install libsndfile1
       - run: just install-poetry
       - run: poetry install
@@ -30,3 +30,4 @@ jobs:
       - run: PYTHONPATH=. poetry run pytest
       - run: just format-check
       - run: just lint-check
+      - run: just mypy

@@ -1,5 +1,22 @@
 # PBP – PyPAM based processing
 
+2024-07
+
+- new release, with 1.0.8 for both the package and the docker image.
+  We will keep these two aligned (at least to the minor version).
+- new package release 0.3.0b19 (`just publish`)
+  and git tagging (v1.0.7) for corresponding docker image release.
+  TODO: as probably already mentioned somewhere, we should harmonize the versioning.
+  We could simply continue with our own versioning, independent of that of PyPAM. 
+ 
+- fixed mypy issues by adding types-six and types-pytz to the dependencies
+- Fixed the issue with the  migration to `loguru` which broke the json generation code
+- Added missing logic to capture a file overlapping the end day boundary which was lost in code changes in April 2024
+- Fixed the ending time calculation for ICListen wav files which was incorrectly being set to the start time of the same file 
+- Other minor renames and code cleanup for clarity in the json generation code
+- Added support for xtracing metadata for Soundtrap files that look like ONMS_FK01_7412_20230314_204134.log.xml
+- Better support for extracing metadata for HARP files
+
 2024-06
 
 - did new pypi release to fix links, etc., and in preparation to
@@ -32,14 +49,6 @@
     - TODO ongoing: README/justfile adjustments, etc. 
 - added this ChangeLog.
 
-
-2024-07
-
-- Fixed the issue with the  migration to `loguru` which broke the json generation code
-- Added missing logic to capture a file overlapping the end day boundary which was lost in code changes in April 2024
-- Fixed the ending time calculation for ICListen wav files which was incorrectly being set to the start time of the same file 
-- Other minor renames and code cleanup for clarity in the json generation code
-- Added support for Soundtrap files that look like ONMS_FK01_7412_20230314_204134.log.xml
 
 ----
 
