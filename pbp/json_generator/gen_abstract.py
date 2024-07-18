@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import List
 
 import matplotlib
+import mdates as mdates
 import pandas as pd
 
 
@@ -86,7 +87,7 @@ class MetadataGeneratorAbstract(object):
         # Sum how`many seconds are in each day in new_df
         daily_sum_df = recording_df.resample("1D").sum()
         # Truncate to the start and end dates
-        daily_sum_df = daily_sum_df.loc[self.start : self.end]
+        daily_sum_df = daily_sum_df[[daily_sum_df.index >= self.start & daily_sum_df.index <= self.end]]
         # Calculate the coverage as a percentage and round to the nearest integer
         daily_sum_df["coverage"] = (
             100 * daily_sum_df["duration"] / 86400
@@ -96,15 +97,15 @@ class MetadataGeneratorAbstract(object):
         plot.set_ylim(0, 100)
         # Setting the tick positions to weekly if the period is less than 30 days, otherwise monthly
         if (self.end - self.start).days < 30:
-            plot.xaxis.set_major_locator(matplotlib.dates.WeekdayLocator())
+            plot.xaxis.set_major_locator(mdates.WeekdayLocator())
             plot.xaxis.set_major_formatter(
-                matplotlib.dates.DateFormatter("%Y-%m-%d %H:%M:%S")
+                mdates.DateFormatter("%Y-%m-%d %H:%M:%S")
             )
             plot.tick_params(axis="x", rotation=45)
         else:
-            plot.xaxis.set_major_locator(matplotlib.dates.MonthLocator())
+            plot.xaxis.set_major_locator(mdates.MonthLocator())
             plot.xaxis.set_major_formatter(
-                matplotlib.dates.DateFormatter("%Y-%m-%d %H:%M:%S")
+                mdates.DateFormatter("%Y-%m-%d %H:%M:%S")
             )
             plot.tick_params(axis="x", rotation=45)
         # Enhance the line color and width to make it more visible - note that anything with a few percent will not be noticably different in the plot
