@@ -309,17 +309,17 @@ class FileHelper:
         Since a process is launched only for a day, we simply clear the cache.
         """
         # first, close all sound files still open:
-        sound_files_open = [
-            c_ss for c_ss in self.sound_cache.values() if c_ss.sound_file_open
-        ]
-        if len(sound_files_open) > 0:
-            self.log.debug(
-                f"day_completed: closing {len(sound_files_open)} sound files still open"
-            )
-            for c_ss in sound_files_open:
-                self.log.debug(f"Closing sound file for cached {c_ss.uri=} {c_ss.age=}")
-                c_ss.sound_file.close()
+        num_still_open = 0
+        for c_uri, c_ss in list(self.sound_cache.items()):
+            # due to some weird issues (when running under dask), let's be extra careful:
+            if c_ss is not None and c_ss.sound_file_open:
                 c_ss.sound_file_open = False
+                num_still_open += 1
+                self.log.debug(f"Closing sound file for cached {c_uri=} {c_ss.age=}")
+                c_ss.sound_file.close()
+            self.log.debug(
+                f"day_completed: closed {num_still_open} sound files that were still open."
+            )
 
         # remove any downloaded files (cloud case):
         if not self.retain_downloaded_files:

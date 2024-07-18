@@ -2,7 +2,7 @@ FROM quay.io/jupyter/minimal-notebook:latest
 
 WORKDIR /opt/pbp
 
-RUN pip install mbari-pbp==1.0.9
+RUN pip install mbari-pbp==1.0.10
 
 USER root
 RUN apt-get update && apt-get install -y libsox-fmt-all libsox-dev

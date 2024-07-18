@@ -2,7 +2,7 @@
 
 2024-07
 
-- 1.0.9 release with fix to occasional issue dealing with sound file cache.
+- 1.0.9/10 release with fix to occasional issue dealing with sound file cache.
 - new release, with 1.0.8 for both the package and the docker image.
   We will keep these two aligned (at least to the minor version).
 - new package release 0.3.0b19 (`just publish`)
