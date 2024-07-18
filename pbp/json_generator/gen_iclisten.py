@@ -15,7 +15,7 @@ from progressbar import progressbar
 import pbp.json_generator.utils as utils
 from pbp.json_generator.corrector import MetadataCorrector
 from pbp.json_generator.metadata_extractor import GenericWavFile
-from pbp.json_generator.gen_abstract import MetadataGeneratorBase
+from pbp.json_generator.gen_base import MetadataGeneratorBase
 
 
 class IcListenMetadataGenerator(MetadataGeneratorBase):
