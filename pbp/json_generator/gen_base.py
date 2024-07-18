@@ -91,7 +91,9 @@ class MetadataGeneratorBase(object):
             (daily_sum_df.index <= self.start) & (daily_sum_df.index <= self.end)
         ]
         if daily_sum_df.empty:
-            self.log.info(f"No recordings found in the date range {self.start} to {self.end}")
+            self.log.info(
+                f"No recordings found in the date range {self.start} to {self.end}"
+            )
             return
         # Calculate the coverage as a percentage and round to the nearest integer
         daily_sum_df["coverage"] = (

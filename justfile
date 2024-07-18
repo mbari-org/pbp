@@ -264,7 +264,7 @@ publish:
 dev: mypy test format
 
 # As the dev recipe plus lint; good to run before committing changes
-all: dev lint
+all: dev lint format-check
 
 # Install dependencies
 setup: install-poetry
