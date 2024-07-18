@@ -185,7 +185,12 @@ class NRSMetadataGenerator(MetadataGeneratorBase):
             except Exception as ex:
                 self.log.exception(str(ex))
 
-        self.plot_coverage(self.json_base_dir)
+        if self.prefix:
+            # Combine all prefixes into one string combined with underscores
+            prefixes = "_".join(self.prefix)
+            self.plot_coverage(self.json_base_dir, prefixes)
+        else:
+            self.plot_coverage(self.json_base_dir, "NRS")
 
 
 if __name__ == "__main__":

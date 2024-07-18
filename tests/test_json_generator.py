@@ -38,6 +38,10 @@ def create_test_logger(name: str):
 
 def create_json_dir(name: str) -> Path:
     json_dir = OUT_BASE_DIR / name
+    if json_dir.exists():
+        for f in json_dir.rglob("*"):
+            if f.is_file():
+                f.unlink()
     json_dir.mkdir(exist_ok=True, parents=True)
     return json_dir
 
@@ -180,5 +184,5 @@ def test_nrs_json_generator():
     # Verify a png file was created called nrs_coverage_20191024_220191025.png
     png_files = list(json_dir.rglob("*.png"))
     assert len(png_files) == 1
-    png_file = json_dir / "nrs_coverage_20191024_20191024.png"
+    png_file = json_dir / "NRS11_coverage_20191024_20191024.png"
     assert png_file.exists()
