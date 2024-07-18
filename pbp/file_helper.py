@@ -312,7 +312,12 @@ class FileHelper:
         num_still_open = 0
         for c_uri, c_ss in list(self.sound_cache.items()):
             # due to some weird issues (when running under dask), let's be extra careful:
-            if c_ss is not None and c_ss.sound_file_open:
+            # TODO clean up this!
+            if (
+                hasattr(c_ss, "sound_file")
+                and hasattr(c_ss, "sound_file_open")
+                and c_ss.sound_file_open
+            ):
                 c_ss.sound_file_open = False
                 num_still_open += 1
                 self.log.debug(f"Closing sound file for cached {c_uri=} {c_ss.age=}")
