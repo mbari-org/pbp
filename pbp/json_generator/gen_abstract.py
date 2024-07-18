@@ -2,8 +2,10 @@
 # Filename: metadata/generator/gen_abstract.py
 # Description:  Abstract class that captures sound wav metadata
 from datetime import datetime
+from pathlib import Path
 from typing import List
 
+import matplotlib
 import pandas as pd
 
 
@@ -58,3 +60,62 @@ class MetadataGeneratorAbstract(object):
     # abstract run method
     def run(self):
         pass
+
+
+    def plot_coverage(self, json_base_dir, prefix: str = ""):
+        # Create a plot of the dataframe with the x axis as the month, and the y axis as the daily recording coverage, which is percent
+        # of the day covered by recordings
+        self.df["duration"] = (self.df["end"] - self.df["start"]).dt.total_seconds()
+        if self.df["duration"].nunique() == 1:
+            self.log.info(f"All recorded durations are the same length: {self.df['duration'].iloc[0]} seconds")
+        # Create a timeseries with 1 second resolution, starting with the first start time and ending with the last end time
+        seconds_dt = pd.date_range(start=self.df.iloc[0]["start"], end=self.df.iloc[-1]["end"], freq="1s")
+        seconds_df = pd.DataFrame(seconds_dt)
+        seconds_df["duration"] = 1
+        # Create a new dataframe that populates a 10second resolution for the duration of the recording
+        recording_df = pd.DataFrame()
+        for i, row in self.df.iterrows():
+            df = pd.DataFrame(index=pd.date_range(start=i, periods=int(row["duration"]), freq="1s"))
+            df["duration"] = 1
+            recording_df = pd.concat([recording_df, df])
+        # Sum how`many seconds are in each day in new_df
+        daily_sum_df = recording_df.resample('1D').sum()
+        # Truncate to the start and end dates
+        daily_sum_df = daily_sum_df.loc[self.start:self.end]
+        # Calculate the coverage as a percentage and round to the nearest integer
+        daily_sum_df['coverage'] = 100 * daily_sum_df['duration'] / 86400  # 86400 seconds in a day
+        plot = daily_sum_df["coverage"].plot()
+        plot.set_ylabel("Recording coverage (% of day)")
+        plot.set_ylim(0, 100)
+        # Setting the tick positions to weekly if the period is less than 30 days, otherwise monthly
+        if (self.end - self.start).days < 30:
+            plot.xaxis.set_major_locator(matplotlib.dates.WeekdayLocator())
+            plot.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y-%m-%d %H:%M:%S'))
+            plot.tick_params(axis='x', rotation=45)
+        else:
+            plot.xaxis.set_major_locator(matplotlib.dates.MonthLocator())
+            plot.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y-%m-%d %H:%M:%S'))
+            plot.tick_params(axis='x', rotation=45)
+        # Enhance the line color and width to make it more visible - note that anything with a few percent will not be noticably different in the plot
+        plot.get_lines()[0].set_color('blue')
+        plot.get_lines()[0].set_linewidth(5)
+        plot.set_title(f"NRS Temporal coverage of recording for {self.start :%Y-%m-%d} to {self.end :%Y-%m-%d}")
+        plot_file = Path(json_base_dir) / f"nrs_coverage_{self.start :%Y%m%d}_{self.end :%Y%m%d}.png"
+        fig = plot.get_figure()
+        fig.set_size_inches(10, 5)
+        fig.set_dpi(300)
+        if plot_file.exists():
+            plot_file.unlink()
+        fig.savefig(plot_file.as_posix(), bbox_inches="tight")
+        self.log.info(f"Saved plot to {plot_file}")
+        daily_sum_df = daily_sum_df.rename_axis('day')
+        daily_sum_df = daily_sum_df.rename(columns={'duration': 'seconds'})
+        daily_sum_df = daily_sum_df.drop(columns=['coverage'])
+        if len(prefix) > 0:
+            daily_sum_df.to_csv(
+                Path(json_base_dir) / f"nrs_coverage_{self.start :%Y%m%d}_{self.end :%Y%m%d}_{prefix}.csv"
+            )
+        else:
+            daily_sum_df.to_csv(
+                Path(json_base_dir) / f"nrs_coverage_{self.start :%Y%m%d}_{self.end :%Y%m%d}.csv"
+            )

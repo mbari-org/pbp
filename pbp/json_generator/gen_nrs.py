@@ -167,7 +167,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                 # create a dataframe from the flac files
                 self.log.info(
                     f"Creating dataframe from {len(sound_files)} "
-                    f"files spanning {sound_files[0].start} to {sound_files[-1].start} in self.json_base_dir..."
+                    f"files spanning {sound_files[0].start} to {sound_files[-1].start} in {self.json_base_dir}..."
                 )
 
                 self.log.debug(f" Running metadata corrector for {day}")
@@ -185,28 +185,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             except Exception as ex:
                 self.log.exception(str(ex))
 
-            # Create a plot of the dataframe with the x axis as the month, and the y axis as the daily recording coverage, which is percent
-            # of the day covered by recordings
-            self.df["duration"] = (self.df["end"] - self.df["start"]).dt.total_seconds()
-            ts_df = self.df[["start", "duration"]].copy()
-            ts_df.set_index('start', inplace=True)
-            daily_sum_df = ts_df.resample('D').sum()
-            daily_sum_df["coverage"] = 100*daily_sum_df["duration"] / 86400
-            daily_sum_df["coverage"] = daily_sum_df["coverage"].round() # round to nearest integer
-            plot = daily_sum_df["coverage"].plot()
-            plot.set_ylabel("Daily Coverage (%)")
-            plot.set_xlabel("Date")
-            # Angle the x-axis labels for better readability and force them to be in the format YYYY-MM-DD
-            plot.set_xticklabels(plot.get_xticklabels(), rotation=45, horizontalalignment='right')
-            plot.set_xticklabels([x.strftime('%Y-%m-%d') for x in daily_sum_df.index])
-            plot.set_title("Daily Coverage of SoundTrap Recordings")
-            plot_file = Path(self.json_base_dir) / f"soundtrap_coverage_{self.start:%Y%m%d}_{self.end:%Y%m%d}.png"
-            dpi = 300
-            fig = plot.get_figure()
-            fig.set_size_inches(10, 5)
-            fig.set_dpi(dpi)
-            fig.savefig(plot_file.as_posix(), bbox_inches="tight")
-            self.log.info(f"Saved plot to {plot_file}")
+        self.plot_coverage(self.json_base_dir)
 
 if __name__ == "__main__":
     from pbp.logging_helper import create_logger

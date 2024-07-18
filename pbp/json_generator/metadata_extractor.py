@@ -222,6 +222,7 @@ class FlacFile(AudioFile):
                 # If the last two digits of the timestamp are 60, subtract 1 second
                 # This is a bug in the FlacFile name
                 if f[2][-2:] == "60":
+                    self.log.warning(f"Invalid timestamp {url}")
                     f_c = f[1] + f[2]
                     # Make the last two digits 59
                     f_c = f_c[:-2] + "59"

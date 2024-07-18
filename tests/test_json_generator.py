@@ -169,10 +169,16 @@ def test_nrs_json_generator():
     # There should be one file in the json directory and with number of objects as indicated
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 1
-    json_file = json_dir / "2019/20191024.json"
+    json_file = json_dir / "2019" / "20191024.json"
     assert json_file.exists()
 
     # Read the file and check the number of json objects
     with open(json_file) as f:
         json_objects = json.load(f)
         assert len(json_objects) == 7
+
+    # Verify a png file was created called nrs_coverage_20191024_220191025.png
+    png_files = list(json_dir.rglob("*.png"))
+    assert len(png_files) == 1
+    png_file = json_dir / "nrs_coverage_20191024_20191024.png"
+    assert png_file.exists()

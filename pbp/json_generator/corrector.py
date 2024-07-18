@@ -99,6 +99,7 @@ class MetadataCorrector:
                 if (
                     self.seconds_per_file > 0
                     and row["duration_secs"] != self.seconds_per_file
+                    and not self.time_correct
                 ):
                     self.log.warning(
                         f'File {row["duration_secs"]}  != {self.seconds_per_file}. File is not complete'
