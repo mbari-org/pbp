@@ -14,11 +14,11 @@ from pathlib import Path
 from progressbar import progressbar
 from pbp.json_generator.corrector import MetadataCorrector
 from pbp.json_generator.metadata_extractor import FlacFile, GenericWavFile as WavFile
-from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
+from pbp.json_generator.gen_abstract import MetadataGeneratorBase
 from pbp.json_generator.utils import parse_s3_or_gcp_url, InstrumentType
 
 
-class NRSMetadataGenerator(MetadataGeneratorAbstract):
+class NRSMetadataGenerator(MetadataGeneratorBase):
     def __init__(
         self,
         log,  # : loguru.Logger,

@@ -15,13 +15,13 @@ from pathlib import Path
 
 from progressbar import progressbar
 
-from pbp.json_generator.gen_abstract import MetadataGeneratorAbstract
+from pbp.json_generator.gen_abstract import MetadataGeneratorBase
 from pbp.json_generator.metadata_extractor import SoundTrapWavFile
 from pbp.json_generator.corrector import MetadataCorrector
 from pbp.json_generator.utils import parse_s3_or_gcp_url, InstrumentType
 
 
-class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
+class SoundTrapMetadataGenerator(MetadataGeneratorBase):
     """
     Captures SoundTrap wav file metadata either from a local directory or S3 bucket.
     """

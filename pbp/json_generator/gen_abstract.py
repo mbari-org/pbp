@@ -1,16 +1,15 @@
 # pbp, Apache License 2.0
-# Filename: metadata/generator/gen_abstract.py
-# Description:  Abstract class that captures sound wav metadata
+# Filename: metadata/generator/gen_base.py
+# Description:  Base class that captures sound wav metadata
 from datetime import datetime
 from pathlib import Path
 from typing import List
 
-import matplotlib
-import mdates as mdates
+import matplotlib.dates as mdates
 import pandas as pd
 
 
-class MetadataGeneratorAbstract(object):
+class MetadataGeneratorBase(object):
     def __init__(
         self,
         log,  # : loguru.Logger,
@@ -23,7 +22,7 @@ class MetadataGeneratorAbstract(object):
         **kwargs,
     ):
         """
-        Abstract class for capturing sound wav metadata
+        Base class for capturing sound wav metadata
         :param audio_loc:
             The local directory or cloud bucket that contains the wav files
         :param json_base_dir:
@@ -63,14 +62,15 @@ class MetadataGeneratorAbstract(object):
         pass
 
     def plot_coverage(self, json_base_dir, prefix: str = ""):
-        # Create a plot of the dataframe with the x axis as the month, and the y axis as the daily recording coverage, which is percent
-        # of the day covered by recordings
+        # Create a plot of the dataframe with the x axis as the month, and the y axis as the daily recording
+        # coverage, which is percent of the day covered by recordings
         self.df["duration"] = (self.df["end"] - self.df["start"]).dt.total_seconds()
         if self.df["duration"].nunique() == 1:
             self.log.info(
                 f"All recorded durations are the same length: {self.df['duration'].iloc[0]} seconds"
             )
-        # Create a timeseries with 1 second resolution, starting with the first start time and ending with the last end time
+        # Create a timeseries with 1 second resolution, starting with the first start time and ending with the last
+        # end time
         seconds_dt = pd.date_range(
             start=self.df.iloc[0]["start"], end=self.df.iloc[-1]["end"], freq="1s"
         )
@@ -108,7 +108,8 @@ class MetadataGeneratorAbstract(object):
                 mdates.DateFormatter("%Y-%m-%d %H:%M:%S")
             )
             plot.tick_params(axis="x", rotation=45)
-        # Enhance the line color and width to make it more visible - note that anything with a few percent will not be noticably different in the plot
+        # Enhance the line color and width to make it more visible - note that anything with a few percent will not
+        # be noticably different in the plot
         plot.get_lines()[0].set_color("blue")
         plot.get_lines()[0].set_linewidth(5)
         plot.set_title(
