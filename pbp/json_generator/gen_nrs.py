@@ -187,6 +187,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
 
         self.plot_coverage(self.json_base_dir)
 
+
 if __name__ == "__main__":
     from pbp.logging_helper import create_logger
 
