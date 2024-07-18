@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y libsox-fmt-all libsox-dev
 
 # Note: tentative adjustments
 RUN /opt/conda/bin/conda install jupyter -y --quiet
-RUN pip install mbari-pbp==1.0.8
+RUN pip install mbari-pbp==1.0.9
 
 ENV PYTHONPATH /opt/pbp:/opt/pbp/pbp
 EXPOSE 8899

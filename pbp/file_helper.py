@@ -64,6 +64,7 @@ class SoundStatus:
 
         self.audio_info: AudioInfo = ai
         self.sound_file = sf.SoundFile(self.sound_filename)
+        self.sound_file_open = True
         self.age = 0  # see _get_sound_status.
 
     def _get_audio_info(self, sound_filename: str) -> Optional[AudioInfo]:
@@ -305,11 +306,11 @@ class FileHelper:
 
     def day_completed(self):
         """
-        Since a process is launched only for day, we simply clear the cache.
+        Since a process is launched only for a day, we simply clear the cache.
         """
         # first, close all sound files still open:
         sound_files_open = [
-            c_ss for c_ss in self.sound_cache.values() if c_ss.sound_file is not None
+            c_ss for c_ss in self.sound_cache.values() if c_ss.sound_file_open
         ]
         if len(sound_files_open) > 0:
             self.log.debug(
@@ -318,6 +319,7 @@ class FileHelper:
             for c_ss in sound_files_open:
                 self.log.debug(f"Closing sound file for cached {c_ss.uri=} {c_ss.age=}")
                 c_ss.sound_file.close()
+                c_ss.sound_file_open = False
 
         # remove any downloaded files (cloud case):
         if not self.retain_downloaded_files:
@@ -483,18 +485,18 @@ class FileHelper:
         # close and remove files in the cache that are not fresh enough in terms
         # of not being recently used
         for c_uri, c_ss in list(self.sound_cache.items()):
-            if uri != c_uri and c_ss.age > 2 and c_ss.sound_file is not None:
+            if uri != c_uri and c_ss.age > 2 and c_ss.sound_file_open:
                 self.log.debug(
                     f"Closing sound file for cached uri={c_uri} age={c_ss.age}"
                 )
                 c_ss.sound_file.close()
-                c_ss.sound_file = None
+                c_ss.sound_file_open = False
                 if not self.retain_downloaded_files:
                     c_ss.remove_downloaded_file()
 
         def log_msg():
             c_sss = self.sound_cache.values()
-            open_files = len([c_ss for c_ss in c_sss if c_ss.sound_file])
+            open_files = len([c_ss for c_ss in c_sss if c_ss.sound_file_open])
             ages = [c_ss.age for c_ss in c_sss]
             return f"{open_files=}  ages={brief_list(ages)}"
 
