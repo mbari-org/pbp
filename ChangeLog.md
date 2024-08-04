@@ -2,7 +2,7 @@
 
 2024-08
 
-- 1.1.0 release introducing a new "porcelain" API intended to make our package even
+- 1.1.1 release introducing a new "porcelain" API intended to make our package even
   more user-friendly. This high-level interface simplifies the usage of the package
   for common scenarios, particularly those that are less complex, enabling users
   of all experience levels to get started more easily.

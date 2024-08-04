@@ -229,6 +229,8 @@ class _Pbp:
         self.voltage_multiplier = voltage_multiplier
         self.subset_to = subset_to
 
+        self.sensitivity_uri: Optional[str] = None
+        self.sensitivity_flat_value: Optional[float] = None
         if isinstance(sensitivity, str):
             self.sensitivity_uri = sensitivity
         else:
@@ -243,7 +245,9 @@ class _Pbp:
         self.gs_client = gs_client
 
         # -----------------------------------------------------
-        # Reset plotting overrides set in pypam - these cause the PBP plot_dataset_summary function to fail
+        # Reset plotting overrides set in pypam
+        # (these cause the PBP plot_dataset_summary function to fail
+        # https://github.com/mbari-org/pbp/issues/21#issuecomment-2261642486)
         plt.rcParams.update({"text.usetex": False})
         pd.plotting.deregister_matplotlib_converters()
 
