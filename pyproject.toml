@@ -4,12 +4,12 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "1.0.11"
-# for now, pbp version "aligned" (not necessarily exactly) with that of lifewatch-pypam.
+version = "1.1.0"
 description = "PyPAM based Processing"
 authors = [
     "Carlos Rueda <carueda@mbari.org>",
     "Danelle Cline <dcline@mbari.org>",
+    "John Ryan <ryjo@mbari.org>",
 ]
 license = "MIT"
 readme = "README.md"
@@ -23,7 +23,7 @@ pbp-plot = "pbp.plot:main"
 pbp-json-gen = "pbp.main_json_generator:main"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.12.0"
+python = ">=3.11,<3.12.0"
 lifewatch-pypam = "0.3.0"
 boto3 = "1.34.47"
 google-cloud-storage = "2.14.0"

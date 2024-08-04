@@ -1,5 +1,23 @@
 # PBP – PyPAM based processing
 
+2024-08
+
+- 1.1.0 release introducing a new "porcelain" API intended to make our package even
+  more user-friendly. This high-level interface simplifies the usage of the package
+  for common scenarios, particularly those that are less complex, enabling users
+  of all experience levels to get started more easily.
+
+    ```python
+    from pbp.simpleapi import Pbp
+    pbp = Pbp()
+    pbp.set_json_base_dir("/tmp/some_json_dir")
+    pbp.set_... # other settings
+    pbp.check_parameters()
+    # all ok, proceed:
+    pbp.process_date('20201008')
+    pbp.plot_date('20201008')
+    ```
+
 2024-07
 
 - 1.0.9/10 release with fix to occasional issue dealing with sound file cache.
