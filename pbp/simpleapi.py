@@ -34,7 +34,7 @@ class Pbp:
         self._s3_client: Optional[BaseClient] = None
         self._gs_client: Optional[GsClient] = None
 
-        self._Pbp: Optional[_Pbp] = None
+        self._pbp: Optional[_Pbp] = None
 
     def set_json_base_dir(self, json_base_dir: str) -> None:
         """
@@ -144,7 +144,7 @@ class Pbp:
         if not self._s3_client and not self._gs_client:
             raise ValueError("No S3 or GS client set.")
 
-        self._Pbp = _Pbp(
+        self._pbp = _Pbp(
             json_base_dir=self._json_base_dir,
             global_attrs_uri=self._global_attrs_uri,
             variable_attrs_uri=self._variable_attrs_uri,
@@ -167,12 +167,12 @@ class Pbp:
         :return:
             ProcessDayResult, or None if no segments at all were processed for the day.
         """
-        if not self._Pbp:
+        if not self._pbp:
             raise ValueError(
                 "Missing or invalid parameters. Call check_parameters() first."
             )
 
-        return self._Pbp.process_date(date)
+        return self._pbp.process_date(date)
 
     def plot_date(
         self,
@@ -198,10 +198,20 @@ class Pbp:
         :param dpi: DPI to use for the plot.
         :param show: Whether to also show the plot. By default, only the JPEG file is generated.
         """
-        if not self._Pbp:
+        if not self._pbp:
             raise ValueError(
                 "Missing or invalid parameters. Call check_parameters() first."
             )
+
+        return self._pbp.plot_date(
+            date,
+            lat_lon_for_solpos,
+            title,
+            ylim,
+            cmlim,
+            dpi,
+            show,
+        )
 
 
 def _version() -> str:
