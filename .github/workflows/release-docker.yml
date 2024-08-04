@@ -1,3 +1,9 @@
+###############################################################
+#  **NOTE** - dockerization has more recently been happening
+#  in other repos (pbp-jupyter, pbp-binder, ...).
+#  TODO revisit this at some point.
+###############################################################
+
 name: Build and publish docker images
 
 on:
