@@ -34,24 +34,27 @@ j all
 which includes type checking, testing, and formatting and linting with ruff:
 ```text
 poetry run mypy .
-Success: no issues found in 25 source files
+Success: no issues found in 35 source files
 poetry run pytest
-========================================= test session starts =========================================
-platform darwin -- Python 3.9.17, pytest-7.4.4, pluggy-1.4.0
-rootdir: ....
+============================== test session starts ==============================
+platform darwin -- Python 3.11.9, pytest-7.4.4, pluggy-1.5.0
+rootdir: /Users/carueda/github/mbari-org/soundspape-repos/pbp
+configfile: pyproject.toml
+testpaths: tests
 plugins: syrupy-4.6.1, cov-4.1.0
-collected 12 items
+collected 14 items
 
-tests/test_file_helper.py .                                                                     [  8%]
-tests/test_json_generator.py ss.                                                                [ 33%]
-tests/test_json_support.py ...                                                                  [ 58%]
-tests/test_metadata.py ...                                                                      [ 83%]
-tests/test_misc.py ..                                                                           [100%]
+tests/test_file_helper.py .                                               [  7%]
+tests/test_json_generator.py ss.                                          [ 28%]
+tests/test_json_support.py ...                                            [ 50%]
+tests/test_metadata.py ...                                                [ 71%]
+tests/test_misc.py ..                                                     [ 85%]
+tests/test_simpleapi.py ..                                                [100%]
 
---------------------------------------- snapshot report summary ---------------------------------------
+---------------------------- snapshot report summary ----------------------------
 9 snapshots passed.
-==================================== 10 passed, 2 skipped in 3.89s ====================================
-ruff format .
-34 files left unchanged
-ruff check --fix
+========================= 12 passed, 2 skipped in 7.13s =========================
+poetry run ruff format .
+36 files left unchanged
+poetry run ruff check --fix
 ```
