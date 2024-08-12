@@ -38,7 +38,7 @@ Success: no issues found in 35 source files
 poetry run pytest
 ============================== test session starts ==============================
 platform darwin -- Python 3.11.9, pytest-7.4.4, pluggy-1.5.0
-rootdir: /Users/carueda/github/mbari-org/soundspape-repos/pbp
+rootdir: ...
 configfile: pyproject.toml
 testpaths: tests
 plugins: syrupy-4.6.1, cov-4.1.0
@@ -53,7 +53,7 @@ tests/test_simpleapi.py ..                                                [100%]
 
 ---------------------------- snapshot report summary ----------------------------
 9 snapshots passed.
-========================= 12 passed, 2 skipped in 7.13s =========================
+========================= 12 passed, 2 skipped in 5.37s =========================
 poetry run ruff format .
 36 files left unchanged
 poetry run ruff check --fix
