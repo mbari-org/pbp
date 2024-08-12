@@ -13,10 +13,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-class Pbp:
+class HmbGen:
     def __init__(self) -> None:
         """
-        Create a new Pbp object.
+        Create a new object for HMB generation.
         Use the various set methods to set the parameters,
         then call process_date() to execute the process for a given date.
         """
