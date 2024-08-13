@@ -36,7 +36,7 @@ class SoundStatus:
         audio_path_prefix: str,
         download_dir: Optional[str],
         assume_downloaded_files: bool,
-        print_downloading_lines: bool = False,
+        print_downloading_lines: bool,
         s3_client: Optional[BaseClient] = None,
         gs_client: Optional[GsClient] = None,
     ):
@@ -81,13 +81,13 @@ class SoundStatus:
         self.log.debug(f"_get_sound_filename: {self.uri=}")
         if self.parsed_uri.scheme in ("s3", "gs"):
             return _download(
-                self.log,
-                self.parsed_uri,
-                self.download_dir,
-                self.assume_downloaded_files,
-                self.print_downloading_lines,
-                self.s3_client,
-                self.gs_client,
+                log=self.log,
+                parsed_uri=self.parsed_uri,
+                download_dir=self.download_dir,
+                assume_downloaded_files=self.assume_downloaded_files,
+                print_downloading_lines=self.print_downloading_lines,
+                s3_client=self.s3_client,
+                gs_client=self.gs_client,
             )
 
         # otherwise assuming local file, so we only inspect the `path` attribute:
@@ -144,6 +144,8 @@ def _download(
 
     if os.path.isfile(local_filename) and assume_downloaded_files:
         log.info(f"ASSUMING ALREADY DOWNLOADED: {bucket=} {key=} to {local_filename}")
+        if print_downloading_lines:
+            print(f"Assuming already downloaded {parsed_uri.geturl()}")
         return local_filename
 
     scheme = parsed_uri.scheme
@@ -305,13 +307,13 @@ class FileHelper:
         parsed_uri = urlparse(uri)
         if parsed_uri.scheme in ("s3", "gs"):
             return _download(
-                self.log,
-                parsed_uri,
-                self.download_dir,
-                self.assume_downloaded_files,
-                self.print_downloading_lines,
-                self.s3_client,
-                self.gs_client,
+                log=self.log,
+                parsed_uri=parsed_uri,
+                download_dir=self.download_dir,
+                assume_downloaded_files=self.assume_downloaded_files,
+                print_downloading_lines=self.print_downloading_lines,
+                s3_client=self.s3_client,
+                gs_client=self.gs_client,
             )
 
         return parsed_uri.path
@@ -354,13 +356,13 @@ class FileHelper:
 
     def _get_json_s3(self, parsed_uri: ParseResult) -> Optional[str]:
         local_filename = _download(
-            self.log,
-            parsed_uri,
-            self.download_dir,
-            self.assume_downloaded_files,
-            self.print_downloading_lines,
-            self.s3_client,
-            self.gs_client,
+            log=self.log,
+            parsed_uri=parsed_uri,
+            download_dir=self.download_dir,
+            assume_downloaded_files=self.assume_downloaded_files,
+            print_downloading_lines=self.print_downloading_lines,
+            s3_client=self.s3_client,
+            gs_client=self.gs_client,
         )
         if local_filename is None:
             return None
@@ -493,6 +495,7 @@ class FileHelper:
                 audio_path_prefix=self.audio_path_prefix,
                 download_dir=self.download_dir,
                 assume_downloaded_files=self.assume_downloaded_files,
+                print_downloading_lines=self.print_downloading_lines,
                 s3_client=self.s3_client,
                 gs_client=self.gs_client,
             )
