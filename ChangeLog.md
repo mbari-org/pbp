@@ -2,6 +2,7 @@
 
 2024-08
 
+- 1.2.2 Fix for new `set_print_downloading_lines`
 - 1.2.1 Complementary to the usual logging options, added `set_print_downloading_lines(bool)`
   to `HmbGen` so one can get "downloading <uri>" lines printed to the console.
   Also, exposed other similar options provided by underlying `FileHelper` in `HmbGen`:
