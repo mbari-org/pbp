@@ -36,6 +36,7 @@ class SoundStatus:
         audio_path_prefix: str,
         download_dir: Optional[str],
         assume_downloaded_files: bool,
+        print_downloading_lines: bool = False,
         s3_client: Optional[BaseClient] = None,
         gs_client: Optional[GsClient] = None,
     ):
@@ -49,6 +50,7 @@ class SoundStatus:
         self.gs_client = gs_client
         self.download_dir: str = download_dir if download_dir else "."
         self.assume_downloaded_files = assume_downloaded_files
+        self.print_downloading_lines = print_downloading_lines
 
         self.error = None
 
@@ -83,6 +85,7 @@ class SoundStatus:
                 self.parsed_uri,
                 self.download_dir,
                 self.assume_downloaded_files,
+                self.print_downloading_lines,
                 self.s3_client,
                 self.gs_client,
             )
@@ -119,6 +122,7 @@ def _download(
     parsed_uri: ParseResult,
     download_dir: str,
     assume_downloaded_files: bool = False,
+    print_downloading_lines: bool = False,
     s3_client: Optional[BaseClient] = None,
     gs_client: Optional[GsClient] = None,
 ) -> Optional[str]:
@@ -144,6 +148,8 @@ def _download(
 
     scheme = parsed_uri.scheme
     log.info(f"Downloading {scheme=} {bucket=} {key=} to {local_filename}")
+    if print_downloading_lines:
+        print(f"downloading {parsed_uri.geturl()}")
 
     if scheme == "s3":
         assert s3_client is not None
@@ -186,6 +192,7 @@ class FileHelper:
         download_dir: Optional[str] = None,
         assume_downloaded_files: bool = False,
         retain_downloaded_files: bool = False,
+        print_downloading_lines: bool = False,
     ):
         """
 
@@ -210,7 +217,9 @@ class FileHelper:
         :param assume_downloaded_files:
             If True, skip downloading files that already exist in the download directory.
         :param retain_downloaded_files:
-            If True, remove downloaded files after use.
+            If True, do not remove downloaded files after use.
+        :param print_downloading_lines:
+            If True, print "downloading <uri>" lines to console.
         """
         self.log = log
 
@@ -238,6 +247,7 @@ class FileHelper:
             + f"\n    download_dir:            {download_dir}"
             + f"\n    assume_downloaded_files: {assume_downloaded_files}"
             + f"\n    retain_downloaded_files: {retain_downloaded_files}"
+            + f"\n    print_downloading_lines: {print_downloading_lines}"
             + "\n"
         )
         self.json_base_dir = json_base_dir
@@ -250,6 +260,7 @@ class FileHelper:
         self.download_dir: str = download_dir if download_dir else "."
         self.assume_downloaded_files = assume_downloaded_files
         self.retain_downloaded_files = retain_downloaded_files
+        self.print_downloading_lines = print_downloading_lines
 
         self.sound_cache: Dict[str, SoundStatus] = {}
 
@@ -298,6 +309,7 @@ class FileHelper:
                 parsed_uri,
                 self.download_dir,
                 self.assume_downloaded_files,
+                self.print_downloading_lines,
                 self.s3_client,
                 self.gs_client,
             )
@@ -346,6 +358,7 @@ class FileHelper:
             parsed_uri,
             self.download_dir,
             self.assume_downloaded_files,
+            self.print_downloading_lines,
             self.s3_client,
             self.gs_client,
         )

@@ -30,11 +30,15 @@ class HmbGen:
         self._output_dir: Optional[str] = None
         self._output_prefix: Optional[str] = None
 
+        self._assume_downloaded_files: bool = False
+        self._retain_downloaded_files: bool = False
+        self._print_downloading_lines: bool = False
+
         # Other attributes
         self._s3_client: Optional[BaseClient] = None
         self._gs_client: Optional[GsClient] = None
 
-        self._pbp: Optional[_Pbp] = None
+        self._hmb_gen: Optional[_HmbGen] = None
 
     def set_json_base_dir(self, json_base_dir: str) -> None:
         """
@@ -93,6 +97,27 @@ class HmbGen:
         """
         self._output_prefix = output_prefix
 
+    def set_assume_downloaded_files(self, value: bool) -> None:
+        """
+        :param value:
+            If True, skip downloading files that already exist in the download directory.
+        """
+        self._assume_downloaded_files = value
+
+    def set_retain_downloaded_files(self, value: bool) -> None:
+        """
+        :param value:
+            If True, do not remove downloaded files after use.
+        """
+        self._retain_downloaded_files = value
+
+    def set_print_downloading_lines(self, value: bool) -> None:
+        """
+        :param value:
+            If True, print "downloading <uri>" lines to console.
+        """
+        self._print_downloading_lines = value
+
     def set_s3_client(self, s3_client: BaseClient) -> None:
         """
         Set the S3 client.
@@ -144,7 +169,7 @@ class HmbGen:
         if not self._s3_client and not self._gs_client:
             raise ValueError("No S3 or GS client set.")
 
-        self._pbp = _Pbp(
+        self._hmb_gen = _HmbGen(
             json_base_dir=self._json_base_dir,
             global_attrs_uri=self._global_attrs_uri,
             variable_attrs_uri=self._variable_attrs_uri,
@@ -154,6 +179,9 @@ class HmbGen:
             download_dir=self._download_dir,
             output_dir=self._output_dir,
             output_prefix=self._output_prefix,
+            assume_downloaded_files=self._assume_downloaded_files,
+            retain_downloaded_files=self._retain_downloaded_files,
+            print_downloading_lines=self._print_downloading_lines,
             s3_client=self._s3_client,
             gs_client=self._gs_client,
         )
@@ -167,12 +195,12 @@ class HmbGen:
         :return:
             ProcessDayResult, or None if no segments at all were processed for the day.
         """
-        if not self._pbp:
+        if not self._hmb_gen:
             raise ValueError(
                 "Missing or invalid parameters. Call check_parameters() first."
             )
 
-        return self._pbp.process_date(date)
+        return self._hmb_gen.process_date(date)
 
     def plot_date(
         self,
@@ -198,12 +226,12 @@ class HmbGen:
         :param dpi: DPI to use for the plot.
         :param show: Whether to also show the plot. By default, only the JPEG file is generated.
         """
-        if not self._pbp:
+        if not self._hmb_gen:
             raise ValueError(
                 "Missing or invalid parameters. Call check_parameters() first."
             )
 
-        return self._pbp.plot_date(
+        return self._hmb_gen.plot_date(
             date,
             lat_lon_for_solpos,
             title,
@@ -218,7 +246,7 @@ def _version() -> str:
     return f"pbp v{get_pbp_version()}: "
 
 
-class _Pbp:
+class _HmbGen:
     def __init__(
         self,
         json_base_dir: str,
@@ -230,6 +258,9 @@ class _Pbp:
         download_dir: str,
         output_dir: str,
         output_prefix: str,
+        assume_downloaded_files: bool,
+        retain_downloaded_files: bool,
+        print_downloading_lines: bool,
         s3_client: Optional[BaseClient],
         gs_client: Optional[GsClient],
     ) -> None:
@@ -249,6 +280,10 @@ class _Pbp:
         self.download_dir = download_dir
         self.output_dir = output_dir
         self.output_prefix = output_prefix
+
+        self.assume_downloaded_files = assume_downloaded_files
+        self.retain_downloaded_files = retain_downloaded_files
+        self.print_downloading_lines = print_downloading_lines
 
         # Other attributes
         self.s3_client = s3_client
@@ -278,6 +313,9 @@ class _Pbp:
             s3_client=self.s3_client,
             gs_client=self.gs_client,
             download_dir=self.download_dir,
+            assume_downloaded_files=self.assume_downloaded_files,
+            retain_downloaded_files=self.retain_downloaded_files,
+            print_downloading_lines=self.print_downloading_lines,
         )
 
         process_helper = ProcessHelper(

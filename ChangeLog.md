@@ -2,6 +2,13 @@
 
 2024-08
 
+- 1.2.1 Complementary to the usual logging options, added `set_print_downloading_lines(bool)`
+  to `HmbGen` so one can get "downloading <uri>" lines printed to the console.
+  Also, exposed other similar options provided by underlying `FileHelper` in `HmbGen`:
+  `set_assume_downloaded_files(bool)`, `set_retain_downloaded_files(bool)`.
+
+2024-08
+
 - 1.2.0 renamed `Pbp` class to `HmbGen` to be more specific
 
     ```python
