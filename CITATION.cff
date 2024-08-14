@@ -1,0 +1,37 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: PBP – PyPAM-Based Processing
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Carlos
+    name-particle: A.
+    family-names: Rueda
+    email: carueda@mbari.org
+    affiliation: MBARI
+    orcid: 'https://orcid.org/0000-0002-5440-0638'
+  - given-names: Danelle
+    family-names: Cline
+    email: dcline@mbari.org
+    affiliation: MBARI
+  - given-names: John
+    name-particle: P.
+    family-names: Ryan
+    email: ryjo@mbari.org
+    affiliation: MBARI
+abstract: >-
+  Process ocean audio data archives to daily analysis products
+  of hybrid millidecade spectra using PyPAM.
+keywords:
+  - audio-processing
+  - cloud
+  - hybrid-millidecade-bands
+  - netcdf
+  - notebook
+  - pypam
+  - soundscape
+license: GPL-3.0
