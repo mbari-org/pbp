@@ -164,8 +164,8 @@ class HmbGen:
 
         if not self._sensitivity:
             errors.append("- sensitivity not set.")
-        elif not isinstance(self._sensitivity, (float, str)):
-            errors.append("- sensitivity must be a float or a string")
+        elif not isinstance(self._sensitivity, (float, int, str)):
+            errors.append("- sensitivity must be a number or a string")
 
         if not isinstance(self._subset_to, tuple):
             errors.append("- subset_to must be a tuple")
