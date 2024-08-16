@@ -2,6 +2,10 @@
 
 2024-08
 
+- 1.2.3 `HmbGen` adjustments:
+    - `check_parameters` now returns `str | None`, with string indicating any errors.
+    - `process_date` now returns `ProcessDayResult | str`, with string indicating any errors. 
+
 - 1.2.2 Fix for new `set_print_downloading_lines`
 - 1.2.1 Complementary to the usual logging options, added `set_print_downloading_lines(bool)`
   to `HmbGen` so one can get "downloading <uri>" lines printed to the console.

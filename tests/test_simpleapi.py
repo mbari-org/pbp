@@ -1,6 +1,5 @@
 from pbp.simpleapi import HmbGen
 from google.cloud.storage import Client as GsClient
-import pytest
 
 
 def test_required_parameters_are_given():
@@ -15,9 +14,8 @@ def test_required_parameters_are_given():
     hmb_gen.set_output_prefix("TEST_")
     hmb_gen.set_gs_client(GsClient.create_anonymous_client())
 
-    hmb_gen.check_parameters()
+    assert hmb_gen.check_parameters() is None
 
 
-def test_required_parameters_are_missing():
-    with pytest.raises(ValueError):
-        HmbGen().check_parameters()
+def test_required_parameters_are_missing(snapshot):
+    assert HmbGen().check_parameters() == snapshot

@@ -1,0 +1,13 @@
+# serializer version: 1
+# name: test_required_parameters_are_missing
+  '''
+  - json_base_dir not set
+  - global_attrs_uri not set
+  - variable_attrs_uri not set
+  - download_dir not set
+  - output_dir not set
+  - subset_to not set
+  - subset_to must be a tuple
+  - No S3 or GS client has been set
+  '''
+# ---

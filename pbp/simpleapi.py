@@ -20,15 +20,15 @@ class HmbGen:
         Use the various set methods to set the parameters,
         then call process_date() to execute the process for a given date.
         """
-        self._json_base_dir: Optional[str] = None
-        self._global_attrs_uri: Optional[str] = None
-        self._variable_attrs_uri: Optional[str] = None
+        self._json_base_dir: str = ""
+        self._global_attrs_uri: str = ""
+        self._variable_attrs_uri: str = ""
         self._voltage_multiplier: float = 1.0
         self._sensitivity: float | str = 1.0
         self._subset_to: Optional[tuple[int, int]] = None
-        self._download_dir: Optional[str] = None
-        self._output_dir: Optional[str] = None
-        self._output_prefix: Optional[str] = None
+        self._download_dir: str = ""
+        self._output_dir: str = ""
+        self._output_prefix: str = ""
 
         self._assume_downloaded_files: bool = False
         self._retain_downloaded_files: bool = False
@@ -134,40 +134,57 @@ class HmbGen:
             raise ValueError("A S3 client has already been set.")
         self._gs_client = gs_client
 
-    def check_parameters(self) -> None:
+    def check_parameters(self) -> str | None:
         """
         Performs a basic check of the parameters,
-        especially verifying that the required ones are give.
+        especially verifying that the required ones are given.
         Call this before performing any processing.
+
+        :return: None if all looks OK, or an error message.
         """
+        errors = []
+
         if not self._json_base_dir:
-            raise ValueError("json_base_dir not set.")
+            errors.append("- json_base_dir not set")
+
         if not self._global_attrs_uri:
-            raise ValueError("global_attrs_uri not set.")
+            errors.append("- global_attrs_uri not set")
+
         if not self._variable_attrs_uri:
-            raise ValueError("variable_attrs_uri not set.")
+            errors.append("- variable_attrs_uri not set")
+
         if not self._download_dir:
-            raise ValueError("download_dir not set.")
+            errors.append("- download_dir not set")
+
         if not self._output_dir:
-            raise ValueError("output_dir not set.")
-        if not self._output_prefix:
-            raise ValueError("output_prefix not set.")
+            errors.append("- output_dir not set")
+
         if not self._subset_to:
-            raise ValueError("subset_to not set.")
+            errors.append("- subset_to not set")
+
         if not self._sensitivity:
-            raise ValueError("sensitivity not set.")
-        if not isinstance(self._sensitivity, (float, str)):
-            raise ValueError("sensitivity must be a float or a string.")
+            errors.append("- sensitivity not set.")
+        elif not isinstance(self._sensitivity, (float, str)):
+            errors.append("- sensitivity must be a float or a string")
+
         if not isinstance(self._subset_to, tuple):
-            raise ValueError("subset_to must be a tuple.")
-        if len(self._subset_to) != 2:
-            raise ValueError("subset_to must be a tuple of length 2.")
-        if not isinstance(self._subset_to[0], int) or not isinstance(
-            self._subset_to[1], int
-        ):
-            raise ValueError("subset_to must contain integers.")
+            errors.append("- subset_to must be a tuple")
+        else:
+            if len(list(self._subset_to)) != 2:
+                errors.append("- subset_to must be a tuple of length 2")
+            if not isinstance(self._subset_to[0], int) or not isinstance(
+                self._subset_to[1], int
+            ):
+                errors.append("- subset_to must contain integers")
+
         if not self._s3_client and not self._gs_client:
-            raise ValueError("No S3 or GS client set.")
+            errors.append("- No S3 or GS client has been set")
+
+        if len(errors) > 0:
+            return "\n".join(errors)
+
+        # make mypy happy
+        assert isinstance(self._subset_to, tuple)
 
         self._hmb_gen = _HmbGen(
             json_base_dir=self._json_base_dir,
@@ -185,22 +202,23 @@ class HmbGen:
             s3_client=self._s3_client,
             gs_client=self._gs_client,
         )
+        return None
 
-    def process_date(self, date: str) -> Optional[ProcessDayResult]:
+    def process_date(self, date: str) -> ProcessDayResult | str:
         """
         Generates NetCDF file with the result of processing all segments of the given day.
 
         :param date:
             Date to process in YYYYMMDD format.
         :return:
-            ProcessDayResult, or None if no segments at all were processed for the day.
+            ProcessDayResult, or a  string indicating any errors
+             if no segments at all were processed for the day.
         """
         if not self._hmb_gen:
-            raise ValueError(
-                "Missing or invalid parameters. Call check_parameters() first."
-            )
+            return "Missing or invalid parameters. Call check_parameters() first."
 
-        return self._hmb_gen.process_date(date)
+        result = self._hmb_gen.process_date(date)
+        return result or f"No segments processed for {date}."
 
     def plot_date(
         self,
