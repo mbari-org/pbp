@@ -41,7 +41,12 @@ Install the package:
 pip install mbari-pbp
 ```
 
-## Programs
+## Programs and API
+
+The mbari-pbp package includes command line interface (CLI) programs,
+and also provides APIs you can use in your Python scripts or notebooks.
+
+### CLI Programs
 
 The package includes the following CLI programs:
 
@@ -51,6 +56,10 @@ The package includes the following CLI programs:
 | [`pbp`](https://docs.mbari.org/pbp/pbp/) | Main HMB generation program.                   |
 | [`pbp-cloud`](https://docs.mbari.org/pbp/pbp-cloud/) | Program for cloud based processing.            |
 | [`pbp-plot`](https://docs.mbari.org/pbp/pbp-plot/) | Utility program to plot resulting HMB product. |
+
+### API
+
+TODO link to the API documentation.
 
 ## References
 
