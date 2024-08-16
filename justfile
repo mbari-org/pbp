@@ -316,6 +316,10 @@ lint-check:
 tags:
     git tag -l | sort -V | tail
 
-# Create dist
-dist:
-    poetry build
+# Create and push git tag
+tag-and-push:
+  #!/usr/bin/env bash
+  version=$(tq -f pyproject.toml 'tool.poetry.version')
+  echo "tagging and pushing v${version}"
+  git tag v${version}
+  git push origin v${version}
