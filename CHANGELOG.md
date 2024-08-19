@@ -2,6 +2,9 @@
 
 2024-08
 
+- 1.2.5 `pbp-plot` now explicitly uses `h5netcdf` when calling `xarray.open_dataset`. 
+  But a new option `--engine name` allows to specify the engine to use.
+
 - 1.2.3 `HmbGen` adjustments:
     - `check_parameters` now returns `str | None`, with string indicating any errors.
     - `process_date` now returns `ProcessDayResult | str`, with string indicating any errors. 

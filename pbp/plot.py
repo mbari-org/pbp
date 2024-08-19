@@ -78,6 +78,14 @@ def parse_arguments():
         help="Only show the plot (do not generate .jpg files)",
     )
 
+    parser.add_argument(
+        "--engine",
+        type=str,
+        metavar="name",
+        default="h5netcdf",
+        help="Engine given to xarray.open_dataset. Default: %(default)s",
+    )
+
     parser.add_argument("netcdf", nargs="+", help="netcdf file(s) to plot")
 
     return parser.parse_args()
@@ -93,7 +101,7 @@ def main():
     show = opts.show or opts.only_show
     for nc_filename in opts.netcdf:
         print(f"plotting {nc_filename} at {opts.dpi} dpi")
-        ds = xr.open_dataset(nc_filename)
+        ds = xr.open_dataset(nc_filename, engine=opts.engine)
         jpeg_filename = None if opts.only_show else nc_filename.replace(".nc", ".jpg")
         plot_dataset_summary(
             ds,
