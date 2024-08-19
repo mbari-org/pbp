@@ -69,6 +69,10 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                 self.log.error("GS not supported for SoundTrap")
                 return
 
+            # Set the start and end dates to 1 day before and after the start and end dates
+            start_dt = self.start - timedelta(days=1)
+            end_dt = self.end + timedelta(days=1)
+
             def get_file_date(xml_file: str) -> datetime:
                 """
                 Check if the xml file is in the search pattern and is within the start and end dates
@@ -98,7 +102,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                                 f_path_dt = datetime.datetime.strptime(
                                     xml_file_path.stem.split(".")[1], "%y%m%d%H%M%S"
                                 )
-                            if self.start <= f_path_dt <= self.end:
+                            if start_dt <= f_path_dt <= end_dt:
                                 return f_path_dt
                         except ValueError:
                             self.log.error(f"Could not parse {xml_file_path.name}")
@@ -119,7 +123,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             else:
                 # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
                 # dates
-                self.log.info(f"Searching between {self.start} and {self.end}")
+                self.log.info(f"Searching between {start_dt} and {end_dt}")
 
                 client = boto3.client("s3")
                 paginator = client.get_paginator("list_objects")
@@ -127,7 +131,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                 operation_parameters = {"Bucket": bucket}
                 page_iterator = paginator.paginate(**operation_parameters)
                 self.log.info(
-                    f"Searching in bucket: {bucket} for .wav and .xml files between {self.start} and {self.end} "
+                    f"Searching in bucket: {bucket} for .wav and .xml files between {start_dt} and {end_dt} "
                 )
                 # list the objects in the bucket
                 # loop through the objects and check if they match the search pattern
@@ -154,7 +158,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                                 )
 
             self.log.info(
-                f"Found {len(wav_files)} files to process that cover the period {self.start} - {self.end}"
+                f"Found {len(wav_files)} files to process that cover the period {start_dt} - {end_dt}"
             )
 
             if len(wav_files) == 0:
@@ -187,13 +191,12 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
 
             # Correct the metadata for each day
             for day in range(days):
-                day_start = self.start + timedelta(days=day)
-                self.log.debug(f"Running metadata corrector for {day_start}")
+                self.log.debug(f"Running metadata corrector for {day}")
                 corrector = MetadataCorrector(
                     self.log,
                     self.df,
                     self.json_base_dir,
-                    day_start,
+                    self.start + timedelta(days=day),
                     InstrumentType.NRS,
                     False,
                 )

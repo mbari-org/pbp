@@ -97,7 +97,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                             try:
                                 # MARS file date is in the filename MARS_YYYYMMDD_HHMMSS.wav
                                 f_path_dt = datetime.strptime(
-                                    f_path.stem, f"{s}_%Y%m%d_%H%M%S"
+                                    f_path.stem, f"{s}%Y%m%d_%H%M%S"
                                 )
 
                                 if f_start_dt <= f_path_dt <= f_end_dt:
