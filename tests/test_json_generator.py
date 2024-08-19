@@ -84,8 +84,8 @@ def test_soundtrap_json_generator():
     log = create_test_logger("test_soundtrap_metadata_generator")
     json_dir = create_json_dir("soundtrap")
 
-    start = datetime(2023, 7, 18)
-    end = datetime(2023, 7, 19)
+    start = datetime(2023, 7, 15)
+    end = datetime(2023, 7, 16)
     gen = SoundTrapMetadataGenerator(
         log=log,
         uri="s3://pacific-sound-ch01",
@@ -96,10 +96,17 @@ def test_soundtrap_json_generator():
     )
     gen.run()
 
-    # There should be two files in the json directory named 20230718.json and 20230719.json
+    # There should be two files in the json directory named 20230715.json and 20230716.json
     json_files = list(json_dir.rglob("*.json"))
-    assert len(json_files) == 1
-    assert (json_dir / "2023/20230718.json").exists()
+    assert len(json_files) == 2
+    assert (json_dir / "2023/20230715.json").exists()
+    assert (json_dir / "2023/20230716.json").exists()
+
+    # Each file should have 5 json objects
+    for json_file in json_files:
+        with open(json_file) as f:
+            json_objects = json.load(f)
+            assert len(json_objects) == 5
 
 
 @pytest.mark.skipif(
@@ -125,7 +132,7 @@ def test_iclisten_json_generator():
         log=log,
         uri="s3://pacific-sound-256khz",
         json_base_dir=json_dir.as_posix(),
-        prefix=["MARS"],
+        prefix=["MARS_"],
         start=start,
         end=end,
         seconds_per_file=600,
