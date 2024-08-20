@@ -32,7 +32,7 @@ You can run `python3 --version` to check the version of Python installed.
 
 As a general practice, it is recommended to use a virtual environment for the installation.
 ```shell
-python3.9 -m venv virtenv
+python3.11 -m venv virtenv
 source virtenv/bin/activate
 ```
 
@@ -52,7 +52,7 @@ The package includes the following CLI programs:
 
 | Program | Description                                    |
 | ------- |------------------------------------------------|
-| [`pbp-json-gen`](https://docs.mbari.org/pbp/pbp-json-gen/) | Generate JSON files with audio metadata.       |
+| [`pbp-meta-gen`](https://docs.mbari.org/pbp/pbp-meta-gen/) | Generate JSON files with audio metadata.       |
 | [`pbp`](https://docs.mbari.org/pbp/pbp/) | Main HMB generation program.                   |
 | [`pbp-cloud`](https://docs.mbari.org/pbp/pbp-cloud/) | Program for cloud based processing.            |
 | [`pbp-plot`](https://docs.mbari.org/pbp/pbp-plot/) | Utility program to plot resulting HMB product. |

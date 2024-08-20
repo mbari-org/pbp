@@ -207,7 +207,7 @@ class FileHelper:
           Prefix mapping to get actual audio uri to be used.
           Example: `s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022`
         :param audio_path_prefix:
-          Ad hoc path prefix for sound file locations, e.g. "/Volumes"
+          Ad hoc path prefixes for sound file locations, e.g. "/Volumes"
         :param segment_size_in_mins:
             The size of each audio segment to extract, in minutes. By default, 1.
         :param s3_client:

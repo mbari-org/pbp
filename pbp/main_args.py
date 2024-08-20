@@ -69,7 +69,7 @@ Examples:
     )
 
     parser.add_argument(
-        "--audio-path-map-prefix",
+        "--audio-path-map-prefixes",
         type=str,
         metavar="from~to",
         default="",
@@ -78,12 +78,12 @@ Examples:
     )
 
     parser.add_argument(
-        "--audio-path-prefix",
+        "--audio-path-prefixes",
         type=str,
         metavar="dir",
         default="",
-        help="Ad hoc path prefix for sound file location, for example, /Volumes."
-        " By default, no prefix applied.",
+        help="Ad hoc path prefixes for sound file location, for example, /Volumes."
+        " By default, no prefixes applied.",
     )
 
     parser.add_argument(
@@ -128,11 +128,11 @@ Examples:
     )
 
     parser.add_argument(
-        "--output-prefix",
+        "--output-prefixes",
         type=str,
-        metavar="prefix",
+        metavar="prefixes",
         default="milli_psd_",
-        help="Output filename prefix",
+        help="Output filename prefixes",
     )
 
     parser.add_argument(

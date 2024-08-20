@@ -24,7 +24,7 @@ download_dir = "NRS11/DOWNLOADS"
 
 # Location for generated files:
 output_dir = "NRS11/OUTPUT"
-# A prefix for the name of generate files:
+# A prefixes for the name of generate files:
 output_prefix = "NRS11_"
 
 

@@ -28,7 +28,7 @@ to-gizo user="carueda" server="gizo.shore.mbari.org": tgz
 tgz:
     #!/usr/bin/env bash
     HASH=$(git rev-parse --short HEAD)
-    git archive ${HASH} -o pbp_${HASH}.tgz --prefix=pbp/
+    git archive ${HASH} -o pbp_${HASH}.tgz --prefixes=pbp/
 
 # Run main (on gizo)
 main-gizo date="20220902" output_dir="/PAM_Analysis/pypam-space/test_output/daily":
@@ -38,7 +38,7 @@ main-gizo date="20220902" output_dir="/PAM_Analysis/pypam-space/test_output/dail
                  --voltage-multiplier=3 \
                  --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
                  --subset-to 10 100000 \
-                 --audio-path-map-prefix="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
+                 --audio-path-map-prefixes="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
                  --output-dir={{output_dir}}
 
 # Run main (on gizo) with some initial test jsons
@@ -50,7 +50,7 @@ main-gizo-test *more_args="":
                  --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
                  --subset-to 10 100000 \
                  --audio-base-dir=tests/wav \
-                 --audio-path-map-prefix="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
+                 --audio-path-map-prefixes="s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022" \
                  --output-dir=/PAM_Analysis/pypam-space/test_output/daily \
                  {{more_args}}
 
@@ -73,7 +73,7 @@ main-gizo-multiple-days year month *days="":
              --voltage-multiplier=3 \
              --sensitivity-uri=misc/icListen1689_sensitivity_hms256kHz.nc \
              --subset-to 10 100000 \
-             --audio-path-map-prefix="s3://pacific-sound-256khz-{{year}}~file:///PAM_Archive/{{year}}" \
+             --audio-path-map-prefixes="s3://pacific-sound-256khz-{{year}}~file:///PAM_Archive/{{year}}" \
              --output-dir="$output_dir" \
              > "$out" 2>&1 &
     done
@@ -96,7 +96,7 @@ main-mb05 *more_args="":
                  --variable-attrs metadata/mb05/variableAttributes_MB05.yaml \
                  --subset-to 10 24000 \
                  --output-dir=NB_SPACE/OUTPUT \
-                 --output-prefix=MB05_ \
+                 --output-prefixes=MB05_ \
                  --download-dir=NB_SPACE/DOWNLOADS \
                  --assume-downloaded-files \
                  --retain-downloaded-files \
@@ -123,7 +123,7 @@ main-nrs11 date='20200101' *more_args='':
                  --voltage-multiplier=2.5 \
                  --sensitivity-uri="$WS/NRS11_H5R6_sensitivity_hms5kHz.nc" \
                  --subset-to 10 2000 \
-                 --output-prefix=NRS11_ \
+                 --output-prefixes=NRS11_ \
                  --output-dir="$WS/OUTPUT" \
                  --download-dir="$WS/DOWNLOADS" \
                  --retain-downloaded-files \
@@ -149,7 +149,7 @@ main-nrs11-multiple-days year month *days="":
              --voltage-multiplier=2.5 \
              --sensitivity-uri="$WS/NRS11_H5R6_sensitivity_hms5kHz.nc" \
              --subset-to 10 2000 \
-             --output-prefix=NRS11_ \
+             --output-prefixes=NRS11_ \
              --output-dir="$WS/OUTPUT" \
              --download-dir="$WS/DOWNLOADS" \
              --retain-downloaded-files \

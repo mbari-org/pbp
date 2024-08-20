@@ -35,10 +35,10 @@ def gen_hour_minute_times(
 
 def map_prefix(prefix_map: str, s: str) -> str:
     """
-    Helper to replace a prefix to another prefix in given string
+    Helper to replace a prefixes to another prefixes in given string
     according to prefix_map.
     :param prefix_map:  Like "old~new".
-    :param s:  The string to replace the prefix in.
+    :param s:  The string to replace the prefixes in.
     :return:  Resulting string, possibly unchanged.
     """
     if "~" in prefix_map:

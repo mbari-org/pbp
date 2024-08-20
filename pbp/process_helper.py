@@ -52,7 +52,7 @@ class ProcessHelper:
         :param output_dir:
             Output directory.
         :param output_prefix:
-            Output filename prefix.
+            Output filename prefixes.
         :param gen_netcdf:
             True to generate the netCDF file.
         :param global_attrs_uri:

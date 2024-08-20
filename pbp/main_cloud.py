@@ -11,13 +11,13 @@
 #  DATE: (Required)
 #     The date to process. Format: "YYYYMMDD".
 #  S3_JSON_BUCKET_PREFIX: (Optional)
-#     Bucket prefix to be used to locate the YYYYMMDD.json file
+#     Bucket prefixes to be used to locate the YYYYMMDD.json file
 #     By default, "s3://pacific-sound-metadata/256khz".
 #  S3_OUTPUT_BUCKET: (Optional)
 #     The bucket to write the generated output to.
 #     Typically this is to be provided but it is optional to facilitate testing.
 #  OUTPUT_PREFIX: (Optional)
-#     Output filename prefix. By default, "milli_psd_".
+#     Output filename prefixes. By default, "milli_psd_".
 #     The resulting file will be named as <OUTPUT_PREFIX><DATE>.nc.
 #  GLOBAL_ATTRS_URI: (Optional)
 #     URI of JSON file with global attributes to be added to the NetCDF file.
@@ -73,7 +73,7 @@ def main():
     # The date to process. Format: "YYYYMMDD"
     date = os.environ["DATE"]
 
-    # Bucket prefix to be used to locate the YYYYMMDD.json file
+    # Bucket prefixes to be used to locate the YYYYMMDD.json file
     json_bucket_prefix = os.getenv(
         "S3_JSON_BUCKET_PREFIX", "s3://pacific-sound-metadata/256khz"
     )

@@ -15,9 +15,9 @@ from datetime import datetime
 from pathlib import Path
 
 from pbp.logging_helper import create_logger
-from pbp.json_generator.gen_nrs import NRSMetadataGenerator
-from pbp.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
-from pbp.json_generator.gen_iclisten import IcListenMetadataGenerator
+from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
+from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
+from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
 
 
 # which is .gitignore'ed
@@ -38,6 +38,9 @@ def create_test_logger(name: str):
 
 def create_json_dir(name: str) -> Path:
     json_dir = OUT_BASE_DIR / name
+    if json_dir.exists():
+        import shutil
+        shutil.rmtree(json_dir)
     json_dir.mkdir(exist_ok=True, parents=True)
     return json_dir
 
@@ -74,14 +77,14 @@ if get_aws_account():
     not AWS_AVAILABLE,
     reason="This test is excluded because it requires a valid AWS account",
 )
-def test_soundtrap_json_generator():
+def test_soundtrap_generator():
     """
     Test fixture for SoundTrapMetadataGenerator.
     Tests the SoundTrapMetadataGenerator class ability to generate metadata for soundtrap recording files.
     Two files should be generated in the json directory for the dates specified.
     :return:
     """
-    log = create_test_logger("test_soundtrap_metadata_generator")
+    log = create_test_logger("test_soundtrap_generator")
     json_dir = create_json_dir("soundtrap")
 
     start = datetime(2023, 7, 15)
@@ -90,7 +93,7 @@ def test_soundtrap_json_generator():
         log=log,
         uri="s3://pacific-sound-ch01",
         json_base_dir=json_dir.as_posix(),
-        prefix=["7000"],
+        prefixes=["7000"],
         start=start,
         end=end,
     )
@@ -113,7 +116,7 @@ def test_soundtrap_json_generator():
     not AWS_AVAILABLE,
     reason="This test is excluded because it requires a valid AWS account",
 )
-def test_iclisten_json_generator():
+def test_iclisten_generator():
     """
     Test fixture for IcListenMetadataGenerator.
     Tests the IcListenMetadataGenerator class ability to generate metadata for soundtrap recording files.
@@ -121,7 +124,7 @@ def test_iclisten_json_generator():
     only works for MBARI MARS ICListen data
     :return:
     """
-    log = create_test_logger("test_mars_metadata_generator")
+    log = create_test_logger("test_iclisten_generator")
     json_dir = create_json_dir("mars")
 
     start = datetime(2023, 7, 18, 0, 0, 0)
@@ -132,7 +135,7 @@ def test_iclisten_json_generator():
         log=log,
         uri="s3://pacific-sound-256khz",
         json_base_dir=json_dir.as_posix(),
-        prefix=["MARS_"],
+        prefixes=["MARS"],
         start=start,
         end=end,
         seconds_per_file=600,
@@ -150,14 +153,14 @@ def test_iclisten_json_generator():
         assert len(json_objects) == 145
 
 
-def test_nrs_json_generator():
+def test_nrs_generator():
     """
     Test fixture for NRSMetadataGenerator.
     Tests the NRSMetadataGenerator class ability to generate metadata for NRS recording files.
     One files should be generated in the json directory for the date specified.
     :return:
     """
-    log = create_test_logger("test_nrs_metadata_generator")
+    log = create_test_logger("test_nrs_generator")
     json_dir = create_json_dir("nrs")
 
     start = datetime(2019, 10, 24, 0, 0, 0)
@@ -167,7 +170,7 @@ def test_nrs_json_generator():
         log=log,
         uri="gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio",
         json_base_dir=json_dir.as_posix(),
-        prefix=["NRS11"],
+        prefixes=["NRS11"],
         start=start,
         end=end,
         seconds_per_file=14400.0,
@@ -183,3 +186,31 @@ def test_nrs_json_generator():
     with open(json_file) as f:
         json_objects = json.load(f)
         assert len(json_objects) == 7
+
+
+def test_datetime_support():
+    """
+    Test fixture for all audio file formats.
+    Tests the ability to extract the datetime from the audio file name.
+    :return:
+    """
+    filenames = [
+        "s3://MARS_20191022_235758.wav",
+        "gs://6550.221113155338.wav",
+        "NRS11_20191023_222260.flac",  # Invalid seconds example
+        "gs://6000.221011155338.wav",
+        "MARS_20191022T235743Z.wav",
+        "6000.230111155338.wav"
+    ]
+    prefixes = ["MARS_", "6550", "NRS11_", "6000", "MARS_", "6000"]
+    expected = [
+        datetime(2019, 10, 22, 23, 57, 58),
+        datetime(2022, 11, 13, 15, 53, 38),
+        datetime(2019, 10, 23, 22, 22, 59),
+        datetime(2022, 10, 11, 15, 53, 38),
+        datetime(2019, 10, 22, 23, 57, 43),
+        datetime(2023, 1, 11, 15, 53, 38)
+    ]
+    from pbp.meta_gen.utils import get_datetime
+    for i, filename in enumerate(filenames):
+        assert get_datetime(filename, [prefixes[i]]) == expected[i]

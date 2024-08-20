@@ -20,7 +20,7 @@ packages = [{include = "pbp"}]
 pbp = "pbp.main:main"
 pbp-cloud = "pbp.main_cloud:main"
 pbp-plot = "pbp.plot:main"
-pbp-json-gen = "pbp.main_json_generator:main"
+pbp-meta-gen = "pbp.main_json_generator:main"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12.0"
@@ -60,7 +60,7 @@ exclude = [
 ]
 
 [tool.ruff]
-line-length = 90
+line-length = 150
 exclude = [
   "virtenv/**"
 ]

@@ -1,7 +1,7 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 from pbp import get_pbp_version
-from pbp.json_generator.utils import InstrumentType
+from pbp.meta_gen.utils import InstrumentType
 
 
 def parse_arguments():
@@ -11,13 +11,13 @@ def parse_arguments():
     )
     example = """
 Examples:
-    pbp-json-gen \\
+    pbp-meta-gen \\
                  --json-base-dir=tests/json/nrs \\
                  --output-dir=output \\
                  --uri=s3://pacific-sound-ch01 \\
                  --start=20220902 \\
                  --end=20220902 \\
-                 --prefix=MARS \\
+                 --prefixes=MARS \\
                  --recorder=NRS
     """
 
@@ -80,12 +80,12 @@ Examples:
     )
 
     parser.add_argument(
-        "--prefix",
+        "--prefixes",
         type=str,
         required=True,
         nargs="+",
-        help="Prefix for search to match the audio files. Assumption is the prefix is separated by an "
-        "underscore, e.g. 'MARS_'.",
+        help="Prefix for search to match the audio files e.g. 'MARS_' for MARS_YYYYMMDD_HHMMSS.wav, '7000. ' for "
+             "7000.20220902.000000.wav",
     )
 
     return parser.parse_args()
