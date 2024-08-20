@@ -80,7 +80,7 @@ Examples:
     )
 
     parser.add_argument(
-        "--prefixes",
+        "--prefix",
         type=str,
         required=True,
         nargs="+",

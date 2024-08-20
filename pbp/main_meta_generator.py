@@ -38,7 +38,7 @@ def main():
                 log=log,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
-                prefixes=opts.prefixes,
+                prefixes=opts.prefix,
                 start=start,
                 end=end,
             )
@@ -48,7 +48,7 @@ def main():
                 log=log,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
-                prefixes=opts.prefixes,
+                prefixes=opts.prefix,
                 start=start,
                 end=end,
             )
@@ -59,7 +59,7 @@ def main():
                 log=log,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
-                prefixes=opts.prefixes,
+                prefixes=opts.prefix,
                 start=start,
                 end=end,
             )

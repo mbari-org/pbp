@@ -93,7 +93,7 @@ class HmbGen:
 
     def set_output_prefix(self, output_prefix: str) -> None:
         """
-        Set the output prefixes.
+        Set the output prefix.
         """
         self._output_prefix = output_prefix
 
