@@ -85,7 +85,7 @@ Examples:
         required=True,
         nargs="+",
         help="Prefix for search to match the audio files e.g. 'MARS_' for MARS_YYYYMMDD_HHMMSS.wav, '7000. ' for "
-             "7000.20220902.000000.wav",
+        "7000.20220902.000000.wav",
     )
 
     return parser.parse_args()
