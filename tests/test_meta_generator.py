@@ -40,6 +40,7 @@ def create_json_dir(name: str) -> Path:
     json_dir = OUT_BASE_DIR / name
     if json_dir.exists():
         import shutil
+
         shutil.rmtree(json_dir)
     json_dir.mkdir(exist_ok=True, parents=True)
     return json_dir
@@ -200,7 +201,7 @@ def test_datetime_support():
         "NRS11_20191023_222260.flac",  # Invalid seconds example
         "gs://6000.221011155338.wav",
         "MARS_20191022T235743Z.wav",
-        "6000.230111155338.wav"
+        "6000.230111155338.wav",
     ]
     prefixes = ["MARS_", "6550", "NRS11_", "6000", "MARS_", "6000"]
     expected = [
@@ -209,8 +210,9 @@ def test_datetime_support():
         datetime(2019, 10, 23, 22, 22, 59),
         datetime(2022, 10, 11, 15, 53, 38),
         datetime(2019, 10, 22, 23, 57, 43),
-        datetime(2023, 1, 11, 15, 53, 38)
+        datetime(2023, 1, 11, 15, 53, 38),
     ]
     from pbp.meta_gen.utils import get_datetime
+
     for i, filename in enumerate(filenames):
         assert get_datetime(filename, [prefixes[i]]) == expected[i]

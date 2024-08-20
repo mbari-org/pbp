@@ -71,7 +71,9 @@ class JsonGenerator:
                 | ((self.raw_df["end"] >= self.day) & (self.raw_df["start"] < self.day))
             ]
 
-            self.log.debug(f"Creating metadata for day {self.day} from {len(day_df)} files...")
+            self.log.debug(
+                f"Creating metadata for day {self.day} from {len(day_df)} files..."
+            )
 
             if len(day_df) == 0:
                 self.log.warning(f"No metadata found for day {self.day}")
@@ -83,7 +85,9 @@ class JsonGenerator:
             day_df["end"] = pd.to_datetime(day_df["end"])
 
             # get the file list that covers the requested day
-            self.log.info(f'Found {len(day_df)} files from day {self.day}, starting {day_df.iloc[0]["start"]} ending {day_df.iloc[-1]["end"]}')
+            self.log.info(
+                f'Found {len(day_df)} files from day {self.day}, starting {day_df.iloc[0]["start"]} ending {day_df.iloc[-1]["end"]}'
+            )
 
             # if there are no files, then return
             if len(day_df) == 0:
@@ -93,7 +97,9 @@ class JsonGenerator:
             for index, row in day_df.iterrows():
                 self.log.debug(f'File {row["uri"]} duration {row["duration_secs"]} ')
                 if 0 < self.seconds_per_file != row["duration_secs"]:
-                    self.log.warning(f'File {row["duration_secs"]}  != {self.seconds_per_file}. File is not complete')
+                    self.log.warning(
+                        f'File {row["duration_secs"]}  != {self.seconds_per_file}. File is not complete'
+                    )
 
             # check whether there is a discrepancy between the number of seconds in the file and the number
             # of seconds in the metadata. If there is a discrepancy, then correct the metadata
@@ -154,7 +160,9 @@ class JsonGenerator:
         except Exception as e:
             self.log.exception(f"Error correcting metadata for  {self.day}. {e}")
         finally:
-            self.log.debug(f"Done correcting metadata for {self.day}. Saved to {self.json_base_dir}")
+            self.log.debug(
+                f"Done correcting metadata for {self.day}. Saved to {self.json_base_dir}"
+            )
 
     def no_jitter(self, day_df: pd.DataFrame) -> pd.DataFrame:
         """

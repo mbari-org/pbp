@@ -61,7 +61,9 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
 
         sound_files = []
         self.df = None
-        self.log.info(f"Searching in {self.audio_loc}/ for files that match the search pattern {self.prefixes}* ...")
+        self.log.info(
+            f"Searching in {self.audio_loc}/ for files that match the search pattern {self.prefixes}* ..."
+        )
 
         # set the window to 1 flac file to account for any missing data
         minutes_window = int(self.seconds_per_file / 60)
@@ -111,7 +113,9 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                 if f_dt > end_dt:
                     break
 
-        self.log.info(f"Found {len(sound_files)} files to process that cover the period {start_dt} - {end_dt}")
+        self.log.info(
+            f"Found {len(sound_files)} files to process that cover the period {start_dt} - {end_dt}"
+        )
 
         if len(sound_files) == 0:
             return

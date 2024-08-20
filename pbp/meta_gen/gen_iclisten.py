@@ -50,13 +50,17 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
         self.log_prefix = f"{self.__class__.__name__} {start:%Y%m%d}"
 
     def run(self):
-        self.log.info( f"{self.log_prefix} Generating metadata for {self.start} to {self.end}..." )
+        self.log.info(
+            f"{self.log_prefix} Generating metadata for {self.start} to {self.end}..."
+        )
 
         bucket_name, prefix, scheme = utils.parse_s3_or_gcp_url(self.audio_loc)
 
         # gs is not supported for icListen
         if scheme == "gs":
-            self.log.error(f"{self.log_prefix} GS is not supported for icListen audio files")
+            self.log.error(
+                f"{self.log_prefix} GS is not supported for icListen audio files"
+            )
             return
 
         # Run for each day in the range
@@ -64,8 +68,10 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             try:
                 self.df = None
                 for s in self.prefixes:
-                    self.log.info(f"{self.log_prefix} Searching in {self.audio_loc}/*.wav "
-                                  f"for wav files that match the search patterns {s}* ...")
+                    self.log.info(
+                        f"{self.log_prefix} Searching in {self.audio_loc}/*.wav "
+                        f"for wav files that match the search patterns {s}* ..."
+                    )
 
                 wav_files = []
 
@@ -75,10 +81,14 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
                 if scheme == "file":
                     wav_path = Path(self.audio_loc.split("file://")[-1])
-                    for filename in progressbar( sorted(wav_path.rglob("*.wav")), prefix="Searching : "):
+                    for filename in progressbar(
+                        sorted(wav_path.rglob("*.wav")), prefix="Searching : "
+                    ):
                         wav_dt = utils.get_datetime(filename, self.prefixes)
                         if wav_dt and start_dt <= wav_dt <= end_dt:
-                            self.log.info(f"Found file {filename} with timestamp {wav_dt}")
+                            self.log.info(
+                                f"Found file {filename} with timestamp {wav_dt}"
+                            )
                             wav_files.append(GenericWavFile(self.log, filename, wav_dt))
 
                 if scheme == "s3":
@@ -92,38 +102,56 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
                             operation_parameters = {"Bucket": bucket, "Prefix": prefix}
                             page_iterator = paginator.paginate(**operation_parameters)
-                            self.log.info(f"{self.log_prefix} Searching in bucket: {bucket} prefixes: {self.prefixes}")
+                            self.log.info(
+                                f"{self.log_prefix} Searching in bucket: {bucket} prefixes: {self.prefixes}"
+                            )
 
                             # list the objects in the bucket
                             # loop through the objects and check if they match the search pattern
                             for page in page_iterator:
                                 if "Contents" not in page:
-                                    self.log.info(f"{self.log_prefix}  No data found in {bucket}")
+                                    self.log.info(
+                                        f"{self.log_prefix}  No data found in {bucket}"
+                                    )
                                     break
 
                                 for obj in page["Contents"]:
                                     key = obj["Key"]
-                                    wav_dt = utils.get_datetime(f"s3://{bucket}/{key}", self.prefixes)
+                                    wav_dt = utils.get_datetime(
+                                        f"s3://{bucket}/{key}", self.prefixes
+                                    )
                                     if wav_dt is None:
                                         continue
                                     if start_dt <= wav_dt <= end_dt:
-                                        self.log.info(f'Found {f"s3://{bucket}/{key}"} with timestamp {wav_dt}')
-                                        wav_files.append(GenericWavFile(self.log, f"s3://{bucket}/{key}", wav_dt))
+                                        self.log.info(
+                                            f'Found {f"s3://{bucket}/{key}"} with timestamp {wav_dt}'
+                                        )
+                                        wav_files.append(
+                                            GenericWavFile(
+                                                self.log, f"s3://{bucket}/{key}", wav_dt
+                                            )
+                                        )
 
-                self.log.info(f"{self.log_prefix} Found {len(wav_files)} files to process that "
-                              f"cover the period {start_dt} - {end_dt}")
+                self.log.info(
+                    f"{self.log_prefix} Found {len(wav_files)} files to process that "
+                    f"cover the period {start_dt} - {end_dt}"
+                )
 
                 if len(wav_files) == 0:
-                    self.log.info(f"{self.log_prefix}  No files found to process that "
-                                  f"cover the period {start_dt} - {end_dt}")
+                    self.log.info(
+                        f"{self.log_prefix}  No files found to process that "
+                        f"cover the period {start_dt} - {end_dt}"
+                    )
                     return
 
                 # sort the files by start time
                 wav_files.sort(key=lambda x: x.start)
 
                 # create a dataframe from the wav files
-                self.log.info(f"{self.log_prefix}  Creating dataframe from {len(wav_files)} files "
-                              f"spanning {wav_files[0].start} to {wav_files[-1].start}...")
+                self.log.info(
+                    f"{self.log_prefix}  Creating dataframe from {len(wav_files)} files "
+                    f"spanning {wav_files[0].start} to {wav_files[-1].start}..."
+                )
 
                 for wc in wav_files:
                     df_wav = wc.to_df()

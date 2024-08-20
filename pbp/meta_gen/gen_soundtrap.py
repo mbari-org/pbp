@@ -58,7 +58,9 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             xml_cache_path.mkdir(exist_ok=True, parents=True)
             wav_files = []
 
-            self.log.info(f"Searching in {self.audio_loc}/*.wav for wav files that match the prefixes {self.prefixes}* ...")
+            self.log.info(
+                f"Searching in {self.audio_loc}/*.wav for wav files that match the prefixes {self.prefixes}* ..."
+            )
 
             bucket, prefix, scheme = parse_s3_or_gcp_url(self.audio_loc)
             # This does not work for GCS
@@ -73,13 +75,17 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             if scheme == "file":
                 parsed_uri = urllib.parse.urlparse(self.audio_loc)
                 wav_path = Path(parsed_uri.path)
-                for filename in progressbar(sorted(wav_path.rglob("*.wav")), prefix="Searching : "):
+                for filename in progressbar(
+                    sorted(wav_path.rglob("*.wav")), prefix="Searching : "
+                ):
                     wav_path = filename.parent / f"{filename.stem}.wav"
                     xml_path = filename.parent / f"{filename.stem}.xml"
                     start_dt = get_datetime(wav_path, self.prefixes)
                     # Must have a start date to be valid and also must have a corresponding xml file
                     if start_dt and xml_path.exists():
-                        wav_files.append(SoundTrapWavFile(wav_path.as_posix(), xml_path, start_dt))
+                        wav_files.append(
+                            SoundTrapWavFile(wav_path.as_posix(), xml_path, start_dt)
+                        )
             else:
                 # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
                 # dates
@@ -90,7 +96,9 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
 
                 operation_parameters = {"Bucket": bucket}
                 page_iterator = paginator.paginate(**operation_parameters)
-                self.log.info(f"Searching in bucket: {bucket} for .wav and .xml files between {start_dt} and {end_dt}")
+                self.log.info(
+                    f"Searching in bucket: {bucket} for .wav and .xml files between {start_dt} and {end_dt}"
+                )
 
                 # list the objects in the bucket
                 # loop through the objects and check if they match the search pattern
@@ -110,9 +118,13 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                             wav_uri = f"s3://{bucket}/{key}"
                             wav_dt = get_datetime(wav_uri, self.prefixes)
                             if wav_dt:
-                                wav_files.append(SoundTrapWavFile(wav_uri, xml_path, wav_dt))
+                                wav_files.append(
+                                    SoundTrapWavFile(wav_uri, xml_path, wav_dt)
+                                )
 
-            self.log.info(f"Found {len(wav_files)} files to process that cover the period {start_dt} - {end_dt}")
+            self.log.info(
+                f"Found {len(wav_files)} files to process that cover the period {start_dt} - {end_dt}"
+            )
 
             if len(wav_files) == 0:
                 return
@@ -121,8 +133,10 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             wav_files.sort(key=lambda x: x.start)
 
             # create a dataframe from the wav files
-            self.log.info(f"Creating dataframe from {len(wav_files)} files spanning "
-                          f"{wav_files[0].start} to {wav_files[-1].start}...")
+            self.log.info(
+                f"Creating dataframe from {len(wav_files)} files spanning "
+                f"{wav_files[0].start} to {wav_files[-1].start}..."
+            )
             for wc in wav_files:
                 df_wav = wc.to_df()
 

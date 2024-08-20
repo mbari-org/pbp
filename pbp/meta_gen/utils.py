@@ -43,7 +43,7 @@ def extract_timecode(filename: str, prefixes: List[str]):
         "underscore_format1": r"{}[._]?(\d{{8}})_(\d{{6}})\.\w+$",
         "underscore_format2": r"{}[._]?(\d{{6}})_(\d{{6}})\.\w+$",
         "dot_format": r"{}[._]?(\d{{12}})\.\w+$",
-        "iso_format": r"{}[._]?(\d{{8}}T\d{{6}}Z)\.\w+$"
+        "iso_format": r"{}[._]?(\d{{8}}T\d{{6}}Z)\.\w+$",
     }
     for prefix in prefixes:
         for pattern_name, pattern in patterns.items():
@@ -72,12 +72,14 @@ def get_datetime(time_str: str, prefixes: List[str]):
     time_str = extract_timecode(time_str, prefixes)
     if time_str is None:
         return None
-    possible_dt_formats = ["%Y%m%d_%H%M%S",
-                           "%y%m%d_%H%M%S",
-                           "%y%m%d%H%M%S",
-                           "%Y%m%d%H%M%S",
-                           "%Y%m%dT%H%M%SZ",
-                           "%Y%m%dT%H%M%S"]
+    possible_dt_formats = [
+        "%Y%m%d_%H%M%S",
+        "%y%m%d_%H%M%S",
+        "%y%m%d%H%M%S",
+        "%Y%m%d%H%M%S",
+        "%Y%m%dT%H%M%SZ",
+        "%Y%m%dT%H%M%S",
+    ]
     for fmt in possible_dt_formats:
         try:
             return datetime.strptime(time_str, fmt)
