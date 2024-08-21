@@ -173,7 +173,7 @@ class JsonGenerator:
             The corrected dataframe
         """
         self.log.info(
-        "Using file start times as is, setting jitter to 0 and calculating end times."
+            "Using file start times as is, setting jitter to 0 and calculating end times."
         )
         # calculate the difference between each row start time and save as diff in a copy of the dataframe
         day_df = day_df.copy()
