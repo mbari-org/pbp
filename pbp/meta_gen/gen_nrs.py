@@ -80,6 +80,8 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                     sorted(sound_path.rglob(ext)), prefix="Searching : "
                 ):
                     f_dt = utils.get_datetime(filename, self.prefixes)
+                    if f_dt is None:
+                        continue
                     if start_dt <= f_dt <= end_dt:
                         self.log.info(f"Found file {filename} with timestamp {f_dt}")
                         if ext == "*.flac":
