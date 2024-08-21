@@ -12,12 +12,11 @@ import pytz
 from datetime import timedelta
 from pathlib import Path
 from progressbar import progressbar
-from pbp.meta_gen.utils import get_datetime
 
 from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
 from pbp.meta_gen.meta_reader import SoundTrapWavFile
 from pbp.meta_gen.json_generator import JsonGenerator
-from pbp.meta_gen.utils import parse_s3_or_gcp_url, InstrumentType
+from pbp.meta_gen.utils import parse_s3_or_gcp_url, InstrumentType, get_datetime, plot_daily_coverage
 
 
 class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
@@ -82,7 +81,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                     xml_path = filename.parent / f"{filename.stem}.xml"
                     start_dt = get_datetime(wav_path, self.prefixes)
                     # Must have a start date to be valid and also must have a corresponding xml file
-                    if start_dt and xml_path.exists():
+                    if start_dt and xml_path.exists() and start_dt <= start_dt <= end_dt:
                         wav_files.append(
                             SoundTrapWavFile(wav_path.as_posix(), xml_path, start_dt)
                         )
@@ -105,22 +104,23 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                 for page in page_iterator:
                     for obj in page["Contents"]:
                         key = obj["Key"]
+                        uri = f"s3://{bucket}/{key}"
+                        key_dt = get_datetime(uri, self.prefixes)
+                        xml_path = xml_cache_path / key
+                        xml_path = xml_path.with_suffix(".xml")
+                        key_xml = key.replace(".wav", ".log.xml")
 
-                        if ".xml" in key:
-                            xml_path = xml_cache_path / key
-
-                            # Check if the xml file is in the cache directory and download it if not
-                            if not xml_path.exists():
-                                self.log.info(f"Downloading {key} ...")
-                                client.download_file(bucket, key, xml_path)
-
-                        if ".wav" in key:
-                            wav_uri = f"s3://{bucket}/{key}"
-                            wav_dt = get_datetime(wav_uri, self.prefixes)
-                            if wav_dt:
-                                wav_files.append(
-                                    SoundTrapWavFile(wav_uri, xml_path, wav_dt)
-                                )
+                        if key_dt is None:
+                            continue
+                        if start_dt <= key_dt <= end_dt and key.endswith(".wav"):
+                            # download the associated xml file to the wav file and create a SoundTrapWavFile object
+                            try:
+                                self.log.info(f"Downloading {key_xml} ...")
+                                client.download_file(bucket, key_xml, xml_path)
+                                wav_files.append(SoundTrapWavFile(uri, xml_path, key_dt))
+                            except Exception as ex:
+                                self.log.error(f"Could not download {key_xml} - {str(ex)}")
+                                continue
 
             self.log.info(
                 f"Found {len(wav_files)} files to process that cover the period {start_dt} - {end_dt}"
@@ -167,6 +167,10 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                     False,
                 )
                 json_gen.run()
+
+            # plot the daily coverage
+            plot_file = plot_daily_coverage(InstrumentType.SOUNDTRAP, self.df, self.json_base_dir, self.start, self.end)
+            self.log.info(f"Coverage plot saved to {plot_file}")
 
 
 if __name__ == "__main__":

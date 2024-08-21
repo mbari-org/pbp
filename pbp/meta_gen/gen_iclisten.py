@@ -1,7 +1,7 @@
 # pbp, Apache License 2.0
 # Filename: metadata/generator/gen_iclisten.py
 # Description:  Captures ICListen wav metadata in a pandas dataframe from either a local directory or S3 bucket.
-
+import os
 from datetime import timedelta
 from datetime import datetime
 from typing import List
@@ -11,7 +11,7 @@ import boto3
 import pandas as pd
 from pathlib import Path
 from progressbar import progressbar
-import pbp.meta_gen.utils as utils
+from pbp.meta_gen.utils import InstrumentType, parse_s3_or_gcp_url, get_datetime, plot_daily_coverage
 from pbp.meta_gen.json_generator import JsonGenerator
 from pbp.meta_gen.meta_reader import GenericWavFile
 from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
@@ -54,7 +54,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             f"{self.log_prefix} Generating metadata for {self.start} to {self.end}..."
         )
 
-        bucket_name, prefix, scheme = utils.parse_s3_or_gcp_url(self.audio_loc)
+        bucket_name, prefix, scheme = parse_s3_or_gcp_url(self.audio_loc)
 
         # gs is not supported for icListen
         if scheme == "gs":
@@ -84,7 +84,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                     for filename in progressbar(
                         sorted(wav_path.rglob("*.wav")), prefix="Searching : "
                     ):
-                        wav_dt = utils.get_datetime(filename, self.prefixes)
+                        wav_dt = get_datetime(filename, self.prefixes)
                         if wav_dt and start_dt <= wav_dt <= end_dt:
                             self.log.info(
                                 f"Found file {filename} with timestamp {wav_dt}"
@@ -92,7 +92,11 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                             wav_files.append(GenericWavFile(self.log, filename, wav_dt))
 
                 if scheme == "s3":
-                    client = boto3.client("s3")
+                    kwargs = {}
+                    aws_region = os.getenv("AWS_REGION")
+                    if aws_region is not None:
+                        kwargs["region_name"] = aws_region
+                    client = boto3.client("s3", **kwargs)
                     for day_hour in pd.date_range(start=start_dt, end=end_dt, freq="h"):
                         bucket = f"{bucket_name}-{day_hour.year:04d}"
 
@@ -117,7 +121,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
                                 for obj in page["Contents"]:
                                     key = obj["Key"]
-                                    wav_dt = utils.get_datetime(
+                                    wav_dt = get_datetime(
                                         f"s3://{bucket}/{key}", self.prefixes
                                     )
                                     if wav_dt is None:
@@ -165,7 +169,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                     self.df,
                     self.json_base_dir,
                     day,
-                    utils.InstrumentType.NRS,
+                    InstrumentType.ICLISTEN,
                     True,
                     self.seconds_per_file,
                 )
@@ -174,6 +178,8 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             except Exception as ex:
                 self.log.exception(str(ex))
 
+        plot_file = plot_daily_coverage(InstrumentType.ICLISTEN, self.df, self.json_base_dir, self.start, self.end)
+        self.log.info(f"Plot file: {plot_file}")
 
 if __name__ == "__main__":
     from pbp.logging_helper import create_logger

@@ -17,7 +17,7 @@ from pbp.meta_gen import utils
 from pbp.meta_gen.json_generator import JsonGenerator
 from pbp.meta_gen.meta_reader import FlacFile, GenericWavFile as WavFile
 from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
-from pbp.meta_gen.utils import parse_s3_or_gcp_url, InstrumentType
+from pbp.meta_gen.utils import parse_s3_or_gcp_url, InstrumentType, plot_daily_coverage
 
 
 class NRSMetadataGenerator(MetadataGeneratorAbstract):
@@ -152,6 +152,9 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             except Exception as ex:
                 self.log.exception(str(ex))
 
+        # plot the daily coverage
+        plot_file = plot_daily_coverage(InstrumentType.NRS, self.df, self.json_base_dir, self.start, self.end)
+        self.log.info(f"Coverage plot saved to {plot_file}")
 
 if __name__ == "__main__":
     from pbp.logging_helper import create_logger

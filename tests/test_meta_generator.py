@@ -19,7 +19,6 @@ from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
 from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
 from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
 
-
 # which is .gitignore'ed
 OUT_BASE_DIR = Path("tests/json_generator_tmp")
 
@@ -46,38 +45,6 @@ def create_json_dir(name: str) -> Path:
     return json_dir
 
 
-def get_aws_account() -> Union[str, None]:
-    """
-    Get the account number associated with this user
-    :return:
-    """
-    try:
-        account_number = boto3.client("sts").get_caller_identity()["Account"]
-        print(f"Found account {account_number}")
-        return account_number
-    except ClientError as e:
-        print(e)
-        msg = (
-            "Could not get account number from AWS. Check your config.ini file. "
-            "Account number is not set in the config.ini file and AWS credentials are not configured."
-        )
-        print(msg)
-        return None
-    except botocore.exceptions.NoCredentialsError as e:
-        print(e)
-        return None
-
-
-# Check if an AWS account is configured by checking if it can access the model with the default credentials
-AWS_AVAILABLE = False
-if get_aws_account():
-    AWS_AVAILABLE = True
-
-
-@pytest.mark.skipif(
-    not AWS_AVAILABLE,
-    reason="This test is excluded because it requires a valid AWS account",
-)
 def test_soundtrap_generator():
     """
     Test fixture for SoundTrapMetadataGenerator.
@@ -100,7 +67,7 @@ def test_soundtrap_generator():
     )
     gen.run()
 
-    # There should be two files in the json directory named 20230715.json and 20230716.json
+    # There should be two files in the json directory - one for each day
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 2
     assert (json_dir / "2023/20230715.json").exists()
@@ -112,11 +79,10 @@ def test_soundtrap_generator():
             json_objects = json.load(f)
             assert len(json_objects) == 5
 
+    # There should also be a coverage plot in the base json directory
+    coverage_plot = json_dir / "soundtrap_coverage_20230715_20230716.png"
+    assert coverage_plot.exists()
 
-@pytest.mark.skipif(
-    not AWS_AVAILABLE,
-    reason="This test is excluded because it requires a valid AWS account",
-)
 def test_iclisten_generator():
     """
     Test fixture for IcListenMetadataGenerator.
@@ -136,7 +102,7 @@ def test_iclisten_generator():
         log=log,
         uri="s3://pacific-sound-256khz",
         json_base_dir=json_dir.as_posix(),
-        prefixes=["MARS"],
+        prefixes=["MARS_"],
         start=start,
         end=end,
         seconds_per_file=600,
@@ -152,6 +118,10 @@ def test_iclisten_generator():
     with open(json_file) as f:
         json_objects = json.load(f)
         assert len(json_objects) == 145
+
+    # There should also be a coverage plot in the base json directory
+    coverage_plot = json_dir / "soundtrap_coverage_20230718_20230718.png"
+    assert coverage_plot.exists()
 
 
 def test_nrs_generator():
@@ -171,7 +141,7 @@ def test_nrs_generator():
         log=log,
         uri="gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio",
         json_base_dir=json_dir.as_posix(),
-        prefixes=["NRS11"],
+        prefixes=["NRS11_"],
         start=start,
         end=end,
         seconds_per_file=14400.0,
@@ -187,6 +157,10 @@ def test_nrs_generator():
     with open(json_file) as f:
         json_objects = json.load(f)
         assert len(json_objects) == 7
+
+    # There should also be a coverage plot in the base json directory
+    coverage_plot = json_dir / "soundtrap_coverage_20191024_20191024.png"
+    assert coverage_plot.exists()
 
 
 def test_datetime_support():
