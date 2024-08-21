@@ -2,6 +2,8 @@
 
 2024-08
 
+- 1.2.7 mainly to test new release-pypi action
+
 - 1.2.6 adjust python dep to `python = ">=3.9,<3.12.0"`
  
 - 1.2.5 `pbp-plot` now explicitly uses `h5netcdf` when calling `xarray.open_dataset`. 

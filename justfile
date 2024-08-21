@@ -254,8 +254,8 @@ run-docker-for-notebooks dir='notebooks':
 # package build/publishing:
 
 # Build and publish package
-publish:
-    poetry publish --build
+publish *args="":
+    poetry publish --build {{args}}
 
 ##############
 # development:
