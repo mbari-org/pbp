@@ -23,4 +23,6 @@ jobs:
       - run: sudo apt-get install libsndfile1
       - run: just install-poetry
       - run: poetry install
-      - run: just publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_PASSWORD }}
+      - run: just publish
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.POETRY_PYPI_TOKEN_PYPI }}
