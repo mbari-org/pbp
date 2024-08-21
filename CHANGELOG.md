@@ -2,6 +2,7 @@
 
 2024-08
 
+- 1.3.0 while retying clean publishing to pypi
 - 1.2.8 - just a bit of cleanup, including removal of the release-docker workflow.
   (dockerization is happening elsewhere, but doing it here can be revisited later).
 - 1.2.7 mainly to test new release-pypi action
