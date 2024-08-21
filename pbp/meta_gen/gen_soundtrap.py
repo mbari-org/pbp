@@ -18,7 +18,12 @@ from progressbar import progressbar
 from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
 from pbp.meta_gen.meta_reader import SoundTrapWavFile
 from pbp.meta_gen.json_generator import JsonGenerator
-from pbp.meta_gen.utils import parse_s3_or_gcp_url, InstrumentType, get_datetime, plot_daily_coverage
+from pbp.meta_gen.utils import (
+    parse_s3_or_gcp_url,
+    InstrumentType,
+    get_datetime,
+    plot_daily_coverage,
+)
 
 
 class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
@@ -92,7 +97,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                 # dates
                 self.log.info(f"Searching between {start_dt} and {end_dt}")
 
-                client = boto3.client('s3', config=Config(signature_version=UNSIGNED))
+                client = boto3.client("s3", config=Config(signature_version=UNSIGNED))
                 paginator = client.get_paginator("list_objects")
 
                 operation_parameters = {"Bucket": bucket}
@@ -121,7 +126,9 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                                 client.download_file(bucket, key_xml, xml_path)
                                 wav_files.append(SoundTrapWavFile(uri, xml_path, key_dt))
                             except Exception as ex:
-                                self.log.error(f"Could not download {key_xml} - {str(ex)}")
+                                self.log.error(
+                                    f"Could not download {key_xml} - {str(ex)}"
+                                )
                                 continue
 
             self.log.info(
@@ -171,7 +178,13 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                 json_gen.run()
 
             # plot the daily coverage
-            plot_file = plot_daily_coverage(InstrumentType.SOUNDTRAP, self.df, self.json_base_dir, self.start, self.end)
+            plot_file = plot_daily_coverage(
+                InstrumentType.SOUNDTRAP,
+                self.df,
+                self.json_base_dir,
+                self.start,
+                self.end,
+            )
             self.log.info(f"Coverage plot saved to {plot_file}")
 
 

@@ -13,7 +13,12 @@ from botocore.client import Config
 import pandas as pd
 from pathlib import Path
 from progressbar import progressbar
-from pbp.meta_gen.utils import InstrumentType, parse_s3_or_gcp_url, get_datetime, plot_daily_coverage
+from pbp.meta_gen.utils import (
+    InstrumentType,
+    parse_s3_or_gcp_url,
+    get_datetime,
+    plot_daily_coverage,
+)
 from pbp.meta_gen.json_generator import JsonGenerator
 from pbp.meta_gen.meta_reader import GenericWavFile
 from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
@@ -94,7 +99,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                             wav_files.append(GenericWavFile(self.log, filename, wav_dt))
 
                 if scheme == "s3":
-                    client = boto3.client('s3', config=Config(signature_version=UNSIGNED))
+                    client = boto3.client("s3", config=Config(signature_version=UNSIGNED))
                     for day_hour in pd.date_range(start=start_dt, end=end_dt, freq="h"):
                         bucket = f"{bucket_name}-{day_hour.year:04d}"
 
@@ -176,8 +181,11 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             except Exception as ex:
                 self.log.exception(str(ex))
 
-        plot_file = plot_daily_coverage(InstrumentType.ICLISTEN, self.df, self.json_base_dir, self.start, self.end)
+        plot_file = plot_daily_coverage(
+            InstrumentType.ICLISTEN, self.df, self.json_base_dir, self.start, self.end
+        )
         self.log.info(f"Plot file: {plot_file}")
+
 
 if __name__ == "__main__":
     from pbp.logging_helper import create_logger

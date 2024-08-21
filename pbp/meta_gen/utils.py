@@ -92,7 +92,13 @@ def get_datetime(time_str: str, prefixes: List[str]):
     return None
 
 
-def plot_daily_coverage(instrument_type: InstrumentType, df: pd.DataFrame, base_dir: str, start: datetime, end: datetime) -> str:
+def plot_daily_coverage(
+    instrument_type: InstrumentType,
+    df: pd.DataFrame,
+    base_dir: str,
+    start: datetime,
+    end: datetime,
+) -> str:
     """
     Plot the daily coverage of the recordings
     :param instrument_type: The type of instrument, e.g. NRS, ICLISTEN, SOUNDTRAP
@@ -104,20 +110,22 @@ def plot_daily_coverage(instrument_type: InstrumentType, df: pd.DataFrame, base_
     """
     # Create a plot of the dataframe with the x-axis as the month, and the y-axis as the daily recording coverage,
     # which is percent of the day covered by recordings
-    plt.rcParams['text.usetex'] = False
+    plt.rcParams["text.usetex"] = False
     df["duration"] = (df["end"] - df["start"]).dt.total_seconds()
     ts_df = df[["start", "duration"]].copy()
-    ts_df.set_index('start', inplace=True)
-    daily_sum_df = ts_df.resample('D').sum()
+    ts_df.set_index("start", inplace=True)
+    daily_sum_df = ts_df.resample("D").sum()
     daily_sum_df["coverage"] = 100 * daily_sum_df["duration"] / 86400
-    daily_sum_df["coverage"] = daily_sum_df["coverage"].round()  # round to nearest integer
+    daily_sum_df["coverage"] = daily_sum_df[
+        "coverage"
+    ].round()  # round to nearest integer
     plot = daily_sum_df["coverage"].plot()
     plot.set_ylabel("Daily Coverage (%)")
     plot.set_xlabel("Date")
     plot.set_xticks(daily_sum_df.index.values)
     # Angle the x-axis labels for better readability and force them to be in the format YYYY-MM-DD
-    plot.set_xticklabels([x.strftime('%Y-%m-%d') for x in daily_sum_df.index])
-    plot.set_xticklabels(plot.get_xticklabels(), rotation=45, horizontalalignment='right')
+    plot.set_xticklabels([x.strftime("%Y-%m-%d") for x in daily_sum_df.index])
+    plot.set_xticklabels(plot.get_xticklabels(), rotation=45, horizontalalignment="right")
     # Adjust the title based on the instrument type
     if instrument_type == InstrumentType.NRS:
         plot.set_title("Daily Coverage of NRS Recordings")

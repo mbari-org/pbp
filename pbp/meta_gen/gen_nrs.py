@@ -107,7 +107,9 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                         sound_files.append(WavFile(self.log, f_path, f_dt))
                 # delay to avoid 400 error
                 if i % 100 == 0:
-                    self.log.info(f"{i} files searched...found {len(sound_files)} files that match the search pattern")
+                    self.log.info(
+                        f"{i} files searched...found {len(sound_files)} files that match the search pattern"
+                    )
                     time.sleep(1)
                 if f_dt > end_dt:
                     break
@@ -152,8 +154,11 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                 self.log.exception(str(ex))
 
         # plot the daily coverage
-        plot_file = plot_daily_coverage(InstrumentType.NRS, self.df, self.json_base_dir, self.start, self.end)
+        plot_file = plot_daily_coverage(
+            InstrumentType.NRS, self.df, self.json_base_dir, self.start, self.end
+        )
         self.log.info(f"Coverage plot saved to {plot_file}")
+
 
 if __name__ == "__main__":
     from pbp.logging_helper import create_logger

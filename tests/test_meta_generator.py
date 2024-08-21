@@ -83,6 +83,7 @@ def test_soundtrap_generator():
     coverage_plot = json_dir / "soundtrap_coverage_20230715_20230716.jpg"
     assert coverage_plot.exists()
 
+
 def test_iclisten_generator():
     """
     Test fixture for IcListenMetadataGenerator.
