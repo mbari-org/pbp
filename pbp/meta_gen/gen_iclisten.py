@@ -7,6 +7,8 @@ from datetime import datetime
 from typing import List
 
 import boto3
+from botocore import UNSIGNED
+from botocore.client import Config
 
 import pandas as pd
 from pathlib import Path
@@ -92,11 +94,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                             wav_files.append(GenericWavFile(self.log, filename, wav_dt))
 
                 if scheme == "s3":
-                    kwargs = {}
-                    aws_region = os.getenv("AWS_REGION")
-                    if aws_region is not None:
-                        kwargs["region_name"] = aws_region
-                    client = boto3.client("s3", **kwargs)
+                    client = boto3.client('s3', config=Config(signature_version=UNSIGNED))
                     for day_hour in pd.date_range(start=start_dt, end=end_dt, freq="h"):
                         bucket = f"{bucket_name}-{day_hour.year:04d}"
 

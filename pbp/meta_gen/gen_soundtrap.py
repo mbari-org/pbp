@@ -5,6 +5,8 @@ import urllib
 from typing import List
 
 import boto3
+from botocore import UNSIGNED
+from botocore.client import Config
 import datetime
 import pandas as pd
 import pytz
@@ -90,7 +92,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                 # dates
                 self.log.info(f"Searching between {start_dt} and {end_dt}")
 
-                client = boto3.client("s3")
+                client = boto3.client('s3', config=Config(signature_version=UNSIGNED))
                 paginator = client.get_paginator("list_objects")
 
                 operation_parameters = {"Bucket": bucket}
