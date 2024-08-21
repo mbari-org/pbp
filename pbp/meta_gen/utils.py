@@ -111,9 +111,11 @@ def plot_daily_coverage(instrument_type: InstrumentType, df: pd.DataFrame, base_
     plot = daily_sum_df["coverage"].plot()
     plot.set_ylabel("Daily Coverage (%)")
     plot.set_xlabel("Date")
-    plot.set_xticklabels([x.strftime('%Y-%m-%d') for x in daily_sum_df.index])
+    plot.set_xticks(daily_sum_df.index.values)
     # Angle the x-axis labels for better readability and force them to be in the format YYYY-MM-DD
+    plot.set_xticklabels([x.strftime('%Y-%m-%d') for x in daily_sum_df.index])
     plot.set_xticklabels(plot.get_xticklabels(), rotation=45, horizontalalignment='right')
+    # Adjust the title based on the instrument type
     if instrument_type == InstrumentType.NRS:
         plot.set_title("Daily Coverage of NRS Recordings")
     elif instrument_type == InstrumentType.ICLISTEN:

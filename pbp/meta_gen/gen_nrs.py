@@ -96,7 +96,6 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             blobs = bucket_obj.list_blobs(prefix=prefix)
             for i, blob in enumerate(blobs):
                 f_path = f"gs://{bucket}/{blob.name}"
-                self.log.info(f"Found {f_path}")
                 f_dt = utils.get_datetime(f_path, self.prefixes)
                 if f_dt is None:
                     continue
@@ -108,13 +107,13 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                         sound_files.append(WavFile(self.log, f_path, f_dt))
                 # delay to avoid 400 error
                 if i % 100 == 0:
-                    self.log.info(f"{i} files processed")
+                    self.log.info(f"{i} files searched...found {len(sound_files)} files that match the search pattern")
                     time.sleep(1)
                 if f_dt > end_dt:
                     break
 
         self.log.info(
-            f"Found {len(sound_files)} files to process that cover the period {start_dt} - {end_dt}"
+            f"Found {len(sound_files)} files to process that cover the expanded period {start_dt} - {end_dt}"
         )
 
         if len(sound_files) == 0:

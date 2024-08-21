@@ -86,7 +86,7 @@ class JsonGenerator:
 
             # get the file list that covers the requested day
             self.log.info(
-                f'Found {len(day_df)} files from day {self.day}, starting {day_df.iloc[0]["start"]} ending {day_df.iloc[-1]["end"]}'
+                f'Found {len(day_df)} files for day {self.day}, between {day_df.iloc[0]["start"]} and {day_df.iloc[-1]["end"]}'
             )
 
             # if there are no files, then return
@@ -172,10 +172,7 @@ class JsonGenerator:
         :return:
             The corrected dataframe
         """
-        self.log.warning(
-            f"Cannot correct {self.day}. Using file start times as is, setting jitter to 0 and using "
-            f"calculated end times."
-        )
+        self.log.info(f"Using file start times as is, setting jitter to 0 and calculating end times.")
         # calculate the difference between each row start time and save as diff in a copy of the dataframe
         day_df = day_df.copy()
         day_df["diff"] = day_df["start"].diff()

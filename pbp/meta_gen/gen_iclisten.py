@@ -138,7 +138,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
                 self.log.info(
                     f"{self.log_prefix} Found {len(wav_files)} files to process that "
-                    f"cover the period {start_dt} - {end_dt}"
+                    f"cover the expanded period {start_dt} - {end_dt}"
                 )
 
                 if len(wav_files) == 0:
