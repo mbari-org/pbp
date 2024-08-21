@@ -43,10 +43,10 @@ def extract_timecode(filename: str, prefixes: List[str]):
     # Define the regex patterns for the different formats, e.g. MARS_YYYYMMDD_HHMMSS.wav, NRS11_20191023_222213.flac,
     # 6000.221111155338.wav
     patterns = {
-        "underscore_format1": r"{}[._]?(\d{{8}})_(\d{{6}})\.\w+$",
-        "underscore_format2": r"{}[._]?(\d{{6}})_(\d{{6}})\.\w+$",
-        "dot_format": r"{}[._]?(\d{{12}})\.\w+$",
-        "iso_format": r"{}[._]?(\d{{8}}T\d{{6}}Z)\.\w+$",
+        "underscore_format1": r"{}[._]?(\d{{8}})_(\d{{6}})\.",
+        "underscore_format2": r"{}[._]?(\d{{6}})_(\d{{6}})\.",
+        "dot_format": r"{}[._]?(\d{{12}})\.",
+        "iso_format": r"{}[._]?(\d{{8}}T\d{{6}}Z)\.",
     }
     for prefix in prefixes:
         for pattern_name, pattern in patterns.items():

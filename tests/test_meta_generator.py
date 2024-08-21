@@ -172,8 +172,10 @@ def test_datetime_support():
         "gs://6000.221011155338.wav",
         "MARS_20191022T235743Z.wav",
         "6000.230111155338.wav",
+        "PacFLT_2_TM02_20130515_234500.d100.x.wav",
+        "PacFLT_2_TM02_20130515_234500.d100.x.wav"
     ]
-    prefixes = ["MARS_", "6550", "NRS11_", "6000", "MARS_", "6000"]
+    prefixes = ["MARS_", "6550", "NRS11_", "6000", "MARS_", "6000", "PacFLT_2_TM02_","PacFLT_2_TM02"]
     expected = [
         datetime(2019, 10, 22, 23, 57, 58),
         datetime(2022, 11, 13, 15, 53, 38),
@@ -181,6 +183,8 @@ def test_datetime_support():
         datetime(2022, 10, 11, 15, 53, 38),
         datetime(2019, 10, 22, 23, 57, 43),
         datetime(2023, 1, 11, 15, 53, 38),
+        datetime(2013, 5, 15, 23, 45, 0),
+        datetime(2013, 5, 15, 23, 45, 0)
     ]
     from pbp.meta_gen.utils import get_datetime
 
