@@ -8,6 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 class InstrumentType:
@@ -103,6 +104,7 @@ def plot_daily_coverage(instrument_type: InstrumentType, df: pd.DataFrame, base_
     """
     # Create a plot of the dataframe with the x-axis as the month, and the y-axis as the daily recording coverage,
     # which is percent of the day covered by recordings
+    plt.rcParams['text.usetex'] = False
     df["duration"] = (df["end"] - df["start"]).dt.total_seconds()
     ts_df = df[["start", "duration"]].copy()
     ts_df.set_index('start', inplace=True)
