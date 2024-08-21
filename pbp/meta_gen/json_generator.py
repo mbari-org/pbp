@@ -11,10 +11,10 @@ import shutil
 import tempfile
 import json
 
-from pbp.json_generator.utils import InstrumentType
+from pbp.meta_gen.utils import InstrumentType
 
 
-class MetadataCorrector:
+class JsonGenerator:
     def __init__(
         self,
         log,  # : loguru.Logger,
@@ -26,7 +26,8 @@ class MetadataCorrector:
         seconds_per_file: float = -1,
     ):
         """
-        Correct the metadata for a day and save to a json file
+        Generate the metadata for a day and save to a json file
+        Only supports IcListen for drift correction
         :param raw_df:
             The dataframe containing the raw metadata to correct
         :param json_path_out:
@@ -36,7 +37,7 @@ class MetadataCorrector:
         :param instrument_type:
             The type of instrument the metadata is coming from: NRS, ICLISTEN, SOUNDTRAP
         :param time_correct:
-            True if need to adjust the time stamp based only supported for ICLISTEN
+            True to need to adjust the time stamp based only supported for ICLISTEN
         :param seconds_per_file:
             (optional) number of seconds in each file
         """
@@ -85,7 +86,7 @@ class MetadataCorrector:
 
             # get the file list that covers the requested day
             self.log.info(
-                f'Found {len(day_df)} files from day {self.day}, starting {day_df.iloc[0]["start"]} ending {day_df.iloc[-1]["end"]}'
+                f'Found {len(day_df)} files for day {self.day}, between {day_df.iloc[0]["start"]} and {day_df.iloc[-1]["end"]}'
             )
 
             # if there are no files, then return
@@ -95,10 +96,7 @@ class MetadataCorrector:
 
             for index, row in day_df.iterrows():
                 self.log.debug(f'File {row["uri"]} duration {row["duration_secs"]} ')
-                if (
-                    self.seconds_per_file > 0
-                    and row["duration_secs"] != self.seconds_per_file
-                ):
+                if 0 < self.seconds_per_file != row["duration_secs"]:
                     self.log.warning(
                         f'File {row["duration_secs"]}  != {self.seconds_per_file}. File is not complete'
                     )
@@ -174,9 +172,8 @@ class MetadataCorrector:
         :return:
             The corrected dataframe
         """
-        self.log.warning(
-            f"Cannot correct {self.day}. Using file start times as is, setting jitter to 0 and using "
-            f"calculated end times."
+        self.log.info(
+            "Using file start times as is, setting jitter to 0 and calculating end times."
         )
         # calculate the difference between each row start time and save as diff in a copy of the dataframe
         day_df = day_df.copy()
@@ -190,13 +187,13 @@ class MetadataCorrector:
 
     def save_day(self, day: datetime.datetime, day_df: pd.DataFrame, prefix: str = ""):
         """
-        Save the day's metadata to a single json file either locally or to s3
+        Save the day's metadata to a single json file locally
         :param day:
             The day to save
         :param day_df:
             The dataframe containing the metadata for the day
         :param prefix:
-            An optional prefix for the filename
+            An optional prefixes for the filename
         :return:
         """
         # if the exception column is full of empty strings, then drop it

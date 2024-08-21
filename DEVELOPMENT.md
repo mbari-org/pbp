@@ -45,7 +45,7 @@ plugins: syrupy-4.6.1, cov-4.1.0
 collected 14 items
 
 tests/test_file_helper.py .                                               [  7%]
-tests/test_json_generator.py ss.                                          [ 28%]
+tests/test_meta_generator.py ...                                          [ 28%]
 tests/test_json_support.py ...                                            [ 50%]
 tests/test_metadata.py ...                                                [ 71%]
 tests/test_misc.py ..                                                     [ 85%]

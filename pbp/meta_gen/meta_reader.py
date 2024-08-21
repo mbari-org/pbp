@@ -1,6 +1,8 @@
 # pbp, Apache License 2.0
-# Filename: json_generator/metadata_extractor.py
-# Description: Utilities for wav file metadata reading. Supports SoundTrap, NRS and and icListen audio files
+# Filename: meta_gen/meta_reader.py
+# Description: Utilities for efficiently reading audio metadata either locally or from a remote source.
+# Wraps the metadata into classes for easy access and transformation into a pandas dataframe.
+# Supports SoundTrap, NRS and icListen audio files
 
 from pathlib import Path
 from typing import Optional
@@ -12,7 +14,7 @@ import soundfile as sf
 import pandas as pd
 from datetime import datetime, timedelta
 import xml.etree.ElementTree as ET
-from pbp.json_generator.utils import parse_s3_or_gcp_url
+from pbp.meta_gen.utils import parse_s3_or_gcp_url
 
 
 class AudioFile:
@@ -38,7 +40,7 @@ class AudioFile:
         return True if len(self.exception) > 0 else False
 
     def to_df(self):
-        # if the self.path_or_url is a url, then add to the data frame with the appropriate prefix
+        # if the self.path_or_url is a url, then add to the data frame with the appropriate prefixes
         if "s3://" in self.path_or_url or "gs://" in self.path_or_url:
             df = pd.DataFrame(
                 {

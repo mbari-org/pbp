@@ -1,10 +1,10 @@
 from datetime import datetime
 from pathlib import Path
 
-from pbp.json_generator.gen_nrs import NRSMetadataGenerator
-from pbp.json_generator.gen_iclisten import IcListenMetadataGenerator
-from pbp.json_generator.gen_soundtrap import SoundTrapMetadataGenerator
-from pbp.main_json_generator_args import parse_arguments
+from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
+from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
+from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
+from pbp.main_meta_generator_args import parse_arguments
 
 # Some imports, in particular involving data processing, cause a delay that is
 # noticeable when just running the --help option. We get around this issue by
@@ -38,7 +38,7 @@ def main():
                 log=log,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
-                prefix=opts.prefix,
+                prefixes=opts.prefix,
                 start=start,
                 end=end,
             )
@@ -48,7 +48,7 @@ def main():
                 log=log,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
-                prefix=opts.prefix,
+                prefixes=opts.prefix,
                 start=start,
                 end=end,
             )
@@ -59,7 +59,7 @@ def main():
                 log=log,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),
-                prefix=opts.prefix,
+                prefixes=opts.prefix,
                 start=start,
                 end=end,
             )
