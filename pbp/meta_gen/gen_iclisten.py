@@ -1,7 +1,6 @@
 # pbp, Apache License 2.0
 # Filename: metadata/generator/gen_iclisten.py
 # Description:  Captures ICListen wav metadata in a pandas dataframe from either a local directory or S3 bucket.
-import os
 from datetime import timedelta
 from datetime import datetime
 from typing import List

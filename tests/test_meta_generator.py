@@ -3,14 +3,9 @@
 # Description:  Test fixtures for the json generator classes.
 # Tests the ability to generate metadata for soundtrap, iclisten, and nrs recording files.
 
-from typing import Union
 
 import json
 
-import boto3
-import botocore
-import pytest
-from botocore.exceptions import ClientError
 from datetime import datetime
 from pathlib import Path
 
