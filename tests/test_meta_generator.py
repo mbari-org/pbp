@@ -80,7 +80,7 @@ def test_soundtrap_generator():
             assert len(json_objects) == 5
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / "soundtrap_coverage_20230715_20230716.png"
+    coverage_plot = json_dir / "soundtrap_coverage_20230715_20230716.jpg"
     assert coverage_plot.exists()
 
 def test_iclisten_generator():
@@ -120,7 +120,7 @@ def test_iclisten_generator():
         assert len(json_objects) == 145
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / "soundtrap_coverage_20230718_20230718.png"
+    coverage_plot = json_dir / "soundtrap_coverage_20230718_20230718.jpg"
     assert coverage_plot.exists()
 
 
@@ -159,7 +159,7 @@ def test_nrs_generator():
         assert len(json_objects) == 7
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / "soundtrap_coverage_20191024_20191024.png"
+    coverage_plot = json_dir / "soundtrap_coverage_20191024_20191024.jpg"
     assert coverage_plot.exists()
 
 

@@ -99,6 +99,7 @@ def plot_daily_coverage(instrument_type: InstrumentType, df: pd.DataFrame, base_
     :param base_dir: The base directory to store the plot
     :param start: The start date of the recordings
     :param end: The end date of the recordings
+    :return: The path to the plot file
     """
     # Create a plot of the dataframe with the x-axis as the month, and the y-axis as the daily recording coverage,
     # which is percent of the day covered by recordings
@@ -122,7 +123,7 @@ def plot_daily_coverage(instrument_type: InstrumentType, df: pd.DataFrame, base_
         plot.set_title("Daily Coverage of icListen Recordings")
     elif instrument_type == InstrumentType.SOUNDTRAP:
         plot.set_title("Daily Coverage of SoundTrap Recordings")
-    plot_file = Path(base_dir) / f"soundtrap_coverage_{start:%Y%m%d}_{end:%Y%m%d}.png"
+    plot_file = Path(base_dir) / f"soundtrap_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
     dpi = 300
     fig = plot.get_figure()
     fig.set_size_inches(10, 5)
