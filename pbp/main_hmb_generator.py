@@ -1,4 +1,4 @@
-from pbp.main_args import parse_arguments
+from pbp.main_hmb_generator_args import parse_arguments
 
 # Some imports, in particular involving data processing, cause a delay that is
 # noticeable when just running the --help option. We get around this issue by

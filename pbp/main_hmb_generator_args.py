@@ -8,7 +8,7 @@ def parse_arguments():
     description = "Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM."
     example = """
 Examples:
-    pbp --json-base-dir=tests/json \\
+    pbp-hmb-gen --json-base-dir=tests/json \\
         --audio-base-dir=tests/wav \\
         --date=20220902 \\
         --output-dir=output

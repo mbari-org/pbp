@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "1.4.1"
+version = "1.4.2"
 description = "PyPAM based Processing"
 authors = [
     "Carlos Rueda <carueda@mbari.org>",
@@ -17,9 +17,9 @@ repository = "https://github.com/mbari-org/pbp"
 packages = [{include = "pbp"}]
 
 [tool.poetry.scripts]
-pbp = "pbp.main:main"
+pbp-hmb-gen = "pbp.main_hmb_generator:main"
 pbp-cloud = "pbp.main_cloud:main"
-pbp-plot = "pbp.plot:main"
+pbp-hmb-plot = "pbp.main_plot:main"
 pbp-meta-gen = "pbp.main_meta_generator:main"
 
 [tool.poetry.dependencies]
