@@ -11,7 +11,7 @@ instrument="SoundTrap ST600 HF, SN 6999"
 for month in $months; do
   for day in $days; do
     date=$(printf "%04d%02d%02d" "$year" "$month" "$day")
-    python src/main.py \
+    python src/main_hmb_generator.py \
            --audio-path-map-prefix="s3://pacific-sound-mb05/~/PAM_Archive/MB05/202211_6999/" \
            --date="$date" \
            --json-base-dir="/PAM_Analysis/JSON/mb05" \
