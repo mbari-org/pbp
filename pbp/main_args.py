@@ -139,7 +139,14 @@ Examples:
         "--s3",
         default=False,
         action="store_true",
-        help="s3 access involved.",
+        help="s3 access is involved, possibly with required credentials.",
+    )
+
+    parser.add_argument(
+        "--s3-unsigned",
+        default=False,
+        action="store_true",
+        help="s3 access is involved, not requiring credentials.",
     )
 
     parser.add_argument(

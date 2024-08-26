@@ -24,16 +24,21 @@ def main():
     )
 
     s3_client = None
-    if opts.s3:
+    if opts.s3 or opts.s3_unsigned:
         # pylint: disable=import-outside-toplevel
         import boto3
+        import botocore
+        from botocore.config import Config
 
-        kwargs = {}
-        aws_region = os.getenv("AWS_REGION")
-        if aws_region is not None:
-            kwargs["region_name"] = aws_region
-
-        s3_client = boto3.client("s3", **kwargs)
+        if opts.s3:
+            kwargs = {}
+            aws_region = os.getenv("AWS_REGION")
+            if aws_region is not None:
+                kwargs["region_name"] = aws_region
+            s3_client = boto3.client("s3", **kwargs)
+        else:
+            config = Config(signature_version=botocore.UNSIGNED)
+            s3_client = boto3.client("s3", config=config)
 
     gs_client = None
     if opts.gs:

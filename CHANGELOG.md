@@ -2,6 +2,8 @@
 
 2024-08
 
+- 1.4.1 - HMB generation CLI now with `--s3-unsigned` option to use unsigned config.
+
 - 1.4.0 with improved "meta-gen" functionality
 
 - 1.3.0 while retying clean publishing to pypi
