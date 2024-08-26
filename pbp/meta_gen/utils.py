@@ -120,9 +120,10 @@ def plot_daily_coverage(
         "coverage"
     ].round()  # round to nearest integer
     plot = daily_sum_df["coverage"].plot()
-    plot.set_ylabel("Daily Coverage (%)")
+    plot.set_ylabel("Daily % Recording")
     plot.set_xlabel("Date")
     plot.set_xticks(daily_sum_df.index.values)
+    plot.set_ylim(0, 102)
     # Angle the x-axis labels for better readability and force them to be in the format YYYY-MM-DD
     plot.set_xticklabels([x.strftime("%Y-%m-%d") for x in daily_sum_df.index])
     plot.set_xticklabels(plot.get_xticklabels(), rotation=45, horizontalalignment="right")
@@ -139,4 +140,5 @@ def plot_daily_coverage(
     fig.set_size_inches(10, 5)
     fig.set_dpi(dpi)
     fig.savefig(plot_file.as_posix(), bbox_inches="tight")
+    plt.close(fig)
     return plot_file.as_posix()

@@ -4,10 +4,12 @@
 # Tests the ability to generate metadata for soundtrap, iclisten, and nrs recording files.
 
 
-import json
-
+import boto3
+from botocore import UNSIGNED
+from botocore.client import Config
 from datetime import datetime
 from pathlib import Path
+import json
 
 from pbp.logging_helper import create_logger
 from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
@@ -40,14 +42,14 @@ def create_json_dir(name: str) -> Path:
     return json_dir
 
 
-def test_soundtrap_generator():
+def test_soundtrap_generator_s3():
     """
     Test fixture for SoundTrapMetadataGenerator.
-    Tests the SoundTrapMetadataGenerator class ability to generate metadata for soundtrap recording files.
+    Tests the SoundTrapMetadataGenerator class ability to generate metadata for soundtrap recording files stored in S3.
     Two files should be generated in the json directory for the dates specified.
     :return:
     """
-    log = create_test_logger("test_soundtrap_generator")
+    log = create_test_logger("test_soundtrap_generator_s3")
     json_dir = create_json_dir("soundtrap")
 
     start = datetime(2023, 7, 15)
@@ -76,6 +78,52 @@ def test_soundtrap_generator():
 
     # There should also be a coverage plot in the base json directory
     coverage_plot = json_dir / "soundtrap_coverage_20230715_20230716.jpg"
+    assert coverage_plot.exists()
+
+def test_soundtrap_generator_local():
+    """
+    Test fixture for SoundTrapMetadataGenerator.
+    Tests the SoundTrapMetadataGenerator class ability to generate metadata for soundtrap recording files stored locally
+    Two files should be generated in the json directory for the dates specified.
+    :return:
+    """
+    log = create_test_logger("test_soundtrap_generator_local")
+    json_dir = create_json_dir("soundtrap")
+
+    wav_dir = Path(__file__).parent / "wav" / "soundtrap"
+    wav_dir.mkdir(exist_ok=True, parents=True)
+
+    # Fetch a file and its associated xml from the S3 bucket
+    client = boto3.client("s3", config=Config(signature_version=UNSIGNED))
+    client.download_file("pacific-sound-ch01", "6716.221116080000.wav", (wav_dir / "6716.221116080000.wav").as_posix())
+    client.download_file("pacific-sound-ch01", "6716.221116080000.log.xml", (wav_dir / "6716.221116080000.log.xml").as_posix())
+
+
+    start = datetime(2022, 11, 16)
+    end = datetime(2022, 11, 16)
+    gen = SoundTrapMetadataGenerator(
+        log=log,
+        uri=f"file://{wav_dir.as_posix()}",
+        json_base_dir=json_dir.as_posix(),
+        prefixes=["6716"],
+        start=start,
+        end=end,
+    )
+    gen.run()
+
+    # There should be two files in the json directory - one for each day
+    json_files = list(json_dir.rglob("*.json"))
+    assert len(json_files) == 1
+    assert (json_dir / "2022/20221116.json").exists()
+
+    # The file should have 1 json object
+    for json_file in json_files:
+        with open(json_file) as f:
+            json_objects = json.load(f)
+            assert len(json_objects) == 1
+
+    # There should also be a coverage plot in the base json directory
+    coverage_plot = json_dir / "soundtrap_coverage_20221116_20221116.jpg"
     assert coverage_plot.exists()
 
 

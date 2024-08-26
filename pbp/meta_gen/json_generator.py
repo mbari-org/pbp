@@ -71,7 +71,7 @@ class JsonGenerator:
                 | ((self.raw_df["end"] >= self.day) & (self.raw_df["start"] < self.day))
             ]
 
-            self.log.debug(
+            self.log.info(
                 f"Creating metadata for day {self.day} from {len(day_df)} files..."
             )
 
@@ -160,7 +160,7 @@ class JsonGenerator:
         except Exception as e:
             self.log.exception(f"Error correcting metadata for  {self.day}. {e}")
         finally:
-            self.log.debug(
+            self.log.info(
                 f"Done correcting metadata for {self.day}. Saved to {self.json_base_dir}"
             )
 
@@ -223,7 +223,6 @@ class JsonGenerator:
                 date_format="iso",
                 date_unit="s",
             )
-            self.log.debug(f"Wrote {temp_metadata.as_posix()}")
 
             # read the file back in using records format with json
             with open(temp_metadata.as_posix(), "r") as f:

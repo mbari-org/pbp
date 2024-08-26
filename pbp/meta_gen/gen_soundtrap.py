@@ -85,7 +85,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
                     sorted(wav_path.rglob("*.wav")), prefix="Searching : "
                 ):
                     wav_path = filename.parent / f"{filename.stem}.wav"
-                    xml_path = filename.parent / f"{filename.stem}.xml"
+                    xml_path = filename.parent / f"{filename.stem}.log.xml"
                     start_dt = get_datetime(wav_path, self.prefixes)
                     # Must have a start date to be valid and also must have a corresponding xml file
                     if start_dt and xml_path.exists() and start_dt <= start_dt <= end_dt:
