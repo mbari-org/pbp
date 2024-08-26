@@ -4,6 +4,7 @@
 
 - 1.4.2:
     - renamed `pbp` CLI program to `pbp-hmb-gen` 
+    - renamed `pbp-plot` CLI program to `pbp-hmb-plot` 
 
 - 1.4.1 - HMB generation CLI now with `--s3-unsigned` option to use unsigned config.
 

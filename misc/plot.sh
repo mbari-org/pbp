@@ -8,7 +8,7 @@ dir=$1
 
 for nc in "${dir}"/*nc; do
   echo -e "\n=== ${nc} ==="
-  python src/plot.py \
+  python src/main_plot.py \
          --latlon 35.77 -121.43 \
          --ylim 10 24000 \
          --title 'Location: MB05, Monterey Bay National Marine Sanctuary, 35.77°N 121.43°W' \

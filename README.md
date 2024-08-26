@@ -50,12 +50,12 @@ and also provides APIs you can use in your Python scripts or notebooks.
 
 The package includes the following CLI programs:
 
-| Program | Description                                    |
-| ------- |------------------------------------------------|
-| [`pbp-meta-gen`](https://docs.mbari.org/pbp/pbp-meta-gen/) | Generate JSON files with audio metadata.       |
-| [`pbp`](https://docs.mbari.org/pbp/pbp/) | Main HMB generation program.                   |
-| [`pbp-cloud`](https://docs.mbari.org/pbp/pbp-cloud/) | Program for cloud based processing.            |
-| [`pbp-plot`](https://docs.mbari.org/pbp/pbp-plot/) | Utility program to plot resulting HMB product. |
+| Program                                                    | Description                             |
+|------------------------------------------------------------|-----------------------------------------|
+| [`pbp-meta-gen`](https://docs.mbari.org/pbp/pbp-meta-gen/) | Generate JSON files with audio metadata |
+| [`pbp-hmb-gen`](https://docs.mbari.org/pbp/pbp-hmb-gen/)   | Main HMB generation program             |
+| [`pbp-cloud`](https://docs.mbari.org/pbp/pbp-cloud/)       | Program for cloud based processing      |
+| [`pbp-hmb-plot`](https://docs.mbari.org/pbp/pbp-hmb-plot/) | Utility program to plot HMB product     |
 
 ### API
 

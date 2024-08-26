@@ -159,8 +159,8 @@ main-nrs11-multiple-days year month *days="":
     wait
 
 # Plot NRS11 datasets
-plot-nrs11 *netcdfs='NRS11/OUTPUT/NRS11_20200101.nc':
-    poetry run python pbp/plot.py \
+hmb-plot-nrs11 *netcdfs='NRS11/OUTPUT/NRS11_20200101.nc':
+    poetry run python pbp/main_plot.py \
       --ylim 10 2000 \
       --cmlim 64 108 \
       --latlon 37.88 -123.44 \
@@ -237,8 +237,8 @@ main *args="":
 # misc/utils:
 
 # Generate summary plots
-plot *args:
-    poetry run python pbp/plot.py {{args}}
+hmb-plot *args:
+    poetry run python pbp/main_plot.py {{args}}
 
 ##############
 # docker:

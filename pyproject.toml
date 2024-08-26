@@ -19,7 +19,7 @@ packages = [{include = "pbp"}]
 [tool.poetry.scripts]
 pbp-hmb-gen = "pbp.main_hmb_generator:main"
 pbp-cloud = "pbp.main_cloud:main"
-pbp-plot = "pbp.plot:main"
+pbp-hmb-plot = "pbp.main_plot:main"
 pbp-meta-gen = "pbp.main_meta_generator:main"
 
 [tool.poetry.dependencies]
