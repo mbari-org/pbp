@@ -80,6 +80,7 @@ def test_soundtrap_generator_s3():
     coverage_plot = json_dir / "soundtrap_coverage_20230715_20230716.jpg"
     assert coverage_plot.exists()
 
+
 def test_soundtrap_generator_local():
     """
     Test fixture for SoundTrapMetadataGenerator.
@@ -95,9 +96,16 @@ def test_soundtrap_generator_local():
 
     # Fetch a file and its associated xml from the S3 bucket
     client = boto3.client("s3", config=Config(signature_version=UNSIGNED))
-    client.download_file("pacific-sound-ch01", "6716.221116080000.wav", (wav_dir / "6716.221116080000.wav").as_posix())
-    client.download_file("pacific-sound-ch01", "6716.221116080000.log.xml", (wav_dir / "6716.221116080000.log.xml").as_posix())
-
+    client.download_file(
+        "pacific-sound-ch01",
+        "6716.221116080000.wav",
+        (wav_dir / "6716.221116080000.wav").as_posix(),
+    )
+    client.download_file(
+        "pacific-sound-ch01",
+        "6716.221116080000.log.xml",
+        (wav_dir / "6716.221116080000.log.xml").as_posix(),
+    )
 
     start = datetime(2022, 11, 16)
     end = datetime(2022, 11, 16)
