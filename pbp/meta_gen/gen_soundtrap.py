@@ -2,6 +2,7 @@
 # Filename: meta_gen/gen_soundtrap.py
 # Description:  Captures SoundTrap metadata either from a local directory of S3 bucket
 import urllib
+import os
 from typing import List
 
 import boto3
@@ -80,7 +81,10 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
 
             if scheme == "file":
                 parsed_uri = urllib.parse.urlparse(self.audio_loc)
-                wav_path = Path(parsed_uri.path)
+                if os.name == "nt":
+                    wav_path = Path(parsed_uri.path[3:])
+                else:
+                    wav_path = Path(parsed_uri.path)
                 for filename in progressbar(
                     sorted(wav_path.rglob("*.wav")), prefix="Searching : "
                 ):
