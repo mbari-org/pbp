@@ -82,7 +82,7 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             if scheme == "file":
                 parsed_uri = urllib.parse.urlparse(self.audio_loc)
                 if os.name == "nt":
-                    wav_path = Path(parsed_uri.path[1:])
+                    wav_path = Path(parsed_uri.path[3:])
                 else:
                     wav_path = Path(parsed_uri.path)
                 for filename in progressbar(
