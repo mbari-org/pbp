@@ -146,6 +146,8 @@ class ProcessHelper:
         if attrs_uri:
             self.log.info(f"Loading {what} attributes from {attrs_uri=}")
             filename = self.file_helper.get_local_filename(attrs_uri)
+            if os.name == "nt":
+                filename = self.file_helper.get_local_filename(attrs_uri)[3:]
             if filename is not None:
                 with open(filename, "r", encoding="UTF-8") as f:
                     res = parse_attributes(f.read(), pathlib.Path(filename).suffix)
