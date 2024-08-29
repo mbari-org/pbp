@@ -308,7 +308,6 @@ class ProcessHelper:
             snippets["{{" + k + "}}"] = v
         return replace_snippets(global_attrs, snippets)
 
-
 def save_dataset_to_netcdf(
     log,  #: loguru.Logger,
     ds: xr.Dataset,
