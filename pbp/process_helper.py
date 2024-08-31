@@ -1,4 +1,5 @@
 import pathlib
+import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
@@ -145,6 +146,8 @@ class ProcessHelper:
         if attrs_uri:
             self.log.info(f"Loading {what} attributes from {attrs_uri=}")
             filename = self.file_helper.get_local_filename(attrs_uri)
+            if os.name == "nt":
+                filename = self.file_helper.get_local_filename(attrs_uri)[3:]
             if filename is not None:
                 with open(filename, "r", encoding="UTF-8") as f:
                     res = parse_attributes(f.read(), pathlib.Path(filename).suffix)
@@ -227,6 +230,8 @@ class ProcessHelper:
 
         generated_filenames = []
         basename = f"{self.output_dir}/{self.output_prefix}{year:04}{month:02}{day:02}"
+        if os.name == "nt":
+            basename = f"{self.output_dir}\{self.output_prefix}{year:04}{month:02}{day:02}"
 
         if self.gen_netcdf:
             nc_filename = f"{basename}.nc"
@@ -302,7 +307,6 @@ class ProcessHelper:
         for k, v in global_attrs.items():
             snippets["{{" + k + "}}"] = v
         return replace_snippets(global_attrs, snippets)
-
 
 def save_dataset_to_netcdf(
     log,  #: loguru.Logger,
