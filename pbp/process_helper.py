@@ -232,7 +232,7 @@ class ProcessHelper:
         basename = f"{self.output_dir}/{self.output_prefix}{year:04}{month:02}{day:02}"
         if os.name == "nt":
             basename = (
-                f"{self.output_dir}\{self.output_prefix}{year:04}{month:02}{day:02}"
+                f"{self.output_dir}\\{self.output_prefix}{year:04}{month:02}{day:02}"
             )
 
         if self.gen_netcdf:
