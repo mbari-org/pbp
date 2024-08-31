@@ -2,6 +2,9 @@
 
 2024-08
 
+- 1.4.3: Adjustments to make pbp-meta-gen and pbp-hmb-gen Windows compatible.
+  Thanks to @spacetimeengineer for the contribution!
+
 - 1.4.2:
     - renamed `pbp` CLI program to `pbp-hmb-gen` 
     - renamed `pbp-plot` CLI program to `pbp-hmb-plot` 
