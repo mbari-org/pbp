@@ -227,11 +227,11 @@ class ProcessHelper:
             data_vars=data_vars,
             attrs=self._get_global_attributes(year, month, day),
         )
-
+        
         generated_filenames = []
         basename = f"{self.output_dir}/{self.output_prefix}{year:04}{month:02}{day:02}"
         if os.name == "nt":
-            basename = f"{self.output_dir}\{self.output_prefix}{year:04}{month:02}{day:02}"
+            basename = f"{self.output_dir}\\{self.output_prefix}{year:04}{month:02}{day:02}"
 
         if self.gen_netcdf:
             nc_filename = f"{basename}.nc"
