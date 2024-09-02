@@ -148,7 +148,7 @@ class ProcessHelper:
             filename = self.file_helper.get_local_filename(attrs_uri)
             if os.name == "nt" and filename is not None:
                 filename = filename[3:]
-            if filename is not None:
+            if os.name != "nt" and filename is not None:
                 with open(filename, "r", encoding="UTF-8") as f:
                     res = parse_attributes(f.read(), pathlib.Path(filename).suffix)
                     for k, v in set_attrs or []:
