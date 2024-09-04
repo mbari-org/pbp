@@ -1,5 +1,9 @@
 # PBP – PyPAM based processing
 
+2024-09
+
+- 1.4.4: Maintenance release.
+
 2024-08
 
 - 1.4.3: Adjustments to make pbp-meta-gen and pbp-hmb-gen Windows compatible.

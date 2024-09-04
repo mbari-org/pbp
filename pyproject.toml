@@ -4,13 +4,18 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "1.4.3"
+version = "1.4.4"
 description = "PyPAM based Processing"
 authors = [
     "Carlos Rueda <carueda@mbari.org>",
     "Danelle Cline <dcline@mbari.org>",
     "John Ryan <ryjo@mbari.org>",
 ]
+maintainers = [
+    "Carlos Rueda <carueda@mbari.org>",
+    "Danelle Cline <dcline@mbari.org>",
+]
+homepage = "https://docs.mbari.org/pbp/"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/mbari-org/pbp"
@@ -26,10 +31,10 @@ pbp-meta-gen = "pbp.main_meta_generator:main"
 python = ">=3.9,<3.12.0"
 lifewatch-pypam = "0.3.0"
 boto3 = "1.34.47"
-google-cloud-storage = "2.14.0"
-dataclasses-json = "0.6.4"
+google-cloud-storage = "2.18.0"
+dataclasses-json = "0.6"
 python-dateutil = "2.8.2"
-pyyaml = "6.0.1"
+pyyaml = "6.0"
 progressbar2 = "3.53.1"
 marshmallow = "3.20.2"
 soundfile = "0.12.1"
