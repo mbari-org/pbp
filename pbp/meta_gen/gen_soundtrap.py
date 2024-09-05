@@ -16,7 +16,7 @@ from datetime import timedelta
 from pathlib import Path
 from progressbar import progressbar
 
-from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
+from pbp.meta_gen.gen_abstract import SoundtrapMetadataGeneratorAbstract
 from pbp.meta_gen.meta_reader import SoundTrapWavFile
 from pbp.meta_gen.json_generator import JsonGenerator
 from pbp.meta_gen.utils import (
