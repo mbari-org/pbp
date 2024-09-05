@@ -88,4 +88,13 @@ Examples:
         "7000.20220902.000000.wav",
     )
 
+    parser.add_argument(
+        "--xml-dir",
+        type=str,
+        metavar="dir",
+        required=False,
+        default=None,
+        help="Specifies the directory where the log.xml files are located. If not specified, the default is the same directory as the audio files.",
+    )
+
     return parser.parse_args()

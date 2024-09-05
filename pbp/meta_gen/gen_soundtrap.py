@@ -2,7 +2,6 @@
 # Filename: meta_gen/gen_soundtrap.py
 # Description:  Captures SoundTrap metadata either from a local directory of S3 bucket
 import urllib
-import os
 from typing import List
 
 import boto3
@@ -11,12 +10,13 @@ from botocore.client import Config
 import datetime
 import pandas as pd
 import pytz
+import os
 
 from datetime import timedelta
 from pathlib import Path
 from progressbar import progressbar
 
-from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
+from pbp.meta_gen.gen_abstract import SoundTrapMetadataGeneratorAbstract
 from pbp.meta_gen.meta_reader import SoundTrapWavFile
 from pbp.meta_gen.json_generator import JsonGenerator
 from pbp.meta_gen.utils import (
@@ -27,7 +27,7 @@ from pbp.meta_gen.utils import (
 )
 
 
-class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
+class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
     """
     Captures SoundTrap wav file metadata either from a local directory or S3 bucket.
     """
@@ -41,8 +41,11 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
         uri: str,
         json_base_dir: str,
         prefixes: List[str],
+        xml_dir: str,
         start: datetime.datetime = START,
         end: datetime.datetime = END,
+        seconds_per_file: float = 0.0,
+        **kwargs,
     ):
         """
         :param uri:
@@ -51,13 +54,19 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
             The local directory to write the json files to
         :param prefixes:
             The search pattern to match the wav files, e.g. 'MARS'
+        :param xml_dir
+            The local directory that contains the log.xml files, defaults to audio_loc if none is specified.
         :param start:
             The start date to search for wav files
         :param end:
             The end date to search for wav files check is done.
         :return:
         """
-        super().__init__(log, uri, json_base_dir, prefixes, start, end, 0.0)
+        self.xml_dir = xml_dir
+
+        super().__init__(
+            log, uri, json_base_dir, prefixes, self.xml_dir, start, end, seconds_per_file
+        )
 
     def run(self):
         try:
@@ -81,21 +90,34 @@ class SoundTrapMetadataGenerator(MetadataGeneratorAbstract):
 
             if scheme == "file":
                 parsed_uri = urllib.parse.urlparse(self.audio_loc)
+
                 if os.name == "nt":
                     wav_path = Path(parsed_uri.path[3:])
                 else:
                     wav_path = Path(parsed_uri.path)
+
                 for filename in progressbar(
                     sorted(wav_path.rglob("*.wav")), prefix="Searching : "
                 ):
                     wav_path = filename.parent / f"{filename.stem}.wav"
-                    xml_path = filename.parent / f"{filename.stem}.log.xml"
+                    xml_path = Path(self.xml_dir + "/" + f"{filename.stem}.log.xml")
                     start_dt = get_datetime(wav_path, self.prefixes)
+
                     # Must have a start date to be valid and also must have a corresponding xml file
-                    if start_dt and xml_path.exists() and start_dt <= start_dt <= end_dt:
+                    if (
+                        start_dt and xml_path.exists() and start_dt <= start_dt <= end_dt
+                    ):  # TODO : Saying that a str object can not have an .exists()
                         wav_files.append(
                             SoundTrapWavFile(wav_path.as_posix(), xml_path, start_dt)
                         )
+                    else:
+                        if not xml_path.exists():
+                            self.log.error(
+                                "The path set by --xml-dir :"
+                                + str(xml_path)
+                                + " could not be located at the user specified directory."
+                            )
+
             else:
                 # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
                 # dates
@@ -199,6 +221,7 @@ if __name__ == "__main__":
     json_dir = Path("tests/json/soundtrap")
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
+    xml_dir = Path("s3://pacific-sound-ch01")
 
     log = create_logger(
         log_filename_and_level=(
@@ -211,6 +234,12 @@ if __name__ == "__main__":
     start = datetime.datetime(2023, 7, 18)
     end = datetime.datetime(2023, 7, 19)
     gen = SoundTrapMetadataGenerator(
-        log, "s3://pacific-sound-ch01", json_dir.as_posix(), ["7000"], start, end
+        log,
+        "s3://pacific-sound-ch01",
+        json_dir.as_posix(),
+        ["7000"],
+        xml_dir.as_posix(),
+        start,
+        end,
     )
     gen.run()
