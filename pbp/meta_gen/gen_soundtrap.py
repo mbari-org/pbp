@@ -221,6 +221,7 @@ if __name__ == "__main__":
     json_dir = Path("tests/json/soundtrap")
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
+    xml_dir = Path("s3://pacific-sound-ch01")
 
     log = create_logger(
         log_filename_and_level=(
@@ -233,6 +234,6 @@ if __name__ == "__main__":
     start = datetime.datetime(2023, 7, 18)
     end = datetime.datetime(2023, 7, 19)
     gen = SoundTrapMetadataGenerator(
-        log, "s3://pacific-sound-ch01", json_dir.as_posix(), ["7000"], start, end
+        log, "s3://pacific-sound-ch01", json_dir.as_posix(), ["7000"], xml_dir.as_posix(), start, end
     )
     gen.run()
