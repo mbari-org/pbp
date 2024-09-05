@@ -46,7 +46,6 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
         end: datetime.datetime = END,
         seconds_per_file: float = 0.0,
         **kwargs,
-
     ):
         """
         :param uri:
@@ -64,14 +63,13 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
         :return:
         """
         self.xml_dir = xml_dir
-        
-            
 
-        super().__init__(log, uri, json_base_dir, prefixes, self.xml_dir, start, end,  seconds_per_file)
+        super().__init__(
+            log, uri, json_base_dir, prefixes, self.xml_dir, start, end, seconds_per_file
+        )
 
     def run(self):
         try:
-
             xml_cache_path = Path(self.json_base_dir) / "xml_cache"
             xml_cache_path.mkdir(exist_ok=True, parents=True)
             wav_files = []
@@ -98,23 +96,27 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                 else:
                     wav_path = Path(parsed_uri.path)
 
-
                 for filename in progressbar(
                     sorted(wav_path.rglob("*.wav")), prefix="Searching : "
                 ):
-                    
                     wav_path = filename.parent / f"{filename.stem}.wav"
-                    xml_path = Path(self.xml_dir +"/"+ f"{filename.stem}.log.xml")
+                    xml_path = Path(self.xml_dir + "/" + f"{filename.stem}.log.xml")
                     start_dt = get_datetime(wav_path, self.prefixes)
 
                     # Must have a start date to be valid and also must have a corresponding xml file
-                    if start_dt and xml_path.exists() and start_dt <= start_dt <= end_dt: #TODO : Saying that a str object can not have an .exists()
+                    if (
+                        start_dt and xml_path.exists() and start_dt <= start_dt <= end_dt
+                    ):  # TODO : Saying that a str object can not have an .exists()
                         wav_files.append(
                             SoundTrapWavFile(wav_path.as_posix(), xml_path, start_dt)
                         )
                     else:
                         if not xml_path.exists():
-                            self.log.error("The path set by --xml-dir :" + str(xml_path) + " could not be located at the user specified directory.")
+                            self.log.error(
+                                "The path set by --xml-dir :"
+                                + str(xml_path)
+                                + " could not be located at the user specified directory."
+                            )
 
             else:
                 # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
