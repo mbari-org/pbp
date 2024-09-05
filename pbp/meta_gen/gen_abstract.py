@@ -14,6 +14,7 @@ class MetadataGeneratorAbstract(object):
         audio_loc: str,
         json_base_dir: str,
         prefixes: List[str],
+        xml_dir: str,
         start: datetime,
         end: datetime,
         seconds_per_file: float = 0.0,

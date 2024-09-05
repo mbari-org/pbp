@@ -87,5 +87,14 @@ Examples:
         help="Prefix for search to match the audio files e.g. 'MARS_' for MARS_YYYYMMDD_HHMMSS.wav, '7000. ' for "
         "7000.20220902.000000.wav",
     )
+    
+    parser.add_argument(
+        "--xml-dir",
+        type=str,
+        metavar="dir",
+        required=False,
+        default=None,
+        help="Specifies the directory where the log.xml files are located. If not specified, the default is the same directory as the audio files.",
+    )
 
     return parser.parse_args()
