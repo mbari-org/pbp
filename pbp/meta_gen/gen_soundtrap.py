@@ -234,6 +234,12 @@ if __name__ == "__main__":
     start = datetime.datetime(2023, 7, 18)
     end = datetime.datetime(2023, 7, 19)
     gen = SoundTrapMetadataGenerator(
-        log, "s3://pacific-sound-ch01", json_dir.as_posix(), ["7000"], xml_dir.as_posix(), start, end
+        log,
+        "s3://pacific-sound-ch01",
+        json_dir.as_posix(),
+        ["7000"],
+        xml_dir.as_posix(),
+        start,
+        end,
     )
     gen.run()
