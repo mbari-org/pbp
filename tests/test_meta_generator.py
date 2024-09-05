@@ -115,7 +115,7 @@ def test_soundtrap_generator_local():
         uri=f"file://{wav_dir.as_posix()}",
         json_base_dir=json_dir.as_posix(),
         prefixes=["6716"],
-        xml_dir=f"file://{wav_dir.as_posix()}",
+        xml_dir=f"{wav_dir.as_posix()}",
         start=start,
         end=end,
     )
