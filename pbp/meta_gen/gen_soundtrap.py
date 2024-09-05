@@ -55,6 +55,8 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             The local directory to write the json files to
         :param prefixes:
             The search pattern to match the wav files, e.g. 'MARS'
+        :param xml_dir
+            The local directory that contains the log.xml files, defaults to audio_loc if none is specified.
         :param start:
             The start date to search for wav files
         :param end:

@@ -60,7 +60,7 @@ class MetadataGeneratorAbstract(object):
         pass
 
 
-class SoundtrapMetadataGeneratorAbstract(object):
+class SoundTrapMetadataGeneratorAbstract(object):
     def __init__(
         self,
         log,  # : loguru.Logger,
@@ -81,6 +81,8 @@ class SoundtrapMetadataGeneratorAbstract(object):
             The local directory to write the json files to
         :param prefixes:
             The search patterns to match the wav files, e.g. 'MARS'
+        :param xml_dir
+            The local directory that contains the log.xml files, defaults to audio_loc if none is specified.
         :param start:
             The start date to search for wav files
         :param end:
@@ -96,6 +98,7 @@ class SoundtrapMetadataGeneratorAbstract(object):
             self.start = start
             self.end = end
             self.prefixes = prefixes
+            self.xml_dir = xml_dir
             self._log = log
             self._seconds_per_file = None if seconds_per_file == 0 else seconds_per_file
         except Exception as e:
