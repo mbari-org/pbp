@@ -261,7 +261,7 @@ publish *args="":
 # development:
 
 # A convenient recipe for development
-dev: mypy test format
+dev: format mypy test
 
 # As the dev recipe plus lint; good to run before committing changes
 all: dev lint
