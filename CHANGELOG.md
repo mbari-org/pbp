@@ -2,6 +2,10 @@
 
 2024-09
 
+- 1.4.5:
+    - removed unneeded print at end of `plot_date` such that the resulting plot in the notebook
+      is not affected in terms of requiring undesirable scrolling (hopefully).
+  
 - 1.4.4: Maintenance release.
 
 2024-08

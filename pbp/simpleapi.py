@@ -381,4 +381,3 @@ class _HmbGen:
             jpeg_filename=jpeg_filename,
             show=show,
         )
-        print(f"   done: {jpeg_filename}")
