@@ -99,8 +99,8 @@ class SoundStatus:
         else:
             sound_filename = path
 
-        if os.name == 'nt':
-            return self.parsed_uri.netloc+self.parsed_uri.path
+        if os.name == "nt":
+            return self.parsed_uri.netloc + self.parsed_uri.path
         else:
             return sound_filename
 
@@ -356,7 +356,7 @@ class FileHelper:
         if parsed_uri.scheme == "s3":
             return self._get_json_s3(parsed_uri)
         #  simply assume local file:
-        if os.name == 'nt':
+        if os.name == "nt":
             return self._get_json_local(uri)
         else:
             return self._get_json_local(parsed_uri.path)
