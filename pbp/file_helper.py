@@ -98,7 +98,11 @@ class SoundStatus:
             sound_filename = f"{self.audio_base_dir}/{path}"
         else:
             sound_filename = path
-        return sound_filename
+
+        if os.name == "nt":
+            return self.parsed_uri.netloc + self.parsed_uri.path
+        else:
+            return sound_filename
 
     def remove_downloaded_file(self):
         if not pathlib.Path(self.sound_filename).exists():
@@ -352,7 +356,10 @@ class FileHelper:
         if parsed_uri.scheme == "s3":
             return self._get_json_s3(parsed_uri)
         #  simply assume local file:
-        return self._get_json_local(parsed_uri.path)
+        if os.name == "nt":
+            return self._get_json_local(uri)
+        else:
+            return self._get_json_local(parsed_uri.path)
 
     def _get_json_s3(self, parsed_uri: ParseResult) -> Optional[str]:
         local_filename = _download(
