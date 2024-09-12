@@ -1,6 +1,9 @@
 import os
 from datetime import datetime
 from pathlib import Path
+import loguru
+import sys
+import copy
 
 from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
 from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
@@ -15,15 +18,19 @@ from pbp.main_meta_generator_args import parse_arguments
 def main():
     opts = parse_arguments()
 
-    # pylint: disable=import-outside-toplevel
-    from pbp.logging_helper import create_logger
-
-    log = create_logger(
-        log_filename_and_level=(
-            f"{opts.output_dir}/{opts.recorder}{opts.start}_{opts.end}.log",
-            "INFO",
-        ),
-        console_level="INFO",
+    loguru.logger.remove()
+    log = copy.deepcopy(loguru.logger)
+    info_format = "{message}"
+    default_format = "{time} {level} {message}"
+    log_filename = (f"{opts.output_dir}/{opts.recorder}{opts.start}_{opts.end}.log",)
+    log.add(
+        sys.stdout,
+        level="INFO",
+        format=info_format,
+        filter=lambda record: record["level"].name == "INFO",
+    )
+    log.add(
+        sink=open(log_filename, "w"), level="DEBUG", format=default_format, enqueue=True
     )
 
     log_dir = Path(opts.output_dir)
