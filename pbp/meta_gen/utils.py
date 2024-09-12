@@ -123,7 +123,9 @@ def plot_daily_coverage(
     plot.set_ylabel("Daily % Recording")
     plot.set_xlabel("Date")
     plot.set_xticks(daily_sum_df.index.values)
-    plot.set_ylim(0, 102)
+    plot.set_ylim(0, 110)
+    # Add points in addition to lines with a blue circle marker that is not filled
+    plot.plot(daily_sum_df.index, daily_sum_df["coverage"], "bo-", markerfacecolor="none")
     # Angle the x-axis labels for better readability and force them to be in the format YYYY-MM-DD
     plot.set_xticklabels([x.strftime("%Y-%m-%d") for x in daily_sum_df.index])
     plot.set_xticklabels(plot.get_xticklabels(), rotation=45, horizontalalignment="right")
