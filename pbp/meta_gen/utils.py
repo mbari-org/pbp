@@ -119,7 +119,12 @@ def plot_daily_coverage(
     daily_sum_df["coverage"] = daily_sum_df[
         "coverage"
     ].round()  # round to nearest integer
-    plot = daily_sum_df["coverage"].plot()
+    if len(daily_sum_df) == 1:
+        delta = pd.Timedelta(days=1)
+        lims = [daily_sum_df.index[0] - delta, daily_sum_df.index[0] + delta]
+    else:
+        lims = [None, None]
+    plot = daily_sum_df["coverage"].plot(xlim=lims)
     plot.set_ylabel("Daily % Recording")
     plot.set_xlabel("Date")
     plot.set_xticks(daily_sum_df.index.values)
