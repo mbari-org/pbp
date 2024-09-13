@@ -128,6 +128,10 @@ def plot_dataset_summary(
     )
     ax3.set_xticks([])
     ax3.set_yticks([])
+    ax3.spines["bottom"].set_color("black")
+    ax3.spines["top"].set_color("black")
+    ax3.spines["left"].set_color("black")
+    ax3.spines["right"].set_color("black")
 
     # colorbar for spectrogram
     r = np.concatenate(np.squeeze(ax0.get_position()))

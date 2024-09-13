@@ -7,8 +7,11 @@ from urllib.parse import urlparse
 from datetime import datetime
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
+from pbp.plot_const import DEFAULT_DPI
 
 
 class InstrumentType:
@@ -120,11 +123,11 @@ def plot_daily_coverage(
         "coverage"
     ].round()  # round to nearest integer
     if len(daily_sum_df) == 1:
-        delta = pd.Timedelta(days=1)
-        lims = [daily_sum_df.index[0] - delta, daily_sum_df.index[0] + delta]
-    else:
-        lims = [None, None]
-    plot = daily_sum_df["coverage"].plot(xlim=lims)
+        # Add a row with a NaN coverage before and after the single day to avoid matplotlib
+        # warnings about automatically expanding the x-axis
+        daily_sum_df.loc[daily_sum_df.index[0] - pd.DateOffset(days=1)] = np.nan
+        daily_sum_df.loc[daily_sum_df.index[0] + pd.DateOffset(days=1)] = np.nan
+    plot = daily_sum_df["coverage"].plot()
     plot.set_ylabel("Daily % Recording")
     plot.set_xlabel("Date")
     plot.set_xticks(daily_sum_df.index.values)
@@ -134,6 +137,10 @@ def plot_daily_coverage(
     # Angle the x-axis labels for better readability and force them to be in the format YYYY-MM-DD
     plot.set_xticklabels([x.strftime("%Y-%m-%d") for x in daily_sum_df.index])
     plot.set_xticklabels(plot.get_xticklabels(), rotation=45, horizontalalignment="right")
+    plot.axes.spines["top"].set_color("black")
+    plot.axes.spines["bottom"].set_color("black")
+    plot.axes.spines["left"].set_color("black")
+    plot.axes.spines["right"].set_color("black")
     # Adjust the title based on the instrument type
     if instrument_type == InstrumentType.NRS:
         plot.set_title("Daily Coverage of NRS Recordings")
@@ -142,10 +149,7 @@ def plot_daily_coverage(
     elif instrument_type == InstrumentType.SOUNDTRAP:
         plot.set_title("Daily Coverage of SoundTrap Recordings")
     plot_file = Path(base_dir) / f"soundtrap_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
-    dpi = 300
     fig = plot.get_figure()
-    fig.set_size_inches(10, 5)
-    fig.set_dpi(dpi)
-    fig.savefig(plot_file.as_posix(), bbox_inches="tight")
+    fig.savefig(plot_file.as_posix(), dpi=DEFAULT_DPI)
     plt.close(fig)
     return plot_file.as_posix()
