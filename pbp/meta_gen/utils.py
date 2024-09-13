@@ -10,6 +10,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib.ticker import MaxNLocator, NullLocator
 
 from pbp.plot_const import DEFAULT_DPI
 
@@ -111,8 +113,8 @@ def plot_daily_coverage(
     :param end: The end date of the recordings
     :return: The path to the plot file
     """
-    # Create a plot of the dataframe with the x-axis as the month, and the y-axis as the daily recording coverage,
-    # which is percent of the day covered by recordings
+    # Create a plot of the dataframe with the x-axis as the month, and the y-axis as the daily recording coverage.
+    # This is percent of the day covered by recordings
     plt.rcParams["text.usetex"] = False
     df["duration"] = (df["end"] - df["start"]).dt.total_seconds()
     ts_df = df[["start", "duration"]].copy()
@@ -131,13 +133,19 @@ def plot_daily_coverage(
     plot.set_ylabel("Daily % Recording")
     plot.set_xlabel("Date")
     plot.set_xticks(daily_sum_df.index.values)
+    plot.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    plot.xaxis.set_major_locator(MaxNLocator(nbins=15))  # Maximum 15 ticks on the x-axis
+    plot.tick_params(axis="both", which="major", labelsize=6)
+    plot.tick_params(axis="both", which="minor", labelsize=6)
+    # Disable the minor ticks on the x-axis using NullLocator, as they are not needed
+    plot.xaxis.set_minor_locator(NullLocator())
+    # Set the y-axis limits to 0-110 to avoid the plot being too close to the top
     plot.set_ylim(0, 110)
     # Add points in addition to lines with a blue circle marker that is not filled
     plot.plot(daily_sum_df.index, daily_sum_df["coverage"], "bo-", markerfacecolor="none")
-    # Angle the x-axis labels for better readability and force them to be in the format YYYY-MM-DD
-    plot.set_xticklabels([x.strftime("%Y-%m-%d") for x in daily_sum_df.index])
-    plot.set_xticklabels(plot.get_xticklabels(), rotation=45, horizontalalignment="right")
+    plot.set_xticklabels(plot.get_xticklabels(), rotation=30, horizontalalignment="right")
     plot.axes.spines["top"].set_color("black")
+    # Set the x-axis and y-axis labels to black
     plot.axes.spines["bottom"].set_color("black")
     plot.axes.spines["left"].set_color("black")
     plot.axes.spines["right"].set_color("black")
@@ -150,6 +158,8 @@ def plot_daily_coverage(
         plot.set_title("Daily Coverage of SoundTrap Recordings")
     plot_file = Path(base_dir) / f"soundtrap_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
     fig = plot.get_figure()
-    fig.savefig(plot_file.as_posix(), dpi=DEFAULT_DPI)
+    fig.autofmt_xdate()
+    fig.set_size_inches(5, 3)
+    fig.savefig(plot_file.as_posix(),  dpi=DEFAULT_DPI, bbox_inches="tight")
     plt.close(fig)
     return plot_file.as_posix()
