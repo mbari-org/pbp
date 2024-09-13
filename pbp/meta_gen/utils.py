@@ -135,15 +135,16 @@ def plot_daily_coverage(
     plot.set_xticks(daily_sum_df.index.values)
     plot.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
     plot.xaxis.set_major_locator(MaxNLocator(nbins=15))  # Maximum 15 ticks on the x-axis
+    # Rotate the x-axis labels for better readability
+    plt.xticks(rotation=45)
+    # Set both x and y axis tick label font size to 6
     plot.tick_params(axis="both", which="major", labelsize=6)
-    plot.tick_params(axis="both", which="minor", labelsize=6)
     # Disable the minor ticks on the x-axis using NullLocator, as they are not needed
     plot.xaxis.set_minor_locator(NullLocator())
     # Set the y-axis limits to 0-110 to avoid the plot being too close to the top
     plot.set_ylim(0, 110)
     # Add points in addition to lines with a blue circle marker that is not filled
     plot.plot(daily_sum_df.index, daily_sum_df["coverage"], "bo-", markerfacecolor="none")
-    plot.set_xticklabels(plot.get_xticklabels(), rotation=30, horizontalalignment="right")
     plot.axes.spines["top"].set_color("black")
     # Set the x-axis and y-axis labels to black
     plot.axes.spines["bottom"].set_color("black")
@@ -159,7 +160,7 @@ def plot_daily_coverage(
     plot_file = Path(base_dir) / f"soundtrap_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
     fig = plot.get_figure()
     fig.autofmt_xdate()
-    fig.set_size_inches(5, 3)
+    fig.set_size_inches(4, 2)
     fig.savefig(plot_file.as_posix(),  dpi=DEFAULT_DPI, bbox_inches="tight")
     plt.close(fig)
     return plot_file.as_posix()
