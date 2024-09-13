@@ -155,6 +155,7 @@ def plot_dataset_summary(
     plt.gcf().text(0.65, 0.91, "UTC")
 
     if jpeg_filename is not None:
+        print(f"Saving plot to {jpeg_filename}")
         plt.savefig(jpeg_filename, dpi=dpi)
     if show:
         plt.show()
