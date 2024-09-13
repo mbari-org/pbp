@@ -1,14 +1,13 @@
 import os
 from datetime import datetime
 from pathlib import Path
-import loguru
-import sys
-import copy
 
+from pbp.logging_helper import create_logger_info
 from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
 from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
 from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
 from pbp.main_meta_generator_args import parse_arguments
+
 
 # Some imports, in particular involving data processing, cause a delay that is
 # noticeable when just running the --help option. We get around this issue by
@@ -17,21 +16,6 @@ from pbp.main_meta_generator_args import parse_arguments
 
 def main():
     opts = parse_arguments()
-
-    loguru.logger.remove()
-    log = copy.deepcopy(loguru.logger)
-    info_format = "{message}"
-    default_format = "{time} {level} {message}"
-    log_filename = (f"{opts.output_dir}/{opts.recorder}{opts.start}_{opts.end}.log",)
-    log.add(
-        sys.stdout,
-        level="INFO",
-        format=info_format,
-        filter=lambda record: record["level"].name == "INFO",
-    )
-    log.add(
-        sink=open(log_filename, "w"), level="DEBUG", format=default_format, enqueue=True
-    )
 
     log_dir = Path(opts.output_dir)
     json_dir = Path(opts.json_base_dir)
@@ -48,6 +32,8 @@ def main():
     json_dir.mkdir(exist_ok=True, parents=True)
     start = datetime.strptime(opts.start, "%Y%m%d")
     end = datetime.strptime(opts.end, "%Y%m%d")
+
+    log = create_logger_info(f"{opts.output_dir}/{opts.recorder}{opts.start}_{opts.end}.log")
 
     try:
         if opts.recorder == "NRS":

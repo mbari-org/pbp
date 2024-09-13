@@ -45,3 +45,27 @@ def create_logger(
         )
 
     return log
+
+
+def create_logger_info(log_filename: str):
+    """
+    Create a logger with INFO level for console and file and simple format (no log level).
+    Also logs to a file all messages at DEBUG level and above.
+    Best used for scripts that don't need DEBUG level logging to the console.
+    :param log_filename:
+        The name of the log file to create
+    """
+    loguru.logger.remove()
+    log = copy.deepcopy(loguru.logger)
+    info_format = "{message}"
+    default_format = "{time} {level} {message}"
+    log.add(
+        sys.stdout,
+        level="INFO",
+        format=info_format,
+        filter=lambda record: record["level"].name == "INFO",
+    )
+    log.add(
+        sink=open(log_filename, "w"), level="DEBUG", format=default_format, enqueue=True
+    )
+    return log
