@@ -116,8 +116,9 @@ def plot_daily_coverage(
     # Create a plot of the dataframe with the x-axis as the month, and the y-axis as the daily recording coverage.
     # This is percent of the day covered by recordings
     plt.rcParams["text.usetex"] = False
-    df.loc[:, "duration"] = (df["end"] - df["start"]).dt.total_seconds()
-    ts_df = df[["start", "duration"]].copy()
+    duration = (df["end"] - df["start"]).dt.total_seconds()
+    ts_df = df[["start"]].copy()
+    ts_df["duration"] = duration
     ts_df.set_index("start", inplace=True)
     daily_sum_df = ts_df.resample("D").sum()
     daily_sum_df["coverage"] = 100 * daily_sum_df["duration"] / 86400
