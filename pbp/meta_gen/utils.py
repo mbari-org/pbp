@@ -129,12 +129,24 @@ def plot_daily_coverage(
         # warnings about automatically expanding the x-axis
         daily_sum_df.loc[daily_sum_df.index[0] - pd.DateOffset(days=1)] = np.nan
         daily_sum_df.loc[daily_sum_df.index[0] + pd.DateOffset(days=1)] = np.nan
-    plot = daily_sum_df["coverage"].plot()
-    plot.set_ylabel("Daily % Recording")
-    plot.set_xlabel("Date")
+    plot = daily_sum_df["coverage"].plot(
+        linestyle="-",
+        markerfacecolor="none",
+        marker="o",
+        color="b",
+        markersize=5,
+        linewidth=1,
+        figsize=(8, 4),
+    )
+    plot.set_ylabel("Daily % Recording", fontsize=8)
+    plot.set_xlabel("Date", fontsize=8)
     plot.set_xticks(daily_sum_df.index.values)
-    plot.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-    plot.xaxis.set_major_locator(MaxNLocator(nbins=15))  # Maximum 15 ticks on the x-axis
+    plot.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+    # Maximum 15 ticks on the x-axis
+    # plot.xaxis.set_major_locator(
+    #     MaxNLocator(nbins=min(15, len(daily_sum_df.index.values) - 1))
+    # )
+    plot.axes.set_facecolor("lightgrey")
     # Rotate the x-axis labels for better readability
     plt.xticks(rotation=45)
     # Set both x and y axis tick label font size to 6
@@ -143,8 +155,6 @@ def plot_daily_coverage(
     plot.xaxis.set_minor_locator(NullLocator())
     # Set the y-axis limits to 0-110 to avoid the plot being too close to the top
     plot.set_ylim(0, 110)
-    # Add points in addition to lines with a blue circle marker that is not filled
-    plot.plot(daily_sum_df.index, daily_sum_df["coverage"], "bo-", markerfacecolor="none")
     plot.axes.spines["top"].set_color("black")
     # Set the x-axis and y-axis labels to black
     plot.axes.spines["bottom"].set_color("black")
@@ -152,15 +162,15 @@ def plot_daily_coverage(
     plot.axes.spines["right"].set_color("black")
     # Adjust the title based on the instrument type
     if instrument_type == InstrumentType.NRS:
-        plot.set_title("Daily Coverage of NRS Recordings")
+        plot.set_title("Daily Coverage of NRS Recordings", fontsize=11)
     elif instrument_type == InstrumentType.ICLISTEN:
-        plot.set_title("Daily Coverage of icListen Recordings")
+        plot.set_title("Daily Coverage of icListen Recordings", fontsize=11)
     elif instrument_type == InstrumentType.SOUNDTRAP:
-        plot.set_title("Daily Coverage of SoundTrap Recordings")
+        plot.set_title("Daily Coverage of SoundTrap Recordings", fontsize=11)
     plot_file = Path(base_dir) / f"soundtrap_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
     fig = plot.get_figure()
+    # Use more of the available plotting space
     fig.autofmt_xdate()
-    fig.set_size_inches(4, 2)
-    fig.savefig(plot_file.as_posix(),  dpi=DEFAULT_DPI, bbox_inches="tight")
+    fig.savefig(plot_file.as_posix(), dpi=DEFAULT_DPI, bbox_inches="tight")
     plt.close(fig)
     return plot_file.as_posix()
