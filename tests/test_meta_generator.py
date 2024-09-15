@@ -50,7 +50,7 @@ def test_soundtrap_generator_s3():
     :return:
     """
     log = create_test_logger("test_soundtrap_generator_s3")
-    json_dir = create_json_dir("soundtrap")
+    json_dir = create_json_dir("soundtrap_s3")
 
     start = datetime(2023, 7, 15)
     end = datetime(2023, 7, 16)
@@ -90,7 +90,7 @@ def test_soundtrap_generator_local():
     :return:
     """
     log = create_test_logger("test_soundtrap_generator_local")
-    json_dir = create_json_dir("soundtrap")
+    json_dir = create_json_dir("soundtrap_local")
 
     wav_dir = Path(__file__).parent / "wav" / "soundtrap"
     wav_dir.mkdir(exist_ok=True, parents=True)
