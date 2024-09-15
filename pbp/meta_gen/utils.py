@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from matplotlib.ticker import MaxNLocator, NullLocator
+from matplotlib.ticker import NullLocator
 
 from pbp.plot_const import DEFAULT_DPI
 

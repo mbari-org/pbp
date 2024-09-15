@@ -68,8 +68,8 @@ def test_soundtrap_generator_s3():
     # There should be two files in the json directory - one for each day
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 2
-    assert (json_dir / "2023/20230715.json").exists()
-    assert (json_dir / "2023/20230716.json").exists()
+    assert (json_dir / "2023" / "20230715.json").exists()
+    assert (json_dir / "2023" / "20230716.json").exists()
 
     # Each file should have 5 json objects
     for json_file in json_files:
@@ -124,7 +124,7 @@ def test_soundtrap_generator_local():
     # There should be two files in the json directory - one for each day
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 1
-    assert (json_dir / "2022/20221116.json").exists()
+    assert (json_dir / "2022" / "20221116.json").exists()
 
     # The file should have 1 json object
     for json_file in json_files:
@@ -165,7 +165,7 @@ def test_iclisten_generator():
     # There should be one files in the json directory named 20230718.json and it should have 145 json objects
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 1
-    json_file = json_dir / "2023/20230718.json"
+    json_file = json_dir / "2023" / "20230718.json"
     assert json_file.exists()
 
     # Read the file and check the number of json objects
@@ -204,7 +204,7 @@ def test_nrs_generator():
     # There should be one file in the json directory and with number of objects as indicated
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 1
-    json_file = json_dir / "2019/20191024.json"
+    json_file = json_dir / "2019" / "20191024.json"
     assert json_file.exists()
 
     # Read the file and check the number of json objects
