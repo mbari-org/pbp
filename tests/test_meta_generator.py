@@ -142,45 +142,45 @@ def test_soundtrap_generator_local():
     assert coverage_plot.exists()
 
 
-# def test_iclisten_generator():
-#     """
-#     Test fixture for IcListenMetadataGenerator.
-#     Tests the IcListenMetadataGenerator class ability to generate metadata for soundtrap recording files.
-#     One file should be generated in the json directory for the date specified. Note this currently
-#     only works for MBARI MARS ICListen data
-#     :return:
-#     """
-#     log = create_test_logger("test_iclisten_generator")
-#     json_dir = create_json_dir("mars")
-#
-#     start = datetime(2023, 7, 18, 0, 0, 0)
-#     end = datetime(2023, 7, 18, 0, 0, 0)
-#
-#     # If only running one day, use a single generator
-#     generator = IcListenMetadataGenerator(
-#         log=log,
-#         uri="s3://pacific-sound-256khz",
-#         json_base_dir=json_dir.as_posix(),
-#         prefixes=["MARS_"],
-#         start=start,
-#         end=end,
-#         seconds_per_file=600,
-#     )
-#     generator.run()
-#     # There should be one files in the json directory named 20230718.json and it should have 145 json objects
-#     json_files = list(json_dir.rglob("*.json"))
-#     assert len(json_files) == 1
-#     json_file = json_dir / "2023" / "20230718.json"
-#     assert json_file.exists()
-#
-#     # Read the file and check the number of json objects
-#     with open(json_file) as f:
-#         json_objects = json.load(f)
-#         assert len(json_objects) == 145
-#
-#     # There should also be a coverage plot in the base json directory
-#     coverage_plot = json_dir / f"{InstrumentType.ICLISTEN.lower()}_coverage_20230718_20230718.jpg"
-#     assert coverage_plot.exists()
+def test_iclisten_generator():
+    """
+    Test fixture for IcListenMetadataGenerator.
+    Tests the IcListenMetadataGenerator class ability to generate metadata for soundtrap recording files.
+    One file should be generated in the json directory for the date specified. Note this currently
+    only works for MBARI MARS ICListen data
+    :return:
+    """
+    log = create_test_logger("test_iclisten_generator")
+    json_dir = create_json_dir("mars")
+
+    start = datetime(2023, 7, 18, 0, 0, 0)
+    end = datetime(2023, 7, 18, 0, 0, 0)
+
+    # If only running one day, use a single generator
+    generator = IcListenMetadataGenerator(
+        log=log,
+        uri="s3://pacific-sound-256khz",
+        json_base_dir=json_dir.as_posix(),
+        prefixes=["MARS_"],
+        start=start,
+        end=end,
+        seconds_per_file=600,
+    )
+    generator.run()
+    # There should be one files in the json directory named 20230718.json and it should have 145 json objects
+    json_files = list(json_dir.rglob("*.json"))
+    assert len(json_files) == 1
+    json_file = json_dir / "2023" / "20230718.json"
+    assert json_file.exists()
+
+    # Read the file and check the number of json objects
+    with open(json_file) as f:
+        json_objects = json.load(f)
+        assert len(json_objects) == 145
+
+    # There should also be a coverage plot in the base json directory
+    coverage_plot = json_dir / f"{InstrumentType.ICLISTEN.lower()}_coverage_20230718_20230718.jpg"
+    assert coverage_plot.exists()
 
 
 def test_nrs_generator():
