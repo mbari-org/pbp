@@ -148,7 +148,7 @@ def plot_daily_coverage(
     # plot.xaxis.set_major_locator(
     #     MaxNLocator(nbins=min(15, len(daily_sum_df.index.values) - 1))
     # )
-    plot.axes.set_facecolor("lightgrey")
+    plot.axes.set_facecolor("#E4E4F1")
     # Rotate the x-axis labels for better readability
     plt.xticks(rotation=45)
     # Set both x and y axis tick label font size to 6

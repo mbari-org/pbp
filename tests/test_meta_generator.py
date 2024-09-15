@@ -179,7 +179,9 @@ def test_iclisten_generator():
         assert len(json_objects) == 145
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / f"{InstrumentType.ICLISTEN.lower()}_coverage_20230718_20230718.jpg"
+    coverage_plot = (
+        json_dir / f"{InstrumentType.ICLISTEN.lower()}_coverage_20230718_20230718.jpg"
+    )
     assert coverage_plot.exists()
 
 
