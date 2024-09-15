@@ -158,7 +158,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                                 continue
 
             self.log.info(
-                f"Found {len(wav_files)} files to process that cover the expanded period {start_dt} - {end_dt}"
+                f"Found {len(wav_files)} files to process that covers the expanded period {start_dt} - {end_dt}"
             )
 
             if len(wav_files) == 0:
