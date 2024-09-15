@@ -180,11 +180,16 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             except Exception as ex:
                 self.log.exception(str(ex))
 
+        # plot the daily coverage only on files that are greater than the start date
+        # this os tp avoid plotting any coverage on files only included for overlap
         plot_file = plot_daily_coverage(
-            InstrumentType.ICLISTEN, self.df, self.json_base_dir, self.start, self.end
+            InstrumentType.ICLISTEN,
+            self.df[self.df["start"] >= self.start],
+            self.json_base_dir,
+            self.start,
+            self.end
         )
-        self.log.info(f"Coverage plot saved to: {plot_file}")
-
+        self.log.info(f"Coverage plot saved to {plot_file}")
 
 if __name__ == "__main__":
     from pbp.logging_helper import create_logger

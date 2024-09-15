@@ -206,7 +206,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             # plot the daily coverage
             plot_file = plot_daily_coverage(
                 InstrumentType.SOUNDTRAP,
-                self.df,
+                self.df[self.df["start"] >= self.start],
                 self.json_base_dir,
                 self.start,
                 self.end,
