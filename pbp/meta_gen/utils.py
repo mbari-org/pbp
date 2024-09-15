@@ -164,7 +164,10 @@ def plot_daily_coverage(
         plot.set_title("Daily Coverage of icListen Recordings", fontsize=11)
     elif instrument_type == InstrumentType.SOUNDTRAP:
         plot.set_title("Daily Coverage of SoundTrap Recordings", fontsize=11)
-    plot_file = Path(base_dir) / f"{str(instrument_type).lower()}_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
+    plot_file = (
+        Path(base_dir)
+        / f"{str(instrument_type).lower()}_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
+    )
     fig = plot.get_figure()
     fig.autofmt_xdate()
     fig.savefig(plot_file.as_posix(), dpi=DEFAULT_DPI, bbox_inches="tight")

@@ -79,7 +79,9 @@ def test_soundtrap_generator_s3():
             assert len(json_objects) == 5
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / f"{InstrumentType.SOUNDTRAP.lower()}_coverage_20230715_20230716.jpg"
+    coverage_plot = (
+        json_dir / f"{InstrumentType.SOUNDTRAP.lower()}_coverage_20230715_20230716.jpg"
+    )
     assert coverage_plot.exists()
 
 
@@ -134,7 +136,9 @@ def test_soundtrap_generator_local():
             assert len(json_objects) == 1
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / f"{InstrumentType.SOUNDTRAP.lower()}_coverage_20221116_20221116.jpg"
+    coverage_plot = (
+        json_dir / f"{InstrumentType.SOUNDTRAP.lower()}_coverage_20221116_20221116.jpg"
+    )
     assert coverage_plot.exists()
 
 
@@ -214,7 +218,9 @@ def test_nrs_generator():
         assert len(json_objects) == 7
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / f"{InstrumentType.NRS.lower()}_coverage_20191024_20191024.jpg"
+    coverage_plot = (
+        json_dir / f"{InstrumentType.NRS.lower()}_coverage_20191024_20191024.jpg"
+    )
     assert coverage_plot.exists()
 
 
