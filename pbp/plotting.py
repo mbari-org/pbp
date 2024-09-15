@@ -39,6 +39,9 @@ def plot_dataset_summary(
     :param jpeg_filename: If given, filename to save the plot to.
     :param show: Whether to show the plot.
     """
+    plt.rcParams["text.usetex"] = False
+    plt.rcParams["axes.edgecolor"] = "black"
+
     # Transpose psd array for plotting
     da = xr.DataArray.transpose(ds.psd)
 
@@ -151,6 +154,7 @@ def plot_dataset_summary(
     plt.gcf().text(0.65, 0.91, "UTC")
 
     if jpeg_filename is not None:
+        print(f"Saving plot to {jpeg_filename}")
         plt.savefig(jpeg_filename, dpi=dpi)
     if show:
         plt.show()

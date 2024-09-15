@@ -7,8 +7,13 @@ from urllib.parse import urlparse
 from datetime import datetime
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib.ticker import NullLocator
+
+from pbp.plot_const import DEFAULT_DPI
 
 
 class InstrumentType:
@@ -108,37 +113,63 @@ def plot_daily_coverage(
     :param end: The end date of the recordings
     :return: The path to the plot file
     """
-    # Create a plot of the dataframe with the x-axis as the month, and the y-axis as the daily recording coverage,
-    # which is percent of the day covered by recordings
+    # Create a plot of the dataframe with the x-axis as the month, and the y-axis as the daily recording coverage.
+    # This is percent of the day covered by recordings
     plt.rcParams["text.usetex"] = False
-    df["duration"] = (df["end"] - df["start"]).dt.total_seconds()
-    ts_df = df[["start", "duration"]].copy()
+    plt.rcParams["axes.edgecolor"] = "black"
+    duration = (df["end"] - df["start"]).dt.total_seconds()
+    ts_df = df[["start"]].copy()
+    ts_df["duration"] = duration
     ts_df.set_index("start", inplace=True)
     daily_sum_df = ts_df.resample("D").sum()
     daily_sum_df["coverage"] = 100 * daily_sum_df["duration"] / 86400
     daily_sum_df["coverage"] = daily_sum_df[
         "coverage"
     ].round()  # round to nearest integer
-    plot = daily_sum_df["coverage"].plot()
-    plot.set_ylabel("Daily % Recording")
-    plot.set_xlabel("Date")
+    if len(daily_sum_df) == 1:
+        # Add a row with a NaN coverage before and after the single day to avoid matplotlib
+        # warnings about automatically expanding the x-axis
+        daily_sum_df.loc[daily_sum_df.index[0] - pd.DateOffset(days=1)] = np.nan
+        daily_sum_df.loc[daily_sum_df.index[0] + pd.DateOffset(days=1)] = np.nan
+    plot = daily_sum_df["coverage"].plot(
+        linestyle="-",
+        markerfacecolor="none",
+        marker="o",
+        color="b",
+        markersize=5,
+        linewidth=1,
+        figsize=(8, 4),
+    )
+    plot.set_ylabel("Daily % Recording", fontsize=8)
+    plot.set_xlabel("Date", fontsize=8)
     plot.set_xticks(daily_sum_df.index.values)
-    plot.set_ylim(0, 102)
-    # Angle the x-axis labels for better readability and force them to be in the format YYYY-MM-DD
-    plot.set_xticklabels([x.strftime("%Y-%m-%d") for x in daily_sum_df.index])
-    plot.set_xticklabels(plot.get_xticklabels(), rotation=45, horizontalalignment="right")
+    plot.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+    # Maximum 15 ticks on the x-axis
+    # plot.xaxis.set_major_locator(
+    #     MaxNLocator(nbins=min(15, len(daily_sum_df.index.values) - 1))
+    # )
+    plot.axes.set_facecolor("#E4E4F1")
+    # Rotate the x-axis labels for better readability
+    plt.xticks(rotation=45)
+    # Set both x and y axis tick label font size to 6
+    plot.tick_params(axis="both", which="major", labelsize=6)
+    # Disable the minor ticks on the x-axis using NullLocator, as they are not needed
+    plot.xaxis.set_minor_locator(NullLocator())
+    # Set the y-axis limits to 0-110 to avoid the plot being too close to the top
+    plot.set_ylim(0, 110)
     # Adjust the title based on the instrument type
     if instrument_type == InstrumentType.NRS:
-        plot.set_title("Daily Coverage of NRS Recordings")
+        plot.set_title("Daily Coverage of NRS Recordings", fontsize=11)
     elif instrument_type == InstrumentType.ICLISTEN:
-        plot.set_title("Daily Coverage of icListen Recordings")
+        plot.set_title("Daily Coverage of icListen Recordings", fontsize=11)
     elif instrument_type == InstrumentType.SOUNDTRAP:
-        plot.set_title("Daily Coverage of SoundTrap Recordings")
-    plot_file = Path(base_dir) / f"soundtrap_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
-    dpi = 300
+        plot.set_title("Daily Coverage of SoundTrap Recordings", fontsize=11)
+    plot_file = (
+        Path(base_dir)
+        / f"{str(instrument_type).lower()}_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
+    )
     fig = plot.get_figure()
-    fig.set_size_inches(10, 5)
-    fig.set_dpi(dpi)
-    fig.savefig(plot_file.as_posix(), bbox_inches="tight")
+    fig.autofmt_xdate()
+    fig.savefig(plot_file.as_posix(), dpi=DEFAULT_DPI, bbox_inches="tight")
     plt.close(fig)
     return plot_file.as_posix()

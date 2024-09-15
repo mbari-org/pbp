@@ -113,8 +113,6 @@ def main():
             jpeg_filename=jpeg_filename,
             show=show,
         )
-        if jpeg_filename is not None:
-            print(f"   done: {jpeg_filename}")
 
 
 if __name__ == "__main__":

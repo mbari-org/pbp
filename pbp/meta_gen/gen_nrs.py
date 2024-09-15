@@ -83,7 +83,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                     if f_dt is None:
                         continue
                     if start_dt <= f_dt <= end_dt:
-                        self.log.info(f"Found file {filename} with timestamp {f_dt}")
+                        self.log.debug(f"Found file {filename} with timestamp {f_dt}")
                         if ext == "*.flac":
                             sound_files.append(FlacFile(self.log, str(filename), f_dt))
                         if ext == "*.wav":
@@ -102,13 +102,13 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                 if f_dt is None:
                     continue
                 if start_dt <= f_dt <= end_dt:
-                    self.log.info(f"Found file {blob.name} with timestamp {f_dt}")
+                    self.log.debug(f"Found file {blob.name} with timestamp {f_dt}")
                     if re.search(r"\.flac$", blob.name):
                         sound_files.append(FlacFile(self.log, f_path, f_dt))
                     if re.search(r"\.wav$", blob.name):
                         sound_files.append(WavFile(self.log, f_path, f_dt))
                 # delay to avoid 400 error
-                if i % 100 == 0:
+                if i % 100 == 0 and i > 0:
                     self.log.info(
                         f"{i} files searched...found {len(sound_files)} files that match the search pattern"
                     )
@@ -135,7 +135,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
         for day in pd.date_range(self.start, self.end, freq="D"):
             try:
                 # create a dataframe from the flac files
-                self.log.info(
+                self.log.debug(
                     f"Creating dataframe from {len(sound_files)} "
                     f"files spanning {sound_files[0].start} to {sound_files[-1].start} in self.json_base_dir..."
                 )
@@ -155,9 +155,14 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
             except Exception as ex:
                 self.log.exception(str(ex))
 
-        # plot the daily coverage
+        # plot the daily coverage only on files that are greater than the start date
+        # this os tp avoid plotting any coverage on files only included for overlap
         plot_file = plot_daily_coverage(
-            InstrumentType.NRS, self.df, self.json_base_dir, self.start, self.end
+            InstrumentType.NRS,
+            self.df[self.df["start"] >= self.start],
+            self.json_base_dir,
+            self.start,
+            self.end,
         )
         self.log.info(f"Coverage plot saved to {plot_file}")
 

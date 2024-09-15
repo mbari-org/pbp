@@ -138,7 +138,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                                             )
                                         )
 
-                self.log.info(
+                self.log.debug(
                     f"{self.log_prefix} Found {len(wav_files)} files to process that "
                     f"cover the expanded period {start_dt} - {end_dt}"
                 )
@@ -154,8 +154,8 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                 wav_files.sort(key=lambda x: x.start)
 
                 # create a dataframe from the wav files
-                self.log.info(
-                    f"{self.log_prefix}  Creating dataframe from {len(wav_files)} files "
+                self.log.debug(
+                    f"{self.log_prefix} creating dataframe from {len(wav_files)} files "
                     f"spanning {wav_files[0].start} to {wav_files[-1].start}..."
                 )
 
@@ -180,10 +180,16 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             except Exception as ex:
                 self.log.exception(str(ex))
 
+        # plot the daily coverage only on files that are greater than the start date
+        # this os tp avoid plotting any coverage on files only included for overlap
         plot_file = plot_daily_coverage(
-            InstrumentType.ICLISTEN, self.df, self.json_base_dir, self.start, self.end
+            InstrumentType.ICLISTEN,
+            self.df[self.df["start"] >= self.start],
+            self.json_base_dir,
+            self.start,
+            self.end,
         )
-        self.log.info(f"Plot file: {plot_file}")
+        self.log.info(f"Coverage plot saved to {plot_file}")
 
 
 if __name__ == "__main__":

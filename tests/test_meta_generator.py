@@ -15,6 +15,7 @@ from pbp.logging_helper import create_logger
 from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
 from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
 from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
+from pbp.meta_gen.utils import InstrumentType
 
 # which is .gitignore'ed
 OUT_BASE_DIR = Path("tests/json_generator_tmp")
@@ -50,7 +51,7 @@ def test_soundtrap_generator_s3():
     :return:
     """
     log = create_test_logger("test_soundtrap_generator_s3")
-    json_dir = create_json_dir("soundtrap")
+    json_dir = create_json_dir("soundtrap_s3")
 
     start = datetime(2023, 7, 15)
     end = datetime(2023, 7, 16)
@@ -68,8 +69,8 @@ def test_soundtrap_generator_s3():
     # There should be two files in the json directory - one for each day
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 2
-    assert (json_dir / "2023/20230715.json").exists()
-    assert (json_dir / "2023/20230716.json").exists()
+    assert (json_dir / "2023" / "20230715.json").exists()
+    assert (json_dir / "2023" / "20230716.json").exists()
 
     # Each file should have 5 json objects
     for json_file in json_files:
@@ -78,7 +79,9 @@ def test_soundtrap_generator_s3():
             assert len(json_objects) == 5
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / "soundtrap_coverage_20230715_20230716.jpg"
+    coverage_plot = (
+        json_dir / f"{InstrumentType.SOUNDTRAP.lower()}_coverage_20230715_20230716.jpg"
+    )
     assert coverage_plot.exists()
 
 
@@ -90,7 +93,7 @@ def test_soundtrap_generator_local():
     :return:
     """
     log = create_test_logger("test_soundtrap_generator_local")
-    json_dir = create_json_dir("soundtrap")
+    json_dir = create_json_dir("soundtrap_local")
 
     wav_dir = Path(__file__).parent / "wav" / "soundtrap"
     wav_dir.mkdir(exist_ok=True, parents=True)
@@ -115,7 +118,7 @@ def test_soundtrap_generator_local():
         uri=f"file://{wav_dir.as_posix()}",
         json_base_dir=json_dir.as_posix(),
         prefixes=["6716"],
-        xml_dir=f"{wav_dir.as_posix()}",
+        xml_dir=wav_dir.as_posix(),
         start=start,
         end=end,
     )
@@ -124,7 +127,7 @@ def test_soundtrap_generator_local():
     # There should be two files in the json directory - one for each day
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 1
-    assert (json_dir / "2022/20221116.json").exists()
+    assert (json_dir / "2022" / "20221116.json").exists()
 
     # The file should have 1 json object
     for json_file in json_files:
@@ -133,7 +136,9 @@ def test_soundtrap_generator_local():
             assert len(json_objects) == 1
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / "soundtrap_coverage_20221116_20221116.jpg"
+    coverage_plot = (
+        json_dir / f"{InstrumentType.SOUNDTRAP.lower()}_coverage_20221116_20221116.jpg"
+    )
     assert coverage_plot.exists()
 
 
@@ -165,7 +170,7 @@ def test_iclisten_generator():
     # There should be one files in the json directory named 20230718.json and it should have 145 json objects
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 1
-    json_file = json_dir / "2023/20230718.json"
+    json_file = json_dir / "2023" / "20230718.json"
     assert json_file.exists()
 
     # Read the file and check the number of json objects
@@ -174,7 +179,9 @@ def test_iclisten_generator():
         assert len(json_objects) == 145
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / "soundtrap_coverage_20230718_20230718.jpg"
+    coverage_plot = (
+        json_dir / f"{InstrumentType.ICLISTEN.lower()}_coverage_20230718_20230718.jpg"
+    )
     assert coverage_plot.exists()
 
 
@@ -204,7 +211,7 @@ def test_nrs_generator():
     # There should be one file in the json directory and with number of objects as indicated
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 1
-    json_file = json_dir / "2019/20191024.json"
+    json_file = json_dir / "2019" / "20191024.json"
     assert json_file.exists()
 
     # Read the file and check the number of json objects
@@ -213,7 +220,9 @@ def test_nrs_generator():
         assert len(json_objects) == 7
 
     # There should also be a coverage plot in the base json directory
-    coverage_plot = json_dir / "soundtrap_coverage_20191024_20191024.jpg"
+    coverage_plot = (
+        json_dir / f"{InstrumentType.NRS.lower()}_coverage_20191024_20191024.jpg"
+    )
     assert coverage_plot.exists()
 
 

@@ -71,10 +71,6 @@ class JsonGenerator:
                 | ((self.raw_df["end"] >= self.day) & (self.raw_df["start"] < self.day))
             ]
 
-            self.log.info(
-                f"Creating metadata for day {self.day} from {len(day_df)} files..."
-            )
-
             if len(day_df) == 0:
                 self.log.warning(f"No metadata found for day {self.day}")
                 return
@@ -85,7 +81,7 @@ class JsonGenerator:
             day_df["end"] = pd.to_datetime(day_df["end"])
 
             # get the file list that covers the requested day
-            self.log.info(
+            self.log.debug(
                 f'Found {len(day_df)} files for day {self.day}, between {day_df.iloc[0]["start"]} and {day_df.iloc[-1]["end"]}'
             )
 
@@ -159,10 +155,6 @@ class JsonGenerator:
 
         except Exception as e:
             self.log.exception(f"Error correcting metadata for  {self.day}. {e}")
-        finally:
-            self.log.info(
-                f"Done correcting metadata for {self.day}. Saved to {self.json_base_dir}"
-            )
 
     def no_jitter(self, day_df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -172,7 +164,7 @@ class JsonGenerator:
         :return:
             The corrected dataframe
         """
-        self.log.info(
+        self.log.debug(
             "Using file start times as is, setting jitter to 0 and calculating end times."
         )
         # calculate the difference between each row start time and save as diff in a copy of the dataframe
@@ -236,4 +228,6 @@ class JsonGenerator:
             output_path = Path(self.json_base_dir, str(day.year))
             output_path.mkdir(parents=True, exist_ok=True)
             shutil.copy2(temp_metadata.as_posix(), output_path)
-            self.log.info(f"Wrote {output_path}/{temp_metadata.name}")
+            self.log.info(
+                f"Done correcting metadata for {self.day}. Saved to {output_path}/{temp_metadata.name}"
+            )
