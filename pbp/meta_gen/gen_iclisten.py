@@ -187,9 +187,10 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             self.df[self.df["start"] >= self.start],
             self.json_base_dir,
             self.start,
-            self.end
+            self.end,
         )
         self.log.info(f"Coverage plot saved to {plot_file}")
+
 
 if __name__ == "__main__":
     from pbp.logging_helper import create_logger
