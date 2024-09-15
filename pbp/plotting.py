@@ -39,6 +39,9 @@ def plot_dataset_summary(
     :param jpeg_filename: If given, filename to save the plot to.
     :param show: Whether to show the plot.
     """
+    plt.rcParams["text.usetex"] = False
+    plt.rcParams["axes.edgecolor"] = "black"
+
     # Transpose psd array for plotting
     da = xr.DataArray.transpose(ds.psd)
 
@@ -128,10 +131,6 @@ def plot_dataset_summary(
     )
     ax3.set_xticks([])
     ax3.set_yticks([])
-    ax3.spines["bottom"].set_color("black")
-    ax3.spines["top"].set_color("black")
-    ax3.spines["left"].set_color("black")
-    ax3.spines["right"].set_color("black")
 
     # colorbar for spectrogram
     r = np.concatenate(np.squeeze(ax0.get_position()))

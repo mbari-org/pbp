@@ -116,6 +116,7 @@ def plot_daily_coverage(
     # Create a plot of the dataframe with the x-axis as the month, and the y-axis as the daily recording coverage.
     # This is percent of the day covered by recordings
     plt.rcParams["text.usetex"] = False
+    plt.rcParams["axes.edgecolor"] = "black"
     duration = (df["end"] - df["start"]).dt.total_seconds()
     ts_df = df[["start"]].copy()
     ts_df["duration"] = duration
@@ -156,11 +157,6 @@ def plot_daily_coverage(
     plot.xaxis.set_minor_locator(NullLocator())
     # Set the y-axis limits to 0-110 to avoid the plot being too close to the top
     plot.set_ylim(0, 110)
-    plot.axes.spines["top"].set_color("black")
-    # Set the x-axis and y-axis labels to black
-    plot.axes.spines["bottom"].set_color("black")
-    plot.axes.spines["left"].set_color("black")
-    plot.axes.spines["right"].set_color("black")
     # Adjust the title based on the instrument type
     if instrument_type == InstrumentType.NRS:
         plot.set_title("Daily Coverage of NRS Recordings", fontsize=11)
@@ -168,9 +164,8 @@ def plot_daily_coverage(
         plot.set_title("Daily Coverage of icListen Recordings", fontsize=11)
     elif instrument_type == InstrumentType.SOUNDTRAP:
         plot.set_title("Daily Coverage of SoundTrap Recordings", fontsize=11)
-    plot_file = Path(base_dir) / f"soundtrap_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
+    plot_file = Path(base_dir) / f"{str(instrument_type).lower()}_coverage_{start:%Y%m%d}_{end:%Y%m%d}.jpg"
     fig = plot.get_figure()
-    # Use more of the available plotting space
     fig.autofmt_xdate()
     fig.savefig(plot_file.as_posix(), dpi=DEFAULT_DPI, bbox_inches="tight")
     plt.close(fig)
