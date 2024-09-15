@@ -33,7 +33,9 @@ def main():
     start = datetime.strptime(opts.start, "%Y%m%d")
     end = datetime.strptime(opts.end, "%Y%m%d")
 
-    log = create_logger_info(f"{opts.output_dir}/{opts.recorder}{opts.start:%Y%m%d}_{opts.end:%Y%m%d}.log")
+    log = create_logger_info(
+        f"{opts.output_dir}/{opts.recorder}{opts.start:%Y%m%d}_{opts.end:%Y%m%d}.log"
+    )
 
     try:
         if opts.recorder == "NRS":
