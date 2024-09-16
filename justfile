@@ -319,6 +319,7 @@ tags:
 # Create and push git tag
 tag-and-push:
   #!/usr/bin/env bash
+  set -ue
   version=$(tq -f pyproject.toml 'tool.poetry.version')
   echo "tagging and pushing v${version}"
   git tag v${version}
