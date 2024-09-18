@@ -35,3 +35,11 @@ keywords:
   - pypam
   - soundscape
 license: GPL-3.0
+references:
+  - authors:
+      - family-names: Parcerisas
+        given-names: Clea
+        orcid: https://orcid.org/0000-0001-7466-0288
+    title: "PyPAM: a package to process long-term underwater acoustics data in chunks"
+    doi: 10.5281/zenodo.7584847
+    type: software
