@@ -23,6 +23,7 @@ authors:
     family-names: Ryan
     email: ryjo@mbari.org
     affiliation: MBARI
+    orcid: 'https://orcid.org/0000-0001-7954-5369'
 abstract: >-
   Process ocean audio data archives to daily analysis products
   of hybrid millidecade spectra using PyPAM.
