@@ -368,8 +368,6 @@ class _HmbGen:
         nc_filename = f"{self.output_dir}/{self.output_prefix}{date}.nc"
         jpeg_filename = nc_filename.replace(".nc", ".jpg")
 
-        print(f"{_version()}: Generating plot for {date} {jpeg_filename}...")
-
         ds = xr.open_dataset(nc_filename, engine="h5netcdf")
         plot_dataset_summary(
             ds,
