@@ -156,7 +156,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                 self.log.exception(str(ex))
 
         # plot the daily coverage only on files that are greater than the start date
-        # this os tp avoid plotting any coverage on files only included for overlap
+        # this is to avoid plotting any coverage on files only included for overlap
         plot_file = plot_daily_coverage(
             InstrumentType.NRS,
             self.df[self.df["start"] >= self.start],

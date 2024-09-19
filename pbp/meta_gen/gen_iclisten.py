@@ -70,9 +70,9 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             return
 
         # Run for each day in the range
+        self.df = None
         for day in pd.date_range(self.start, self.end, freq="D"):
             try:
-                self.df = None
                 for s in self.prefixes:
                     self.log.info(
                         f"{self.log_prefix} Searching in {self.audio_loc}/*.wav "
@@ -181,7 +181,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                 self.log.exception(str(ex))
 
         # plot the daily coverage only on files that are greater than the start date
-        # this os tp avoid plotting any coverage on files only included for overlap
+        # this is to avoid plotting any coverage on files only included for overlap
         plot_file = plot_daily_coverage(
             InstrumentType.ICLISTEN,
             self.df[self.df["start"] >= self.start],

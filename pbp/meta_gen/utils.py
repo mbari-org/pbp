@@ -126,6 +126,8 @@ def plot_daily_coverage(
     daily_sum_df["coverage"] = daily_sum_df[
         "coverage"
     ].round()  # round to nearest integer
+    # Cap the coverage at 100%
+    daily_sum_df["coverage"] = daily_sum_df["coverage"].clip(upper=100)
     if len(daily_sum_df) == 1:
         # Add a row with a NaN coverage before and after the single day to avoid matplotlib
         # warnings about automatically expanding the x-axis
