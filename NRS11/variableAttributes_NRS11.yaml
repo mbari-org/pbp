@@ -24,5 +24,3 @@ sensitivity:
   long_name: Hydrophone sensitivity (dB re 1 volt / µPa)
   units: dB
   coverage_content_type: physicalMeasurement
-  comment: >-
-    Any comments for NRS11, about the hydrophone or the site?
