@@ -340,9 +340,9 @@ class FileHelper:
                 num_still_open += 1
                 self.log.debug(f"Closing sound file for cached {c_uri=} {c_ss.age=}")
                 c_ss.sound_file.close()
-            self.log.debug(
-                f"day_completed: closed {num_still_open} sound files that were still open."
-            )
+        self.log.debug(
+            f"day_completed: closed {num_still_open} sound files that were still open."
+        )
 
         # remove any downloaded files (cloud case):
         if not self.retain_downloaded_files:

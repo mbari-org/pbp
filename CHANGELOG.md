@@ -2,6 +2,11 @@
 
 2024-09
 
+- 1.5.0:
+    - bringing up recent updates
+    - a minor fix in a log.debug statement
+    - also noting that 1.4.9 was published but still with 1.4.8 in pyproject.toml
+
 - 1.4.5:
     - removed unneeded print at end of `plot_date` such that the resulting plot in the notebook
       is not affected in terms of requiring undesirable scrolling (hopefully).
