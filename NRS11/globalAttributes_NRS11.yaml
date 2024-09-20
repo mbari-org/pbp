@@ -31,7 +31,7 @@ time_coverage_end: AUTOPOPULATE
 time_coverage_duration: P1D
 time_coverage_resolution: P60S
 platform: NOAA NRS11 mooring
-instrument: "AUH model ITC-1032, SN {{serial_number}}"
+instrument: "AUH model ITC-1032, SN H23"
 cdm_data_type: TimeSeries
 references: >-
   Computation of single-sided mean-square sound pressure spectral density with 1 Hz resolution
