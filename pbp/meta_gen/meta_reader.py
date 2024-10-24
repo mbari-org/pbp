@@ -88,8 +88,11 @@ class SoundTrapWavFile(AudioFile):
         :param start:
         """
         super().__init__(path_or_url, start)
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
+        try:
+            tree = ET.parse(xml_file)
+            root = tree.getroot()
+        except ET.ParseError:
+            raise ValueError(f"Error reading {xml_file}. Empty metadata")
         wav_start_dt = None
         wav_stop_dt = None
         sample_count = None
