@@ -1,4 +1,5 @@
 .env
+.idea/
 output*/
 cloud_tmp*/
 NRS11/
