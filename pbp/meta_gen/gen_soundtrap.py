@@ -110,13 +110,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                         wav_files.append(
                             SoundTrapWavFile(wav_path.as_posix(), start_dt)
                         )
-                    else:
-                        if not xml_path.exists():
-                            self.log.error(
-                                "The path set by --xml-dir :"
-                                + str(xml_path)
-                                + " could not be located at the user specified directory."
-                            )
+
 
             else:
                 # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
