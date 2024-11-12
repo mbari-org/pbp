@@ -100,15 +100,15 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                     sorted(wav_path.rglob("*.wav")), prefix="Searching : "
                 ):
                     wav_path = filename.parent / f"{filename.stem}.wav"
-                    xml_path = Path(self.xml_dir + "/" + f"{filename.stem}.log.xml")
+                    #xml_path = Path(self.xml_dir + "/" + f"{filename.stem}.log.xml")
                     start_dt = get_datetime(wav_path, self.prefixes)
 
                     # Must have a start date to be valid and also must have a corresponding xml file
                     if (
-                        start_dt and xml_path.exists() and start_dt <= start_dt <= end_dt
+                        start_dt and start_dt <= end_dt
                     ):  # TODO : Saying that a str object can not have an .exists()
                         wav_files.append(
-                            SoundTrapWavFile(wav_path.as_posix(), xml_path, start_dt)
+                            SoundTrapWavFile(wav_path.as_posix(), start_dt)
                         )
                     else:
                         if not xml_path.exists():
