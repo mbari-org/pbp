@@ -105,7 +105,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
 
                     # Must have a start date to be valid and also must have a corresponding xml file
                     if (
-                        start_dt and start_dt <= end_dt
+                        start_dt and (self.start-timedelta(days=1))  <= start_dt <= end_dt 
                     ):  # TODO : Saying that a str object can not have an .exists()
                         wav_files.append(
                             SoundTrapWavFile(wav_path.as_posix(), start_dt)
@@ -115,7 +115,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             else:
                 # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
                 # dates
-                self.log.debug(f"Searching between {start_dt} and {end_dt}")
+                self.log.debug(f"Searching between {self.start-timedelta(days=1)} and {end_dt}")
 
                 client = boto3.client("s3", config=Config(signature_version=UNSIGNED))
                 paginator = client.get_paginator("list_objects")
@@ -123,7 +123,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                 operation_parameters = {"Bucket": bucket}
                 page_iterator = paginator.paginate(**operation_parameters)
                 self.log.info(
-                    f"Searching in bucket: {bucket} for .wav and .xml files between {start_dt} and {end_dt}"
+                    f"Searching in bucket: {bucket} for .wav and .xml files between {self.start-timedelta(days=1)} and {end_dt}"
                 )
 
                 # list the objects in the bucket
@@ -152,7 +152,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                                 continue
 
             self.log.info(
-                f"Found {len(wav_files)} files to process that covers the expanded period {start_dt} - {end_dt}"
+                f"Found {len(wav_files)} files to process that covers the expanded period {self.start-timedelta(days=1)} - {end_dt}"
             )
 
             if len(wav_files) == 0:
