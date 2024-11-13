@@ -107,16 +107,9 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                     if (
                         start_dt and (self.start-timedelta(days=1))  <= start_dt <= end_dt 
                     ):  # TODO : Saying that a str object can not have an .exists()
-                        try:
-                            wav_files.append(
-                                SoundTrapWavFile(wav_path.as_posix(), start_dt)
-                            )
-                        except Exception as ex:
-                            self.log.error(
-                                f"Error reading metadata from: {wav_path} - {str(ex)}"
-                            )
-                            errorcount += 1
-                print(f"The number of wavfiles with faulty metadata is: {errorcount}")
+                        wav_files.append(
+                            SoundTrapWavFile(wav_path.as_posix(), start_dt)
+                        )
             else:
                 # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
                 # dates
