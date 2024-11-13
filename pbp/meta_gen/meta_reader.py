@@ -15,7 +15,6 @@ import pandas as pd
 from datetime import datetime, timedelta
 import xml.etree.ElementTree as ET
 from pbp.meta_gen.utils import parse_s3_or_gcp_url
-import wave
 
 
 class AudioFile:
@@ -102,12 +101,13 @@ class SoundTrapWavFile(AudioFile):
         self._read_wav_metadata()
         
     def _read_wav_metadata(self):
-        with wave.open(self.path_or_url, "rb") as f:
-            self.fs = f.getframerate()
-            self.frames = f.getnframes()
-            self.channels = f.getnchannels()
-            self.duration_secs = self.frames / self.fs
-            self.end = self.start + timedelta(seconds=self.duration_secs)
+        # read the wav file to get the metadata
+        metadata = sf.info(self.path_or_url)
+        self.fs = metadata.samplerate
+        self.frames = metadata.frames
+        self.channels = metadata.channels
+        self.duration_secs = metadata.duration
+        self.end = self.start + timedelta(seconds=self.duration_secs)
         
         if not self.start or not self.end or not self.frames:
             raise ValueError(f"Error reading {self.path_or_url}. Missing metadata")
