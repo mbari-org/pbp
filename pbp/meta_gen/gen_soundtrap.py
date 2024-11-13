@@ -87,7 +87,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             # Set the start and end dates to 1 day before and after the start and end dates
             start_dt = self.start - timedelta(days=1)
             end_dt = self.end + timedelta(days=1)
-
+            errorcount = 0 
             if scheme == "file":
                 parsed_uri = urllib.parse.urlparse(self.audio_loc)
 
@@ -115,10 +115,8 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                             self.log.error(
                                 f"Error reading metadata from: {wav_path} - {str(ex)}"
                             )
-                            break
-                            
-
-
+                            errorcount += 1
+                print(f"The number of wavfiles with faulty metadata is: {errorcount}")
             else:
                 # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
                 # dates
