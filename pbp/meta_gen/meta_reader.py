@@ -99,10 +99,7 @@ class SoundTrapWavFile(AudioFile):
         self.subtype = "SoundTrap"
         self.exception = ""  # no exceptions for SoundTrap  files
         
-        try:
-            self._read_wav_metadata()
-        except Exception as ex:
-            self.log.exception(f"Error reading wav file metadata for: {path_or_url}. {ex}")
+        self._read_wav_metadata()
         
     def _read_wav_metadata(self):
         with wave.open(self.path_or_url, "rb") as f:

@@ -107,9 +107,16 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                     if (
                         start_dt and (self.start-timedelta(days=1))  <= start_dt <= end_dt 
                     ):  # TODO : Saying that a str object can not have an .exists()
-                        wav_files.append(
-                            SoundTrapWavFile(wav_path.as_posix(), start_dt)
-                        )
+                        try:
+                            wav_files.append(
+                                SoundTrapWavFile(wav_path.as_posix(), start_dt)
+                            )
+                        except Exception as ex:
+                            self.log.error(
+                                f"Error reading metadata from: {wav_path} - {str(ex)}"
+                            )
+                            break
+                            
 
 
             else:
