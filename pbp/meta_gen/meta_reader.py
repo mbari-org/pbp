@@ -76,7 +76,7 @@ class AudioFile:
 
 
 class SoundTrapWavFile(AudioFile):
-    def __init__(self, log, path_or_url: str, start: datetime):
+    def __init__(self, path_or_url: str, start: datetime):
         """
         SoundTrapWavFile uses the metadata from the xml files, not the wav file itself
         :param path_or_url:
@@ -97,9 +97,10 @@ class SoundTrapWavFile(AudioFile):
         self.channels = None
         self.subtype = "SoundTrap"
         self.exception = ""  # no exceptions for SoundTrap  files
-        self.log = log
-        
-        self._read_wav_metadata()
+        try:
+            self._read_wav_metadata()
+        except ValueError as ex:        
+            raise ValueError(f"Error reading {self.path_or_url}. {ex}")
         
     def _read_wav_metadata(self):
         # read the wav file to get the metadata
@@ -111,7 +112,7 @@ class SoundTrapWavFile(AudioFile):
         self.end = self.start + timedelta(seconds=self.duration_secs)
         
         if not self.start or not self.end or not self.frames:
-            self.log.error(f"Error reading {self.path_or_url}. Missing metadata")
+            raise ValueError(f"Error reading {self.path_or_url}. Faulty wavfile")
         
 
 class GenericWavFile(AudioFile):

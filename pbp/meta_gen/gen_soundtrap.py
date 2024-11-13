@@ -142,7 +142,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                             try:
                                 self.log.debug(f"Downloading {key_xml} ...")
                                 client.download_file(bucket, key_xml, xml_path)
-                                wav_files.append(SoundTrapWavFile(uri, xml_path, key_dt))
+                                wav_files.append(SoundTrapWavFile(uri, key_dt))
                             except Exception as ex:
                                 self.log.error(
                                     f"Could not download {key_xml} - {str(ex)}"
