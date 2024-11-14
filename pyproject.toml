@@ -26,6 +26,7 @@ pbp-hmb-gen = "pbp.main_hmb_generator:main"
 pbp-cloud = "pbp.main_cloud:main"
 pbp-hmb-plot = "pbp.main_plot:main"
 pbp-meta-gen = "pbp.main_meta_generator:main"
+pbp-job-agent = "pbp.main_job_agent:main"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12.0"
