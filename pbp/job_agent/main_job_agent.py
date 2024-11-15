@@ -6,8 +6,6 @@ def main():
     opts = parse_arguments()
 
     # pylint: disable=import-outside-toplevel
-    import os
-
     from pbp.logging_helper import create_logger
     from pbp.job_agent.job_agent import JobAgent
     
@@ -20,7 +18,6 @@ def main():
     )
 
     job_agent = JobAgent(
-        deployment=opts.deployment,
         recorder=opts.recorder,
         audio_base_dir=opts.audio_base_dir,
         json_base_dir=opts.json_base_dir,
@@ -36,7 +33,7 @@ def main():
         title=opts.title,
         cmlim=opts.cmlim,
         ylim=opts.ylim,
-        orch_dir = opts.orch_dir)
+        log_dir = opts.log_dir)
     
     try:
         job_agent.run()

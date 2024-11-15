@@ -31,7 +31,6 @@ class JobAgent:
         ylim,  # YLIM
         log_dir # Log directory
     ):
-        self.deployment = deployment
         self.recorder = recorder
         self.audio_base_dir = audio_base_dir
 
@@ -86,8 +85,8 @@ class JobAgent:
         self.title = title
         self.cmlim = cmlim
         self.ylim = ylim  # YLIM
-        self.orch_dir = orch_dir
-        logger.add(orch_dir+r"\process-orchestration.log")
+        self.orch_dir = log_dir
+        #logger.add(log_dir+r"\process-orchestration.log")
         self.output_prefix = self.deployment+"_"
 
     def search_filenames(self, directory, pattern):
