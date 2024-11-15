@@ -8,13 +8,13 @@ def main():
     from pbp.logging_helper import create_logger
     from pbp.job_agent.job_agent import JobAgent
     
-    log = create_logger(
-        log_filename_and_level=(
-            f"{opts.log_dir}/{opts.prefix}{opts.start}_{opts.end}.log",
-            "INFO",
-        ),
-        console_level="WARNING",
-    )
+    #log = create_logger(
+    #    log_filename_and_level=(
+    #        f"{opts.log_dir}/{opts.prefix}{opts.start}_{opts.end}.log",
+    #        "INFO",
+    #    ),
+    #    console_level="WARNING",
+    #)
 
     job_agent = JobAgent(
         recorder=opts.recorder,

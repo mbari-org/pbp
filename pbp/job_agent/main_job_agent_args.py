@@ -34,6 +34,7 @@ def parse_arguments():
                     "--recorder",
                     choices=[InstrumentType.NRS, InstrumentType.ICLISTEN, InstrumentType.SOUNDTRAP],
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["recorder"],
                     help="Choose the audio instrument type",
                 )
             else:
@@ -48,6 +49,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--log_dir",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["log_dir"],
                     help="The path where the job agent log file will be saved.",
                 )
             else:
@@ -77,6 +79,7 @@ def parse_arguments():
                     "--start",
                     required=False,
                     metavar="start date",
+                    default=yaml_data["pbp_job_agent"]["start"],
                     help="The desired starting date of the deployment period for processing.",
                 )
             else:
@@ -91,6 +94,7 @@ def parse_arguments():
                     "--end",
                     required=False,
                     metavar="start date",
+                    default=yaml_data["pbp_job_agent"]["end"],
                     help="The desired starting date of the deployment period for processing.",
                 )
             else:
@@ -104,6 +108,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--audio_base_dir",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["audio_base_dir"],
                     help="",
                 )
             else:

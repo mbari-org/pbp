@@ -65,37 +65,12 @@ references: >-
   https://doi.org/10.1121/10.0003324; https://doi.org/10.1121/10.0005818)
 sensitivity_flat_value: 176.6
 
-pbp_meta_gen:
-  json_base_dir: ""
-  output_dir: ""
-  uri: ""
-  start: ""
-  end: ""
-  prefix: ""
-  recorder: ""
-  xml_dir: ""
-
-pbp_hmb_gen:
-  json_base_dir: ""
-  audio_base_dir: ""
-  audio_path_map_prefix: ""
-  sensitivity_flat_value: ""
-  voltage_multiplier: ""
-  sensitivity_uri: ""
-
-pbp_hmb_plot:
-  title: ""
-  clim: ""
-  ylim: ""
-  latlon: ""
-  ncfile: ""
-
 pbp_job_agent:
   recorder: ""
-  audio_base_dir: ""
+  audio_base_dir: "/home/mryan/Desktop/SOUNDTRAP/"
   json_base_dir: ""
   xml_dir: ""
-  start: ""
+  start: "220520"
   end: ""
   prefix: ""
   nc_output_dir: ""

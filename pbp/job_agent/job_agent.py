@@ -44,7 +44,8 @@ class JobAgent:
             self.uri = self.uri.replace(" ", "")
             path = Path(self.uri)
         else:
-            self.uri = r"file:/// " + audio_base_dir
+            print(audio_base_dir)
+            self.uri = r"file:/// " + str(audio_base_dir)
             self.uri = self.uri.replace(" ", "")
             path = Path(self.uri)
 
