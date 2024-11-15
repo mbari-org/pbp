@@ -17,20 +17,25 @@ class JobAgent:
         recorder,  # Recorder type
         audio_base_dir,  # Audio base directory
         json_base_dir,  # JSON base directory
-        xml_dir,  # XML directory
         start,  # Start date
         end,  # End date
         prefix,  # Prefix
         nc_output_dir,  # NetCDF output directory
-        global_attrs_file,  # Global attributes file
-        variable_attrs_file,  # Variable attributes file
+        global_attrs,  # Global attributes file
+        variable_attrs,  # Variable attributes file
         sensitivity_flat_value,  # Sensitivity flat value
         latlon,  # Latitude and Longitude
         title,  # Title
         cmlim,  # CMLIM
         ylim,  # YLIM
-        log_dir # Log directory
+        log_dir, # Log directory
+        meta_output_dir = None,
+        xml_dir = None
     ):
+
+        if meta_output_dir is None:  # Sets the log directory the same as the json base directory if not specified which feels like a good best practice. 
+            meta_output_dir = json_base_dir
+            
         self.recorder = recorder
         self.audio_base_dir = audio_base_dir
 
@@ -43,7 +48,7 @@ class JobAgent:
             self.uri = self.uri.replace(" ", "")
             path = Path(self.uri)
 
-        self.meta_log_output_dir = json_base_dir
+        self.meta_output_dir = meta_output_dir #TODO : I forget is this an assumpsion I made. I think it is. This hides some of the original pbp argumentation so that is bad.
         self.json_base_dir = json_base_dir
         self.xml_dir = xml_dir
 
@@ -68,15 +73,15 @@ class JobAgent:
             )  # Remove any spaces. This is to avoid the escape character issue in python.
         else:  # For Unix-based systems
             self.global_attrs_file = (
-                r"file:/// " + global_attrs_file
+                r"file:/// " + global_attrs
             )  # Apply URI formatting
-            self.global_attrs_file = self.global_attrs_file.replace(
+            self.global_attrs = self.global_attrs.replace(
                 " ", ""
             )  # Remove any spaces. This is to avoid the escape character issue in python.
             self.variable_attrs_file = (
-                r"file:/// " + variable_attrs_file
+                r"file:/// " + variable_attrs
             )  # Apply URI formatting
-            self.variable_attrs_file = self.variable_attrs_file.replace(
+            self.variable_attrs = self.variable_attrs.replace(
                 " ", ""
             )  # Remove any spaces. This is to avoid the escape character issue in python.
 
