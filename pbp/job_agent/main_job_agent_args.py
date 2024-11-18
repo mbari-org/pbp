@@ -29,6 +29,23 @@ def parse_arguments():
         yaml_path =  parser.parse_args().global_attrs # The yaml_path is the path to the yaml file but it is not known yet if the value exists in the yaml.
         if yaml_path is not None: # If there is a yaml path is provided.
             yaml_data = yaml_to_json(yaml_path) # Convert the yaml file to a parsable object. This parsing is yaml based and distinct from the Argparse parsing.
+            
+            if yaml_data["pbp_job_agent"]["name"] is not None: # If the yaml file has a recorder key present.
+                parser.add_argument(
+                    "--name",
+                    choices=[InstrumentType.NRS, InstrumentType.ICLISTEN, InstrumentType.SOUNDTRAP],
+                    required=False,
+                    default=yaml_data["pbp_job_agent"]["name"],
+                    help="Choose the audio instrument type",
+                )
+            else:
+                parser.add_argument(
+                    "--recorder",
+                    choices=[InstrumentType.NRS, InstrumentType.ICLISTEN, InstrumentType.SOUNDTRAP],
+                    required=True,
+                    help="Choose the audio instrument type",
+                )
+            
             if yaml_data["pbp_job_agent"]["recorder"] is not None: # If the yaml file has a recorder key present.
                 parser.add_argument(
                     "--recorder",
@@ -64,6 +81,7 @@ def parse_arguments():
                     "--prefix",
                     required=False,
                     metavar="prefix",
+                    default=yaml_data["pbp_job_agent"]["prefix"],
                     help="The path where the job agent log file will be saved.",
                 )
             else:
@@ -121,6 +139,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--json_base_dir",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["json_base_dir"],
                     help="",
                 )
             else:
@@ -133,6 +152,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--xml_dir",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["xml_dir"],
                     help="",
                 )
             else:
@@ -145,6 +165,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--nc_output_dir",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["nc_output_dir"],
                     help="",
                 )
             else:
@@ -156,6 +177,7 @@ def parse_arguments():
             if yaml_data["pbp_job_agent"]["variable_attrs"] is not None: # If the yaml file has a recorder key present.
                 parser.add_argument(
                     "--variable_attrs",
+                    default=yaml_data["pbp_job_agent"]["variable_attrs"],
                     required=False,
                     help="",
                 )
@@ -169,6 +191,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--sensitivity_flat_value",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["sensitivity_flat_value"],
                     help="",
                 )
             else:
@@ -181,6 +204,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--latlon",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["latlon"],
                     help="",
                 )
             else:
@@ -193,6 +217,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--title",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["title"],
                     help="",
                 )
             else:
@@ -205,6 +230,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--cmlim",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["cmlim"],
                     help="",
                 )
             else:
@@ -217,6 +243,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--ylim",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["ylim"],
                     help="",
                 )
             else:
@@ -229,6 +256,7 @@ def parse_arguments():
                 parser.add_argument(
                     "--meta_output_dir",
                     required=False,
+                    default=yaml_data["pbp_job_agent"]["meta_output_dir"],
                     help="",
                 )
             else:

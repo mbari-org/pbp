@@ -2,21 +2,22 @@ from pbp.job_agent.main_job_agent_args import parse_arguments
 
 
 def main():
+    
     opts = parse_arguments()
 
-    # pylint: disable=import-outside-toplevel
     from pbp.logging_helper import create_logger
     from pbp.job_agent.job_agent import JobAgent
     
-    #log = create_logger(
-    #    log_filename_and_level=(
-    #        f"{opts.log_dir}/{opts.prefix}{opts.start}_{opts.end}.log",
-    #        "INFO",
-    #    ),
-    #    console_level="WARNING",
-    #)
+    log = create_logger(
+        log_filename_and_level=(
+            f"{opts.log_dir}/{opts.prefix}{opts.start}_{opts.end}.log",
+            "INFO",
+        ),
+        console_level="WARNING",
+    )
 
     job_agent = JobAgent(
+        name=opts.name,
         recorder=opts.recorder,
         audio_base_dir=opts.audio_base_dir,
         json_base_dir=opts.json_base_dir,

@@ -32,9 +32,9 @@ def main():
     json_dir.mkdir(exist_ok=True, parents=True)
     start = datetime.strptime(opts.start, "%Y%m%d")
     end = datetime.strptime(opts.end, "%Y%m%d")
-
+    print(opts)
     log = create_logger_info(
-        f"{opts.output_dir}/{opts.recorder}{opts.start:%Y%m%d}_{opts.end:%Y%m%d}.log"
+        f"{opts.output_dir}/{opts.recorder}{start}_{end}.log"
     )
 
     try:
