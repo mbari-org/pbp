@@ -5,8 +5,13 @@ from datetime import date, timedelta, datetime
 import os
 import time
 from loguru import logger  # A great logger option.
+import sys
 
+# Configure loguru to print to the terminal
+logger.add(sys.stdout, format="{time} {level} {message}", level="INFO")
 
+# Example usage
+logger.info("This will be printed directly to the terminal")
     
 
 class JobAgent:
@@ -14,6 +19,7 @@ class JobAgent:
 
     def __init__(
         self,
+        name,  # Name of the deployment
         recorder,  # Recorder type
         audio_base_dir,  # Audio base directory
         json_base_dir,  # JSON base directory
@@ -32,7 +38,7 @@ class JobAgent:
         meta_output_dir = None,
         xml_dir = None
     ):
-
+        self.name = name
         if meta_output_dir is None:  # Sets the log directory the same as the json base directory if not specified which feels like a good best practice. 
             meta_output_dir = json_base_dir
             
@@ -44,9 +50,9 @@ class JobAgent:
             self.uri = self.uri.replace(" ", "")
             path = Path(self.uri)
         else:
-            print(audio_base_dir)
-            self.uri = r"file:/// " + str(audio_base_dir)
+            self.uri = r"file:/// " + str(self.audio_base_dir)
             self.uri = self.uri.replace(" ", "")
+            self.uri = self.uri.replace(r"////", r"///")
             path = Path(self.uri)
 
         self.meta_output_dir = meta_output_dir #TODO : I forget is this an assumpsion I made. I think it is. This hides some of the original pbp argumentation so that is bad.
@@ -60,28 +66,30 @@ class JobAgent:
         self.end_date = datetime.strptime(end, "%Y%m%d").date()
 
         if os.name == "nt":  # For Windows-based systems
-            self.global_attrs_file = (
-                r"file:\\\ " + global_attrs_file
-            )  # Apply URI formatting
-            self.global_attrs_file = self.global_attrs_file.replace(
-                " ", ""
-            )  # Remove any spaces. This is to avoid the escape character issue in python.
-            self.variable_attrs_file = (
-                r"file:\\\ " + variable_attrs_file
-            )  # Apply URI formatting
-            self.variable_attrs_file = self.variable_attrs_file.replace(
-                " ", ""
-            )  # Remove any spaces. This is to avoid the escape character issue in python.
-        else:  # For Unix-based systems
-            self.global_attrs_file = (
-                r"file:/// " + global_attrs
+            self.global_attrs = (
+                r"file:\\\ " + global_attrs
             )  # Apply URI formatting
             self.global_attrs = self.global_attrs.replace(
                 " ", ""
             )  # Remove any spaces. This is to avoid the escape character issue in python.
-            self.variable_attrs_file = (
+            self.variable_attrs = (
+                r"file:\\\ " + variable_attrs
+            )  # Apply URI formatting
+            self.variable_attrs = self.variable_attrs.replace(
+                " ", ""
+            )  # Remove any spaces. This is to avoid the escape character issue in python.
+        else:  # For Unix-based systems
+            self.global_attrs = (
+                r"file:/// " + global_attrs
+            )  # Apply URI formatting
+            
+            self.global_attrs = self.global_attrs.replace(
+                " ", ""
+            )  # Remove any spaces. This is to avoid the escape character issue in python.
+            self.variable_attrs = (
                 r"file:/// " + variable_attrs
             )  # Apply URI formatting
+
             self.variable_attrs = self.variable_attrs.replace(
                 " ", ""
             )  # Remove any spaces. This is to avoid the escape character issue in python.
@@ -91,9 +99,12 @@ class JobAgent:
         self.title = title
         self.cmlim = cmlim
         self.ylim = ylim  # YLIM
-        self.orch_dir = log_dir
-        #logger.add(log_dir+r"\process-orchestration.log")
-        self.output_prefix = self.deployment+"_"
+        self.log_dir = log_dir
+        #if os.name == "nt":
+            #logger.add(log_dir+r"\pbp-job-agent.log")
+        #if os.name == "posix":
+            #logger.add(log_dir+"/pbp-job-agent.log")
+        self.output_prefix = self.name+"_"
 
     def search_filenames(self, directory, pattern):
         try:
@@ -188,7 +199,7 @@ class JobAgent:
         command = self.synth_pbp_meta_gen(
             self.recorder,
             self.uri,
-            self.meta_log_output_dir,
+            self.meta_output_dir,
             self.json_base_dir,
             self.xml_dir,
             self.start_date.strftime("%Y%m%d"),
@@ -220,17 +231,18 @@ class JobAgent:
                     + str(self.start_date)
                     + "</blue>"
                 )
+                print(command)
                 command = self.synth_pbp_hmb_gen(
                     date=self.start_date.strftime("%Y%m%d"),
                     json_base_dir=self.json_base_dir,
                     audio_base_dir=self.audio_base_dir,
                     output_dir=self.nc_output_dir,
-                    global_attrs=self.global_attrs_file,
-                    variable_attrs=self.variable_attrs_file,
+                    global_attrs=self.global_attrs,
+                    variable_attrs=self.variable_attrs,
                     sensitivity_flat_value=self.sensitivity_flat_value,
                     output_prefix = self.output_prefix
                 )
-
+                print(command)
                 logger.opt(colors=True).info(
                     "<blue>Checking if netCDF file associated with "
                     + str(self.start_date.strftime("%Y%m%d"))
