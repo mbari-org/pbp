@@ -63,25 +63,25 @@ references: >-
   18405:2017(E), Underwater Acoustics – Terminology. Geneva: ISO). Hybrid
   millidecade band processing followed Martin et al. (2021a,b:
   https://doi.org/10.1121/10.0003324; https://doi.org/10.1121/10.0005818)
-sensitivity_flat_value: 176.6
+sensitivity_flat_value: "176.6"
 
 pbp_job_agent:
   name: some_deployment
   recorder: "SOUNDTRAP"
-  audio_base_dir: "home/mryan/Desktop/SOUNDTRAP/"
+  audio_base_dir: "/home/mryan/Desktop/SOUNDTRAP/"
   json_base_dir: "/home/mryan/Desktop/SOUNDTRAP/JSON"
-  xml_dir: "/home/mryan/Desktop/SOUNDTRAP/"
-  start: "20220520"
+  xml_dir: "/home/mryan/Desktop/SOUNDTRAP"
+  start: "20220521"
   end: "20220521"
   prefix: "6550"
   nc_output_dir: "/home/mryan/Desktop/SOUNDTRAP/NC"
   global_attrs: "/home/mryan/Documents/GitHub/pbp/tests/yaml/test_deployment_global_attributes.yaml"
   variable_attrs: "/home/mryan/Documents/GitHub/pbp/tests/yaml/test_deployment_variable_attributes.yaml"
-  sensitivity_flat_value: 176.6
-  latlon: ""
-  title: ""
-  cmlim: ""
-  ylim: ""
+  sensitivity_flat_value: "176.6"
+  latlon: "-31.711 115.583"
+  title: "some_title"
+  cmlim: "36 107"
+  ylim: "10 24000"
   meta_output_dir: "/home/mryan/Desktop/SOUNDTRAP/META"
   voltage_multiplier: ""
   sensitivity_uri: ""
