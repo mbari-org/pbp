@@ -39,6 +39,8 @@ class JobAgent:
         xml_dir = None
     ):
         self.name = name
+        if not self.name.endswith('_'):
+            self.name += '_'
         if meta_output_dir is None:  # Sets the log directory the same as the json base directory if not specified which feels like a good best practice. 
             meta_output_dir = json_base_dir
             
@@ -46,65 +48,38 @@ class JobAgent:
         self.audio_base_dir = audio_base_dir
 
         if os.name == "nt":
-            self.uri = r"file:\\\ " + audio_base_dir
-            self.uri = self.uri.replace(" ", "")
-            path = Path(self.uri)
-        else:
-            self.uri = r"file:/// " + str(self.audio_base_dir)
-            self.uri = self.uri.replace(" ", "")
-            self.uri = self.uri.replace(r"////", r"///")
-            path = Path(self.uri)
+            self.uri = Path(self.audio_base_dir).resolve().as_uri()
+            self.meta_output_dir = Path(meta_output_dir)
+            self.json_base_dir = Path(json_base_dir)
+            self.xml_dir = Path(xml_dir)
+            self.nc_output_dir = Path(nc_output_dir)
+            self.global_attrs = Path(global_attrs)
+            self.variable_attrs = Path(variable_attrs)
+            self.log_dir = Path(log_dir)
+        if os.name == "posix":
+            self.uri = Path(self.audio_base_dir).resolve().as_uri()
+            self.meta_output_dir = Path(meta_output_dir).as_posix()
+            self.json_base_dir = Path(json_base_dir).as_posix()
+            self.xml_dir = Path(xml_dir).as_posix()
+            self.nc_output_dir = Path(nc_output_dir).as_posix()
+            self.global_attrs = Path(global_attrs).as_posix()
+            self.variable_attrs = Path(variable_attrs).as_posix()
+            self.log_dir = Path(log_dir).as_posix()
 
-        self.meta_output_dir = meta_output_dir #TODO : I forget is this an assumpsion I made. I think it is. This hides some of the original pbp argumentation so that is bad.
-        self.json_base_dir = json_base_dir
-        self.xml_dir = xml_dir
-
-        self.prefix = prefix
-
-        self.nc_output_dir = nc_output_dir
+        self.prefix = str(prefix)
         self.start_date = datetime.strptime(start, "%Y%m%d").date()
         self.end_date = datetime.strptime(end, "%Y%m%d").date()
 
-        if os.name == "nt":  # For Windows-based systems
-            self.global_attrs = (
-                r"file:\\\ " + global_attrs
-            )  # Apply URI formatting
-            self.global_attrs = self.global_attrs.replace(
-                " ", ""
-            )  # Remove any spaces. This is to avoid the escape character issue in python.
-            self.variable_attrs = (
-                r"file:\\\ " + variable_attrs
-            )  # Apply URI formatting
-            self.variable_attrs = self.variable_attrs.replace(
-                " ", ""
-            )  # Remove any spaces. This is to avoid the escape character issue in python.
-        else:  # For Unix-based systems
-            self.global_attrs = (
-                r"file:/// " + global_attrs
-            )  # Apply URI formatting
-            
-            self.global_attrs = self.global_attrs.replace(
-                " ", ""
-            )  # Remove any spaces. This is to avoid the escape character issue in python.
-            self.variable_attrs = (
-                r"file:/// " + variable_attrs
-            )  # Apply URI formatting
-
-            self.variable_attrs = self.variable_attrs.replace(
-                " ", ""
-            )  # Remove any spaces. This is to avoid the escape character issue in python.
-
-        self.sensitivity_flat_value = sensitivity_flat_value
+        self.sensitivity_flat_value = str(sensitivity_flat_value)
         self.latlon = latlon
         self.title = title
         self.cmlim = cmlim
         self.ylim = ylim  # YLIM
-        self.log_dir = log_dir
         #if os.name == "nt":
             #logger.add(log_dir+r"\pbp-job-agent.log")
         #if os.name == "posix":
             #logger.add(log_dir+"/pbp-job-agent.log")
-        self.output_prefix = self.name+"_"
+        self.output_prefix = self.name
 
     def search_filenames(self, directory, pattern):
         try:
@@ -141,6 +116,7 @@ class JobAgent:
             + r" --prefix "
             + str(prefix)
         )
+        print(command)
         return command
 
     def synth_pbp_hmb_gen(
@@ -231,7 +207,7 @@ class JobAgent:
                     + str(self.start_date)
                     + "</blue>"
                 )
-                print(command)
+
                 command = self.synth_pbp_hmb_gen(
                     date=self.start_date.strftime("%Y%m%d"),
                     json_base_dir=self.json_base_dir,
@@ -242,7 +218,6 @@ class JobAgent:
                     sensitivity_flat_value=self.sensitivity_flat_value,
                     output_prefix = self.output_prefix
                 )
-                print(command)
                 logger.opt(colors=True).info(
                     "<blue>Checking if netCDF file associated with "
                     + str(self.start_date.strftime("%Y%m%d"))
@@ -285,21 +260,16 @@ class JobAgent:
                         title=self.title,
                         cmlim=self.cmlim,
                         ylim=self.ylim,
-                        nc_file=self.nc_output_dir
-                        + r"\milli_psd_"
-                        + str(self.start_date.strftime("%Y%m%d"))
-                        + ".nc",
+                        nc_file=os.path.join(self.nc_output_dir, "milli_psd_", str(self.start_date.strftime("%Y%m%d")) + ".nc"),
+
                     )  # Generate the command for plotting the NetCDF file
-                else:  # For Unix-based systems
+                if os.name == "posix":  # For Unix-based systems
                     command = self.synth_pbp_plot_gen(
                         latlon=self.latlon,
                         title=self.title,
                         cmlim=self.cmlim,
                         ylim=self.ylim,
-                        nc_file=self.nc_output_dir
-                        + self.output_prefix+r"/milli_psd_"
-                        + str(self.start_date.strftime("%Y%m%d"))
-                        + ".nc",
+                        nc_file=os.path.join(self.nc_output_dir, self.name+str(self.start_date.strftime("%Y%m%d")) + ".nc"),
                     )  # Generate the command for plotting the NetCDF file
 
                 logger.opt(colors=True).info(
@@ -353,5 +323,6 @@ class JobAgent:
                 time.sleep(1)
 
             except TypeError as e:
-                logger.error("Processing was unsucessful for " + str(self.start_date))
-                logger.error(e)
+                logger.error(f"Processing was unsuccessful for {self.start_date} at line {sys.exc_info()[-1].tb_lineno}")
+                logger.error(f"Error: {e}")
+                print(f"Error: {e} at line {sys.exc_info()[-1].tb_lineno}")

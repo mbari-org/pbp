@@ -70,6 +70,9 @@ def replace_snippets(
     for k, v in attributes.items():
         if isinstance(v, str):
             for snippet, replacement in snippets.items():
-                v = v.replace(snippet, replacement)
-        result[k] = v
+                if isinstance(replacement, dict):
+                    pass
+                else:
+                    v = v.replace(snippet, replacement)
+                    result[k] = v
     return result
