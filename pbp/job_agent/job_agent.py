@@ -7,11 +7,7 @@ import time
 from loguru import logger  # A great logger option.
 import sys
 
-# Configure loguru to print to the terminal
-logger.add(sys.stdout, format="{time} {level} {message}", level="INFO")
 
-# Example usage
-logger.info("This will be printed directly to the terminal")
     
 
 class JobAgent:
@@ -19,7 +15,7 @@ class JobAgent:
 
     def __init__(
         self,
-        name,  # Name of the deployment
+        output_prefix,  # Name of the deployment
         recorder,  # Recorder type
         audio_base_dir,  # Audio base directory
         json_base_dir,  # JSON base directory
@@ -38,49 +34,54 @@ class JobAgent:
         meta_output_dir = None,
         xml_dir = None
     ):
-        self.name = name
-        if not self.name.endswith('_'):
-            self.name += '_'
+        self.output_prefix = output_prefix
+        if not self.output_prefix.endswith('_'):
+            self.output_prefix += '_'
         if meta_output_dir is None:  # Sets the log directory the same as the json base directory if not specified which feels like a good best practice. 
             meta_output_dir = json_base_dir
+        if meta_output_dir == "":
+            meta_output_dir = json_base_dir
+        self.name = self.output_prefix    
+        if self.name.endswith('_'):
+            self.name = self.name[:-1]
             
         self.recorder = recorder
         self.audio_base_dir = audio_base_dir
 
         if os.name == "nt":
-            self.uri = Path(self.audio_base_dir).resolve().as_uri()
-            self.meta_output_dir = Path(meta_output_dir)
-            self.json_base_dir = Path(json_base_dir)
-            self.xml_dir = Path(xml_dir)
-            self.nc_output_dir = Path(nc_output_dir)
-            self.global_attrs = Path(global_attrs)
-            self.variable_attrs = Path(variable_attrs)
-            self.log_dir = Path(log_dir)
+            self.uri = Path(os.path.normpath(self.audio_base_dir)).resolve().as_uri()
+            self.meta_output_dir = Path(os.path.normpath(meta_output_dir))
+            self.json_base_dir = Path(os.path.normpath(json_base_dir))
+            self.xml_dir = Path(os.path.normpath(xml_dir))
+            self.nc_output_dir = Path(os.path.normpath(nc_output_dir))
+            self.global_attrs = Path(os.path.normpath(global_attrs))
+            self.variable_attrs = Path(os.path.normpath(variable_attrs))
+            self.log_dir = Path(os.path.normpath(log_dir))
         if os.name == "posix":
             self.uri = Path(self.audio_base_dir).resolve().as_uri()
-            self.meta_output_dir = Path(meta_output_dir).as_posix()
-            self.json_base_dir = Path(json_base_dir).as_posix()
-            self.xml_dir = Path(xml_dir).as_posix()
-            self.nc_output_dir = Path(nc_output_dir).as_posix()
-            self.global_attrs = Path(global_attrs).as_posix()
-            self.variable_attrs = Path(variable_attrs).as_posix()
-            self.log_dir = Path(log_dir).as_posix()
+            self.meta_output_dir = Path(os.path.normpath(meta_output_dir)).as_posix()
+            self.json_base_dir = Path(os.path.normpath(json_base_dir)).as_posix()
+            self.xml_dir = Path(os.path.normpath(xml_dir)).as_posix()
+            self.nc_output_dir = Path(os.path.normpath(nc_output_dir)).as_posix()
+            self.global_attrs = Path(os.path.normpath(global_attrs)).as_posix()
+            self.variable_attrs = Path(os.path.normpath(variable_attrs)).as_posix()
+            self.log_dir = Path(os.path.normpath(log_dir)).as_posix()
 
         self.prefix = str(prefix)
-        self.start_date = datetime.strptime(start, "%Y%m%d").date()
-        self.end_date = datetime.strptime(end, "%Y%m%d").date()
+        self.start_date = datetime.strptime(str(start), "%Y%m%d").date()
+        self.end_date = datetime.strptime(str(end), "%Y%m%d").date()
 
         self.sensitivity_flat_value = str(sensitivity_flat_value)
         self.latlon = latlon
         self.title = title
         self.cmlim = cmlim
         self.ylim = ylim  # YLIM
-        #if os.name == "nt":
-            #logger.add(log_dir+r"\pbp-job-agent.log")
-        #if os.name == "posix":
-            #logger.add(log_dir+"/pbp-job-agent.log")
-        self.output_prefix = self.name
-
+        logger.add(os.path.join(log_dir, "pbp-job-agent_"+self.output_prefix+"_"+str(start)+"_"+str(end)+".log"), format="{extra[name]} | {time} | {level} | {message}", level="DEBUG")
+        # Configure loguru to print to the terminal
+        logger.add(sys.stdout, format="{extra[name]} | {time} | {level} | {message}", level="DEBUG")
+        # Example usage
+        logger.bind(name=self.name).info("This will be printed directly to the terminal")
+        
     def search_filenames(self, directory, pattern):
         try:
             # List all files in the directory
@@ -102,13 +103,13 @@ class JobAgent:
             + r"--recorder "
             + recorder
             + r" --uri "
-            + uri
+            + str(uri)
             + r" --output-dir "
-            + output_dir
+            + str(output_dir)
             + r" --json-base-dir "
-            + json_base_dir
+            + str(json_base_dir)
             + r" --xml-dir "
-            + xml_dir
+            + str(xml_dir)
             + r" --start "
             + start
             + r" --end "
@@ -116,7 +117,6 @@ class JobAgent:
             + r" --prefix "
             + str(prefix)
         )
-        print(command)
         return command
 
     def synth_pbp_hmb_gen(
@@ -134,15 +134,15 @@ class JobAgent:
             r"pbp-hmb-gen --date "
             + date
             + r" --json-base-dir "
-            + json_base_dir
+            + str(json_base_dir)
             + r" --audio-base-dir "
-            + audio_base_dir
+            + str(audio_base_dir)
             + r" --output-dir "
-            + output_dir
+            + str(output_dir)
             + r" --global-attrs "
-            + global_attrs
+            + str(global_attrs)
             + r" --variable-attrs "
-            + variable_attrs
+            + str(variable_attrs)
             + r" --sensitivity-flat-value "
             + sensitivity_flat_value
             + r" --output-prefix "
@@ -161,12 +161,12 @@ class JobAgent:
             + r" --ylim "
             + ylim
             + r" "
-            + nc_file
+            + str(nc_file)
         )
         return command
 
     def run(self):
-        logger.opt(colors=True).info(
+        logger.bind(name=self.name).opt(colors=True).info(
             "<blue>Initializing the pbp/pypam processing suite.</blue>"
         )
 
@@ -182,12 +182,12 @@ class JobAgent:
             self.end_date.strftime("%Y%m%d"),
             self.prefix,
         )
-        logger.opt(colors=True).info(
+        logger.bind(name=self.name).opt(colors=True).info(
             "<blue>Initiating processing for audio file and netCDF generation associated with : "
             + str(self.start_date)
             + "</blue>"
         )
-        logger.opt(colors=True).info("<green>running > " + command + "</green>")
+        logger.bind(name=self.name).opt(colors=True).info("<green>running > " + command + "</green>")
         os.system(command)
 
         delta = timedelta(days=1)
@@ -197,12 +197,12 @@ class JobAgent:
             try:
                 """NetCDF generation and logs"""
 
-                logger.opt(colors=True).info(
+                logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Initiating pypam/pbp processing sequence for audio file associated with : "
                     + str(self.start_date)
                     + "</blue>"
                 )
-                logger.opt(colors=True).info(
+                logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Initiating metadata generation associated with : "
                     + str(self.start_date)
                     + "</blue>"
@@ -218,7 +218,7 @@ class JobAgent:
                     sensitivity_flat_value=self.sensitivity_flat_value,
                     output_prefix = self.output_prefix
                 )
-                logger.opt(colors=True).info(
+                logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Checking if netCDF file associated with "
                     + str(self.start_date.strftime("%Y%m%d"))
                     + " exists...</blue>"
@@ -226,27 +226,27 @@ class JobAgent:
                 if not self.search_filenames(
                     self.nc_output_dir, str(self.start_date.strftime("%Y%m%d")) + ".nc"
                 ):
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>No netCDF file exists for "
                         + str(self.start_date) + ". Proceeding to netCDF generation of "+str(self.start_date)+"."
                         + "</blue>"
                     )
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>Proceeding to netCDF generatrion...</blue>"
                     )
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<green>running > " + command + "</green>"
                     )
                     
                     os.system(command)
                     
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>NetCDF file generation for "
                         + str(self.start_date)
                         + " complete!</blue>"
                     )
                 else:
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<yellow>NetCDF file already exists for "
                         + str(self.start_date)
                         + "</yellow>"
@@ -260,7 +260,7 @@ class JobAgent:
                         title=self.title,
                         cmlim=self.cmlim,
                         ylim=self.ylim,
-                        nc_file=os.path.join(self.nc_output_dir, "milli_psd_", str(self.start_date.strftime("%Y%m%d")) + ".nc"),
+                        nc_file=os.path.join(self.nc_output_dir, self.output_prefix+str(self.start_date.strftime("%Y%m%d")) + ".nc"),
 
                     )  # Generate the command for plotting the NetCDF file
                 if os.name == "posix":  # For Unix-based systems
@@ -269,15 +269,15 @@ class JobAgent:
                         title=self.title,
                         cmlim=self.cmlim,
                         ylim=self.ylim,
-                        nc_file=os.path.join(self.nc_output_dir, self.name+str(self.start_date.strftime("%Y%m%d")) + ".nc"),
+                        nc_file=os.path.join(self.nc_output_dir, self.output_prefix+str(self.start_date.strftime("%Y%m%d")) + ".nc"),
                     )  # Generate the command for plotting the NetCDF file
 
-                logger.opt(colors=True).info(
+                logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Initiating plot generation for audio file associated with date : "
                     + str(self.start_date)
                     + "</blue>"
                 )
-                logger.opt(colors=True).info(
+                logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Checking if jpg file associated with "
                     + str(self.start_date)
                     + " exists...</blue>"
@@ -285,44 +285,39 @@ class JobAgent:
                 if not self.search_filenames(
                     self.nc_output_dir, str(self.start_date.strftime("%Y%m%d")) + ".jpg"
                 ):
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>No plot exists or has been generated for the date: "
                         + str(self.start_date)
                         + "</blue>"
                     )
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>Proceeding to plot generatrion from netCDF...</blue>"
                     )
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<green>running > " + command + "</green>"
                     )
                     os.system(command)
                 else:
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<yellow>Plot already exists for "
                         + str(self.start_date)
                         + "</yellow>"
                     )
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<yellow>Perfroming an override of the existing plot for "
                         + str(self.start_date)
                         + "</yellow>"
                     )
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<green>running > " + command + "</green>"
                     )
                     os.system(command)
-                    logger.opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Plot generation complete!</blue>"
                 )
 
                 self.start_date += delta  # Iterate to next day.
-                logger.opt(colors=True).info(
-                    "<blue>Proceeding to the next day for processing...</blue>"
-                )
                 time.sleep(1)
 
             except TypeError as e:
-                logger.error(f"Processing was unsuccessful for {self.start_date} at line {sys.exc_info()[-1].tb_lineno}")
-                logger.error(f"Error: {e}")
-                print(f"Error: {e} at line {sys.exc_info()[-1].tb_lineno}")
+                logger.bind(name=self.name).error(f"Error: {e} at line {sys.exc_info()[-1].tb_lineno} ; Processing was unsuccessful for {self.start_date}")

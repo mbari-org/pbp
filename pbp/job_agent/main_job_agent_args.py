@@ -25,17 +25,16 @@ def parse_arguments():
         help="URI of JSON file with global attributes to be added to the NetCDF file.",
     )
 
-    if len(parser.parse_args().global_attrs) > 0: # Checks if there is even a yaml file provided.
+    if parser.parse_args().global_attrs is not None: # Checks if there is even a yaml file provided.
         yaml_path =  parser.parse_args().global_attrs # The yaml_path is the path to the yaml file but it is not known yet if the value exists in the yaml.
         if yaml_path is not None: # If there is a yaml path is provided.
             yaml_data = yaml_to_json(yaml_path) # Convert the yaml file to a parsable object. This parsing is yaml based and distinct from the Argparse parsing.
-            
-            if yaml_data["pbp_job_agent"]["name"] is not None: # If the yaml file has a recorder key present.
+            if yaml_data["pbp_job_agent"]["output_prefix"] is not None: # If the yaml file has a recorder key present.
                 parser.add_argument(
-                    "--name",
+                    "--output_prefix",
                     choices=[InstrumentType.NRS, InstrumentType.ICLISTEN, InstrumentType.SOUNDTRAP],
                     required=False,
-                    default=yaml_data["pbp_job_agent"]["name"],
+                    default=yaml_data["pbp_job_agent"]["output_prefix"],
                     help="Choose the audio instrument type",
                 )
             else:

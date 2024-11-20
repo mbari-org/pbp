@@ -66,23 +66,23 @@ references: >-
 sensitivity_flat_value: "176.6"
 
 pbp_job_agent:
-  name: some_deployment
-  recorder: "SOUNDTRAP"
-  audio_base_dir: "/home/mryan/Desktop/SOUNDTRAP/"
-  json_base_dir: "/home/mryan/Desktop/SOUNDTRAP/JSON"
-  xml_dir: "/home/mryan/Desktop/SOUNDTRAP"
-  start: "20220521"
-  end: "20220521"
-  prefix: "6550"
-  nc_output_dir: "/home/mryan/Desktop/SOUNDTRAP/NC"
-  global_attrs: "/home/mryan/Documents/GitHub/pbp/tests/yaml/test_deployment_global_attributes.yaml"
-  variable_attrs: "/home/mryan/Documents/GitHub/pbp/tests/yaml/test_deployment_variable_attributes.yaml"
-  sensitivity_flat_value: "176.6"
-  latlon: "-31.711 115.583"
-  title: "some_title"
-  cmlim: "36 107"
-  ylim: "10 24000"
-  meta_output_dir: "/home/mryan/Desktop/SOUNDTRAP/META"
-  voltage_multiplier: ""
-  sensitivity_uri: ""
-  log_dir: "/home/mryan/Desktop/SOUNDTRAP/AGENT"
+  output_prefix: some_deployment
+  recorder: SOUNDTRAP
+  audio_base_dir: "C:/Users/michael.ryan/Desktop/SOUNDTRAP/"
+  json_base_dir: "C:/Users/michael.ryan/Desktop/SOUNDTRAP/JSON"
+  xml_dir: "C:/Users/michael.ryan/Desktop/SOUNDTRAP/XML"
+  start: 20220521
+  end: 20220521
+  prefix: 6550
+  nc_output_dir: "C:/Users/michael.ryan/Desktop/SOUNDTRAP/NC"
+  global_attrs: "C:/Users/michael.ryan/Documents/GitHub/pbp/tests/yaml/test_deployment_global_attributes.yaml"
+  variable_attrs: "C:/Users/michael.ryan/Documents/GitHub/pbp/tests/yaml/test_deployment_variable_attributes.yaml"
+  sensitivity_flat_value: 176.6
+  latlon: -31.711 115.583
+  title: some_title
+  cmlim: 36 107
+  ylim: 10 24000
+  meta_output_dir: ""
+  voltage_multiplier: 
+  sensitivity_uri: 
+  log_dir: "C:/Users/michael.ryan/Desktop/SOUNDTRAP/AGENT"

@@ -17,7 +17,7 @@ def main():
     )
 
     job_agent = JobAgent(
-        name=opts.name,
+        output_prefix=opts.output_prefix,
         recorder=opts.recorder,
         audio_base_dir=opts.audio_base_dir,
         json_base_dir=opts.json_base_dir,

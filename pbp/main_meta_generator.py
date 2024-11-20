@@ -21,20 +21,19 @@ def main():
     json_dir = Path(opts.json_base_dir)
     if opts.xml_dir is None:
         if os.name == "nt":
-            xml_dir_str = str(opts.uri).replace("file:\\\\\\", "")
+            xml_dir = Path(opts.uri) #TODO: Use pathlib.Path instead of string manipulation
         else:
-            xml_dir_str = str(opts.uri).replace("file:///", "")
+            xml_dir = Path(opts.uri) #TODO: Use pathlib.Path instead of string manipulation
 
-        xml_dir = Path(xml_dir_str)
     else:
         xml_dir = Path(opts.xml_dir)
+        
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
     start = datetime.strptime(opts.start, "%Y%m%d")
     end = datetime.strptime(opts.end, "%Y%m%d")
-    print(opts)
     log = create_logger_info(
-        f"{opts.output_dir}/{opts.recorder}{start}_{end}.log"
+        os.path.join(opts.output_dir, opts.recorder+"_"+str(opts.start)+"_"+str(opts.end)+".log")
     )
 
     try:
