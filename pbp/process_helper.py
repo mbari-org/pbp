@@ -14,7 +14,6 @@ from pbp.metadata import MetadataHelper, parse_attributes, replace_snippets
 from pbp.misc_helper import gen_hour_minute_times, parse_date
 from pbp.pypam_support import ProcessResult, PypamSupport
 
-
 @dataclass
 class ProcessDayResult:
     """
@@ -146,8 +145,6 @@ class ProcessHelper:
         if attrs_uri:
             self.log.info(f"Loading {what} attributes from {attrs_uri=}")
             filename = self.file_helper.get_local_filename(attrs_uri)
-            if os.name == "nt" and filename is not None:
-                filename = filename[3:]
             if filename is not None:
                 with open(filename, "r", encoding="UTF-8") as f:
                     res = parse_attributes(f.read(), pathlib.Path(filename).suffix)
