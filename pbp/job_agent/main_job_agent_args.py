@@ -34,7 +34,7 @@ def parse_arguments():
     )
 
     if parser.parse_args().global_attrs is not None: # Checks if there is even a yaml file provided.
-        
+        deployment_configurations = []
         for deployment_configuration in parser.parse_args().global_attrs: # Iterates through the yaml files provided.
             if deployment_configuration is not None: # If there is a yaml path is provided.
                 yaml_data = yaml_to_json(deployment_configuration) # Convert the yaml file to a parsable object. This parsing is yaml based and distinct from the Argparse parsing.
@@ -128,4 +128,6 @@ def parse_arguments():
                     logger.error("The 'meta_output_dir' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
                     exit(1)
                     
-            return yaml_data["pbp_job_agent"]
+                deployment_configurations.append(yaml_data["pbp_job_agent"])
+                
+        return deployment_configurations
