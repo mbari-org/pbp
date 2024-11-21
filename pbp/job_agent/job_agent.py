@@ -1,5 +1,5 @@
 from pathlib import Path
-from datetime import date, timedelta, datetime
+from datetime import timedelta, datetime
 import os
 import time
 from loguru import logger  # A great logger option.
@@ -66,7 +66,7 @@ class JobAgent:
             self.log_dir = Path(os.path.normpath(log_dir)).as_posix()
 
         self.prefix = str(prefix)  # Prefix
-        se = datetime.strptime(str(start), "%Y%m%d").date()
+        self.start_date = datetime.strptime(str(start), "%Y%m%d").date()
         self.end_date = datetime.strptime(str(end), "%Y%m%d").date()
 
         self.sensitivity_flat_value = str(sensitivity_flat_value)
