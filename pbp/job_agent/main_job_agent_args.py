@@ -1,10 +1,7 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
-from pbp.meta_gen.utils import InstrumentType
 
-from pbp import get_pbp_version
 from pbp.job_agent.utils import yaml_to_json
 from loguru import logger
-import sys
 import os
 
 
