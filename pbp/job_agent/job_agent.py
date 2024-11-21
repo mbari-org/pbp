@@ -78,7 +78,7 @@ class JobAgent:
         self.ylim = ylim  # YLIM
         logger.add(os.path.join(log_dir, "pbp-job-agent_"+self.output_prefix+"_"+str(start)+"_"+str(end)+".log"), format="{extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}", level="DEBUG")
         # Configure loguru to print to the terminal
-        logger.add(sys.stdout, format="{name} | {extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}", level="DEBUG")  # Example usage
+        #logger.add(sys.stdout, format="{name} | {extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}", level="DEBUG")  # Example usage
         logger.bind(name=self.name).info("This will be printed directly to the terminal")
         
     def search_filenames(self, directory, pattern):
@@ -303,7 +303,7 @@ class JobAgent:
                         + "</yellow>"
                     )
                     logger.bind(name=self.name).opt(colors=True).info(
-                        "<yellow>Perfroming an override of the existing plot for "
+                        "<yellow>Performing an override of the existing plot for "
                         + str(self.start_date)
                         + "</yellow>"
                     )
