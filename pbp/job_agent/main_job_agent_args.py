@@ -11,121 +11,152 @@ def parse_arguments():
     
 
     
-    description = "Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM."
+    description = "Deploys a job agent to process audio files. Each yaml file configuration argument spawns a new process."
     example = """
     Examples:
-    pbp_job_agent --json-base-dir=tests/json \\
-        --audio-base-dir=tests/wav \\
-        --date=20220902 \\
-        --output-dir=output
+    pbp-job-agent --config /path/to/deployment/global_config_1.yaml /path/to/deployment/global_config_2.yaml
+    
+    Runs two job-job-agent process concurrently with the configurations provided in the yaml files.
+    
+    An Example YAML Content (For SoundTrap) ~ global_config_1.yaml:
+    
+    pbp_job_agent:
+      output_prefix: Georges_Bank_2021
+      recorder: "SOUNDTRAP"
+      audio_base_dir: "/home/user/Desktop/SOUNDTRAP/"
+      json_base_dir: "/home/user/Desktop/SOUNDTRAP/JSON"
+      xml_dir: "/home/user/Desktop/SOUNDTRAP"
+      start: "20220521"
+      end: "20220521"
+      prefix: "6550"
+      nc_output_dir: "/home/user/Desktop/SOUNDTRAP/NC"
+      global_attrs: "/path/to/deployment/global_config_1.yaml"
+      variable_attrs: "/path/to/deployment/variable_config_1.yaml"
+      sensitivity_flat_value: "176.6"
+      latlon: "-31.711 115.583"
+      title: "Georges_Bank_2021"
+      cmlim: "36 107"
+      ylim: "10 24000"
+      meta_output_dir: "/home/user/Desktop/SOUNDTRAP/META"
+      voltage_multiplier: ""
+      sensitivity_uri: ""
+      log_dir: "/home/user/Desktop/SOUNDTRAP/AGENT"
     """
     parser = ArgumentParser(
         description=description, epilog=example, formatter_class=RawTextHelpFormatter
     )
 
     parser.add_argument(
-        "--global-attrs",
+        "--config",
         type=str,
-        metavar="uri",
-        default=None,
+        metavar="path",
         nargs='+',
         required=True,
-        help="URI of JSON file with global attributes to be added to the NetCDF file.",
+        help="path to the YAML file(s) containing the pbp-job-agent configurations",
     )
 
-    if parser.parse_args().global_attrs is not None: # Checks if there is even a yaml file provided.
+    if parser.parse_args().config is not None: # Checks if there is even a yaml file provided.
+        for config_path in parser.parse_args().config:
+            if not os.path.isfile(config_path):
+                logger.error(f"The config path {config_path} does not exist or is not a file.")
+                exit(1)
         deployment_configurations = []
-        for deployment_configuration in parser.parse_args().global_attrs: # Iterates through the yaml files provided.
+        for deployment_configuration in parser.parse_args().config: # Iterates through the yaml files provided.
             if deployment_configuration is not None: # If there is a yaml path is provided.
                 yaml_data = yaml_to_json(deployment_configuration) # Convert the yaml file to a parsable object. This parsing is yaml based and distinct from the Argparse parsing.
                 if yaml_data["pbp_job_agent"]["output_prefix"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'output_prefix' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'output_prefix' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 
                 if yaml_data["pbp_job_agent"]["recorder"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'recorder' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'recorder' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                     
                 if yaml_data["pbp_job_agent"]["log_dir"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'log_dir' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'log_dir' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                     
                 if yaml_data["pbp_job_agent"]["prefix"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'prefix' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'prefix' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                     
                 if yaml_data["pbp_job_agent"]["start"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'start' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'start' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["end"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'end' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'end' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["audio_base_dir"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'audio_base_dir' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'audio_base_dir' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["json_base_dir"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'json_base_dir' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'json_base_dir' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["xml_dir"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'xml_dir' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'xml_dir' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["nc_output_dir"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'nc_output_dir' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'nc_output_dir' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["variable_attrs"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'variable_attrs' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'variable_attrs' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["sensitivity_flat_value"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'sensitivity_flat_value' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'sensitivity_flat_value' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["latlon"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'latlon' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'latlon' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["title"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'title' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'title' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["cmlim"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'cmlim' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'cmlim' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["ylim"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'ylim' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'ylim' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                 if yaml_data["pbp_job_agent"]["meta_output_dir"] is not None: # If the yaml file has a recorder key present.
                     pass
                 else:
-                    logger.error("The 'meta_output_dir' key-value pair in the --global-attrs YAML file(s) is necessary to run the job agent.")
+                    logger.error("The 'meta_output_dir' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
+                    exit(1)
+                if yaml_data["pbp_job_agent"]["global_attrs"] is not None: # If the yaml file has a recorder key present.
+                    pass
+                else:
+                    logger.error("The 'global_attrs' key-value pair in the --config YAML file(s) is necessary to run the job agent.")
                     exit(1)
                     
                 deployment_configurations.append(yaml_data["pbp_job_agent"])
