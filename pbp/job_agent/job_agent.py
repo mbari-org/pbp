@@ -48,7 +48,7 @@ class JobAgent:
         self.recorder = recorder
         self.audio_base_dir = audio_base_dir
 
-        if os.name == "nt":
+        if os.name == "nt": # If machine running the job agent is Windows.
             self.uri = Path(os.path.normpath(self.audio_base_dir)).resolve().as_uri()
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir))
             self.json_base_dir = Path(os.path.normpath(json_base_dir))
@@ -57,7 +57,7 @@ class JobAgent:
             self.global_attrs = Path(os.path.normpath(global_attrs))
             self.variable_attrs = Path(os.path.normpath(variable_attrs))
             self.log_dir = Path(os.path.normpath(log_dir))
-        if os.name == "posix":
+        if os.name == "posix": # If machine running the job agent is Unix-based.
             self.uri = Path(self.audio_base_dir).resolve().as_uri()
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir)).as_posix()
             self.json_base_dir = Path(os.path.normpath(json_base_dir)).as_posix()
@@ -67,8 +67,8 @@ class JobAgent:
             self.variable_attrs = Path(os.path.normpath(variable_attrs)).as_posix()
             self.log_dir = Path(os.path.normpath(log_dir)).as_posix()
 
-        self.prefix = str(prefix)
-        self.start_date = datetime.strptime(str(start), "%Y%m%d").date()
+        self.prefix = str(prefix) # Prefix
+        se = datetime.strptime(str(start), "%Y%m%d").date() 
         self.end_date = datetime.strptime(str(end), "%Y%m%d").date()
 
         self.sensitivity_flat_value = str(sensitivity_flat_value)
