@@ -1,5 +1,3 @@
-
-
 from pathlib import Path
 from datetime import date, timedelta, datetime
 import os
@@ -7,8 +5,6 @@ import time
 from loguru import logger  # A great logger option.
 import sys
 
-
-    
 
 class JobAgent:
     """This class structure is designed to encapsulate the entire pbp process suite in a simple agent that performs all tasks, more automation with fewer parameters and no URI interface."""
@@ -30,25 +26,27 @@ class JobAgent:
         title,  # Title
         cmlim,  # CMLIM
         ylim,  # YLIM
-        log_dir, # Log directory
-        meta_output_dir = None,
-        xml_dir = None
+        log_dir,  # Log directory
+        meta_output_dir=None,
+        xml_dir=None,
     ):
         self.output_prefix = output_prefix
-        if not self.output_prefix.endswith('_'):
-            self.output_prefix += '_'
-        if meta_output_dir is None:  # Sets the log directory the same as the json base directory if not specified which feels like a good best practice. 
+        if not self.output_prefix.endswith("_"):
+            self.output_prefix += "_"
+        if (
+            meta_output_dir is None
+        ):  # Sets the log directory the same as the json base directory if not specified which feels like a good best practice.
             meta_output_dir = json_base_dir
         if meta_output_dir == "":
             meta_output_dir = json_base_dir
-        self.name = self.output_prefix    
-        if self.name.endswith('_'):
+        self.name = self.output_prefix
+        if self.name.endswith("_"):
             self.name = self.name[:-1]
-            
+
         self.recorder = recorder
         self.audio_base_dir = audio_base_dir
 
-        if os.name == "nt": # If machine running the job agent is Windows.
+        if os.name == "nt":  # If machine running the job agent is Windows.
             self.uri = Path(os.path.normpath(self.audio_base_dir)).resolve().as_uri()
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir))
             self.json_base_dir = Path(os.path.normpath(json_base_dir))
@@ -57,7 +55,7 @@ class JobAgent:
             self.global_attrs = Path(os.path.normpath(global_attrs))
             self.variable_attrs = Path(os.path.normpath(variable_attrs))
             self.log_dir = Path(os.path.normpath(log_dir))
-        if os.name == "posix": # If machine running the job agent is Unix-based.
+        if os.name == "posix":  # If machine running the job agent is Unix-based.
             self.uri = Path(self.audio_base_dir).resolve().as_uri()
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir)).as_posix()
             self.json_base_dir = Path(os.path.normpath(json_base_dir)).as_posix()
@@ -67,8 +65,8 @@ class JobAgent:
             self.variable_attrs = Path(os.path.normpath(variable_attrs)).as_posix()
             self.log_dir = Path(os.path.normpath(log_dir)).as_posix()
 
-        self.prefix = str(prefix) # Prefix
-        se = datetime.strptime(str(start), "%Y%m%d").date() 
+        self.prefix = str(prefix)  # Prefix
+        se = datetime.strptime(str(start), "%Y%m%d").date()
         self.end_date = datetime.strptime(str(end), "%Y%m%d").date()
 
         self.sensitivity_flat_value = str(sensitivity_flat_value)
@@ -76,11 +74,24 @@ class JobAgent:
         self.title = title
         self.cmlim = cmlim
         self.ylim = ylim  # YLIM
-        logger.add(os.path.join(log_dir, "pbp-job-agent_"+self.output_prefix+"_"+str(start)+"_"+str(end)+".log"), format="{extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}", level="DEBUG")
+        logger.add(
+            os.path.join(
+                log_dir,
+                "pbp-job-agent_"
+                + self.output_prefix
+                + "_"
+                + str(start)
+                + "_"
+                + str(end)
+                + ".log",
+            ),
+            format="{extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}",
+            level="DEBUG",
+        )
         # Configure loguru to print to the terminal
-        #logger.add(sys.stdout, format="{name} | {extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}", level="DEBUG")  # Example usage
+        # logger.add(sys.stdout, format="{name} | {extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}", level="DEBUG")  # Example usage
         logger.bind(name=self.name).info("This will be printed directly to the terminal")
-        
+
     def search_filenames(self, directory, pattern):
         try:
             # List all files in the directory
@@ -127,7 +138,7 @@ class JobAgent:
         global_attrs,
         variable_attrs,
         sensitivity_flat_value,
-        output_prefix
+        output_prefix,
     ):
         command = (
             r"pbp-hmb-gen --date "
@@ -186,7 +197,9 @@ class JobAgent:
             + str(self.start_date)
             + "</blue>"
         )
-        logger.bind(name=self.name).opt(colors=True).info("<green>running > " + command + "</green>")
+        logger.bind(name=self.name).opt(colors=True).info(
+            "<green>running > " + command + "</green>"
+        )
         os.system(command)
 
         delta = timedelta(days=1)
@@ -215,7 +228,7 @@ class JobAgent:
                     global_attrs=self.global_attrs,
                     variable_attrs=self.variable_attrs,
                     sensitivity_flat_value=self.sensitivity_flat_value,
-                    output_prefix = self.output_prefix
+                    output_prefix=self.output_prefix,
                 )
                 logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Checking if netCDF file associated with "
@@ -227,7 +240,10 @@ class JobAgent:
                 ):
                     logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>No netCDF file exists for "
-                        + str(self.start_date) + ". Proceeding to netCDF generation of "+str(self.start_date)+"."
+                        + str(self.start_date)
+                        + ". Proceeding to netCDF generation of "
+                        + str(self.start_date)
+                        + "."
                         + "</blue>"
                     )
                     logger.bind(name=self.name).opt(colors=True).info(
@@ -236,9 +252,9 @@ class JobAgent:
                     logger.bind(name=self.name).opt(colors=True).info(
                         "<green>running > " + command + "</green>"
                     )
-                    
+
                     os.system(command)
-                    
+
                     logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>NetCDF file generation for "
                         + str(self.start_date)
@@ -259,8 +275,12 @@ class JobAgent:
                         title=self.title,
                         cmlim=self.cmlim,
                         ylim=self.ylim,
-                        nc_file=os.path.join(self.nc_output_dir, self.output_prefix+str(self.start_date.strftime("%Y%m%d")) + ".nc"),
-
+                        nc_file=os.path.join(
+                            self.nc_output_dir,
+                            self.output_prefix
+                            + str(self.start_date.strftime("%Y%m%d"))
+                            + ".nc",
+                        ),
                     )  # Generate the command for plotting the NetCDF file
                 if os.name == "posix":  # For Unix-based systems
                     command = self.synth_pbp_plot_gen(
@@ -268,7 +288,12 @@ class JobAgent:
                         title=self.title,
                         cmlim=self.cmlim,
                         ylim=self.ylim,
-                        nc_file=os.path.join(self.nc_output_dir, self.output_prefix+str(self.start_date.strftime("%Y%m%d")) + ".nc"),
+                        nc_file=os.path.join(
+                            self.nc_output_dir,
+                            self.output_prefix
+                            + str(self.start_date.strftime("%Y%m%d"))
+                            + ".nc",
+                        ),
                     )  # Generate the command for plotting the NetCDF file
 
                 logger.bind(name=self.name).opt(colors=True).info(
@@ -312,11 +337,13 @@ class JobAgent:
                     )
                     os.system(command)
                     logger.bind(name=self.name).opt(colors=True).info(
-                    "<blue>Plot generation complete!</blue>"
-                )
+                        "<blue>Plot generation complete!</blue>"
+                    )
 
                 self.start_date += delta  # Iterate to next day.
                 time.sleep(1)
 
             except TypeError as e:
-                logger.bind(name=self.name).error(f"Error: {e} at line {sys.exc_info()[-1].tb_lineno} ; Processing was unsuccessful for {self.start_date}")
+                logger.bind(name=self.name).error(
+                    f"Error: {e} at line {sys.exc_info()[-1].tb_lineno} ; Processing was unsuccessful for {self.start_date}"
+                )
