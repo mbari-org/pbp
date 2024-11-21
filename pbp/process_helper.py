@@ -14,6 +14,7 @@ from pbp.metadata import MetadataHelper, parse_attributes, replace_snippets
 from pbp.misc_helper import gen_hour_minute_times, parse_date
 from pbp.pypam_support import ProcessResult, PypamSupport
 
+
 @dataclass
 class ProcessDayResult:
     """
