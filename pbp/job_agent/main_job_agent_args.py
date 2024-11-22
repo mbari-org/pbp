@@ -17,36 +17,33 @@ def parse_arguments():
         _type_: _description_
     """
 
-    description = "Deploys a job agent to process audio files. Each yaml file configuration argument spawns a new process."
+    description = "Deploys a job agent to process audio files and other data and provision pypam/pbp-generated resources. Each yaml file configuration argument spawns a new process. So keep in mind hardware constraints"
     example = """
-    Examples:
-    pbp-job-agent --config /path/to/deployment/global_config_1.yaml /path/to/deployment/global_config_2.yaml
+    Example:
+        pbp-job-agent --config /path/to/deployment/global_config_1.yaml /path/to/deployment/global_config_2.yaml
     
-    Runs two job-job-agent process concurrently with the configurations provided in the yaml files.
-    
-    An Example YAML Content (For SoundTrap) ~ global_config_1.yaml:
-    
-    pbp_job_agent:
-      output_prefix: Georges_Bank_2021
-      recorder: "SOUNDTRAP"
-      audio_base_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/"
-      json_base_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/JSON"
-      xml_dir: "/home/user/SOUNDTRAP_DEPLOYMENT"
-      start: "20220521"
-      end: "20220521"
-      prefix: "6550"
-      nc_output_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/NC"
-      global_attrs: "/path/to/deployment/global_config_1.yaml"
-      variable_attrs: "/path/to/deployment/variable_config_1.yaml"
-      sensitivity_flat_value: "176.6"
-      latlon: "-31.711 115.583"
-      title: "Georges_Bank_2021"
-      cmlim: "36 107"
-      ylim: "10 24000"
-      meta_output_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/META"
-      voltage_multiplier: ""
-      sensitivity_uri: ""
-      log_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/AGENT"
+    Example Configuration : global_config_1.yaml:
+        pbp_job_agent:
+            output_prefix: Georges_Bank_2021                                # Output prefix
+            recorder: "SOUNDTRAP"                                           # Recorder type
+            audio_base_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/"              # Base directory for audio files
+            json_base_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/JSON"           # Base directory for JSON files
+            xml_dir: "/home/user/SOUNDTRAP_DEPLOYMENT"                      # Directory for XML files   
+            start: "20220521"                                               # Start date
+            end: "20220521"                                                 # End date                               
+            prefix: "6550"                                                  # Prefix
+            nc_output_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/NC"             # NetCDF output directory
+            global_attrs: "/path/to/deployment/global_config_1.yaml"        # Global attributes    
+            variable_attrs: "/path/to/deployment/variable_config_1.yaml"    # Variable attributes
+            sensitivity_flat_value: "176.6"                                 # Sensitivity flat value
+            latlon: "-31.711 115.583"                                       # Latitude and Longitude
+            title: "Georges_Bank_2021"                                      # Title                   
+            cmlim: "36 107"                                                 # CMLIM
+            ylim: "10 24000"                                                # YLIM                  
+            meta_output_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/META"         # Meta output directory
+            voltage_multiplier: ""                                          # Voltage multiplier          
+            sensitivity_uri: ""                                             # Sensitivity URI
+            log_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/AGENT"                # Log directory
     """
     parser = ArgumentParser(
         description=description, epilog=example, formatter_class=RawTextHelpFormatter
