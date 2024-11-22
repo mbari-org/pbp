@@ -18,6 +18,8 @@ def parse_arguments():
     """
 
     description = "Deploys a job agent to process audio files and other data and provision pypam/pbp-generated resources. Each yaml file configuration argument spawns a new process. So keep in mind hardware constraints"
+=======
+    description = "Deploys job agent(s) to process audio files using the pypam/pbp processing suite. This tool enables multiprocessing through 'job-agents' which can run concurrently. The agents are configured in .yaml files, and their paths can be provided as arguments via the --config option (without string quotes). See example below for further details."
     example = """
     Example:
         pbp-job-agent --config /path/to/deployment/global_config_1.yaml /path/to/deployment/global_config_2.yaml
