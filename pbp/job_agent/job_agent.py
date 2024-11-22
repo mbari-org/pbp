@@ -92,6 +92,22 @@ class JobAgent:
         # logger.add(sys.stdout, format="{name} | {extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}", level="DEBUG")  # Example usage
         logger.bind(name=self.name).info("This will be printed directly to the terminal")
 
+    def info_log(self, message):
+        logger.bind(name=self.name).opt(colors=True).info("<blue>" + message + "</blue>")
+
+    def error_log(self, message):
+        logger.bind(name=self.name).opt(colors=True).error("<red>" + message + "</red>")
+
+    def warning_log(self, message):
+        logger.bind(name=self.name).opt(colors=True).warning(
+            "<yellow>" + message + "</yellow>"
+        )
+
+    def debug_log(self, message):
+        logger.bind(name=self.name).opt(colors=True).debug(
+            "<green>" + message + "</green>"
+        )
+
     def search_filenames(self, directory, pattern):
         try:
             # List all files in the directory
@@ -208,18 +224,14 @@ class JobAgent:
         while self.start_date <= self.end_date:
             try:
                 """NetCDF generation and logs"""
-
-                logger.bind(name=self.name).opt(colors=True).info(
-                    "<blue>Initiating pypam/pbp processing sequence for audio file associated with : "
+                self.info_log(
+                    "Initiating pypam/pbp processing sequence for audio file associated with : "
                     + str(self.start_date)
-                    + "</blue>"
                 )
-                logger.bind(name=self.name).opt(colors=True).info(
-                    "<blue>Initiating metadata generation associated with : "
+                self.info_log(
+                    "Initiating metadata generation associated with : "
                     + str(self.start_date)
-                    + "</blue>"
                 )
-
                 command = self.synth_pbp_hmb_gen(
                     date=self.start_date.strftime("%Y%m%d"),
                     json_base_dir=self.json_base_dir,
