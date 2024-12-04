@@ -333,15 +333,15 @@ def parse_arguments():
                                 "The 'variable_attrs' key-value pair in the --config YAML file(s) is necessary to run the job agent."
                             )
                             exit(1)
-                        # if (
-                        #     yaml_data["pbp_job_agent"]["sensitivity_flat_value"] is not None
-                        # ):  # If the yaml file has a recorder key present.
-                        #     pass
-                        # else:
-                        #     logger.error(
-                        #         "The 'sensitivity_flat_value' key-value pair in the --config YAML file(s) is necessary to run the job agent."
-                        #     )
-                        #     exit(1)
+                        if (
+                            yaml_data["pbp_job_agent"]["sensitivity_uri"] is not None
+                        ):  # If the yaml file has a sensitivity_uri key present.
+                            pass
+                        else:
+                            logger.error(
+                                "The 'sensitivity_uri' key-value pair in the --config YAML file(s) is necessary to run the job agent."
+                            )
+                            exit(1)
                         if (
                             yaml_data["pbp_job_agent"]["latlon"] is not None
                         ):  # If the yaml file has a recorder key present.
@@ -394,6 +394,15 @@ def parse_arguments():
                         else:
                             logger.error(
                                 "The 'global_attrs' key-value pair in the --config YAML file(s) is necessary to run the job agent."
+                            )
+                            exit(1)
+                        if (
+                            yaml_data["pbp_job_agent"]["voltage_multiplier"] is not None
+                        ):  # If the yaml file has a recorder key present.
+                            pass
+                        else:
+                            logger.error(
+                                "The 'voltage_multiplier' key-value pair in the --config YAML file(s) is necessary to run the job agent."
                             )
                             exit(1)
 
