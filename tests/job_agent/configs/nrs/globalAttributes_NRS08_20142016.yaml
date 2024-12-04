@@ -1,4 +1,3 @@
----
 title: >-
     Hybrid Millidecade Band Sound Pressure Levels Computed at 1 Minute Resolution from Oceanic Passive Acoustic Monitoring Recordings at NOAA Ocean Noise Reference Station NRS08, in the North Atlantic, USA
 Summary: >- 
@@ -40,20 +39,23 @@ references: >-
   https://doi.org/10.1121/10.0005818)
 
 pbp_job_agent:
-  name: NRS08 2014-2016
+  output_prefix: "NRS08_2014-2016"
   recorder: "NRS"
-  audio_base_dir: "nefscdata\PassiveAcoustics_Soundfiles\BOTTOM_MOUNTED\PMEL_NE-OFFSHORE\PMEL_NE-OFFSHORE_201406_NRS08"
-  json_base_dir: "nefscdata\PassiveAcoustics_Soundfiles\BOTTOM_MOUNTED\PMEL_NE-OFFSHORE\PMEL_NE-OFFSHORE_201406_NRS08\PYPAM\JSON"
+  audio_base_dir: "//nefscdata/PassiveAcoustics_Soundfiles/BOTTOM_MOUNTED/PMEL_NE-OFFSHORE/PMEL_NE-OFFSHORE_201406_NRS08"
+  json_base_dir: "//nefscdata/PassiveAcoustics_Soundfiles/BOTTOM_MOUNTED/PMEL_NE-OFFSHORE/PMEL_NE-OFFSHORE_201406_NRS08/PYPAM/JSON"
+  xml_dir: ""
   start: "20140611"
   end: "20150219"
-  nc_output_dir: "nefscdata\PassiveAcoustics_Soundfiles\BOTTOM_MOUNTED\PMEL_NE-OFFSHORE\PMEL_NE-OFFSHORE_201406_NRS08\PYPAM"
-  global_attrs: "nefscdata\PassiveAcoustics_Soundfiles\BOTTOM_MOUNTED\PMEL_NE-OFFSHORE\PMEL_NE-OFFSHORE_201406_NRS08\PYPAM\META\globalAttributes_NRS08_20142016.yaml"
-  variable_attrs: "nefscdata\PassiveAcoustics_Soundfiles\BOTTOM_MOUNTED\PMEL_NE-OFFSHORE\PMEL_NE-OFFSHORE_201406_NRS08\PYPAM\META\variableAttributes_NRS.yaml"
-  latlon: "POINT (40.13, -66.25)"
-  title: ""
+  prefix: "NRS08-"
+  nc_output_dir: "//nefscdata/PassiveAcoustics_Soundfiles/BOTTOM_MOUNTED/PMEL_NE-OFFSHORE/PMEL_NE-OFFSHORE_201406_NRS08/PYPAM"
+  global_attrs: "//nefscdata/PassiveAcoustics_Soundfiles/BOTTOM_MOUNTED/PMEL_NE-OFFSHORE/PMEL_NE-OFFSHORE_201406_NRS08/PYPAM/META/globalAttributes_NRS08_20142016.yaml"
+  variable_attrs: "//nefscdata/PassiveAcoustics_Soundfiles/BOTTOM_MOUNTED/PMEL_NE-OFFSHORE/PMEL_NE-OFFSHORE_201406_NRS08/PYPAM/META/variableAttributes_NRS.yaml"
+  sensitivity_flat_value: ""
+  latlon: "40.13 -66.25"
+  title: "NRS08_2014-2016"
   cmlim: ""
-  ylim: "0, 2000"
-  meta_output_dir: " "
+  ylim: "0 2000"
+  meta_output_dir: "//nefscdata/PassiveAcoustics_Soundfiles/BOTTOM_MOUNTED/PMEL_NE-OFFSHORE/PMEL_NE-OFFSHORE_201406_NRS08/PYPAM/JSON"
   voltage_multiplier: "2.5"
-  sensitivity_uri: "nefscdata\PassiveAcoustics_Soundfiles\BOTTOM_MOUNTED\PMEL_NE-OFFSHORE\PMEL_NE-OFFSHORE_201406_NRS08\PYPAM\META\NRS08_20142016_sensitivity.nc"
-  log_dir: " "
+  sensitivity_uri: "//nefscdata/PassiveAcoustics_Soundfiles/BOTTOM_MOUNTED/PMEL_NE-OFFSHORE/PMEL_NE-OFFSHORE_201406_NRS08/PYPAM/META/NRS08_20142016_sensitivity.nc"
+  log_dir: ""

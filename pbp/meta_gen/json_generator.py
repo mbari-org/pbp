@@ -188,6 +188,7 @@ class JsonGenerator:
             An optional prefixes for the filename
         :return:
         """
+        
         # if the exception column is full of empty strings, then drop it
         if "exception" in day_df.columns and day_df["exception"].str.len().sum() == 0:
             day_df.drop(columns=["exception"], inplace=True)
