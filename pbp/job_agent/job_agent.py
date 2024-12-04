@@ -21,7 +21,6 @@ class JobAgent:
         nc_output_dir,  # NetCDF output directory
         global_attrs,  # Global attributes file
         variable_attrs,  # Variable attributes file
-        sensitivity_flat_value,  # Sensitivity flat value
         latlon,  # Latitude and Longitude
         title,  # Title
         cmlim,  # CMLIM
@@ -29,7 +28,11 @@ class JobAgent:
         log_dir,  # Log directory
         meta_output_dir=None,
         xml_dir=None,
+        sensitivity_flat_value = None,
+        sensitivity_uri = None,
+        voltage_multiplier = None
     ):
+        
         self.output_prefix = output_prefix
         if not self.output_prefix.endswith("_"):
             self.output_prefix += "_"
@@ -48,11 +51,8 @@ class JobAgent:
 
         if os.name == "nt":  # If machine running the job agent is Windows.
             self.uri = Path(os.path.normpath(self.audio_base_dir))
-            print(self.uri)
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir))
-            print(self.meta_output_dir)
             self.json_base_dir = Path(os.path.normpath(json_base_dir))
-            print(self.json_base_dir)
             if xml_dir is not None and xml_dir != "":
                 self.xml_dir = Path(os.path.normpath(xml_dir))
             
@@ -60,6 +60,7 @@ class JobAgent:
             self.global_attrs = Path(os.path.normpath(global_attrs))
             self.variable_attrs = Path(os.path.normpath(variable_attrs))
             self.log_dir = Path(os.path.normpath(log_dir))
+            self.sensitivity_uri = Path(os.path.normpath(sensitivity_uri))
             
         if os.name == "posix":  # If machine running the job agent is Unix-based.
             self.uri = Path(self.audio_base_dir).resolve().as_uri()
@@ -75,7 +76,14 @@ class JobAgent:
         self.start_date = datetime.strptime(str(start), "%Y%m%d").date()
         self.end_date = datetime.strptime(str(end), "%Y%m%d").date()
 
+        
+        
         self.sensitivity_flat_value = str(sensitivity_flat_value)
+        
+        self.voltage_multiplier = str(voltage_multiplier)
+        
+        
+        
         self.latlon = latlon
         self.title = title
         self.cmlim = cmlim
@@ -174,8 +182,10 @@ class JobAgent:
         output_dir,
         global_attrs,
         variable_attrs,
-        sensitivity_flat_value,
         output_prefix,
+        sensitivity_flat_value = None,
+        sensitivity_uri = None,
+        voltage_multiplier = None
     ):
         command = "pbp-hmb-gen"
         
@@ -202,14 +212,23 @@ class JobAgent:
         # Add --variable-attrs flag only if variable_attrs is not None or empty
         if variable_attrs not in [None, ""]:
             command += f" --variable-attrs {str(variable_attrs)}"
-        
+            
+        # Add --output-prefix flag only if output_prefix is not None or empty
+        if output_prefix not in [None, ""]:
+            command += f" --output-prefix {output_prefix}"
+            
         # Add --sensitivity-flat-value flag only if sensitivity_flat_value is not None or empty
         if sensitivity_flat_value not in [None, ""]:
             command += f" --sensitivity-flat-value {sensitivity_flat_value}"
         
-        # Add --output-prefix flag only if output_prefix is not None or empty
-        if output_prefix not in [None, ""]:
-            command += f" --output-prefix {output_prefix}"
+        # Add --sensitivity-uri flag only if sensitivity_flat_value is not None or empty
+        if sensitivity_uri not in [None, ""]:
+            command += f" --sensitivity-uri {sensitivity_uri}"
+            
+        # Add --sensitivity-uri flag only if sensitivity_flat_value is not None or empty
+        if voltage_multiplier not in [None, ""]:
+            command += f" --voltage-multiplier {voltage_multiplier}"
+        
         
         return command
     
@@ -280,7 +299,14 @@ class JobAgent:
         logger.bind(name=self.name).opt(colors=True).info(
             "<green>running > " + command + "</green>"
         )
+        
+        
+        
+        
+        
         os.system(command)
+
+
 
         delta = timedelta(days=1)
         command = ""
@@ -296,16 +322,33 @@ class JobAgent:
                     "Initiating metadata generation associated with : "
                     + str(self.start_date)
                 )
-                command = self.synth_pbp_hmb_gen(
-                    date=self.start_date.strftime("%Y%m%d"),
-                    json_base_dir=self.json_base_dir,
-                    audio_base_dir=self.uri,
-                    output_dir=self.nc_output_dir,
-                    global_attrs=self.global_attrs,
-                    variable_attrs=self.variable_attrs,
-                    sensitivity_flat_value=self.sensitivity_flat_value,
-                    output_prefix=self.output_prefix,
-                )
+                
+                if self.recorder == "SOUNDTRAP":
+                    command = self.synth_pbp_hmb_gen(
+                        date=self.start_date.strftime("%Y%m%d"),
+                        json_base_dir=self.json_base_dir,
+                        audio_base_dir=self.uri,
+                        output_dir=self.nc_output_dir,
+                        global_attrs=self.global_attrs,
+                        variable_attrs=self.variable_attrs,
+                        output_prefix=self.output_prefix,
+                        sensitivity_flat_value=self.sensitivity_flat_value,
+                        sensitivity_uri=None,
+                        voltage_multiplier=None
+                    )
+                if self.recorder == "NRS":
+                    command = self.synth_pbp_hmb_gen(
+                        date=self.start_date.strftime("%Y%m%d"),
+                        json_base_dir=self.json_base_dir,
+                        audio_base_dir=self.uri,
+                        output_dir=self.nc_output_dir,
+                        global_attrs=self.global_attrs,
+                        variable_attrs=self.variable_attrs,
+                        output_prefix=self.output_prefix,
+                        sensitivity_flat_value=None,
+                        sensitivity_uri=self.sensitivity_uri,
+                        voltage_multiplier=self.voltage_multiplier,
+                    )
                 logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Checking if netCDF file associated with "
                     + str(self.start_date.strftime("%Y%m%d"))

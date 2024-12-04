@@ -42,6 +42,7 @@ def plot_dataset_summary(
     plt.rcParams["text.usetex"] = False
     plt.rcParams["axes.edgecolor"] = "black"
 
+    
     # Transpose psd array for plotting
     da = xr.DataArray.transpose(ds.psd)
 
