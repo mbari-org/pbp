@@ -52,6 +52,8 @@ def extract_timecode(filename: str, prefixes: List[str]):
         "underscore_format2": r"{}[._]?(\d{{6}})_(\d{{6}})\.",
         "dot_format": r"{}[._]?(\d{{12}})\.",
         "iso_format": r"{}[._]?(\d{{8}}T\d{{6}}Z)\.",
+        "dash_format1": r"{}[.-]?(\d{{8}})-(\d{{6}})\.",  # Matches: MARS-YYYYMMDD-HHMMSS.wav
+        "dash_format2": r"{}[.-]?(\d{{6}})-(\d{{6}})\.",  # Matches: NRS08-150219-151716.wav
     }
     for prefix in prefixes:
         for pattern_name, pattern in patterns.items():
@@ -87,6 +89,9 @@ def get_datetime(time_str: str, prefixes: List[str]):
         "%Y%m%d%H%M%S",
         "%Y%m%dT%H%M%SZ",
         "%Y%m%dT%H%M%S",
+        "%y%M%d-%H%M%S",
+        "-%y%M%d-%H%M%S",
+        "_%y%m%d_%H%M%S"
     ]
     for fmt in possible_dt_formats:
         try:

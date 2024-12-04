@@ -47,14 +47,20 @@ class JobAgent:
         self.audio_base_dir = audio_base_dir
 
         if os.name == "nt":  # If machine running the job agent is Windows.
-            self.uri = Path(os.path.normpath(self.audio_base_dir)).resolve().as_uri()
+            self.uri = Path(os.path.normpath(self.audio_base_dir))
+            print(self.uri)
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir))
+            print(self.meta_output_dir)
             self.json_base_dir = Path(os.path.normpath(json_base_dir))
-            self.xml_dir = Path(os.path.normpath(xml_dir))
+            print(self.json_base_dir)
+            if xml_dir is not None and xml_dir != "":
+                self.xml_dir = Path(os.path.normpath(xml_dir))
+            
             self.nc_output_dir = Path(os.path.normpath(nc_output_dir))
             self.global_attrs = Path(os.path.normpath(global_attrs))
             self.variable_attrs = Path(os.path.normpath(variable_attrs))
             self.log_dir = Path(os.path.normpath(log_dir))
+            
         if os.name == "posix":  # If machine running the job agent is Unix-based.
             self.uri = Path(self.audio_base_dir).resolve().as_uri()
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir)).as_posix()
@@ -122,27 +128,42 @@ class JobAgent:
             return False  # Return False if the directory doesn't exist
 
     def synth_pbp_meta_gen(
-        self, recorder, uri, output_dir, json_base_dir, xml_dir, start, end, prefix
+        self, recorder, uri, output_dir, json_base_dir, start, end, prefix, xml_dir=None
     ):
-        command = (
-            r"pbp-meta-gen "
-            + r"--recorder "
-            + recorder
-            + r" --uri "
-            + str(uri)
-            + r" --output-dir "
-            + str(output_dir)
-            + r" --json-base-dir "
-            + str(json_base_dir)
-            + r" --xml-dir "
-            + str(xml_dir)
-            + r" --start "
-            + start
-            + r" --end "
-            + end
-            + r" --prefix "
-            + str(prefix)
-        )
+        command = "pbp-meta-gen"
+        
+        # Check if recorder is not None or an empty string
+        if recorder and recorder != "":
+            command += f" --recorder {recorder}"
+        
+        # Check if uri is not None or an empty string
+        if uri and uri != "":
+            command += f" --uri {uri}"
+        
+        # Check if output_dir is not None or an empty string
+        if output_dir and output_dir != "":
+            command += f" --output-dir {output_dir}"
+        
+        # Check if json_base_dir is not None or an empty string
+        if json_base_dir and json_base_dir != "":
+            command += f" --json-base-dir {json_base_dir}"
+        
+        # Check if xml_dir is not None or an empty string
+        if xml_dir and xml_dir != "":
+            command += f" --xml-dir {xml_dir}"
+        
+        # Check if start is not None or an empty string
+        if start and start != "":
+            command += f" --start {start}"
+        
+        # Check if end is not None or an empty string
+        if end and end != "":
+            command += f" --end {end}"
+        
+        # Check if prefix is not None or an empty string
+        if prefix and prefix != "":
+            command += f" --prefix {prefix}"
+        
         return command
 
     def synth_pbp_hmb_gen(
@@ -156,39 +177,68 @@ class JobAgent:
         sensitivity_flat_value,
         output_prefix,
     ):
-        command = (
-            r"pbp-hmb-gen --date "
-            + date
-            + r" --json-base-dir "
-            + str(json_base_dir)
-            + r" --audio-base-dir "
-            + str(audio_base_dir)
-            + r" --output-dir "
-            + str(output_dir)
-            + r" --global-attrs "
-            + str(global_attrs)
-            + r" --variable-attrs "
-            + str(variable_attrs)
-            + r" --sensitivity-flat-value "
-            + sensitivity_flat_value
-            + r" --output-prefix "
-            + output_prefix
-        )
+        command = "pbp-hmb-gen"
+        
+        # Add --date flag only if date is not None or empty
+        if date not in [None, ""]:
+            command += f" --date {date}"
+        
+        # Add --json-base-dir flag only if json_base_dir is not None or empty
+        if json_base_dir not in [None, ""]:
+            command += f" --json-base-dir {str(json_base_dir)}"
+        
+        # Add --audio-base-dir flag only if audio_base_dir is not None or empty
+        if audio_base_dir not in [None, ""]:
+            command += f" --audio-base-dir {str(audio_base_dir)}"
+        
+        # Add --output-dir flag only if output_dir is not None or empty
+        if output_dir not in [None, ""]:
+            command += f" --output-dir {str(output_dir)}"
+        
+        # Add --global-attrs flag only if global_attrs is not None or empty
+        if global_attrs not in [None, ""]:
+            command += f" --global-attrs {str(global_attrs)}"
+        
+        # Add --variable-attrs flag only if variable_attrs is not None or empty
+        if variable_attrs not in [None, ""]:
+            command += f" --variable-attrs {str(variable_attrs)}"
+        
+        # Add --sensitivity-flat-value flag only if sensitivity_flat_value is not None or empty
+        if sensitivity_flat_value not in [None, ""]:
+            command += f" --sensitivity-flat-value {sensitivity_flat_value}"
+        
+        # Add --output-prefix flag only if output_prefix is not None or empty
+        if output_prefix not in [None, ""]:
+            command += f" --output-prefix {output_prefix}"
+        
         return command
-
+    
+    
+    
+    
     def synth_pbp_plot_gen(self, latlon, title, cmlim, ylim, nc_file):
-        command = (
-            r"pbp-hmb-plot --latlon "
-            + latlon
-            + r" --title "
-            + title
-            + r" --cmlim "
-            + cmlim
-            + r" --ylim "
-            + ylim
-            + r" "
-            + str(nc_file)
-        )
+        command = "pbp-hmb-plot"
+
+        # Add --latlon flag if latlon is not None or empty string
+        if latlon not in [None, ""]:
+            command += f" --latlon {latlon}"
+
+        # Add --title flag if title is not None or empty string
+        if title not in [None, ""]:
+            command += f" --title {title}"
+
+        # Add --cmlim flag if cmlim is not None or empty string
+        if cmlim not in [None, ""]:
+            command += f" --cmlim {cmlim}"
+
+        # Add --ylim flag if ylim is not None or empty string
+        if ylim not in [None, ""]:
+            command += f" --ylim {ylim}"
+
+        # Add nc_file if nc_file is not None or empty string
+        if nc_file not in [None, ""]:
+            command += f" {str(nc_file)}"
+
         return command
 
     def run(self):
@@ -198,16 +248,30 @@ class JobAgent:
 
         """Metadata generation and logs"""
 
-        command = self.synth_pbp_meta_gen(
-            self.recorder,
-            self.uri,
-            self.meta_output_dir,
-            self.json_base_dir,
-            self.xml_dir,
-            self.start_date.strftime("%Y%m%d"),
-            self.end_date.strftime("%Y%m%d"),
-            self.prefix,
-        )
+        if self.recorder == "SOUNDTRAP":
+
+            command = self.synth_pbp_meta_gen(
+                self.recorder,
+                self.uri,
+                self.meta_output_dir,
+                self.json_base_dir,
+                self.start_date.strftime("%Y%m%d"),
+                self.end_date.strftime("%Y%m%d"),
+                self.prefix,
+                self.xml_dir,
+            )
+            
+        if self.recorder == "NRS":
+            command = self.synth_pbp_meta_gen(
+                self.recorder,
+                self.uri,
+                self.meta_output_dir,
+                self.json_base_dir,
+                self.start_date.strftime("%Y%m%d"),
+                self.end_date.strftime("%Y%m%d"),
+                self.prefix,
+            )
+            
         logger.bind(name=self.name).opt(colors=True).info(
             "<blue>Initiating processing for audio file and netCDF generation associated with : "
             + str(self.start_date)
@@ -235,7 +299,7 @@ class JobAgent:
                 command = self.synth_pbp_hmb_gen(
                     date=self.start_date.strftime("%Y%m%d"),
                     json_base_dir=self.json_base_dir,
-                    audio_base_dir=self.audio_base_dir,
+                    audio_base_dir=self.uri,
                     output_dir=self.nc_output_dir,
                     global_attrs=self.global_attrs,
                     variable_attrs=self.variable_attrs,
