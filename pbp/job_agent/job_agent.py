@@ -59,7 +59,6 @@ class JobAgent:
             self.global_attrs = Path(os.path.normpath(global_attrs))
             self.variable_attrs = Path(os.path.normpath(variable_attrs))
             self.log_dir = Path(os.path.normpath(log_dir))
-            self.sensitivity_uri = Path(os.path.normpath(sensitivity_uri))
             
             if self.recorder =="NRS":
                 self.voltage_multiplier = str(voltage_multiplier)
