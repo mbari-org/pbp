@@ -307,13 +307,10 @@ class JobAgent:
             "<green>running > " + command + "</green>"
         )
         
+
         
-        
-        
-        
+        # Excecutes the meta-gen command
         os.system(command)
-
-
 
         delta = timedelta(days=1)
         command = ""
