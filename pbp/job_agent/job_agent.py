@@ -75,9 +75,17 @@ class JobAgent:
         self.start_date = datetime.strptime(str(start), "%Y%m%d").date()
         self.end_date = datetime.strptime(str(end), "%Y%m%d").date()
 
+<<<<<<< Updated upstream
         self.sensitivity_flat_value = str(sensitivity_flat_value)
 
         self.voltage_multiplier = str(voltage_multiplier)
+=======
+        
+        if self.recorder == "NRS":
+            self.sensitivity_flat_value = str(sensitivity_flat_value)      
+            self.voltage_multiplier = str(voltage_multiplier)
+        
+>>>>>>> Stashed changes
 
         self.latlon = latlon
         self.title = title
