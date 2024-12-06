@@ -86,31 +86,36 @@ class JobAgent:
         self.latlon = latlon
         self.title = title
         self.cmlim = cmlim
-        self.ylim = ylim  # YLIM
+        self.ylim = ylim
+        
         log_filename_str = "pbp-job-agent_" + self.output_prefix + "_" + str(start) + "_" + str(end) + ".log"
         log_filename_str = log_filename_str.replace("__", "_")
+        
+        self.log_dir = log_dir
+        self.log_filename_str = log_filename_str
+        
         logger.add(
             os.path.join(
-                log_dir,
-                log_filename_str
+                self.log_dir,
+                self.log_filename_str
             ),
             format="{extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}",
             level="DEBUG",
         )
 
     def info_log(self, message):
-        self.logger.bind(name=self.name).opt(colors=True).info("<blue>" + message + "</blue>")
+        logger.bind(name=self.name).opt(colors=True).info("<blue>" + message + "</blue>")
 
     def error_log(self, message):
-        self.logger.bind(name=self.name).opt(colors=True).error("<red>" + message + "</red>")
+        logger.bind(name=self.name).opt(colors=True).error("<red>" + message + "</red>")
 
     def warning_log(self, message):
-        self.logger.bind(name=self.name).opt(colors=True).warning(
+        logger.bind(name=self.name).opt(colors=True).warning(
             "<yellow>" + message + "</yellow>"
         )
 
     def debug_log(self, message):
-        self.logger.bind(name=self.name).opt(colors=True).debug(
+        logger.bind(name=self.name).opt(colors=True).debug(
             "<green>" + message + "</green>"
         )
 
@@ -253,7 +258,17 @@ class JobAgent:
         return command
 
     def run(self):
-        self.logger.bind(name=self.name).opt(colors=True).info(
+
+        logger.add(
+            os.path.join(
+                self.log_dir,
+                self.log_filename_str
+            ),
+            format="{extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}",
+            level="DEBUG",
+        )
+        
+        logger.bind(name=self.name).opt(colors=True).info(
             "<blue>Initializing the pbp/pypam processing suite.</blue>"
         )
 
@@ -283,12 +298,12 @@ class JobAgent:
                 self.prefix,
             )
             
-        self.logger.bind(name=self.name).opt(colors=True).info(
+        logger.bind(name=self.name).opt(colors=True).info(
             "<blue>Initiating processing for audio file and netCDF generation associated with : "
             + str(self.start_date)
             + "</blue>"
         )
-        self.logger.bind(name=self.name).opt(colors=True).info(
+        logger.bind(name=self.name).opt(colors=True).info(
             "<green>running > " + command + "</green>"
         )
         
@@ -341,7 +356,7 @@ class JobAgent:
                         sensitivity_uri=self.sensitivity_uri,
                         voltage_multiplier=self.voltage_multiplier,
                     )
-                self.logger.bind(name=self.name).opt(colors=True).info(
+                logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Checking if netCDF file associated with "
                     + str(self.start_date.strftime("%Y%m%d"))
                     + " exists...</blue>"
@@ -349,7 +364,7 @@ class JobAgent:
                 if not self.search_filenames(
                     self.nc_output_dir, str(self.start_date.strftime("%Y%m%d")) + ".nc"
                 ):
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>No netCDF file exists for "
                         + str(self.start_date)
                         + ". Proceeding to netCDF generation of "
@@ -357,22 +372,22 @@ class JobAgent:
                         + "."
                         + "</blue>"
                     )
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>Proceeding to netCDF generatrion...</blue>"
                     )
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<green>running > " + command + "</green>"
                     )
 
                     os.system(command)
 
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>NetCDF file generation for "
                         + str(self.start_date)
                         + " complete!</blue>"
                     )
                 else:
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<yellow>NetCDF file already exists for "
                         + str(self.start_date)
                         + "</yellow>"
@@ -407,12 +422,12 @@ class JobAgent:
                         ),
                     )  # Generate the command for plotting the NetCDF file
 
-                self.logger.bind(name=self.name).opt(colors=True).info(
+                logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Initiating plot generation for audio file associated with date : "
                     + str(self.start_date)
                     + "</blue>"
                 )
-                self.logger.bind(name=self.name).opt(colors=True).info(
+                logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Checking if jpg file associated with "
                     + str(self.start_date)
                     + " exists...</blue>"
@@ -420,34 +435,34 @@ class JobAgent:
                 if not self.search_filenames(
                     self.nc_output_dir, str(self.start_date.strftime("%Y%m%d")) + ".jpg"
                 ):
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>No plot exists or has been generated for the date: "
                         + str(self.start_date)
                         + "</blue>"
                     )
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>Proceeding to plot generatrion from netCDF...</blue>"
                     )
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<green>running > " + command + "</green>"
                     )
                     os.system(command)
                 else:
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<yellow>Plot already exists for "
                         + str(self.start_date)
                         + "</yellow>"
                     )
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<yellow>Performing an override of the existing plot for "
                         + str(self.start_date)
                         + "</yellow>"
                     )
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<green>running > " + command + "</green>"
                     )
                     os.system(command)
-                    self.logger.bind(name=self.name).opt(colors=True).info(
+                    logger.bind(name=self.name).opt(colors=True).info(
                         "<blue>Plot generation complete!</blue>"
                     )
 
@@ -455,6 +470,6 @@ class JobAgent:
                 time.sleep(1)
 
             except TypeError as e:
-                self.logger.bind(name=self.name).error(
+                logger.bind(name=self.name).error(
                     f"Error: {e} at line {sys.exc_info()[-1].tb_lineno} ; Processing was unsuccessful for {self.start_date}"
                 )
