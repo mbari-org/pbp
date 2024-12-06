@@ -70,25 +70,18 @@ def parse_arguments():
                 )  # Provide error message to logs/user
                 exit(1)
         deployment_configurations = []  # A data structure to store the parsed yaml configurations.
-        
+
         for (
             deployment_configuration
         ) in parser.parse_args().config:  # Iterates through the yaml files provided.
             if deployment_configuration is not None:  # TODO: This may be redundant
-                yaml_data = yaml_to_json(
-                    deployment_configuration
-                )
-                
-                
+                yaml_data = yaml_to_json(deployment_configuration)
+
                 if (
                     yaml_data["pbp_job_agent"]["recorder"] is not None
                 ):  # If the yaml file has a recorder key present.
-                    
-
                     if yaml_data["pbp_job_agent"]["recorder"] == "SOUNDTRAP":
-                        
-                    
-                        #print(yaml_data)# Convert the yaml file to a parsable object. This parsing is yaml based and distinct from the Argparse parsing.
+                        # print(yaml_data)# Convert the yaml file to a parsable object. This parsing is yaml based and distinct from the Argparse parsing.
                         if (
                             yaml_data["pbp_job_agent"]["output_prefix"] is not None
                         ):  # If the yaml file has a recorder key present.
@@ -183,7 +176,8 @@ def parse_arguments():
                             )
                             exit(1)
                         if (
-                            yaml_data["pbp_job_agent"]["sensitivity_flat_value"] is not None
+                            yaml_data["pbp_job_agent"]["sensitivity_flat_value"]
+                            is not None
                         ):  # If the yaml file has a recorder key present.
                             pass
                         else:
@@ -245,9 +239,8 @@ def parse_arguments():
                                 "The 'global_attrs' key-value pair in the --config YAML file(s) is necessary to run the job agent."
                             )
                             exit(1)
-                            
+
                     if yaml_data["pbp_job_agent"]["recorder"] == "NRS":
-    
                         if (
                             yaml_data["pbp_job_agent"]["output_prefix"] is not None
                         ):  # If the yaml file has a recorder key present.
@@ -406,11 +399,10 @@ def parse_arguments():
                             )
                             exit(1)
 
-
                     deployment_configurations.append(
                         yaml_data["pbp_job_agent"]
                     )  # Append the parsed yaml data to the deployment configurations list.
-                    
+
                 else:
                     logger.error(
                         "The 'recorder' key-value pair in the --config YAML file(s) is necessary to run the job agent."
