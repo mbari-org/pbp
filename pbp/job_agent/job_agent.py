@@ -60,6 +60,12 @@ class JobAgent:
             self.variable_attrs = Path(os.path.normpath(variable_attrs))
             self.log_dir = Path(os.path.normpath(log_dir))
             self.sensitivity_uri = Path(os.path.normpath(sensitivity_uri))
+            
+            if self.recorder =="NRS":
+                self.voltage_multiplier = str(voltage_multiplier)
+                self.sensitivity_uri = Path(os.path.normpath(sensitivity_uri))
+            if self.recorder =="SOUNDTRAP":
+                self.sensitivity_flat_value = str(sensitivity_flat_value)
 
         if os.name == "posix":  # If machine running the job agent is Unix-based.
             self.uri = Path(self.audio_base_dir).resolve().as_uri()
@@ -70,23 +76,18 @@ class JobAgent:
             self.global_attrs = Path(os.path.normpath(global_attrs)).as_posix()
             self.variable_attrs = Path(os.path.normpath(variable_attrs)).as_posix()
             self.log_dir = Path(os.path.normpath(log_dir)).as_posix()
+            
+            if self.recorder =="NRS":
+                self.voltage_multiplier = str(voltage_multiplier)
+                self.sensitivity_uri = Path(os.path.normpath(sensitivity_uri))
+            if self.recorder =="SOUNDTRAP":
+                self.sensitivity_flat_value = str(sensitivity_flat_value)
 
         self.prefix = str(prefix)  # Prefix
         self.start_date = datetime.strptime(str(start), "%Y%m%d").date()
         self.end_date = datetime.strptime(str(end), "%Y%m%d").date()
 
-<<<<<<< Updated upstream
-        self.sensitivity_flat_value = str(sensitivity_flat_value)
-
-        self.voltage_multiplier = str(voltage_multiplier)
-=======
-        
-        if self.recorder == "NRS":
-            self.sensitivity_flat_value = str(sensitivity_flat_value)      
-            self.voltage_multiplier = str(voltage_multiplier)
-        
->>>>>>> Stashed changes
-
+            
         self.latlon = latlon
         self.title = title
         self.cmlim = cmlim
