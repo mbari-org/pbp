@@ -17,9 +17,9 @@ def main():  # This function represents the entry point for the job agent.
     for deployment_configuration in (
         deployment_configurations
     ):  # Iterates through the deployment configurations provided by the user.
-        
-        if deployment_configuration["recorder"] == "SOUNDTRAP":  # Checks if the recorder is SOUNDTRAP.
-            
+        if (
+            deployment_configuration["recorder"] == "SOUNDTRAP"
+        ):  # Checks if the recorder is SOUNDTRAP.
             job_agent = JobAgent(
                 output_prefix=deployment_configuration["output_prefix"],
                 recorder=deployment_configuration["recorder"],
@@ -40,11 +40,10 @@ def main():  # This function represents the entry point for the job agent.
                 xml_dir=deployment_configuration["xml_dir"],
                 sensitivity_flat_value=deployment_configuration["sensitivity_flat_value"],
                 sensitivity_uri=None,
-                voltage_multiplier=None
+                voltage_multiplier=None,
             )
-            
+
         if deployment_configuration["recorder"] == "NRS":
-        
             job_agent = JobAgent(
                 output_prefix=deployment_configuration["output_prefix"],
                 recorder=deployment_configuration["recorder"],
@@ -65,13 +64,13 @@ def main():  # This function represents the entry point for the job agent.
                 xml_dir=None,
                 sensitivity_flat_value=None,
                 sensitivity_uri=deployment_configuration["sensitivity_uri"],
-                voltage_multiplier=deployment_configuration["voltage_multiplier"]
+                voltage_multiplier=deployment_configuration["voltage_multiplier"],
             )
 
         pbp_job_agent_process = Process(
             target=job_agent.run
         )  # Creates a process for the job agent.
-        
+
         processes.append(
             pbp_job_agent_process
         )  # Appends the process to the list of processes.
