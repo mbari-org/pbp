@@ -88,16 +88,13 @@ class JobAgent:
         self.title = title
         self.cmlim = cmlim
         self.ylim = ylim  # YLIM
+        log_filename_str = "pbp-job-agent_" + self.output_prefix + "_" + str(start) + "_" + str(end) + ".log"
+        
+        log_filename_str = log_filename_str.replace("__", "_")
         logger.add(
             os.path.join(
                 log_dir,
-                "pbp-job-agent_"
-                + self.output_prefix
-                + "_"
-                + str(start)
-                + "_"
-                + str(end)
-                + ".log",
+                log_filename_str
             ),
             format="{extra[name]} | {time:YYYYMMDD:HH:mm:ss:SSS} | {level} | {message}",
             level="DEBUG",

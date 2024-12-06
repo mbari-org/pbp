@@ -62,7 +62,7 @@ def main():  # This function represents the entry point for the job agent.
                 ylim=deployment_configuration["ylim"],
                 log_dir=deployment_configuration["log_dir"],
                 meta_output_dir=deployment_configuration["meta_output_dir"],
-                xml_dir=deployment_configuration["xml_dir"],
+                xml_dir=None,
                 sensitivity_flat_value=None,
                 sensitivity_uri=deployment_configuration["sensitivity_uri"],
                 voltage_multiplier=deployment_configuration["voltage_multiplier"]
