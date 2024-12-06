@@ -24,9 +24,9 @@ def parse_arguments():
     
     Example Configuration : global_config_1.yaml:
         pbp_job_agent:
-            output_prefix: Georges_Bank_2021                                # Output prefix
-            recorder: "SOUNDTRAP"                                           # Recorder type
-            audio_base_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/"              # Base directory for audio files
+            output_prefix: Georges_Bank_2021                                # Output prefix (A prefix assigned to files generated through pbp-job-agent)
+            recorder: "SOUNDTRAP"                                           # Recorder type ("SOUNDTRAP", "NRS")
+            audio_base_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/"              # Audio file base directory ( The directory where the audio files for the deployment are stored )
             json_base_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/JSON"           # Base directory for JSON files
             xml_dir: "/home/user/SOUNDTRAP_DEPLOYMENT"                      # Directory for XML files   
             start: "20220521"                                               # Start date
@@ -38,12 +38,12 @@ def parse_arguments():
             sensitivity_flat_value: "176.6"                                 # Sensitivity flat value
             latlon: "-31.711 115.583"                                       # Latitude and Longitude
             title: "Georges_Bank_2021"                                      # Title                   
-            cmlim: "36 107"                                                 # CMLIM
-            ylim: "10 24000"                                                # YLIM                  
-            meta_output_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/META"         # Meta output directory
-            voltage_multiplier: ""                                          # Voltage multiplier          
-            sensitivity_uri: ""                                             # Sensitivity URI
-            log_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/AGENT"                # Log directory
+            cmlim: "36 107"                                                 # CMLIM ( Plotting colormap limits )
+            ylim: "10 24000"                                                # YLIM ( Plotting )                 
+            meta_output_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/META"         # Meta output directory ( The output_dir of pbp-meta-gen / metadata generation log directory)
+            voltage_multiplier: ""                                          # Voltage multiplier ( Applies to NRS )         
+            sensitivity_uri: ""                                             # URI to the sensitivity file ( Applies to NRS )
+            log_dir: "/home/user/SOUNDTRAP_DEPLOYMENT/AGENT"                # Log directory ( The pbp-job-agent orchestration layer logs )
     """
     parser = ArgumentParser(
         description=description, epilog=example, formatter_class=RawTextHelpFormatter
