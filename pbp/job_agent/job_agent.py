@@ -146,35 +146,35 @@ class JobAgent:
         command = "pbp-meta-gen"
 
         # Check if recorder is not None or an empty string
-        if recorder and recorder != "":
+        if recorder not in [None, ""]:
             command += f" --recorder {recorder}"
 
         # Check if uri is not None or an empty string
-        if uri and uri != "":
+        if uri not in [None, ""]:
             command += f" --uri {uri}"
 
         # Check if output_dir is not None or an empty string
-        if output_dir and output_dir != "":
+        if output_dir not in [None, ""]:
             command += f" --output-dir {output_dir}"
 
         # Check if json_base_dir is not None or an empty string
-        if json_base_dir and json_base_dir != "":
+        if json_base_dir not in [None, ""]:
             command += f" --json-base-dir {json_base_dir}"
 
         # Check if xml_dir is not None or an empty string
-        if xml_dir and xml_dir != "":
+        if xml_dir not in [None, ""]:
             command += f" --xml-dir {xml_dir}"
 
         # Check if start is not None or an empty string
-        if start and start != "":
+        if start not in [None, ""]:
             command += f" --start {start}"
 
         # Check if end is not None or an empty string
-        if end and end != "":
+        if end not in [None, ""]:
             command += f" --end {end}"
 
         # Check if prefix is not None or an empty string
-        if prefix and prefix != "":
+        if prefix not in [None, ""]:
             command += f" --prefix {prefix}"
 
         return command
