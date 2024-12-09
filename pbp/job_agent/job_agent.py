@@ -33,7 +33,8 @@ class JobAgent:
         voltage_multiplier=None,
     ):
         self.output_prefix = output_prefix
-
+        if not self.output_prefix.endswith("_"):
+            self.output_prefix += "_"
         if (
             meta_output_dir is None
         ):  # Sets the log directory the same as the json base directory if not specified which feels like a good best practice.
