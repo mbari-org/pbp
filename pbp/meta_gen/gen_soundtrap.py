@@ -91,7 +91,6 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             if scheme == "file" or scheme == "":
                 #parsed_uri = urllib.parse.urlparse(self.audio_loc)
                 if os.name == "nt":
-                    #wav_path = Path(parsed_uri.path[3:])
                     wav_path = Path(self.audio_loc)
                 else:
                     wav_path = Path(self.audio_loc)
@@ -99,11 +98,9 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                 for filename in progressbar(
                     sorted(wav_path.rglob("*.wav")), prefix="Searching : "
                 ):
-                    xml_path = os.path.join(self.xml_dir, f"{filename.stem}.log.xml"),
-                    print("xml_path", xml_path)
+                    
                     wav_path = filename.parent / f"{filename.stem}.wav"
                     xml_path = Path(self.xml_dir + "/" + f"{filename.stem}.log.xml")
-                    print("xml_path", xml_path)
                     start_dt = get_datetime(wav_path, self.prefixes)
 
                     # Must have a start date to be valid and also must have a corresponding xml file
