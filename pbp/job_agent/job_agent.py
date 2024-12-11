@@ -41,7 +41,7 @@ class JobAgent:
             self.output_prefix += "_"
             
         self.output_prefix = self.output_prefix.replace("__", "_")
-        print("Output Prefix: ", self.output_prefix)
+
         if (
             meta_output_dir is None
         ):  # Sets the log directory the same as the json base directory if not specified which feels like a good best practice.
@@ -248,8 +248,7 @@ class JobAgent:
         # Add --sensitivity-uri flag only if sensitivity_flat_value is not None or empty
         if voltage_multiplier not in [None, ""]:
             command += f" --voltage-multiplier {voltage_multiplier}"
-        print("")
-        print("Subset to: ", subset_to)   
+  
         if subset_to not in [None, ""]:
             command += f" --subset-to {subset_to}"
 
