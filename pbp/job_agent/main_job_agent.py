@@ -41,6 +41,7 @@ def main():  # This function represents the entry point for the job agent.
                 sensitivity_flat_value=deployment_configuration["sensitivity_flat_value"],
                 sensitivity_uri=None,
                 voltage_multiplier=None,
+                subset_to=deployment_configuration["subset_to"],
             )
 
         if deployment_configuration["recorder"] == "NRS":
@@ -65,6 +66,7 @@ def main():  # This function represents the entry point for the job agent.
                 sensitivity_flat_value=None,
                 sensitivity_uri=deployment_configuration["sensitivity_uri"],
                 voltage_multiplier=deployment_configuration["voltage_multiplier"],
+                subset_to=deployment_configuration["subset_to"],
             )
 
         pbp_job_agent_process = Process(
