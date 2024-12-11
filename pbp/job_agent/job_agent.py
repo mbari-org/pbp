@@ -31,12 +31,17 @@ class JobAgent:
         sensitivity_flat_value=None,
         sensitivity_uri=None,
         voltage_multiplier=None,
+        subset_to=None
     ):
+        
+        
+            
         self.output_prefix = output_prefix
         if not self.output_prefix.endswith("_"):
             self.output_prefix += "_"
             
         self.output_prefix = self.output_prefix.replace("__", "_")
+        print("Output Prefix: ", self.output_prefix)
         if (
             meta_output_dir is None
         ):  # Sets the log directory the same as the json base directory if not specified which feels like a good best practice.
@@ -49,7 +54,7 @@ class JobAgent:
 
         self.recorder = recorder
         self.audio_base_dir = audio_base_dir
-
+        
         if os.name == "nt":  # If machine running the job agent is Windows.
             self.uri = Path(os.path.normpath(self.audio_base_dir))
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir))
@@ -93,7 +98,12 @@ class JobAgent:
         self.title = title
         self.cmlim = cmlim
         self.ylim = ylim
-
+        
+        if subset_to not in [None, ""]:
+            subset_to = ylim
+        
+        self.subset_to = subset_to
+        
         log_filename_str = (
             "pbp-job-agent_"
             + self.output_prefix
@@ -103,6 +113,7 @@ class JobAgent:
             + str(end)
             + ".log"
         )
+        log_filename_str = log_filename_str.replace("___", "__")
         log_filename_str = log_filename_str.replace("__", "_")
 
         self.log_dir = log_dir
@@ -194,6 +205,7 @@ class JobAgent:
         sensitivity_flat_value=None,
         sensitivity_uri=None,
         voltage_multiplier=None,
+        subset_to=None,
     ):
         command = "pbp-hmb-gen"
 
@@ -236,6 +248,10 @@ class JobAgent:
         # Add --sensitivity-uri flag only if sensitivity_flat_value is not None or empty
         if voltage_multiplier not in [None, ""]:
             command += f" --voltage-multiplier {voltage_multiplier}"
+        print("")
+        print("Subset to: ", subset_to)   
+        if subset_to not in [None, ""]:
+            command += f" --subset-to {subset_to}"
 
         return command
 
@@ -339,6 +355,7 @@ class JobAgent:
                         sensitivity_flat_value=self.sensitivity_flat_value,
                         sensitivity_uri=None,
                         voltage_multiplier=None,
+                        subset_to=self.subset_to
                     )
                 if self.recorder == "NRS":
                     command = self.synth_pbp_hmb_gen(
@@ -352,6 +369,7 @@ class JobAgent:
                         sensitivity_flat_value=None,
                         sensitivity_uri=self.sensitivity_uri,
                         voltage_multiplier=self.voltage_multiplier,
+                        subset_to=self.subset_to
                     )
                 logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Checking if netCDF file associated with "

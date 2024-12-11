@@ -241,6 +241,7 @@ def parse_arguments():
                             exit(1)
 
                     if yaml_data["pbp_job_agent"]["recorder"] == "NRS":
+                        
                         if (
                             yaml_data["pbp_job_agent"]["output_prefix"] is not None
                         ):  # If the yaml file has a recorder key present.
