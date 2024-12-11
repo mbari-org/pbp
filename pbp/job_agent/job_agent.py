@@ -31,15 +31,12 @@ class JobAgent:
         sensitivity_flat_value=None,
         sensitivity_uri=None,
         voltage_multiplier=None,
-        subset_to=None
+        subset_to=None,
     ):
-        
-        
-            
         self.output_prefix = output_prefix
         if not self.output_prefix.endswith("_"):
             self.output_prefix += "_"
-            
+
         self.output_prefix = self.output_prefix.replace("__", "_")
 
         if (
@@ -54,7 +51,7 @@ class JobAgent:
 
         self.recorder = recorder
         self.audio_base_dir = audio_base_dir
-        
+
         if os.name == "nt":  # If machine running the job agent is Windows.
             self.uri = Path(os.path.normpath(self.audio_base_dir))
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir))
@@ -66,11 +63,11 @@ class JobAgent:
             self.global_attrs = Path(os.path.normpath(global_attrs))
             self.variable_attrs = Path(os.path.normpath(variable_attrs))
             self.log_dir = Path(os.path.normpath(log_dir))
-            
-            if self.recorder =="NRS":
+
+            if self.recorder == "NRS":
                 self.voltage_multiplier = str(voltage_multiplier)
                 self.sensitivity_uri = Path(os.path.normpath(sensitivity_uri))
-            if self.recorder =="SOUNDTRAP":
+            if self.recorder == "SOUNDTRAP":
                 self.sensitivity_flat_value = str(sensitivity_flat_value)
 
         if os.name == "posix":  # If machine running the job agent is Unix-based.
@@ -82,28 +79,27 @@ class JobAgent:
             self.global_attrs = Path(os.path.normpath(global_attrs)).as_posix()
             self.variable_attrs = Path(os.path.normpath(variable_attrs)).as_posix()
             self.log_dir = Path(os.path.normpath(log_dir)).as_posix()
-            
-            if self.recorder =="NRS":
+
+            if self.recorder == "NRS":
                 self.voltage_multiplier = str(voltage_multiplier)
                 self.sensitivity_uri = Path(os.path.normpath(sensitivity_uri))
-            if self.recorder =="SOUNDTRAP":
+            if self.recorder == "SOUNDTRAP":
                 self.sensitivity_flat_value = str(sensitivity_flat_value)
 
         self.prefix = str(prefix)  # Prefix
         self.start_date = datetime.strptime(str(start), "%Y%m%d").date()
         self.end_date = datetime.strptime(str(end), "%Y%m%d").date()
 
-            
         self.latlon = latlon
         self.title = title
         self.cmlim = cmlim
         self.ylim = ylim
-        
+
         if subset_to not in [None, ""]:
             subset_to = ylim
-        
+
         self.subset_to = subset_to
-        
+
         log_filename_str = (
             "pbp-job-agent_"
             + self.output_prefix
@@ -248,7 +244,7 @@ class JobAgent:
         # Add --sensitivity-uri flag only if sensitivity_flat_value is not None or empty
         if voltage_multiplier not in [None, ""]:
             command += f" --voltage-multiplier {voltage_multiplier}"
-  
+
         if subset_to not in [None, ""]:
             command += f" --subset-to {subset_to}"
 
@@ -354,7 +350,7 @@ class JobAgent:
                         sensitivity_flat_value=self.sensitivity_flat_value,
                         sensitivity_uri=None,
                         voltage_multiplier=None,
-                        subset_to=self.subset_to
+                        subset_to=self.subset_to,
                     )
                 if self.recorder == "NRS":
                     command = self.synth_pbp_hmb_gen(
@@ -368,7 +364,7 @@ class JobAgent:
                         sensitivity_flat_value=None,
                         sensitivity_uri=self.sensitivity_uri,
                         voltage_multiplier=self.voltage_multiplier,
-                        subset_to=self.subset_to
+                        subset_to=self.subset_to,
                     )
                 logger.bind(name=self.name).opt(colors=True).info(
                     "<blue>Checking if netCDF file associated with "

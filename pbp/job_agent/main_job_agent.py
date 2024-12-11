@@ -17,10 +17,8 @@ def main():  # This function represents the entry point for the job agent.
     for deployment_configuration in (
         deployment_configurations
     ):  # Iterates through the deployment configurations provided by the user.
-        
-        
         try:
-            if deployment_configuration["subset_to"] not in ["" , None]:
+            if deployment_configuration["subset_to"] not in ["", None]:
                 subset_to = deployment_configuration["subset_to"]
         except KeyError:
             subset_to = None
