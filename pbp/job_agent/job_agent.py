@@ -95,8 +95,8 @@ class JobAgent:
         self.cmlim = cmlim
         self.ylim = ylim
 
-        if subset_to in [None, ""]:
-            subset_to = ylim
+        #if subset_to in [None, ""]:
+            #subset_to = ylim
 
         self.subset_to = subset_to
 
