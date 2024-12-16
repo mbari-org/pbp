@@ -1,5 +1,5 @@
 {
   "destination": "pbp",
-  "public": true,
-  "docdir": "pbp-doc"
+  "docdir": "pbp-doc",
+  "public": true
 }
