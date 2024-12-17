@@ -1,7 +1,12 @@
 # PBP – PyPAM based processing
 
+2024-12
+
+- The setup and sources for the end-user documentation site has been incorporated in this repo.
+
 2024-09
 
+- 1.5.1: released (09/23)
 - 1.5.0:
     - bringing up recent updates
     - a minor fix in a log.debug statement
