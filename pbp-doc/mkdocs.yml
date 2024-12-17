@@ -1,5 +1,5 @@
 site_name: PBP Documentation
-repo_url: "https://github.com/mbari-org/pbp-doc/"
+repo_url: "https://github.com/mbari-org/pbp/"
 edit_uri: "blob/main/pbp-doc/docs/"
 theme:
   name: 'material'
