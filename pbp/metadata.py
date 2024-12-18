@@ -70,6 +70,14 @@ def replace_snippets(
     for k, v in attributes.items():
         if isinstance(v, str):
             for snippet, replacement in snippets.items():
-                v = v.replace(snippet, replacement)
-        result[k] = v
+                if isinstance(replacement, dict):
+                    pass
+                else:
+                    try:
+                        v = v.replace(
+                            snippet, replacement
+                        )  # TODO : I am getting a NoneType error here. Apparently replacement is None for some deployments. I think the pbp or pypam versions return nothing. For this I added a try except block to catch the error and continue with the loop.
+                        result[k] = v
+                    except TypeError:
+                        pass
     return result
