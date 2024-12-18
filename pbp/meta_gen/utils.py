@@ -51,6 +51,7 @@ def extract_timecode(filename: str, prefixes: List[str]):
         "underscore_format1": r"{}[._]?(\d{{8}})_(\d{{6}})\.",
         "underscore_format2": r"{}[._]?(\d{{6}})_(\d{{6}})\.",
         "dot_format": r"{}[._]?(\d{{12}})\.",
+        "dot_format2": r"{}[.]?(\d{{6}})(\d{{6}})\.",
         "iso_format": r"{}[._]?(\d{{8}}T\d{{6}}Z)\.",
         "dash_format1": r"{}[.-]?(\d{{8}})-(\d{{6}})\.",  # Matches: MARS-YYYYMMDD-HHMMSS.wav
         "dash_format2": r"{}[.-]?(\d{{6}})-(\d{{6}})\.",  # Matches: NRS08-150219-151716.wav
