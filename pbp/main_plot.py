@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
-
+from loguru import logger
 from pbp.plot_const import (
     DEFAULT_DPI,
     DEFAULT_LAT_LON_FOR_SOLPOS,
@@ -100,7 +100,7 @@ def main():
 
     show = opts.show or opts.only_show
     for nc_filename in opts.netcdf:
-        print(f"plotting {nc_filename} at {opts.dpi} dpi")
+        logger.info(f"plotting {nc_filename} at {opts.dpi} dpi")
         ds = xr.open_dataset(nc_filename, engine=opts.engine)
         jpeg_filename = None if opts.only_show else nc_filename.replace(".nc", ".jpg")
         plot_dataset_summary(
