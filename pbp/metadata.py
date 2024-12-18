@@ -74,7 +74,9 @@ def replace_snippets(
                     pass
                 else:
                     try:
-                        v = v.replace(snippet, replacement) #TODO : I am getting a NoneType error here. Apparently replacement is None for some deployments. I think the pbp or pypam versions return nothing. For this I added a try except block to catch the error and continue with the loop.
+                        v = v.replace(
+                            snippet, replacement
+                        )  # TODO : I am getting a NoneType error here. Apparently replacement is None for some deployments. I think the pbp or pypam versions return nothing. For this I added a try except block to catch the error and continue with the loop.
                         result[k] = v
                     except TypeError:
                         pass
