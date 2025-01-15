@@ -21,6 +21,7 @@ process ocean audio data archives to daily analysis products of hybrid millideca
 
 ## Documentation
 
+Official documentation is available at
 [docs.mbari.org/pbp](https://docs.mbari.org/pbp/).
 
 ## Installation
