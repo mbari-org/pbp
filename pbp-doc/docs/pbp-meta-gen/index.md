@@ -48,6 +48,12 @@ The data must be stored in a public cloud storage bucket; private buckets are no
         NRS11_191024T022220Z.d100.x.wav
     ```
 
+!!! note start and end date
+    The start and end date should be a datetime.date, not a datetime.datetime. 
+    It can be given as a string or as a datetime object.
+    If the user gives a datetime it should be at 00:00:00. 
+    Otherwise pbp will raise an error. 
+
 
 ## Generate JSONs with audio metadata from NRS flac files for a date range
 
