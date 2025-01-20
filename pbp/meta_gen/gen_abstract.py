@@ -36,6 +36,7 @@ class MetadataGeneratorAbstract(object):
         :return:
         """
         try:
+            start, end = utils.check_start_end_args(start, end)
             self.audio_loc = audio_loc
             self.json_base_dir = json_base_dir
             self.df = pd.DataFrame()
@@ -106,6 +107,7 @@ class SoundTrapMetadataGeneratorAbstract(object):
         :return:
         """
         try:
+            start, end = utils.check_start_end_args(start, end)
             self.audio_loc = audio_loc
             self.json_base_dir = json_base_dir
             self.df = pd.DataFrame()
