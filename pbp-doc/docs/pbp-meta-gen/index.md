@@ -14,12 +14,11 @@ Once this is done, you can proceed to the main program [pbp-hmb-gen](../pbp-hmb-
 Three types of audio recorders are supported: NRS, IcListen, and Soundtrap files. Here is the current supported matrix:
 
 ----------------
-| Recorder | [Google Storage](https://cloud.google.com/storage/docs/buckets) | [AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html) | Local Storage |
-|----------|-----------------------------------------------------------------|------------------|---------------|
-| NRS      |  :material-check:                                                               |  :material-close:               |  :material-check:             |
-| IcListen |  :material-close:                                                               |  :material-check:               | :material-check:             |
-| Soundtrap|  :material-close:                                                               |  :material-check:               | :material-check:             |
- 
+| Recorder  | [Google Storage](https://cloud.google.com/storage/docs/buckets) | [AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html) | Local Storage |
+|-----------|-----------------------------------------------------------------|------------------------------------------------------------------------------|---------------|
+| NRS       |  :material-check:                                                               | :material-close:                                                             |  :material-check:             |
+| IcListen  |  :material-close:                                                               | :material-check:                                                             | :material-check:             |
+| Soundtrap |  :material-close:                                                               | :material-check:                                                             | :material-check:             |
 
 For audio that is stored in a cloud storage bucket, the URI that is required to access the audio files depends on the cloud storage provider.
 The data must be stored in a public cloud storage bucket; private buckets are not supported.
@@ -49,10 +48,10 @@ The data must be stored in a public cloud storage bucket; private buckets are no
     ```
 
 !!! note start and end date
-    The start and end date should be a datetime.date, not a datetime.datetime. 
-    It can be given as a string or as a datetime object.
-    If the user gives a datetime it should be at 00:00:00. 
-    Otherwise pbp will raise an error. 
+    The start and end date should be a string date, not including hour, minutes nor seconds. 
+    When using the API directly instead of running the `pbp-meta-gen` command-line program, start and end date should
+    be a datetime.datetime object starting at 00:00:00. A datetime.date can also be passed, and it will be 
+    automatically converted. If these requirements are not met, pbp will raise an error. 
 
 
 ## Generate JSONs with audio metadata from NRS flac files for a date range
