@@ -1,0 +1,59 @@
+site_name: PBP Documentation
+repo_url: "https://github.com/mbari-org/pbp/"
+edit_uri: "blob/main/pbp-doc/docs/"
+theme:
+  name: 'material'
+  logo: https://docs.mbari.org/imgs/mbari-logo.png
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: light
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+extra_css:
+  - extra/extra.css
+
+plugins:
+  - search
+  - mermaid2:
+      arguments:
+        theme: |
+          ^(JSON.parse(__md_get("__palette").index == 1)) ? 'dark' : 'light'
+
+extra_javascript:
+  - extra/refresh_on_toggle_dark_light.js
+
+markdown_extensions:
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - meta
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - footnotes
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - md_in_html
+  - pymdownx.magiclink
+  - toc:
+      permalink: True
+
+nav:
+  - Home: index.md
+  - Meta Generation: pbp-meta-gen/index.md
+  - HMB Generation: pbp-hmb-gen/index.md
+  - HMB Plotting: pbp-hmb-plot/index.md
+  - Cloud: pbp-cloud/index.md
+  - Notebooks: notebooks/index.md

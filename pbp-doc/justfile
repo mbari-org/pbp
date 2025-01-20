@@ -1,0 +1,41 @@
+# List recipes
+list:
+  @just --list --unsorted
+
+# Set up virtenv, install requirements
+setup: clean
+  #!/usr/bin/env bash
+  python3 -m venv virtenv
+  source virtenv/bin/activate
+  just install
+
+clean:
+    rm -rf virtenv
+
+# Run this if there are new requirements
+install:
+  #!/usr/bin/env bash
+  source virtenv/bin/activate
+  pip3 install -r requirements.txt
+
+uninstall *args="":
+  #!/usr/bin/env bash
+  source virtenv/bin/activate
+  pip3 uninstall {{args}}
+
+# mkdocs serve
+serve:
+  #!/usr/bin/env bash
+  source virtenv/bin/activate
+  just _serve_dyn_port
+
+# (mkdocs does not support indicating a dynamic port)
+# Get an available port and run `mkdoc serve -a` with it
+_serve_dyn_port:
+    #!/usr/bin/env python
+    import socket
+    import subprocess
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('', 0))
+        port = s.getsockname()[1]
+    subprocess.run(['virtenv/bin/mkdocs', 'serve', '-a', f'localhost:{port}'])
