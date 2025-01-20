@@ -1,0 +1,33 @@
+@import url(https://fonts.googleapis.com/css?family=Merriweather:400,300);
+@import url(https://docs.mbari.org/css/iosevka-custom/iosevka-custom.css);
+
+body {
+  font-family: 'Merriweather', serif;
+  font-weight: 300;
+}
+
+code, tt {
+  font-family: 'Iosevka', 'Roboto Mono', monospace;
+  font-weight: 400;
+  font-variant-ligatures: none;
+}
+
+[data-md-color-scheme=slate] {
+  /* more legible links: */
+  --md-typeset-a-color: #a6c1f1;
+}
+
+.md-content {
+    /* so the content expands a bit, mainly for `program --help` outputs */
+    min-width: unset;
+}
+
+/* restrict block width to that of container */
+.md-typeset pre code {
+    max-width: 100%;
+    display: inline-block;
+    white-space: pre-wrap;
+    overflow-x: scroll;
+    word-wrap: break-word;
+    padding: 1rem;
+}
