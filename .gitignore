@@ -1,4 +1,5 @@
 .env
+.idea/
 pbp-doc/site/
 output*/
 cloud_tmp*/

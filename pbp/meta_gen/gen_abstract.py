@@ -6,6 +6,8 @@ from typing import List
 
 import pandas as pd
 
+from pbp.meta_gen.utils import check_start_end_args
+
 
 class MetadataGeneratorAbstract(object):
     def __init__(
@@ -36,6 +38,7 @@ class MetadataGeneratorAbstract(object):
         :return:
         """
         try:
+            start, end = check_start_end_args(start, end)
             self.audio_loc = audio_loc
             self.json_base_dir = json_base_dir
             self.df = pd.DataFrame()
@@ -92,6 +95,7 @@ class SoundTrapMetadataGeneratorAbstract(object):
         :return:
         """
         try:
+            start, end = check_start_end_args(start, end)
             self.audio_loc = audio_loc
             self.json_base_dir = json_base_dir
             self.df = pd.DataFrame()
