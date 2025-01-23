@@ -1,5 +1,5 @@
 #
-# Run these recipes using `just` - https://github.com/casey/just.
+# Run these recipes using `just` - https://just.systems/.
 #
 
 # List recipes
