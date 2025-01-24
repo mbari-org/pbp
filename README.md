@@ -61,6 +61,7 @@ The package includes the following CLI programs:
 | [`pbp-hmb-gen`](https://docs.mbari.org/pbp/pbp-hmb-gen/)   | Main HMB generation program             |
 | [`pbp-cloud`](https://docs.mbari.org/pbp/pbp-cloud/)       | Program for cloud based processing      |
 | [`pbp-hmb-plot`](https://docs.mbari.org/pbp/pbp-hmb-plot/) | Utility program to plot HMB product     |
+| [`pbp-job-agent`](https://docs.mbari.org/pbp/pbp-job-agent/) | A process agent that wraps the PBP suite per deployment.   |
 
 ### API
 

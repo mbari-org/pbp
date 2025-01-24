@@ -1,7 +1,7 @@
 # pbp, Apache License 2.0
 # Filename: metadata/generator/gen_nrs.py
 # Description:  Captures NRS recorded metadata in a pandas dataframe from either a local directory or gs bucket.
-
+import os
 import re
 from datetime import timedelta, datetime
 import time
@@ -73,13 +73,17 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
         end_dt = self.end + timedelta(days=1)
 
         if scheme == "file" or scheme == "":
-            sound_path = Path(f"/{bucket}/{prefix}")
+            if os.name == "nt":
+                sound_path = Path(self.audio_loc)
+            if os.name == "posix":
+                sound_path = Path(f"/{bucket}/{prefix}")
             file_extensions = ["*.flac", "*.wav"]
             for ext in file_extensions:
                 for filename in progressbar(
                     sorted(sound_path.rglob(ext)), prefix="Searching : "
                 ):
                     f_dt = utils.get_datetime(filename, self.prefixes)
+
                     if f_dt is None:
                         continue
                     if start_dt <= f_dt <= end_dt:
