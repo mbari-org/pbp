@@ -74,7 +74,6 @@ class JobAgent:
             self.uri = Path(self.audio_base_dir).resolve().as_uri()
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir)).as_posix()
             self.json_base_dir = Path(os.path.normpath(json_base_dir)).as_posix()
-            self.xml_dir = Path(os.path.normpath(xml_dir)).as_posix()
             self.nc_output_dir = Path(os.path.normpath(nc_output_dir)).as_posix()
             self.global_attrs = Path(os.path.normpath(global_attrs)).as_posix()
             self.variable_attrs = Path(os.path.normpath(variable_attrs)).as_posix()
@@ -85,6 +84,8 @@ class JobAgent:
                 self.sensitivity_uri = Path(os.path.normpath(sensitivity_uri))
             if self.recorder == "SOUNDTRAP":
                 self.sensitivity_flat_value = str(sensitivity_flat_value)
+                if xml_dir is not None and xml_dir != "":
+                    self.xml_dir = Path(os.path.normpath(xml_dir)).as_posix()
 
         self.prefix = str(prefix)  # Prefix
         self.start_date = datetime.strptime(str(start), "%Y%m%d").date()
