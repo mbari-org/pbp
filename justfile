@@ -320,7 +320,13 @@ tags:
 tag-and-push:
   #!/usr/bin/env bash
   set -ue
-  version=$(tq -f pyproject.toml 'tool.poetry.version')
+  version=$(just pbp-version)
   echo "tagging and pushing v${version}"
   git tag v${version}
   git push origin v${version}
+
+# Get PBP version from pyproject.toml
+@pbp-version:
+    python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['tool']['poetry']['version'])"
+    # If using tq (https://github.com/cryptaliagy/tomlq):
+    #tq -f pyproject.toml 'tool.poetry.version'
