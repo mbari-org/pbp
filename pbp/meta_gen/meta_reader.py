@@ -93,10 +93,14 @@ class SoundTrapWavFile(AudioFile):
         wav_start_dt = None
         wav_stop_dt = None
         sample_count = None
+        sample_rate = 48_000 # default sample rate
 
         # Iterate over the XML elements grabbing the needed metadata values
+        for element in root.iter("CFG"):
+            if element.get("ID") == "4":
+                sample_rate = int(element.find("FS").text)
+
         for element in root.iter("WavFileHandler"):
-            # Get the value of the id attribute
             value = element.get("SamplingStartTimeUTC")
             if value:
                 wav_start_dt = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
@@ -116,8 +120,8 @@ class SoundTrapWavFile(AudioFile):
         self.path_or_url = path_or_url
         self.start = wav_start_dt
         self.end = wav_stop_dt
-        self.duration_secs = sample_count / 48000
-        self.fs = 48000
+        self.duration_secs = sample_count / sample_rate
+        self.fs = sample_rate
         self.frames = sample_count
         self.channels = 1
         self.subtype = "SoundTrap"
