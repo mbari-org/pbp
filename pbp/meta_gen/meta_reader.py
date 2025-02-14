@@ -93,7 +93,7 @@ class SoundTrapWavFile(AudioFile):
         wav_start_dt = None
         wav_stop_dt = None
         sample_count = None
-        sample_rate = 48_000 # default sample rate
+        sample_rate = 48_000  # default sample rate
 
         # Iterate over the XML elements grabbing the needed metadata values
         for element in root.iter("CFG"):
