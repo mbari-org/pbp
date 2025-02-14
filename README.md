@@ -1,3 +1,7 @@
+[![MBARI](https://www.mbari.org/wp-content/uploads/2014/11/logo-mbari-3b.png)](http://www.mbari.org)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python](https://img.shields.io/badge/language-Python-blue.svg)](https://www.python.org/downloads/)
+
 # PyPAM based data processing
 
 The [mbari-pbp](https://pypi.org/project/mbari-pbp/) package allows to
@@ -21,6 +25,7 @@ process ocean audio data archives to daily analysis products of hybrid millideca
 
 ## Documentation
 
+Official documentation is available at
 [docs.mbari.org/pbp](https://docs.mbari.org/pbp/).
 
 ## Installation

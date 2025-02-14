@@ -1,7 +1,7 @@
 # Development
 
 Routine command recipes are captured in a [`justfile`](justfile),
-to be run with the handy [`just`](https://github.com/casey/j) tool,
+to be run with the handy [`just`](https://just.systems/) tool,
 which I alias to `j` in my shell.
 
 Run:
