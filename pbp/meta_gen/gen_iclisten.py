@@ -94,11 +94,17 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                         ):
                             f_dt = get_datetime(filename, self.prefixes)
                             if f_dt and start_dt <= f_dt <= end_dt:
-                                self.log.info(f"Found file {filename} with timestamp {f_dt}")
+                                self.log.info(
+                                    f"Found file {filename} with timestamp {f_dt}"
+                                )
                                 if ext == "*.flac":
-                                    sound_files.append(FlacFile(self.log, str(filename), f_dt))
+                                    sound_files.append(
+                                        FlacFile(self.log, str(filename), f_dt)
+                                    )
                                 if ext == "*.wav":
-                                    sound_files.append(GenericWavFile(self.log, str(filename), f_dt))
+                                    sound_files.append(
+                                        GenericWavFile(self.log, str(filename), f_dt)
+                                    )
 
                 if scheme == "s3":
                     client = boto3.client("s3", config=Config(signature_version=UNSIGNED))
@@ -133,7 +139,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                                         continue
                                     if start_dt <= f_dt <= end_dt:
                                         self.log.info(
-                                            f'Found {f"s3://{bucket}/{key}"} with timestamp {f_dt}'
+                                            f"Found {f's3://{bucket}/{key}'} with timestamp {f_dt}"
                                         )
                                         if key.endswith(".flac"):
                                             sound_files.append(
