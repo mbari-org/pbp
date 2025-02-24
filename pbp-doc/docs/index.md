@@ -1,7 +1,3 @@
----
-description: Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM.
----
-
 !!! note "WIP"
     Thanks for your interest in PBP. This documentation is still a work in progress :construction:.
     Please get in touch if you have any questions or suggestions.
