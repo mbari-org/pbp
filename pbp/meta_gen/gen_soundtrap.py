@@ -88,12 +88,15 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             start_dt = self.start - timedelta(days=1)
             end_dt = self.end + timedelta(days=1)
 
-            if scheme == "file":
-                parsed_uri = urllib.parse.urlparse(self.audio_loc)
-
+            if scheme == "file" or scheme == "":
+                #parsed_uri = urllib.parse.urlparse(self.audio_loc)
                 if os.name == "nt":
-                    wav_path = Path(parsed_uri.path[3:])
-                else:
+                    wav_path = urllib.parse.urlparse(self.audio_loc).path
+                    if wav_path.startswith("/"):
+                        wav_path = wav_path[1:]
+                    wav_path = Path(wav_path)
+                if os.name == "posix":
+                    parsed_uri = urllib.parse.urlparse(self.audio_loc)
                     wav_path = Path(parsed_uri.path)
 
                 for filename in progressbar(

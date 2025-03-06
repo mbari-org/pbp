@@ -67,9 +67,18 @@ def replace_snippets(
         A new dictionary with the snippets replaced.
     """
     result = OrderedDict()
+    print("attributes.items() : Error was here->")
+    print(attributes.items())
+    print()
     for k, v in attributes.items():
         if isinstance(v, str):
             for snippet, replacement in snippets.items():
-                v = v.replace(snippet, replacement)
-        result[k] = v
+                if isinstance(replacement, dict):
+                    pass
+                else:
+                    try:
+                        v = v.replace(snippet, replacement)
+                        result[k] = v
+                    except TypeError:
+                        pass
     return result

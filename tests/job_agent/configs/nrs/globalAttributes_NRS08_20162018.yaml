@@ -1,0 +1,40 @@
+---
+title: >-
+    Hybrid Millidecade Band Sound Pressure Levels Computed at 1 Minute Resolution from Oceanic Passive Acoustic Monitoring Recordings at NOAA Ocean Noise Reference Station NRS08, in the North Atlantic, USA
+Summary: >- 
+    To understand natural and anthropogenic sound in the ocean, and to compare underwater soundscapes globally, standard methods of analysis must be applied to passive acoustic monitoring (PAM) data. Methods that balance constrained volume and adequate resolution of acoustic spectra have recently been published (Martin et al., 2021a,b). A community effort supported by NOAA, BOEM, U.S. Navy, and ONR was initiated to apply these methods to PAM datasets from around the world. This record represents the hybrid millidecade band (HMB) spectra of sound levels derived from calibrated PAM data.
+Conventions: COARDS, CF-1.6, ACDD-1.3
+keywords: >-
+  oceans, ocean acoustics, ambient noise, intensity, marine environment monitoring,
+  marine habitat, sound_intensity_level_in_water, soundscapes
+keywords_vocabulary: GCMD Science Keywords
+history: >- 
+  Original hybrid millidecade spectra were produced by Samara Haver (NOAA)
+source: >-
+  Data analysis was performed using Python Passive Acoustic Monitoring (PyPAM) software, version {{PyPAM_version}}, to produce hybrid millidecade band (HMB) spectra of sound levels from oceanic audio recordings.  Processing followed the methods defined in Martin et al. (2021a,b), and results were validated by comparison with results produced using the MATLAB code provided as supplemental material in Martin et al. (2021b).  Power spectral density (PSD) levels were computed from 1-minute segments of audio data. Input flac audio data as read (scaled between -1 and 1) were rescaled to the full voltage range (5 Vppk) by multiplying by a factor of 2.5. PSD was computed from voltage data. By applying fast Fourier transform (FFT) with length equal to the sample rate, using Hann window and 50% overlap, PSD estimates (V^2/Hz) were computed with a frequency resolution of 1 Hz and a temporal resolution of 1 second. The 119 PSD estimates from each 1-minute segment were averaged, and the average spectrum for each minute was further processed to an HMB spectrum. Each 1-minute spectrum (dB re V^2/Hz) was calibrated using the frequency-dependent hydrophone sensitivity (dB re V/µPa) data provided by the hydrophone manufacturer to obtain calibrated PSD (dB re 1 µPa^2/Hz).
+acknowledgement: >- 
+  These products support the Passive Acoustic Monitoring National Cyberinfrastructure (SoundCoop) project funded by the NOAA Integrated Ocean Observatory System, Bureau of Ocean Energy Management, U.S. Navy Living Marine Resources, and Office of Naval Research.
+license: CC 4.0
+standard_name_vocabulary: CF Standard Name Table v80
+date_created: AUTOPOPULATE
+creator_name: Robert Dziak, Jason Gedamke, Samara Haver, Lauren Roche, Leila Hatch, Sofie Van Parijs
+creator_email: samara.haver@noaa.gov
+creator_url: https://www.fisheries.noaa.gov/contact/samara-haver-phd
+institution: NOAA Pacific Marine Environmental Laboratory, NOAA Northeast Fisheries Science Center
+publisher_name: NOAA National Centers for Environmental Information
+publisher_email: pad.info@noaa.gov
+publisher_url: https://www.ncei.noaa.gov/products/passive-acoustic-data
+geospatial_bounds: POINT (39.01, -67.27)
+comment: Data quality good 2016-04-23T00:00:00 to 2018-04-25T00:00:00 for channel 1 from 0Hz to 2000Hz. Reviewed by Navy. Data include Navy redactions.; Data quality unusable 2016-04-23T00:00:00 to 2018-04-25T00:00:00 for channel 1 from 2000Hz to 2500Hz. Reviewed by Navy. Data include Navy redactions.
+time_coverage_start: AUTOPOPULATE
+time_coverage_end: AUTOPOPULATE
+time_coverage_duration: P1D
+time_coverage_resolution: P60S
+platform: NOAA NRS11 mooring
+instrument: "AUH model ITC-1032, H17 SN1001"
+cdm_data_type: TimeSeries
+references: >-
+  Computation of single-sided mean-square sound pressure spectral density with 1 Hz resolution
+  followed ISO 18405 3.1.3.13 (International Standard ISO 18405:2017(E), Underwater Acoustics – Terminology.  Geneva: ISO).
+  Hybrid millidecade band processing followed Martin et al. (2021a,b:  https://doi.org/10.1121/10.0003324;
+  https://doi.org/10.1121/10.0005818)
