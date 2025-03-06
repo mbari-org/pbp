@@ -53,7 +53,8 @@ class JobAgent:
         self.audio_base_dir = audio_base_dir
 
         if os.name == "nt":  # If machine running the job agent is Windows.
-            self.uri = Path(os.path.normpath(self.audio_base_dir))
+            #self.uri = Path(os.path.normpath(self.audio_base_dir))
+            self.uri = Path(self.audio_base_dir).resolve().as_uri()
             self.meta_output_dir = Path(os.path.normpath(meta_output_dir))
             self.json_base_dir = Path(os.path.normpath(json_base_dir))
             if xml_dir is not None and xml_dir != "":
