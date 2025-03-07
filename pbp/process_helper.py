@@ -340,7 +340,7 @@ def save_dataset_to_netcdf(
                 "chunksizes": tuple(map(lambda x: x // 2, ds[k].shape)),
             }
     try:
-        ds.to_netcdf(filename, engine="h5netcdf", encoding=encoding)
+        ds.to_netcdf(filename, format="NETCDF4", engine="h5netcdf", encoding=encoding)
         return True
     except Exception as e:  # pylint: disable=broad-exception-caught
         error = f"Unable to save {filename}: {e}"
