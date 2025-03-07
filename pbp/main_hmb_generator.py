@@ -66,6 +66,7 @@ def main():
         file_helper=file_helper,
         output_dir=opts.output_dir,
         output_prefix=opts.output_prefix,
+        compress_netcdf=opts.compress_netcdf,
         global_attrs_uri=opts.global_attrs,
         set_global_attrs=opts.set_global_attrs,
         variable_attrs_uri=opts.variable_attrs,

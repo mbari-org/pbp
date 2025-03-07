@@ -136,6 +136,14 @@ Examples:
     )
 
     parser.add_argument(
+        "--no-netcdf-compression",
+        dest="compress_netcdf",
+        default=True,
+        action="store_false",
+        help="Do not compress the generated NetCDF file.",
+    )
+
+    parser.add_argument(
         "--s3",
         default=False,
         action="store_true",

@@ -37,6 +37,7 @@ class ProcessHelper:
         output_dir: str,
         output_prefix: str,
         gen_netcdf: bool = True,
+        compress_netcdf: bool = True,
         global_attrs_uri: Optional[str] = None,
         set_global_attrs: Optional[list[list[str]]] = None,
         variable_attrs_uri: Optional[str] = None,
@@ -56,6 +57,8 @@ class ProcessHelper:
             Output filename prefix.
         :param gen_netcdf:
             True to generate the netCDF file.
+        :param compress_netcdf:
+            True to compress the generated NetCDF file.
         :param global_attrs_uri:
             URI of JSON file with global attributes to be added to the NetCDF file.
         :param set_global_attrs:
@@ -83,6 +86,7 @@ class ProcessHelper:
             + f"\n    output_dir:             {output_dir}"
             + f"\n    output_prefix:          {output_prefix}"
             + f"\n    gen_netcdf:             {gen_netcdf}"
+            + f"\n    compress_netcdf:        {compress_netcdf}"
             + f"\n    global_attrs_uri:       {global_attrs_uri}"
             + f"\n    set_global_attrs:       {set_global_attrs}"
             + f"\n    variable_attrs_uri:     {variable_attrs_uri}"
@@ -101,6 +105,7 @@ class ProcessHelper:
         self.output_dir = output_dir
         self.output_prefix = output_prefix
         self.gen_netcdf = gen_netcdf
+        self.compress_netcdf = compress_netcdf
 
         self.metadata_helper = MetadataHelper(
             self.log,
@@ -315,18 +320,27 @@ def save_dataset_to_netcdf(
     log,  #: loguru.Logger,
     ds: xr.Dataset,
     filename: str,
+    compress_netcdf: bool = True,
 ) -> bool:
-    log.info(f"  - saving dataset to: {filename}")
+    log.info(f"  - saving dataset to: {filename}  (compressed: {compress_netcdf})")
+    encoding: dict[Any, dict[str, Any]] = {
+        "effort": {"_FillValue": None},
+        "frequency": {"_FillValue": None},
+        "sensitivity": {"_FillValue": None},
+    }
+    if compress_netcdf:
+        # TODO(Danelle) please review this
+        for k in ds.data_vars:
+            if ds[k].ndim < 2:
+                continue
+            encoding[k] = {
+                "zlib": True,
+                "complevel": 3,
+                "fletcher32": True,
+                "chunksizes": tuple(map(lambda x: x // 2, ds[k].shape)),
+            }
     try:
-        ds.to_netcdf(
-            filename,
-            engine="h5netcdf",
-            encoding={
-                "effort": {"_FillValue": None},
-                "frequency": {"_FillValue": None},
-                "sensitivity": {"_FillValue": None},
-            },
-        )
+        ds.to_netcdf(filename, engine="h5netcdf", encoding=encoding)
         return True
     except Exception as e:  # pylint: disable=broad-exception-caught
         error = f"Unable to save {filename}: {e}"
