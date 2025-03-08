@@ -1,8 +1,13 @@
 import os
+from argparse import Namespace
 from datetime import datetime
 from pathlib import Path
 
 from pbp.logging_helper import create_logger
+from pbp.meta_gen.gen_abstract import (
+    MetadataGeneratorAbstract,
+    SoundTrapMetadataGeneratorAbstract,
+)
 from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
 from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
 from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
@@ -14,9 +19,7 @@ from pbp.main_meta_generator_args import parse_arguments
 # postponing the imports until actually needed. See the main() function.
 
 
-def main():
-    opts = parse_arguments()
-
+def run_main_meta_generator(opts: Namespace):
     log_dir = Path(opts.output_dir)
     json_dir = Path(opts.json_base_dir)
     if opts.xml_dir is None:
@@ -41,6 +44,7 @@ def main():
         console_level="INFO",
     )
 
+    generator: MetadataGeneratorAbstract | SoundTrapMetadataGeneratorAbstract
     try:
         if opts.recorder == "NRS":
             generator = NRSMetadataGenerator(
@@ -79,4 +83,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run_main_meta_generator(parse_arguments())
