@@ -1,4 +1,4 @@
-from argparse import ArgumentParser, RawTextHelpFormatter
+from argparse import ArgumentParser, RawTextHelpFormatter, Namespace
 
 from pbp.plot_const import (
     DEFAULT_DPI,
@@ -91,8 +91,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def main():
-    opts = parse_arguments()
+def run_main_plot(opts: Namespace):
     # pylint: disable=import-outside-toplevel
     import xarray as xr
 
@@ -116,4 +115,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run_main_plot(parse_arguments())

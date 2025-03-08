@@ -1,3 +1,5 @@
+from argparse import Namespace
+
 from pbp.main_hmb_generator_args import parse_arguments
 
 # Some imports, in particular involving data processing, cause a delay that is
@@ -5,9 +7,7 @@ from pbp.main_hmb_generator_args import parse_arguments
 # postponing the imports until actually needed. See the main() function.
 
 
-def main():
-    opts = parse_arguments()
-
+def run_main_hmb_generator(opts: Namespace) -> None:
     # pylint: disable=import-outside-toplevel
     import os
 
@@ -83,4 +83,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run_main_hmb_generator(parse_arguments())
