@@ -1,5 +1,15 @@
 # PBP – PyPAM based processing
 
+2025-03
+
+- 1.6.0:
+    - The generated NetCDF file is now compressed by default.
+      This can be disabled as follows:
+        - Use the `--no-netcdf-compression` option in the `pbp-hmb-gen` CLI program.
+        - At the API level:
+            - Pass `compress_netcdf=False` to the `ProcessHelper` constructor
+            - Call `set_compress_netcdf(False)` on the `HmbGen` instance.
+
 2024-12
 
 - The setup and sources for the end-user documentation site has been incorporated in this repo.

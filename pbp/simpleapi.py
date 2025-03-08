@@ -29,6 +29,7 @@ class HmbGen:
         self._download_dir: str = ""
         self._output_dir: str = ""
         self._output_prefix: str = ""
+        self._compress_netcdf: bool = True
 
         self._assume_downloaded_files: bool = False
         self._retain_downloaded_files: bool = False
@@ -96,6 +97,12 @@ class HmbGen:
         Set the output prefix.
         """
         self._output_prefix = output_prefix
+
+    def set_compress_netcdf(self, compress_netcdf: bool) -> None:
+        """
+        Set whether to compress the NetCDF file.
+        """
+        self._compress_netcdf = compress_netcdf
 
     def set_assume_downloaded_files(self, value: bool) -> None:
         """
@@ -196,6 +203,7 @@ class HmbGen:
             download_dir=self._download_dir,
             output_dir=self._output_dir,
             output_prefix=self._output_prefix,
+            compress_netcdf=self.compress_netcdf,
             assume_downloaded_files=self._assume_downloaded_files,
             retain_downloaded_files=self._retain_downloaded_files,
             print_downloading_lines=self._print_downloading_lines,
@@ -276,6 +284,7 @@ class _HmbGen:
         download_dir: str,
         output_dir: str,
         output_prefix: str,
+        compress_netcdf: bool,
         assume_downloaded_files: bool,
         retain_downloaded_files: bool,
         print_downloading_lines: bool,
@@ -298,6 +307,7 @@ class _HmbGen:
         self.download_dir = download_dir
         self.output_dir = output_dir
         self.output_prefix = output_prefix
+        self.compress_netcdf = compress_netcdf
 
         self.assume_downloaded_files = assume_downloaded_files
         self.retain_downloaded_files = retain_downloaded_files
@@ -341,6 +351,7 @@ class _HmbGen:
             file_helper=file_helper,
             output_dir=self.output_dir,
             output_prefix=self.output_prefix,
+            compress_netcdf=self.compress_netcdf,
             global_attrs_uri=self.global_attrs_uri,
             variable_attrs_uri=self.variable_attrs_uri,
             voltage_multiplier=self.voltage_multiplier,
