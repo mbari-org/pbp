@@ -203,7 +203,7 @@ class HmbGen:
             download_dir=self._download_dir,
             output_dir=self._output_dir,
             output_prefix=self._output_prefix,
-            compress_netcdf=self.compress_netcdf,
+            compress_netcdf=self._compress_netcdf,
             assume_downloaded_files=self._assume_downloaded_files,
             retain_downloaded_files=self._retain_downloaded_files,
             print_downloading_lines=self._print_downloading_lines,
