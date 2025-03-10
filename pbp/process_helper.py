@@ -22,10 +22,13 @@ DEFAULT_QUALITY_FLAG_VALUE = 2
 class ProcessDayResult:
     """
     The result returned from `process_day`.
-
     Contains the list of paths to generated files
     (NetCDF and others depending on given parameters)
     as well as the generated dataset.
+
+    Attributes:
+        generated_filenames: List of paths to generated files
+        dataset: The generated dataset
     """
 
     generated_filenames: list[str]
@@ -52,38 +55,24 @@ class ProcessHelper:
         subset_to: Optional[Tuple[int, int]] = None,
     ):
         """
+        Initializes the processor.
 
-        :param file_helper:
-            File loader.
-        :param output_dir:
-            Output directory.
-        :param output_prefix:
-            Output filename prefix.
-        :param gen_netcdf:
-            True to generate the netCDF file.
-        :param compress_netcdf:
-            True to compress the generated NetCDF file.
-        :param add_quality_flag:
-            True to add quality flag variable (with value 2 - "Not evaluated") to the NetCDF file.
-        :param global_attrs_uri:
-            URI of JSON file with global attributes to be added to the NetCDF file.
-        :param set_global_attrs:
-            List of [key, value] pairs to be considered for the global attributes.
-        :param variable_attrs_uri:
-            URI of JSON file with variable attributes to be added to the NetCDF file.
-        :param voltage_multiplier:
-            Applied on the loaded signal.
-        :param sensitivity_uri:
-            URI of sensitivity NetCDF for calibration of result.
-            Has precedence over `sensitivity_flat_value`.
-        :param sensitivity_flat_value:
-            Flat sensitivity value to be used for calibration.
-        :param max_segments:
-            Maximum number of segments to process for each day.
-            By default, 0 (no limit).
-        :param subset_to:
-            Tuple of (lower, upper) frequency limits to use for the PSD,
-            lower inclusive, upper exclusive.
+        Args:
+            file_helper: File loader.
+            output_dir: Output directory.
+            output_prefix: Output filename prefix.
+            gen_netcdf (bool): Whether to generate the netCDF file.
+            compress_netcdf (bool): Whether to compress the generated NetCDF file.
+            add_quality_flag (bool): Whether to add a quality flag variable (with value 2 - "Not evaluated") to the NetCDF file.
+            global_attrs_uri (str): URI of a JSON file with global attributes to be added to the NetCDF file.
+            set_global_attrs (list[tuple[str, str]]): List of (key, value) pairs to be considered for the global attributes.
+            variable_attrs_uri (str): URI of a JSON file with variable attributes to be added to the NetCDF file.
+            voltage_multiplier (float): Factor applied to the loaded signal.
+            sensitivity_uri (str, optional): URI of a sensitivity NetCDF file for calibration of results.
+                Has precedence over `sensitivity_flat_value`.
+            sensitivity_flat_value (float, optional): Flat sensitivity value used for calibration.
+            max_segments (int, optional): Maximum number of segments to process for each day. Defaults to 0 (no limit).
+            subset_to (tuple[float, float], optional): Frequency limits for the PSD (lower inclusive, upper exclusive).
         """
         self.log = log
 
