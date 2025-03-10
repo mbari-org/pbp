@@ -8,15 +8,16 @@ It processes ocean audio data archives to daily analysis products of hybrid mill
 The program accepts several options.
 A typical use mainly involves the following:
 
-| Option            | To indicate   |
-| ----------------- |--------------- |
-| `--json-base-dir` | base directory for JSON files                                                         |
-| `--date`          | date to be processed                                                                  |
-| `--global-attrs`  | URI of a YAML file with global attributes to be added to the NetCDF file              |
-| `--variable-attrs`| URI of a YAML file with attributes to associate with the variables in the NetCDF file |
-| `--output-dir`    | output directory                                                                      |
-| `--output-prefix` | output filename prefix                                                                |
-| `--subset-to`     | subset of the resulting PSD in terms of central frequency                             |
+| Option            | To indicate                                                                              |
+| ----------------- |------------------------------------------------------------------------------------------|
+| `--json-base-dir` | Base directory for JSON files                                                            |
+| `--date`          | Date to be processed                                                                     |
+| `--add-quality-flag` | Add quality flag variable (with value 2 - 'Not evaluated') to the generated NetCDF file. |
+| `--global-attrs`  | URI of a YAML file with global attributes to be added to the NetCDF file                 |
+| `--variable-attrs`| URI of a YAML file with attributes to associate with the variables in the NetCDF file    |
+| `--output-dir`    | Output directory                                                                         |
+| `--output-prefix` | Output filename prefix                                                                   |
+| `--subset-to`     | Subset of the resulting PSD in terms of central frequency                                |
 
 Also, the following depending on the recorder:
 
@@ -36,10 +37,9 @@ Also, the following depending on the recorder:
 $ pbp-hmb-gen --help
 ```
 ```text
-usage: main_hmb_generator.py [-h] [--version] --json-base-dir dir [--audio-base-dir dir] [--global-attrs uri] [--set-global-attr key value] [--variable-attrs uri]
-                             [--audio-path-map-prefix from~to] [--audio-path-prefix dir] --date YYYYMMDD [--voltage-multiplier value] [--sensitivity-uri file]
-                             [--sensitivity-flat-value value] --output-dir dir [--output-prefix prefix] [--no-netcdf-compression] [--s3] [--s3-unsigned] [--gs]
-                             [--download-dir dir] [--assume-downloaded-files] [--retain-downloaded-files] [--max-segments num] [--subset-to lower upper]
+usage: main_hmb_generator.py [-h] [--version] --json-base-dir dir [--audio-base-dir dir] [--global-attrs uri] [--set-global-attr key value] [--variable-attrs uri] [--audio-path-map-prefix from~to] [--audio-path-prefix dir] --date YYYYMMDD [--voltage-multiplier value]
+                             [--sensitivity-uri file] [--sensitivity-flat-value value] --output-dir dir [--output-prefix prefix] [--no-netcdf-compression] [--add-quality-flag] [--s3] [--s3-unsigned] [--gs] [--download-dir dir] [--assume-downloaded-files]
+                             [--retain-downloaded-files] [--max-segments num] [--subset-to lower upper]
 
 Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM.
 
@@ -68,6 +68,7 @@ options:
                         Output filename prefix
   --no-netcdf-compression
                         Do not compress the generated NetCDF file.
+  --add-quality-flag    Add quality flag variable (with value 2 - 'Not evaluated') to the generated NetCDF file.
   --s3                  s3 access is involved, possibly with required credentials.
   --s3-unsigned         s3 access is involved, not requiring credentials.
   --gs                  gs access involved.
