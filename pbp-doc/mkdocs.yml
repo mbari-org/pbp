@@ -26,6 +26,10 @@ extra_css:
 
 plugins:
   - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ .. ]
   - mermaid2:
       arguments:
         theme: |
@@ -58,4 +62,9 @@ nav:
   - HMB Plotting: pbp-hmb-plot/index.md
   - Cloud: pbp-cloud/index.md
   - Notebooks: notebooks/index.md
-  - API: api/index.md
+  - API:
+    - Overview: api/index.md
+    - HMB Gen:
+      - HmbGen: api/hmb_gen/HmbGen.md
+      - File helper: api/hmb_gen/FileHelper.md
+      - Process helper: api/hmb_gen/ProcessHelper.md
