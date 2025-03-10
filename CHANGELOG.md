@@ -2,13 +2,21 @@
 
 2025-03
 
-- 1.6.0:
+- 1.6.2:
+    - A quality flag variable (with value fixed to 2 - "Not Evaluated")
+      can now be added to the NetCDF file.
+        - `pbp-hmb-gen` CLI: use the  `--add-quality-flag` option.
+        - API level:
+            - Pass `add_quality_flag=True` to `ProcessHelper` constructor
+            - Call `set_add_quality_flag(True)` on `HmbGen` instance.
+
+- 1.6.1:
     - The generated NetCDF file is now compressed by default.
       This can be disabled as follows:
         - Use the `--no-netcdf-compression` option in the `pbp-hmb-gen` CLI program.
         - At the API level:
-            - Pass `compress_netcdf=False` to the `ProcessHelper` constructor
-            - Call `set_compress_netcdf(False)` on the `HmbGen` instance.
+            - Pass `compress_netcdf=False` to `ProcessHelper` constructor
+            - Call `set_compress_netcdf(False)` on `HmbGen` instance.
 
 2024-12
 
