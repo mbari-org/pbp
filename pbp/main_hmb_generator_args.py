@@ -144,11 +144,11 @@ Examples:
     )
 
     parser.add_argument(
-        "--no-quality-flag",
+        "--add-quality-flag",
         dest="add_quality_flag",
-        default=True,
-        action="store_false",
-        help="Do not add quality flag to the generated NetCDF file.",
+        default=False,
+        action="store_True",
+        help="Add quality flag variable to the generated NetCDF file.",
     )
 
     parser.add_argument(
