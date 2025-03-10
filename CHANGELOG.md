@@ -2,6 +2,9 @@
 
 2025-03
 
+- As we add to the API documentation, `"always_generate": true` has been set in `.mbaridoc.json`
+  to ensure any updates in python scripts get reflected in the generated doc site.
+
 - 1.6.2:
     - A quality flag variable (with value fixed to 2 - "Not Evaluated")
       can now be added to the NetCDF file.
