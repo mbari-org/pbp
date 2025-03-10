@@ -147,8 +147,8 @@ Examples:
         "--add-quality-flag",
         dest="add_quality_flag",
         default=False,
-        action="store_True",
-        help="Add quality flag variable to the generated NetCDF file.",
+        action="store_true",
+        help="Add quality flag variable (with value 2 - 'Not evaluated') to the generated NetCDF file.",
     )
 
     parser.add_argument(

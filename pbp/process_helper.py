@@ -41,7 +41,7 @@ class ProcessHelper:
         output_prefix: str,
         gen_netcdf: bool = True,
         compress_netcdf: bool = True,
-        add_quality_flag: bool = True,
+        add_quality_flag: bool = False,
         global_attrs_uri: Optional[str] = None,
         set_global_attrs: Optional[list[list[str]]] = None,
         variable_attrs_uri: Optional[str] = None,
@@ -64,7 +64,7 @@ class ProcessHelper:
         :param compress_netcdf:
             True to compress the generated NetCDF file.
         :param add_quality_flag:
-            True to add a quality flag to the NetCDF file.
+            True to add quality flag variable (with value 2 - "Not evaluated") to the NetCDF file.
         :param global_attrs_uri:
             URI of JSON file with global attributes to be added to the NetCDF file.
         :param set_global_attrs:
@@ -232,7 +232,7 @@ class ProcessHelper:
                 data=np.full(psd_da.shape, DEFAULT_QUALITY_FLAG_VALUE, dtype=np.int8),
                 dims=psd_da.dims,
                 coords=psd_da.coords,
-                # attrs assigned below.
+                # attrs are assigned below.
             )
 
         md_helper = self.metadata_helper

@@ -30,7 +30,7 @@ class HmbGen:
         self._output_dir: str = ""
         self._output_prefix: str = ""
         self._compress_netcdf: bool = True
-        self._add_quality_flag: bool = True
+        self._add_quality_flag: bool = False
 
         self._assume_downloaded_files: bool = False
         self._retain_downloaded_files: bool = False
@@ -107,7 +107,7 @@ class HmbGen:
 
     def set_add_quality_flag(self, add_quality_flag: bool) -> None:
         """
-        Set whether to add quality flag variable to the NetCDF file.
+        Set whether to add quality flag variable (with value fixed to 2 - "Not evaluated") to the NetCDF file.
         """
         self._add_quality_flag = add_quality_flag
 
