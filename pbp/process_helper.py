@@ -15,6 +15,9 @@ from pbp.misc_helper import gen_hour_minute_times, parse_date
 from pbp.pypam_support import ProcessResult, PypamSupport
 
 
+DEFAULT_QUALITY_FLAG_VALUE = 2
+
+
 @dataclass
 class ProcessDayResult:
     """
@@ -38,6 +41,7 @@ class ProcessHelper:
         output_prefix: str,
         gen_netcdf: bool = True,
         compress_netcdf: bool = True,
+        add_quality_flag: bool = False,
         global_attrs_uri: Optional[str] = None,
         set_global_attrs: Optional[list[list[str]]] = None,
         variable_attrs_uri: Optional[str] = None,
@@ -59,6 +63,8 @@ class ProcessHelper:
             True to generate the netCDF file.
         :param compress_netcdf:
             True to compress the generated NetCDF file.
+        :param add_quality_flag:
+            True to add quality flag variable (with value 2 - "Not evaluated") to the NetCDF file.
         :param global_attrs_uri:
             URI of JSON file with global attributes to be added to the NetCDF file.
         :param set_global_attrs:
@@ -87,6 +93,7 @@ class ProcessHelper:
             + f"\n    output_prefix:          {output_prefix}"
             + f"\n    gen_netcdf:             {gen_netcdf}"
             + f"\n    compress_netcdf:        {compress_netcdf}"
+            + f"\n    add_quality_flag:       {add_quality_flag}"
             + f"\n    global_attrs_uri:       {global_attrs_uri}"
             + f"\n    set_global_attrs:       {set_global_attrs}"
             + f"\n    variable_attrs_uri:     {variable_attrs_uri}"
@@ -106,6 +113,7 @@ class ProcessHelper:
         self.output_prefix = output_prefix
         self.gen_netcdf = gen_netcdf
         self.compress_netcdf = compress_netcdf
+        self.add_quality_flag = add_quality_flag
 
         self.metadata_helper = MetadataHelper(
             self.log,
@@ -219,6 +227,14 @@ class ProcessHelper:
                 dims=["1"],
             ).astype(np.float32)
 
+        if self.add_quality_flag:
+            data_vars["quality_flag"] = xr.DataArray(
+                data=np.full(psd_da.shape, DEFAULT_QUALITY_FLAG_VALUE, dtype=np.int8),
+                dims=psd_da.dims,
+                coords=psd_da.coords,
+                # attrs are assigned below.
+            )
+
         md_helper = self.metadata_helper
 
         md_helper.add_variable_attributes(psd_da["time"], "time")
@@ -226,6 +242,8 @@ class ProcessHelper:
         md_helper.add_variable_attributes(psd_da["frequency"], "frequency")
         if "sensitivity" in data_vars:
             md_helper.add_variable_attributes(data_vars["sensitivity"], "sensitivity")
+        if "quality_flag" in data_vars:
+            md_helper.add_variable_attributes(data_vars["quality_flag"], "quality_flag")
         md_helper.add_variable_attributes(data_vars["psd"], "psd")
 
         ds_result = xr.Dataset(
