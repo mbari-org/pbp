@@ -67,6 +67,7 @@ def main():
         output_dir=opts.output_dir,
         output_prefix=opts.output_prefix,
         compress_netcdf=opts.compress_netcdf,
+        add_quality_flag=opts.add_quality_flag,
         global_attrs_uri=opts.global_attrs,
         set_global_attrs=opts.set_global_attrs,
         variable_attrs_uri=opts.variable_attrs,

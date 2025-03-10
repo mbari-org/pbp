@@ -8,10 +8,11 @@ It processes ocean audio data archives to daily analysis products of hybrid mill
 The program accepts several options.
 A typical use mainly involves the following:
 
-| Option            | To indicate   |
-| ----------------- |--------------- |
+| Option            | To indicate                                                                           |
+| ----------------- |---------------------------------------------------------------------------------------|
 | `--json-base-dir` | base directory for JSON files                                                         |
 | `--date`          | date to be processed                                                                  |
+| `--add-quality-flag` | add quality flag variable to the NetCDF file (value fixed to 2)                    |
 | `--global-attrs`  | URI of a YAML file with global attributes to be added to the NetCDF file              |
 | `--variable-attrs`| URI of a YAML file with attributes to associate with the variables in the NetCDF file |
 | `--output-dir`    | output directory                                                                      |

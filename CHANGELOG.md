@@ -2,7 +2,15 @@
 
 2025-03
 
-- 1.6.0:
+- 1.6.2:
+    - The generated NetCDF file is now compressed by default.
+      This can be disabled as follows:
+        - Use the `--no-netcdf-compression` option in the `pbp-hmb-gen` CLI program.
+        - At the API level:
+            - Pass `compress_netcdf=False` to the `ProcessHelper` constructor
+            - Call `set_compress_netcdf(False)` on the `HmbGen` instance.
+
+- 1.6.1:
     - The generated NetCDF file is now compressed by default.
       This can be disabled as follows:
         - Use the `--no-netcdf-compression` option in the `pbp-hmb-gen` CLI program.

@@ -30,6 +30,7 @@ class HmbGen:
         self._output_dir: str = ""
         self._output_prefix: str = ""
         self._compress_netcdf: bool = True
+        self._add_quality_flag: bool = False
 
         self._assume_downloaded_files: bool = False
         self._retain_downloaded_files: bool = False
@@ -103,6 +104,12 @@ class HmbGen:
         Set whether to compress the NetCDF file.
         """
         self._compress_netcdf = compress_netcdf
+
+    def set_add_quality_flag(self, add_quality_flag: bool) -> None:
+        """
+        Set whether to add quality flag variable (with value fixed to 2 - "Not evaluated") to the NetCDF file.
+        """
+        self._add_quality_flag = add_quality_flag
 
     def set_assume_downloaded_files(self, value: bool) -> None:
         """
@@ -204,6 +211,7 @@ class HmbGen:
             output_dir=self._output_dir,
             output_prefix=self._output_prefix,
             compress_netcdf=self._compress_netcdf,
+            add_quality_flag=self._add_quality_flag,
             assume_downloaded_files=self._assume_downloaded_files,
             retain_downloaded_files=self._retain_downloaded_files,
             print_downloading_lines=self._print_downloading_lines,
@@ -285,6 +293,7 @@ class _HmbGen:
         output_dir: str,
         output_prefix: str,
         compress_netcdf: bool,
+        add_quality_flag: bool,
         assume_downloaded_files: bool,
         retain_downloaded_files: bool,
         print_downloading_lines: bool,
@@ -308,6 +317,7 @@ class _HmbGen:
         self.output_dir = output_dir
         self.output_prefix = output_prefix
         self.compress_netcdf = compress_netcdf
+        self.add_quality_flag = add_quality_flag
 
         self.assume_downloaded_files = assume_downloaded_files
         self.retain_downloaded_files = retain_downloaded_files
@@ -352,6 +362,7 @@ class _HmbGen:
             output_dir=self.output_dir,
             output_prefix=self.output_prefix,
             compress_netcdf=self.compress_netcdf,
+            add_quality_flag=self.add_quality_flag,
             global_attrs_uri=self.global_attrs_uri,
             variable_attrs_uri=self.variable_attrs_uri,
             voltage_multiplier=self.voltage_multiplier,
