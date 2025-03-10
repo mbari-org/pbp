@@ -201,31 +201,21 @@ class FileHelper:
         print_downloading_lines: bool = False,
     ):
         """
+        Handles file loading and path mapping for audio processing.
 
-        :param log:
-          Logger
-        :param audio_base_dir:
-          If given, it will be used as base directory for any relative (not starting with a slash)
-          `path` attribute in the json entries.
-        :param audio_path_map_prefix:
-          Prefix mapping to get actual audio uri to be used.
-          Example: `s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022`
-        :param audio_path_prefix:
-          Ad hoc path prefix for sound file locations, e.g. "/Volumes"
-        :param segment_size_in_mins:
-            The size of each audio segment to extract, in minutes. By default, 1.
-        :param s3_client:
-            If given, it will be used to handle `s3:` based uris.
-        :param gs_client:
-            If given, it will be used to handle `gs:` based uris.
-        :param download_dir:
-            Save downloaded S3 files here if given, otherwise, save in current directory.
-        :param assume_downloaded_files:
-            If True, skip downloading files that already exist in the download directory.
-        :param retain_downloaded_files:
-            If True, do not remove downloaded files after use.
-        :param print_downloading_lines:
-            If True, print "downloading <uri>" lines to console.
+        Args:
+            log: Logger instance.
+            audio_base_dir (str, optional): Base directory for relative `path` attributes in JSON entries.
+            audio_path_map_prefix (str, optional): Prefix mapping for resolving actual audio URIs.
+                Example: `"s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022"`.
+            audio_path_prefix (str, optional): Ad hoc path prefix for sound file locations, e.g., `"/Volumes"`.
+            segment_size_in_mins (int, optional): The size of each extracted audio segment in minutes. Defaults to `1`.
+            s3_client (object, optional): S3 client for handling `s3://` URIs.
+            gs_client (object, optional): Google Cloud Storage client for handling `gs://` URIs.
+            download_dir (str, optional): Directory to save downloaded S3 files. Defaults to the current directory.
+            assume_downloaded_files (bool, optional): If `True`, skips downloading files that already exist in `download_dir`.
+            retain_downloaded_files (bool, optional): If `True`, does not remove downloaded files after use.
+            print_downloading_lines (bool, optional): If `True`, prints `"downloading <uri>"` messages to the console.
         """
         self.log = log
 
