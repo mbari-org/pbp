@@ -1,3 +1,3 @@
-# API Reference for file_helper
+## FileHelper
 
 ::: pbp.file_helper.FileHelper

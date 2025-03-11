@@ -34,6 +34,8 @@ plugins:
             filters:
               - "!^_"
               - "^__"
+            members_order: source
+            heading_level: 3
   - mermaid2:
       arguments:
         theme: |
@@ -70,5 +72,6 @@ nav:
     - Overview: api/index.md
     - HMB Gen:
       - HmbGen: api/hmb_gen/HmbGen.md
-      - File helper: api/hmb_gen/FileHelper.md
-      - Process helper: api/hmb_gen/ProcessHelper.md
+      - File Helper: api/hmb_gen/FileHelper.md
+      - Process Helper: api/hmb_gen/ProcessHelper.md
+      - PyPAM support: api/hmb_gen/PypamSupport.md

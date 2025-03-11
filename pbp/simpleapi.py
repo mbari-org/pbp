@@ -14,6 +14,43 @@ import matplotlib.pyplot as plt
 
 
 class HmbGen:
+    """
+    A high-level interface intended to simplify the usage of the package for common scenarios.
+    This uses other API elements that can also be used directly for more control on the
+    settings or more advanced scenarios.
+
+    Here is a basic, schematic example of how to use this class:
+    ```python
+    hmb_gen = HmbGen()
+    hmb_gen.set_json_base_dir("json")
+    hmb_gen.set_global_attrs_uri("gs://bucket/global_attrs.json")
+    hmb_gen.set_variable_attrs_uri("gs://bucket/variable_attrs.json")
+    hmb_gen.set_subset_to((0, 100))
+    hmb_gen.set_download_dir("download")
+    hmb_gen.set_output_dir("output")
+    hmb_gen.set_output_prefix("hmb_")
+    hmb_gen.set_add_quality_flag(True)
+    hmb_gen.set_gs_client(gs_client)
+
+    errors = hmb_gen.check_parameters()
+    if errors:
+        print(f"Errors: {errors}")
+    else:
+        result = hmb_gen.process_date("20220101")
+        if result:
+            print(f"Result: {result}")
+        hmb_gen.plot_date(
+            "20220101",
+            lat_lon_for_solpos=(37.7749, -122.4194),
+            title="HMB",
+            ylim=(0, 100),
+            cmlim=(0, 100),
+            dpi=300,
+            show=True,
+        )
+    ```
+    """
+
     def __init__(self) -> None:
         """
         Create a new object for HMB generation.

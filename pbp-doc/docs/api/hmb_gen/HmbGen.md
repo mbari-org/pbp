@@ -1,3 +1,3 @@
-# API Reference for HmbGen
+## HmbGen
 
-::: pbp.simpleapi
+::: pbp.simpleapi.HmbGen
