@@ -124,7 +124,7 @@ def test_soundtrap_generator_local():
     )
     gen.run()
 
-    # There should be two files in the json directory - one for each day
+    # There should be one file in the json directory - one for each day
     json_files = list(json_dir.rglob("*.json"))
     assert len(json_files) == 1
     assert (json_dir / "2022" / "20221116.json").exists()

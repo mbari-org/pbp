@@ -98,9 +98,9 @@ class SoundTrapWavFile(AudioFile):
         # Iterate over the XML elements grabbing the needed metadata values
         for element in root.iter("CFG"):
             if element.get("ID") == "4":
-                value = element.get("FS")
-                if value:
-                    sample_rate = int(value)
+                value = element.find("FS")
+                if value is not None:
+                    sample_rate = int(value.text)  # type: ignore[arg-type]
 
         for element in root.iter("WavFileHandler"):
             value = element.get("SamplingStartTimeUTC")
