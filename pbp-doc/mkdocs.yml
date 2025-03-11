@@ -75,3 +75,4 @@ nav:
       - File Helper: api/hmb_gen/FileHelper.md
       - Process Helper: api/hmb_gen/ProcessHelper.md
       - PyPAM support: api/hmb_gen/PypamSupport.md
+      - Plot Summary: api/hmb_gen/PlotSummary.md
