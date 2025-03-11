@@ -30,6 +30,10 @@ plugins:
       handlers:
         python:
           paths: [ .. ]
+          options:
+            filters:
+              - "!^_"
+              - "^__"
   - mermaid2:
       arguments:
         theme: |

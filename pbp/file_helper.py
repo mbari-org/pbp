@@ -270,10 +270,13 @@ class FileHelper:
         """
         Selects the given day for subsequent processing of relevant audio segments.
 
-        :param year:
-        :param month:
-        :param day:
-        :return:  True only if selection was successful
+        Args:
+            year (int): The year.
+            month (int): The month.
+            day (int): The day.
+
+        Returns:
+            True only if selection was successful
         """
 
         self.log.info(f"Selecting day: {year:04}{month:02}{day:02}")
@@ -473,8 +476,11 @@ class FileHelper:
         can increment the 'age' for all entries in the cache except for the uri
         just requested.
 
-        :param uri:
-        :return:
+        Args:
+            uri: The URI of the sound file.
+
+        Returns:
+            SoundStatus: The SoundStatus object.
         """
         self.log.debug(f"_get_sound_status: {uri=}")
         ss = self.sound_cache.get(uri)

@@ -166,10 +166,11 @@ class ProcessHelper:
         """
         Generates NetCDF file with the result of processing all segments of the given day.
 
-        :param date:
-            Date to process in YYYYMMDD format.
-        :return:
-            ProcessDayResult, or None if no segments at all were processed for the day.
+        Args:
+            date (str): Date to process in YYYYMMDD format.
+
+        Returns:
+            The result or None if no segments at all were processed for the day.
         """
         year, month, day = parse_date(date)
         if not self.file_helper.select_day(year, month, day):
