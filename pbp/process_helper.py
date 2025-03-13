@@ -337,7 +337,6 @@ def save_dataset_to_netcdf(
         "sensitivity": {"_FillValue": None},
     }
     if compress_netcdf:
-        # TODO(Danelle) please review this
         for k in ds.data_vars:
             if ds[k].ndim < 2:
                 continue
