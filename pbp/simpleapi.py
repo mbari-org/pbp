@@ -26,8 +26,8 @@ class HmbGen:
 
     # Indicate parameters as needed:
     hmb_gen.set_json_base_dir("json")
-    hmb_gen.set_global_attrs_uri("gs://bucket/global_attrs.json")
-    hmb_gen.set_variable_attrs_uri("gs://bucket/variable_attrs.json")
+    hmb_gen.set_global_attrs_uri("gs://bucket/globalAttributes.yaml")
+    hmb_gen.set_variable_attrs_uri("gs://bucket/variableAttributes.yaml")
     hmb_gen.set_subset_to((0, 100))
     hmb_gen.set_download_dir("download")
     hmb_gen.set_output_dir("output")
@@ -170,6 +170,7 @@ class HmbGen:
     def set_compress_netcdf(self, compress_netcdf: bool) -> None:
         """
         Set whether to compress the NetCDF file.
+        This is done by default.
 
         Args:
             compress_netcdf (bool): Whether to compress the NetCDF file.
@@ -179,6 +180,7 @@ class HmbGen:
     def set_add_quality_flag(self, add_quality_flag: bool) -> None:
         """
         Set whether to add quality flag variable (with value fixed to 2 - "Not evaluated") to the NetCDF file.
+        This is not done by default.
 
         Args:
             add_quality_flag (bool): Whether to add quality flag variable.
@@ -187,6 +189,9 @@ class HmbGen:
 
     def set_assume_downloaded_files(self, value: bool) -> None:
         """
+        Set whether to skip downloading files that already exist in the download directory.
+        This is not done by default.
+
         Args:
             value:
                 If True, skip downloading files that already exist in the download directory.
@@ -195,6 +200,9 @@ class HmbGen:
 
     def set_retain_downloaded_files(self, value: bool) -> None:
         """
+        Set whether to retain downloaded files after use.
+        This is not done by default.
+
         Args:
             value:
                 If True, do not remove downloaded files after use.
@@ -203,6 +211,9 @@ class HmbGen:
 
     def set_print_downloading_lines(self, value: bool) -> None:
         """
+        Set whether to print "downloading <uri>" lines to console.
+        This is not done by default.
+
         Args:
             value:
                 If True, print "downloading <uri>" lines to console.
@@ -238,7 +249,7 @@ class HmbGen:
         Call this before performing any processing.
 
         Returns:
-            str | None: None if no errors, otherwise a string with the errors.
+            None if no errors, otherwise a string with the errors.
         """
         errors = []
 
@@ -312,7 +323,7 @@ class HmbGen:
             date (str): Date to process in YYYYMMDD format.
 
         Returns:
-            ProcessDayResult | str: ProcessDayResult if segments were processed, otherwise a string with an error.
+            ProcessDayResult if segments were processed, otherwise a string with an error.
         """
         if not self._hmb_gen:
             return "Missing or invalid parameters. Call check_parameters() first."
