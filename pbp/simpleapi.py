@@ -21,7 +21,10 @@ class HmbGen:
 
     Here is a basic, schematic example of how to use this class:
     ```python
+    # Create instance:
     hmb_gen = HmbGen()
+
+    # Indicate parameters as needed:
     hmb_gen.set_json_base_dir("json")
     hmb_gen.set_global_attrs_uri("gs://bucket/global_attrs.json")
     hmb_gen.set_variable_attrs_uri("gs://bucket/variable_attrs.json")
@@ -32,6 +35,7 @@ class HmbGen:
     hmb_gen.set_add_quality_flag(True)
     hmb_gen.set_gs_client(gs_client)
 
+    # Before processing, perform basic check of the parameters:
     errors = hmb_gen.check_parameters()
     if errors:
         print(f"Errors: {errors}")
@@ -54,8 +58,11 @@ class HmbGen:
     def __init__(self) -> None:
         """
         Create a new object for HMB generation.
-        Use the various set methods to set the parameters,
-        then call process_date() to execute the process for a given date.
+        On the created instance, call the various `set_*` methods to set the parameters,
+        `check_parameters()` to verify the parameters, and
+        then call `process_date()` to execute the process for a given date.
+
+        See source code for more details on the default parameter values.
         """
         self._json_base_dir: str = ""
         self._global_attrs_uri: str = ""
