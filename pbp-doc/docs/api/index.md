@@ -1,7 +1,8 @@
 !!! note
     This is a placeholder for briefly describing the main elements of
-    the API, and and pointing to actual API documentation. 
+    the API, and pointing to actual API documentation. 
 
 # API
 
-TODO
+- [Meta Generation](meta_gen/)
+- [HMB Generation](hmb_gen/)

@@ -70,7 +70,10 @@ nav:
   - Notebooks: notebooks/index.md
   - API:
     - Overview: api/index.md
-    - HMB Gen:
+    - Meta Generation:
+      - Overview: api/meta_gen/index.md
+    - HMB Generation:
+      - Overview: api/hmb_gen/index.md
       - HmbGen: api/hmb_gen/HmbGen.md
       - File Helper: api/hmb_gen/FileHelper.md
       - Process Helper: api/hmb_gen/ProcessHelper.md

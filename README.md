@@ -64,7 +64,7 @@ The package includes the following CLI programs:
 
 ### API
 
-TODO link to the API documentation.
+API documentation is available at [docs.mbari.org/pbp/api](https://docs.mbari.org/pbp/api/).
 
 ## References
 
