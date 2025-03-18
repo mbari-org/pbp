@@ -340,7 +340,7 @@ def save_dataset_to_netcdf(
         compress_netcdf (bool): Whether to compress the NetCDF file.
 
     Returns:
-        bool: True if the dataset was saved successfully, False otherwise.
+        True if the dataset was saved successfully, False otherwise.
     """
     log.info(f"  - saving dataset to: {filename}  (compressed: {compress_netcdf})")
     encoding: dict[Any, dict[str, Any]] = {

@@ -302,7 +302,7 @@ class FileHelper:
             uri (str): The URI of the file.
 
         Returns:
-            str: The local filename or None if error or if the scheme is not `s3` or `gs`.
+            The local filename or None if error or if the scheme is not `s3` or `gs`.
         """
         parsed_uri = urlparse(uri)
         if parsed_uri.scheme in ("s3", "gs"):
@@ -489,7 +489,7 @@ class FileHelper:
             uri: The URI of the sound file.
 
         Returns:
-            SoundStatus: The SoundStatus object.
+            The SoundStatus object.
         """
         self.log.debug(f"_get_sound_status: {uri=}")
         ss = self.sound_cache.get(uri)
