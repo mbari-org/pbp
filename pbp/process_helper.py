@@ -330,6 +330,18 @@ def save_dataset_to_netcdf(
     filename: str,
     compress_netcdf: bool = True,
 ) -> bool:
+    """
+    Saves the given dataset to a NetCDF file.
+
+    Args:
+        log (loguru.Logger): Logger.
+        ds (xr.Dataset): Dataset to save.
+        filename (str): Output filename.
+        compress_netcdf (bool): Whether to compress the NetCDF file.
+
+    Returns:
+        bool: True if the dataset was saved successfully, False otherwise.
+    """
     log.info(f"  - saving dataset to: {filename}  (compressed: {compress_netcdf})")
     encoding: dict[Any, dict[str, Any]] = {
         "effort": {"_FillValue": None},

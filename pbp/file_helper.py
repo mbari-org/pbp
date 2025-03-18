@@ -293,14 +293,17 @@ class FileHelper:
         self.json_entries = list(parse_json_contents(json_contents))
         return True
 
-    def get_local_filename(self, uri: Optional[str]) -> Optional[str]:
+    def get_local_filename(self, uri: str) -> Optional[str]:
         """
         Returns the local filename for the given URI, which will be that of
         the downloaded file when the given uri is cloud based.
-        """
-        if uri is None:
-            return None
 
+        Args:
+            uri (str): The URI of the file.
+
+        Returns:
+            str: The local filename or None if error or if the scheme is not `s3` or `gs`.
+        """
         parsed_uri = urlparse(uri)
         if parsed_uri.scheme in ("s3", "gs"):
             return _download(
@@ -317,6 +320,7 @@ class FileHelper:
 
     def day_completed(self):
         """
+        ProcessHelper calls this to indicate that the day's processing is completed.
         Since a process is launched only for a day, we simply clear the cache.
         """
         # first, close all sound files still open:
@@ -375,7 +379,12 @@ class FileHelper:
         Extracts the audio segment at the given start time.
         For this it loads and aggregates the relevant audio segments.
 
-        :return:  A tuple (audio_info, audio_segment) or None
+        Args:
+            at_hour (int): The hour when the audio segment was extracted.
+            at_minute (int): The minute when the audio segment was extracted.
+
+        Returns:
+            A tuple (audio_info, audio_segment) or None
         """
 
         assert self.json_entries is not None
