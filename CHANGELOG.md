@@ -2,6 +2,11 @@
 
 2025-03
 
+- Resolve #37 "Add pre-commit"
+    - with only ruff formatting and mypy check
+    - TODO test it.
+    - NOTE: CI continues to perform the checks as before.
+
 - As we add to the API documentation, `"always_generate": true` has been set in `.mbaridoc.json`
   to ensure any updates in python scripts get reflected in the generated doc site.
 

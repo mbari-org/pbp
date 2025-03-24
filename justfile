@@ -269,11 +269,16 @@ all: dev lint
 # Install dependencies
 setup: install-poetry
     poetry install
+    poetry run pre-commit install
     just install-types
 
 # Install poetry
 install-poetry:
     curl -sSL https://install.python-poetry.org | python3 -
+
+# poetry run pre-commit run --all-files
+run-pre-commit:
+    poetry run pre-commit run --all-files
 
 # Install updated dependencies
 update-deps:
