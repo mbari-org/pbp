@@ -19,7 +19,7 @@ from pbp.meta_gen.utils import (
     plot_daily_coverage,
 )
 from pbp.meta_gen.json_generator import JsonGenerator
-from pbp.meta_gen.meta_reader import GenericWavFile
+from pbp.meta_gen.meta_reader import GenericWavFile, FlacFile
 from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
 
 
@@ -75,27 +75,36 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
             try:
                 for s in self.prefixes:
                     self.log.info(
-                        f"{self.log_prefix} Searching in {self.audio_loc}/*.wav "
-                        f"for wav files that match the search patterns {s}* ..."
+                        f"{self.log_prefix} Searching in {self.audio_loc}/ "
+                        f"for wav or flac files that match the search patterns {s}* ..."
                     )
 
-                wav_files = []
+                sound_files = []
 
                 # Set the start and end dates to 1 hour before and after the start and end dates
                 start_dt = day - timedelta(hours=1)
                 end_dt = day + timedelta(days=1)
 
                 if scheme == "file":
-                    wav_path = Path(self.audio_loc.split("file://")[-1])
-                    for filename in progressbar(
-                        sorted(wav_path.rglob("*.wav")), prefix="Searching : "
-                    ):
-                        wav_dt = get_datetime(filename, self.prefixes)
-                        if wav_dt and start_dt <= wav_dt <= end_dt:
-                            self.log.info(
-                                f"Found file {filename} with timestamp {wav_dt}"
-                            )
-                            wav_files.append(GenericWavFile(self.log, filename, wav_dt))
+                    sound_path = Path(self.audio_loc.split("file://")[-1])
+                    file_extensions = ["*.flac", "*.wav"]
+                    for ext in file_extensions:
+                        for filename in progressbar(
+                            sorted(sound_path.rglob(ext)), prefix="Searching : "
+                        ):
+                            f_dt = get_datetime(filename, self.prefixes)
+                            if f_dt and start_dt <= f_dt <= end_dt:
+                                self.log.info(
+                                    f"Found file {filename} with timestamp {f_dt}"
+                                )
+                                if ext == "*.flac":
+                                    sound_files.append(
+                                        FlacFile(self.log, str(filename), f_dt)
+                                    )
+                                if ext == "*.wav":
+                                    sound_files.append(
+                                        GenericWavFile(self.log, str(filename), f_dt)
+                                    )
 
                 if scheme == "s3":
                     client = boto3.client("s3", config=Config(signature_version=UNSIGNED))
@@ -123,27 +132,34 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
                                 for obj in page["Contents"]:
                                     key = obj["Key"]
-                                    wav_dt = get_datetime(
+                                    f_dt = get_datetime(
                                         f"s3://{bucket}/{key}", self.prefixes
                                     )
-                                    if wav_dt is None:
+                                    if f_dt is None:
                                         continue
-                                    if start_dt <= wav_dt <= end_dt:
+                                    if start_dt <= f_dt <= end_dt:
                                         self.log.info(
-                                            f'Found {f"s3://{bucket}/{key}"} with timestamp {wav_dt}'
+                                            f"Found {f's3://{bucket}/{key}'} with timestamp {f_dt}"
                                         )
-                                        wav_files.append(
-                                            GenericWavFile(
-                                                self.log, f"s3://{bucket}/{key}", wav_dt
+                                        if key.endswith(".flac"):
+                                            sound_files.append(
+                                                FlacFile(
+                                                    self.log, f"s3://{bucket}/{key}", f_dt
+                                                )
                                             )
-                                        )
+                                        if key.endswith(".wav"):
+                                            sound_files.append(
+                                                GenericWavFile(
+                                                    self.log, f"s3://{bucket}/{key}", f_dt
+                                                )
+                                            )
 
                 self.log.debug(
-                    f"{self.log_prefix} Found {len(wav_files)} files to process that "
+                    f"{self.log_prefix} Found {len(sound_files)} files to process that "
                     f"cover the expanded period {start_dt} - {end_dt}"
                 )
 
-                if len(wav_files) == 0:
+                if len(sound_files) == 0:
                     self.log.info(
                         f"{self.log_prefix}  No files found to process that "
                         f"cover the period {start_dt} - {end_dt}"
@@ -151,15 +167,15 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                     return
 
                 # sort the files by start time
-                wav_files.sort(key=lambda x: x.start)
+                sound_files.sort(key=lambda x: x.start)
 
                 # create a dataframe from the wav files
                 self.log.debug(
-                    f"{self.log_prefix} creating dataframe from {len(wav_files)} files "
-                    f"spanning {wav_files[0].start} to {wav_files[-1].start}..."
+                    f"{self.log_prefix} creating dataframe from {len(sound_files)} files "
+                    f"spanning {sound_files[0].start} to {sound_files[-1].start}..."
                 )
 
-                for wc in wav_files:
+                for wc in sound_files:
                     df_wav = wc.to_df()
 
                     # concatenate the metadata to the dataframe

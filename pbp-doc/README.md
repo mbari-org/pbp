@@ -20,4 +20,5 @@ Then:
 ```bash
 just serve
 ```
+
 and open the indicated URL in your browser.

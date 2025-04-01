@@ -1,4 +1,5 @@
 site_name: PBP Documentation
+site_description: "Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM"
 repo_url: "https://github.com/mbari-org/pbp/"
 edit_uri: "blob/main/pbp-doc/docs/"
 theme:
@@ -25,6 +26,16 @@ extra_css:
 
 plugins:
   - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ .. ]
+          options:
+            filters:
+              - "!^_"
+              - "^__"
+            members_order: source
+            heading_level: 3
   - mermaid2:
       arguments:
         theme: |
@@ -57,3 +68,14 @@ nav:
   - HMB Plotting: pbp-hmb-plot/index.md
   - Cloud: pbp-cloud/index.md
   - Notebooks: notebooks/index.md
+  - API:
+    - Overview: api/index.md
+    - Meta Generation:
+      - Overview: api/meta_gen/index.md
+    - HMB Generation:
+      - Overview: api/hmb_gen/index.md
+      - HmbGen: api/hmb_gen/HmbGen.md
+      - File Helper: api/hmb_gen/FileHelper.md
+      - Process Helper: api/hmb_gen/ProcessHelper.md
+      - PyPAM support: api/hmb_gen/PypamSupport.md
+      - Plot Summary: api/hmb_gen/PlotSummary.md

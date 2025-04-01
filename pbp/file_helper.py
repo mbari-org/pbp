@@ -201,31 +201,21 @@ class FileHelper:
         print_downloading_lines: bool = False,
     ):
         """
+        Handles file loading and path mapping for audio processing.
 
-        :param log:
-          Logger
-        :param audio_base_dir:
-          If given, it will be used as base directory for any relative (not starting with a slash)
-          `path` attribute in the json entries.
-        :param audio_path_map_prefix:
-          Prefix mapping to get actual audio uri to be used.
-          Example: `s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022`
-        :param audio_path_prefix:
-          Ad hoc path prefix for sound file locations, e.g. "/Volumes"
-        :param segment_size_in_mins:
-            The size of each audio segment to extract, in minutes. By default, 1.
-        :param s3_client:
-            If given, it will be used to handle `s3:` based uris.
-        :param gs_client:
-            If given, it will be used to handle `gs:` based uris.
-        :param download_dir:
-            Save downloaded S3 files here if given, otherwise, save in current directory.
-        :param assume_downloaded_files:
-            If True, skip downloading files that already exist in the download directory.
-        :param retain_downloaded_files:
-            If True, do not remove downloaded files after use.
-        :param print_downloading_lines:
-            If True, print "downloading <uri>" lines to console.
+        Args:
+            log: Logger instance.
+            audio_base_dir (str, optional): Base directory for relative `path` attributes in JSON entries.
+            audio_path_map_prefix (str, optional): Prefix mapping for resolving actual audio URIs.
+                Example: `"s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022"`.
+            audio_path_prefix (str, optional): Ad hoc path prefix for sound file locations, e.g., `"/Volumes"`.
+            segment_size_in_mins (int, optional): The size of each extracted audio segment in minutes. Defaults to `1`.
+            s3_client (object, optional): S3 client for handling `s3://` URIs.
+            gs_client (object, optional): Google Cloud Storage client for handling `gs://` URIs.
+            download_dir (str, optional): Directory to save downloaded S3 files. Defaults to the current directory.
+            assume_downloaded_files (bool, optional): If `True`, skips downloading files that already exist in `download_dir`.
+            retain_downloaded_files (bool, optional): If `True`, does not remove downloaded files after use.
+            print_downloading_lines (bool, optional): If `True`, prints `"downloading <uri>"` messages to the console.
         """
         self.log = log
 
@@ -280,10 +270,13 @@ class FileHelper:
         """
         Selects the given day for subsequent processing of relevant audio segments.
 
-        :param year:
-        :param month:
-        :param day:
-        :return:  True only if selection was successful
+        Args:
+            year (int): The year.
+            month (int): The month.
+            day (int): The day.
+
+        Returns:
+            True only if selection was successful
         """
 
         self.log.info(f"Selecting day: {year:04}{month:02}{day:02}")
@@ -300,14 +293,17 @@ class FileHelper:
         self.json_entries = list(parse_json_contents(json_contents))
         return True
 
-    def get_local_filename(self, uri: Optional[str]) -> Optional[str]:
+    def get_local_filename(self, uri: str) -> Optional[str]:
         """
         Returns the local filename for the given URI, which will be that of
         the downloaded file when the given uri is cloud based.
-        """
-        if uri is None:
-            return None
 
+        Args:
+            uri (str): The URI of the file.
+
+        Returns:
+            The local filename or None if error or if the scheme is not `s3` or `gs`.
+        """
         parsed_uri = urlparse(uri)
         if parsed_uri.scheme in ("s3", "gs"):
             return _download(
@@ -324,6 +320,7 @@ class FileHelper:
 
     def day_completed(self):
         """
+        ProcessHelper calls this to indicate that the day's processing is completed.
         Since a process is launched only for a day, we simply clear the cache.
         """
         # first, close all sound files still open:
@@ -382,7 +379,12 @@ class FileHelper:
         Extracts the audio segment at the given start time.
         For this it loads and aggregates the relevant audio segments.
 
-        :return:  A tuple (audio_info, audio_segment) or None
+        Args:
+            at_hour (int): The hour when the audio segment was extracted.
+            at_minute (int): The minute when the audio segment was extracted.
+
+        Returns:
+            A tuple (audio_info, audio_segment) or None
         """
 
         assert self.json_entries is not None
@@ -483,8 +485,11 @@ class FileHelper:
         can increment the 'age' for all entries in the cache except for the uri
         just requested.
 
-        :param uri:
-        :return:
+        Args:
+            uri: The URI of the sound file.
+
+        Returns:
+            The SoundStatus object.
         """
         self.log.debug(f"_get_sound_status: {uri=}")
         ss = self.sound_cache.get(uri)
