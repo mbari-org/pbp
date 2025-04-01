@@ -4,7 +4,7 @@
 import re
 from typing import Tuple, List
 from urllib.parse import urlparse
-from datetime import datetime
+import datetime
 from pathlib import Path
 
 import numpy as np
@@ -90,7 +90,7 @@ def get_datetime(time_str: str, prefixes: List[str]):
     ]
     for fmt in possible_dt_formats:
         try:
-            return datetime.strptime(time_str, fmt)
+            return datetime.datetime.strptime(time_str, fmt)
         except ValueError:
             continue
 
@@ -101,8 +101,8 @@ def plot_daily_coverage(
     instrument_type: InstrumentType,
     df: pd.DataFrame,
     base_dir: str,
-    start: datetime,
-    end: datetime,
+    start: datetime.datetime,
+    end: datetime.datetime,
 ) -> str:
     """
     Plot the daily coverage of the recordings
@@ -175,3 +175,36 @@ def plot_daily_coverage(
     fig.savefig(plot_file.as_posix(), dpi=DEFAULT_DPI, bbox_inches="tight")
     plt.close(fig)
     return plot_file.as_posix()
+
+
+def check_start_end_args(start, end):
+    """
+    Check if start and end dates are at 00:00:00. If it's a datetime.date object, convert to datetime.datetime object.
+    :param start The start date of the recordings
+    :param end The end date of the recordings
+    :return The corrected start and end date of the recordings as datetime.datetime objects
+    """
+    if type(start) is datetime.date:
+        start = datetime.datetime(start.year, start.month, start.day)
+    if type(end) is datetime.date:
+        end = datetime.datetime(end.year, end.month, end.day)
+
+    if type(start) is datetime.datetime:
+        if start.hour == 0 and start.minute == 0 and start.second == 0:
+            pass
+        else:
+            raise ValueError(
+                "Start must be of type datetime.date or a datetime.datetime object at 00:00:00. "
+                "Otherwise that would be the start of the HMD computation."
+            )
+
+    if type(end) is datetime.datetime:
+        if end.hour == 0 and end.minute == 0 and end.second == 0:
+            pass
+        else:
+            raise ValueError(
+                "End must be of type datetime.date or a datetime.datetime object at 00:00:00. "
+                "Otherwise that would be the start of the HMD computation."
+            )
+
+    return start, end
