@@ -1,5 +1,6 @@
 {
   "destination": "pbp",
   "docdir": "pbp-doc",
+  "always_generate": true,
   "public": true
 }

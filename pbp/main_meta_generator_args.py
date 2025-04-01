@@ -12,13 +12,13 @@ def parse_arguments():
     example = """
 Examples:
     pbp-meta-gen \\
-                 --json-base-dir=tests/json/nrs \\
+                 --json-base-dir=tests/json/soundtrap \\
                  --output-dir=output \\
                  --uri=s3://pacific-sound-ch01 \\
-                 --start=20220902 \\
-                 --end=20220902 \\
-                 --prefixes=MARS \\
-                 --recorder=NRS
+                 --start=20230715 \\
+                 --end=20230716 \\
+                 --prefixes=7000 \\
+                 --recorder=SOUNDTRAP
     """
 
     parser = ArgumentParser(

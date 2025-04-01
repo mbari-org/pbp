@@ -27,9 +27,9 @@ def plot_dataset_summary(
     jpeg_filename: Optional[str] = None,
     show: bool = False,
 ):  # pylint: disable=R0915  too-many-statements
+    # Code by RYJO, with some typing/formatting/variable naming adjustments.
     """
     Generate a summary plot from the given dataset.
-    Code by RYJO, with some typing/formatting/variable naming adjustments.
     :param ds: Dataset to plot.
     :param lat_lon_for_solpos: Lat/Lon for solar position calculation.
     :param title: Title for the plot.

@@ -16,6 +16,10 @@ class ProcessResult:
     """
     The result of processing a day of audio segments when at least one actual segment
     has been captured.
+
+    Attributes:
+        psd_da: The resulting hybrid millidecade PSD product.
+        effort_da: The effort in seconds for each segment.
     """
 
     psd_da: xr.DataArray
@@ -30,6 +34,11 @@ class _CapturedSegment:
 
 
 class PypamSupport:
+    """
+    Helper to process audio segments for a given day, resulting in the
+    aggregated hybrid millidecade PSD product.
+    """
+
     def __init__(
         self,
         log,  #: loguru.Logger
@@ -53,6 +62,9 @@ class PypamSupport:
 
         When all segments have been captured, call `process_captured_segments`
         to get the result.
+
+        Args:
+            log: A logger instance.
         """
         self.log = log
 
@@ -78,13 +90,11 @@ class PypamSupport:
         Call this as soon as you get the first audio segment for a day,
         in particular, to set the sampling frequency used for subsequent calculations.
 
-        :param fs:
-            Sampling frequency.
-        :param nfft:
-            Number of samples to use for the FFT. If 0, it will be set to `fs`.
-        :param subset_to:
-            If not None, the product for a day will get the resulting PSD
-            subset to `[lower, upper)`, in terms of central frequency.
+        Args:
+            fs (int): Sampling frequency.
+            nfft (int): Number of samples to use for the FFT. If 0, it will be set to `fs`.
+            subset_to (Tuple[int, int]): If not None, the product for a day will get the resulting PSD
+                subset to `[lower, upper)`, in terms of central frequency.
         """
         assert fs > 0
         self.fs = fs
@@ -111,8 +121,8 @@ class PypamSupport:
         Adds a missing segment to the ongoing aggregation.
         This method can be called even before `set_parameters` is called.
 
-        :param dt:
-            The datetime of the start of the missing segment.
+        Args:
+            dt (datetime): The datetime of the start of the missing segment.
         """
         self._captured_segments.append(_CapturedSegment(dt, 0, None))
         self.log.debug(f"  captured segment: {dt}  (NO DATA)")
@@ -123,10 +133,9 @@ class PypamSupport:
 
         `set_parameters` must have been called first.
 
-        :param dt:
-            The datetime of the start of the segment.
-        :param data:
-            The audio data.
+        Args:
+            dt (datetime): The datetime of the start of the segment.
+            data (np.ndarray): The audio data.
         """
         assert self.parameters_set
         assert self.fs is not None
@@ -146,9 +155,11 @@ class PypamSupport:
         Gets the resulting hybrid millidecade bands for all captured segments.
         At least one actual segment must have been captured, otherwise None is returned.
 
-        :param sensitivity_da:
-            If given, it will be used to calibrate the result.
-        :return:
+        Args:
+            sensitivity_da (Optional[xr.DataArray]): The sensitivity data.
+                If given, it will be used to calibrate the result.
+
+        Returns:
             Result if at least an actual segment was captured, None otherwise.
         """
         if self._num_actual_segments == 0:

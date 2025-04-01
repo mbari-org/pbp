@@ -1,5 +1,31 @@
 # PBP – PyPAM based processing
 
+2025-03
+
+- Resolve #37 "Add pre-commit"
+    - with only ruff formatting and mypy check
+    - TODO test it.
+    - NOTE: CI continues to perform the checks as before.
+
+- As we add to the API documentation, `"always_generate": true` has been set in `.mbaridoc.json`
+  to ensure any updates in python scripts get reflected in the generated doc site.
+
+- 1.6.2:
+    - A quality flag variable (with value fixed to 2 - "Not Evaluated")
+      can now be added to the NetCDF file.
+        - `pbp-hmb-gen` CLI: use the  `--add-quality-flag` option.
+        - API level:
+            - Pass `add_quality_flag=True` to `ProcessHelper` constructor
+            - Call `set_add_quality_flag(True)` on `HmbGen` instance.
+
+- 1.6.1:
+    - The generated NetCDF file is now compressed by default.
+      This can be disabled as follows:
+        - Use the `--no-netcdf-compression` option in the `pbp-hmb-gen` CLI program.
+        - At the API level:
+            - Pass `compress_netcdf=False` to `ProcessHelper` constructor
+            - Call `set_compress_netcdf(False)` on `HmbGen` instance.
+
 2024-12
 
 - The setup and sources for the end-user documentation site has been incorporated in this repo.

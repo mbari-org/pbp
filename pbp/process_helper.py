@@ -15,14 +15,20 @@ from pbp.misc_helper import gen_hour_minute_times, parse_date
 from pbp.pypam_support import ProcessResult, PypamSupport
 
 
+DEFAULT_QUALITY_FLAG_VALUE = 2
+
+
 @dataclass
 class ProcessDayResult:
     """
     The result returned from `process_day`.
-
     Contains the list of paths to generated files
     (NetCDF and others depending on given parameters)
     as well as the generated dataset.
+
+    Attributes:
+        generated_filenames: List of paths to generated files
+        dataset: The generated dataset
     """
 
     generated_filenames: list[str]
@@ -37,6 +43,8 @@ class ProcessHelper:
         output_dir: str,
         output_prefix: str,
         gen_netcdf: bool = True,
+        compress_netcdf: bool = True,
+        add_quality_flag: bool = False,
         global_attrs_uri: Optional[str] = None,
         set_global_attrs: Optional[list[list[str]]] = None,
         variable_attrs_uri: Optional[str] = None,
@@ -47,34 +55,24 @@ class ProcessHelper:
         subset_to: Optional[Tuple[int, int]] = None,
     ):
         """
+        Initializes the processor.
 
-        :param file_helper:
-            File loader.
-        :param output_dir:
-            Output directory.
-        :param output_prefix:
-            Output filename prefix.
-        :param gen_netcdf:
-            True to generate the netCDF file.
-        :param global_attrs_uri:
-            URI of JSON file with global attributes to be added to the NetCDF file.
-        :param set_global_attrs:
-            List of [key, value] pairs to be considered for the global attributes.
-        :param variable_attrs_uri:
-            URI of JSON file with variable attributes to be added to the NetCDF file.
-        :param voltage_multiplier:
-            Applied on the loaded signal.
-        :param sensitivity_uri:
-            URI of sensitivity NetCDF for calibration of result.
-            Has precedence over `sensitivity_flat_value`.
-        :param sensitivity_flat_value:
-            Flat sensitivity value to be used for calibration.
-        :param max_segments:
-            Maximum number of segments to process for each day.
-            By default, 0 (no limit).
-        :param subset_to:
-            Tuple of (lower, upper) frequency limits to use for the PSD,
-            lower inclusive, upper exclusive.
+        Args:
+            file_helper: File loader.
+            output_dir: Output directory.
+            output_prefix: Output filename prefix.
+            gen_netcdf (bool): Whether to generate the netCDF file.
+            compress_netcdf (bool): Whether to compress the generated NetCDF file.
+            add_quality_flag (bool): Whether to add a quality flag variable (with value 2 - "Not evaluated") to the NetCDF file.
+            global_attrs_uri (str): URI of a JSON file with global attributes to be added to the NetCDF file.
+            set_global_attrs (list[tuple[str, str]]): List of (key, value) pairs to be considered for the global attributes.
+            variable_attrs_uri (str): URI of a JSON file with variable attributes to be added to the NetCDF file.
+            voltage_multiplier (float): Factor applied to the loaded signal.
+            sensitivity_uri (str, optional): URI of a sensitivity NetCDF file for calibration of results.
+                Has precedence over `sensitivity_flat_value`.
+            sensitivity_flat_value (float, optional): Flat sensitivity value used for calibration.
+            max_segments (int, optional): Maximum number of segments to process for each day. Defaults to 0 (no limit).
+            subset_to (tuple[float, float], optional): Frequency limits for the PSD (lower inclusive, upper exclusive).
         """
         self.log = log
 
@@ -83,6 +81,8 @@ class ProcessHelper:
             + f"\n    output_dir:             {output_dir}"
             + f"\n    output_prefix:          {output_prefix}"
             + f"\n    gen_netcdf:             {gen_netcdf}"
+            + f"\n    compress_netcdf:        {compress_netcdf}"
+            + f"\n    add_quality_flag:       {add_quality_flag}"
             + f"\n    global_attrs_uri:       {global_attrs_uri}"
             + f"\n    set_global_attrs:       {set_global_attrs}"
             + f"\n    variable_attrs_uri:     {variable_attrs_uri}"
@@ -101,6 +101,8 @@ class ProcessHelper:
         self.output_dir = output_dir
         self.output_prefix = output_prefix
         self.gen_netcdf = gen_netcdf
+        self.compress_netcdf = compress_netcdf
+        self.add_quality_flag = add_quality_flag
 
         self.metadata_helper = MetadataHelper(
             self.log,
@@ -164,10 +166,11 @@ class ProcessHelper:
         """
         Generates NetCDF file with the result of processing all segments of the given day.
 
-        :param date:
-            Date to process in YYYYMMDD format.
-        :return:
-            ProcessDayResult, or None if no segments at all were processed for the day.
+        Args:
+            date (str): Date to process in YYYYMMDD format.
+
+        Returns:
+            The result or None if no segments at all were processed for the day.
         """
         year, month, day = parse_date(date)
         if not self.file_helper.select_day(year, month, day):
@@ -214,6 +217,14 @@ class ProcessHelper:
                 dims=["1"],
             ).astype(np.float32)
 
+        if self.add_quality_flag:
+            data_vars["quality_flag"] = xr.DataArray(
+                data=np.full(psd_da.shape, DEFAULT_QUALITY_FLAG_VALUE, dtype=np.int8),
+                dims=psd_da.dims,
+                coords=psd_da.coords,
+                # attrs are assigned below.
+            )
+
         md_helper = self.metadata_helper
 
         md_helper.add_variable_attributes(psd_da["time"], "time")
@@ -221,6 +232,8 @@ class ProcessHelper:
         md_helper.add_variable_attributes(psd_da["frequency"], "frequency")
         if "sensitivity" in data_vars:
             md_helper.add_variable_attributes(data_vars["sensitivity"], "sensitivity")
+        if "quality_flag" in data_vars:
+            md_helper.add_variable_attributes(data_vars["quality_flag"], "quality_flag")
         md_helper.add_variable_attributes(data_vars["psd"], "psd")
 
         ds_result = xr.Dataset(
@@ -315,18 +328,38 @@ def save_dataset_to_netcdf(
     log,  #: loguru.Logger,
     ds: xr.Dataset,
     filename: str,
+    compress_netcdf: bool = True,
 ) -> bool:
-    log.info(f"  - saving dataset to: {filename}")
+    """
+    Saves the given dataset to a NetCDF file.
+
+    Args:
+        log (loguru.Logger): Logger.
+        ds (xr.Dataset): Dataset to save.
+        filename (str): Output filename.
+        compress_netcdf (bool): Whether to compress the NetCDF file.
+
+    Returns:
+        True if the dataset was saved successfully, False otherwise.
+    """
+    log.info(f"  - saving dataset to: {filename}  (compressed: {compress_netcdf})")
+    encoding: dict[Any, dict[str, Any]] = {
+        "effort": {"_FillValue": None},
+        "frequency": {"_FillValue": None},
+        "sensitivity": {"_FillValue": None},
+    }
+    if compress_netcdf:
+        for k in ds.data_vars:
+            if ds[k].ndim < 2:
+                continue
+            encoding[k] = {
+                "zlib": True,
+                "complevel": 3,
+                "fletcher32": True,
+                "chunksizes": tuple(map(lambda x: x // 2, ds[k].shape)),
+            }
     try:
-        ds.to_netcdf(
-            filename,
-            engine="h5netcdf",
-            encoding={
-                "effort": {"_FillValue": None},
-                "frequency": {"_FillValue": None},
-                "sensitivity": {"_FillValue": None},
-            },
-        )
+        ds.to_netcdf(filename, format="NETCDF4", engine="h5netcdf", encoding=encoding)
         return True
     except Exception as e:  # pylint: disable=broad-exception-caught
         error = f"Unable to save {filename}: {e}"

@@ -14,11 +14,55 @@ import matplotlib.pyplot as plt
 
 
 class HmbGen:
+    """
+    A high-level interface intended to simplify the usage of the package for common scenarios.
+    This uses other API elements that can also be used directly for more control on the
+    settings or more advanced scenarios.
+
+    Here is a basic, schematic example of how to use this class:
+    ```python
+    # Create instance:
+    hmb_gen = HmbGen()
+
+    # Indicate parameters as needed:
+    hmb_gen.set_json_base_dir("json")
+    hmb_gen.set_global_attrs_uri("gs://bucket/globalAttributes.yaml")
+    hmb_gen.set_variable_attrs_uri("gs://bucket/variableAttributes.yaml")
+    hmb_gen.set_subset_to((0, 100))
+    hmb_gen.set_download_dir("download")
+    hmb_gen.set_output_dir("output")
+    hmb_gen.set_output_prefix("hmb_")
+    hmb_gen.set_add_quality_flag(True)
+    hmb_gen.set_gs_client(gs_client)
+
+    # Before processing, perform basic check of the parameters:
+    errors = hmb_gen.check_parameters()
+    if errors:
+        print(f"Errors: {errors}")
+    else:
+        result = hmb_gen.process_date("20220101")
+        if result:
+            print(f"Result: {result}")
+        hmb_gen.plot_date(
+            "20220101",
+            lat_lon_for_solpos=(37.7749, -122.4194),
+            title="HMB",
+            ylim=(0, 100),
+            cmlim=(0, 100),
+            dpi=300,
+            show=True,
+        )
+    ```
+    """
+
     def __init__(self) -> None:
         """
         Create a new object for HMB generation.
-        Use the various set methods to set the parameters,
-        then call process_date() to execute the process for a given date.
+        On the created instance, call the various `set_*` methods to set the parameters,
+        `check_parameters()` to verify the parameters, and
+        then call `process_date()` to execute the process for a given date.
+
+        See source code for more details on the default parameter values.
         """
         self._json_base_dir: str = ""
         self._global_attrs_uri: str = ""
@@ -29,6 +73,8 @@ class HmbGen:
         self._download_dir: str = ""
         self._output_dir: str = ""
         self._output_prefix: str = ""
+        self._compress_netcdf: bool = True
+        self._add_quality_flag: bool = False
 
         self._assume_downloaded_files: bool = False
         self._retain_downloaded_files: bool = False
@@ -43,30 +89,45 @@ class HmbGen:
     def set_json_base_dir(self, json_base_dir: str) -> None:
         """
         Set the base directory where JSON files are located.
+
+        Args:
+            json_base_dir (str): The base directory where JSON files are located.
         """
         self._json_base_dir = json_base_dir
 
     def set_global_attrs_uri(self, global_attrs_uri: str) -> None:
         """
         Set the URI for global attributes.
+
+        Args:
+            global_attrs_uri (str): The URI for global attributes.
         """
         self._global_attrs_uri = global_attrs_uri
 
     def set_variable_attrs_uri(self, variable_attrs_uri: str) -> None:
         """
-        set the URI for variable attributes.
+        Set the URI for variable attributes.
+
+        Args:
+            variable_attrs_uri (str): The URI for variable attributes.
         """
         self._variable_attrs_uri = variable_attrs_uri
 
     def set_voltage_multiplier(self, voltage_multiplier: float) -> None:
         """
         Set the voltage multiplier. By default, this is 1.0.
+
+        Args:
+            voltage_multiplier (float): The voltage multiplier.
         """
         self._voltage_multiplier = voltage_multiplier
 
     def set_sensitivity(self, sensitivity: float | str) -> None:
         """
         Set Sensitivity flat value (a float), or URI of sensitivity file.
+
+        Args:
+            sensitivity (float | str): Sensitivity flat value (a float), or URI of sensitivity file.
         """
         self._sensitivity = sensitivity
 
@@ -74,53 +135,97 @@ class HmbGen:
         """
         Set the frequency subset to use for the PSD.
 
-        :param subset_to:
-            Tuple of (lower, upper), with lower inclusive, upper exclusive.
+        Args:
+            subset_to (tuple[int, int]): Tuple of (lower, upper), with lower inclusive, upper exclusive.
         """
         self._subset_to = subset_to
 
     def set_download_dir(self, download_dir: str) -> None:
         """
         Set the download directory.
+
+        Args:
+            download_dir (str): The download directory.
         """
         self._download_dir = download_dir
 
     def set_output_dir(self, output_dir: str) -> None:
         """
         Set the output directory.
+
+        Args:
+            output_dir (str): The output directory.
         """
         self._output_dir = output_dir
 
     def set_output_prefix(self, output_prefix: str) -> None:
         """
         Set the output prefix.
+
+        Args:
+            output_prefix (str): The output prefix.
         """
         self._output_prefix = output_prefix
 
+    def set_compress_netcdf(self, compress_netcdf: bool) -> None:
+        """
+        Set whether to compress the NetCDF file.
+        This is done by default.
+
+        Args:
+            compress_netcdf (bool): Whether to compress the NetCDF file.
+        """
+        self._compress_netcdf = compress_netcdf
+
+    def set_add_quality_flag(self, add_quality_flag: bool) -> None:
+        """
+        Set whether to add quality flag variable (with value fixed to 2 - "Not evaluated") to the NetCDF file.
+        This is not done by default.
+
+        Args:
+            add_quality_flag (bool): Whether to add quality flag variable.
+        """
+        self._add_quality_flag = add_quality_flag
+
     def set_assume_downloaded_files(self, value: bool) -> None:
         """
-        :param value:
-            If True, skip downloading files that already exist in the download directory.
+        Set whether to skip downloading files that already exist in the download directory.
+        This is not done by default.
+
+        Args:
+            value:
+                If True, skip downloading files that already exist in the download directory.
         """
         self._assume_downloaded_files = value
 
     def set_retain_downloaded_files(self, value: bool) -> None:
         """
-        :param value:
-            If True, do not remove downloaded files after use.
+        Set whether to retain downloaded files after use.
+        This is not done by default.
+
+        Args:
+            value:
+                If True, do not remove downloaded files after use.
         """
         self._retain_downloaded_files = value
 
     def set_print_downloading_lines(self, value: bool) -> None:
         """
-        :param value:
-            If True, print "downloading <uri>" lines to console.
+        Set whether to print "downloading <uri>" lines to console.
+        This is not done by default.
+
+        Args:
+            value:
+                If True, print "downloading <uri>" lines to console.
         """
         self._print_downloading_lines = value
 
     def set_s3_client(self, s3_client: BaseClient) -> None:
         """
         Set the S3 client.
+
+        Args:
+            s3_client (BaseClient): The S3 client.
         """
         if self._gs_client:
             raise ValueError("A GS client has already been set.")
@@ -129,6 +234,9 @@ class HmbGen:
     def set_gs_client(self, gs_client: GsClient) -> None:
         """
         Set the GS client.
+
+        Args:
+            gs_client (GsClient): The GS client.
         """
         if self._s3_client:
             raise ValueError("A S3 client has already been set.")
@@ -140,7 +248,8 @@ class HmbGen:
         especially verifying that the required ones are given.
         Call this before performing any processing.
 
-        :return: None if all looks OK, or an error message.
+        Returns:
+            None if no errors, otherwise a string with the errors.
         """
         errors = []
 
@@ -196,6 +305,8 @@ class HmbGen:
             download_dir=self._download_dir,
             output_dir=self._output_dir,
             output_prefix=self._output_prefix,
+            compress_netcdf=self._compress_netcdf,
+            add_quality_flag=self._add_quality_flag,
             assume_downloaded_files=self._assume_downloaded_files,
             retain_downloaded_files=self._retain_downloaded_files,
             print_downloading_lines=self._print_downloading_lines,
@@ -208,11 +319,11 @@ class HmbGen:
         """
         Generates NetCDF file with the result of processing all segments of the given day.
 
-        :param date:
-            Date to process in YYYYMMDD format.
-        :return:
-            ProcessDayResult, or a  string indicating any errors
-             if no segments at all were processed for the day.
+        Args:
+            date (str): Date to process in YYYYMMDD format.
+
+        Returns:
+            ProcessDayResult if segments were processed, otherwise a string with an error.
         """
         if not self._hmb_gen:
             return "Missing or invalid parameters. Call check_parameters() first."
@@ -236,13 +347,14 @@ class HmbGen:
         The output will be saved as a JPEG file with name derived from the input date
         resulting in a sibling file to the NetCDF file.
 
-        :param date: Date to plot in YYYYMMDD format.
-        :param lat_lon_for_solpos: Lat/Lon for solar position calculation.
-        :param title: Title for the plot.
-        :param ylim: Limits for the y-axis.
-        :param cmlim: Limits passed to pcolormesh.
-        :param dpi: DPI to use for the plot.
-        :param show: Whether to also show the plot. By default, only the JPEG file is generated.
+        Args:
+            date (str): Date to plot in `YYYYMMDD` format.
+            lat_lon_for_solpos (tuple[float, float]): Latitude and longitude for solar position calculation.
+            title (str, optional): Title for the plot.
+            ylim (tuple[float, float], optional): Limits for the y-axis.
+            cmlim (tuple[float, float], optional): Limits passed to `pcolormesh`.
+            dpi (int, optional): DPI to use for the plot.
+            show (bool, optional): Whether to also show the plot. Defaults to `False`, meaning only the JPEG file is generated.
         """
         if not self._hmb_gen:
             raise ValueError(
@@ -276,6 +388,8 @@ class _HmbGen:
         download_dir: str,
         output_dir: str,
         output_prefix: str,
+        compress_netcdf: bool,
+        add_quality_flag: bool,
         assume_downloaded_files: bool,
         retain_downloaded_files: bool,
         print_downloading_lines: bool,
@@ -298,6 +412,8 @@ class _HmbGen:
         self.download_dir = download_dir
         self.output_dir = output_dir
         self.output_prefix = output_prefix
+        self.compress_netcdf = compress_netcdf
+        self.add_quality_flag = add_quality_flag
 
         self.assume_downloaded_files = assume_downloaded_files
         self.retain_downloaded_files = retain_downloaded_files
@@ -341,6 +457,8 @@ class _HmbGen:
             file_helper=file_helper,
             output_dir=self.output_dir,
             output_prefix=self.output_prefix,
+            compress_netcdf=self.compress_netcdf,
+            add_quality_flag=self.add_quality_flag,
             global_attrs_uri=self.global_attrs_uri,
             variable_attrs_uri=self.variable_attrs_uri,
             voltage_multiplier=self.voltage_multiplier,
