@@ -113,7 +113,7 @@ class SoundTrapWavFile(AudioFile):
         
         if not self.start or not self.end or not self.frames:
             raise ValueError(f"Error reading {self.path_or_url}. Faulty wavfile")
-        
+
 
 class GenericWavFile(AudioFile):
     """GenericWavFile uses the metadata from the wav file itself,
