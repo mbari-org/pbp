@@ -13,7 +13,6 @@ import re
 import soundfile as sf
 import pandas as pd
 from datetime import datetime, timedelta
-import xml.etree.ElementTree as ET
 from pbp.meta_gen.utils import parse_s3_or_gcp_url
 
 
@@ -75,61 +74,6 @@ class AudioFile:
         return self.fs / 2
 
 
-class SoundTrapWavFile(AudioFile):
-    def __init__(self, path_or_url: str, xml_file: str, start: datetime):
-        """
-        SoundTrapWavFile uses the metadata from the xml files, not the wav file itself
-        :param path_or_url:
-            The path or uri of the wav file
-        :param xml_file:
-            The uri of the xml file that contains the metadata
-        :param path_or_url:
-
-        :param start:
-        """
-        super().__init__(path_or_url, start)
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
-        wav_start_dt = None
-        wav_stop_dt = None
-        sample_count = None
-        sample_rate = 48_000  # default sample rate
-
-        # Iterate over the XML elements grabbing the needed metadata values
-        for element in root.iter("CFG"):
-            if element.get("ID") == "4":
-                value = element.find("FS")
-                if value is not None:
-                    sample_rate = int(value.text)  # type: ignore[arg-type]
-
-        for element in root.iter("WavFileHandler"):
-            value = element.get("SamplingStartTimeUTC")
-            if value:
-                wav_start_dt = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
-
-            value = element.get("SamplingStopTimeUTC")
-            if value:
-                wav_stop_dt = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
-
-            value = element.get("SampleCount")
-            if value:
-                sample_count = int(value)
-
-        # Error checking
-        if not wav_start_dt or not wav_stop_dt or not sample_count:
-            raise ValueError(f"Error reading {xml_file}. Missing metadata")
-
-        self.path_or_url = path_or_url
-        self.start = wav_start_dt
-        self.end = wav_stop_dt
-        self.duration_secs = sample_count / sample_rate
-        self.fs = sample_rate
-        self.frames = sample_count
-        self.channels = 1
-        self.subtype = "SoundTrap"
-        self.exception = ""  # no exceptions for SoundTrap  files
-
-
 class GenericWavFile(AudioFile):
     """GenericWavFile uses the metadata from the wav file itself,
     but only grabs the needed metadata from the header in S3"""
@@ -146,9 +90,9 @@ class GenericWavFile(AudioFile):
         self.subtype = ""
         self.exception = ""
         self.path_or_url = path_or_url
-        bytes_per_sec = (
-            3 * 256e3
-        )  # 3 bytes per sample at 24-bit resolution and 256 kHz sampling rate
+        # bytes_per_sec = (
+        #     3 * 256e3
+        # )  # 3 bytes per sample at 24-bit resolution and 256 kHz sampling rate
 
         try:
             # if the in_file is a s3 url, then read the metadata from the s3 url
@@ -161,8 +105,10 @@ class GenericWavFile(AudioFile):
                 info = sf.info(io.BytesIO(urlopen(url).read(20_000)), verbose=True)
                 # get the duration from the extra_info data field which stores the duration in total bytes
                 fields = info.extra_info.split()
-                idx = fields.index("data")
-                self.duration_secs = float(fields[idx + 2]) / bytes_per_sec
+                idx_data = fields.index("data")
+                idx_bytes = fields.index("Bytes/sec")
+                bytes_per_sec = float(fields[idx_bytes + 2])
+                self.duration_secs = float(fields[idx_data + 2]) / bytes_per_sec
                 # get the size in bytes of the data+RIFF header
                 idx = fields.index("RIFF")
                 riff_size = int(fields[idx + 2]) + 8

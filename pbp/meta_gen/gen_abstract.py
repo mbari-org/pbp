@@ -67,7 +67,6 @@ class SoundTrapMetadataGeneratorAbstract(object):
         audio_loc: str,
         json_base_dir: str,
         prefixes: List[str],
-        xml_dir: str,
         start: datetime,
         end: datetime,
         seconds_per_file: float = 0.0,
@@ -81,8 +80,6 @@ class SoundTrapMetadataGeneratorAbstract(object):
             The local directory to write the json files to
         :param prefixes:
             The search patterns to match the wav files, e.g. 'MARS'
-        :param xml_dir
-            The local directory that contains the log.xml files, defaults to audio_loc if none is specified.
         :param start:
             The start date to search for wav files
         :param end:
@@ -98,7 +95,6 @@ class SoundTrapMetadataGeneratorAbstract(object):
             self.start = start
             self.end = end
             self.prefixes = prefixes
-            self.xml_dir = xml_dir
             self._log = log
             self._seconds_per_file = None if seconds_per_file == 0 else seconds_per_file
         except Exception as e:
