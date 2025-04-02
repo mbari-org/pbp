@@ -17,7 +17,7 @@ from pathlib import Path
 from progressbar import progressbar
 
 from pbp.meta_gen.gen_abstract import SoundTrapMetadataGeneratorAbstract
-from pbp.meta_gen.meta_reader import SoundTrapWavFile
+from pbp.meta_gen.meta_reader import GenericWavFile
 from pbp.meta_gen.json_generator import JsonGenerator
 from pbp.meta_gen.utils import (
     parse_s3_or_gcp_url,
@@ -41,7 +41,6 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
         uri: str,
         json_base_dir: str,
         prefixes: List[str],
-        xml_dir: str,
         start: datetime.datetime = START,
         end: datetime.datetime = END,
         seconds_per_file: float = 0.0,
@@ -62,16 +61,13 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             The end date to search for wav files check is done.
         :return:
         """
-        self.xml_dir = xml_dir
 
         super().__init__(
-            log, uri, json_base_dir, prefixes, self.xml_dir, start, end, seconds_per_file
+            log, uri, json_base_dir, prefixes, start, end, seconds_per_file
         )
 
     def run(self):
         try:
-            xml_cache_path = Path(self.json_base_dir) / "xml_cache"
-            xml_cache_path.mkdir(exist_ok=True, parents=True)
             wav_files = []
 
             self.log.info(
@@ -87,28 +83,26 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             # Set the start and end dates to 1 day before and after the start and end dates
             start_dt = self.start - timedelta(days=1)
             end_dt = self.end + timedelta(days=1)
-            errorcount = 0 
             if scheme == "file":
                 parsed_uri = urllib.parse.urlparse(self.audio_loc)
 
                 if os.name == "nt":
-                    wav_path = Path(parsed_uri.path[3:])
+                    wav_path = Path(parsed_uri.netloc).joinpath(parsed_uri.path)
                 else:
                     wav_path = Path(parsed_uri.path)
 
                 for filename in progressbar(
                     sorted(wav_path.rglob("*.wav")), prefix="Searching : "
                 ):
-                    wav_path = filename.parent / f"{filename.stem}.wav"
-                    #xml_path = Path(self.xml_dir + "/" + f"{filename.stem}.log.xml")
-                    start_dt = get_datetime(wav_path, self.prefixes)
+                    local_wav_path = filename.parent / f"{filename.stem}.wav"
+                    start_dt = get_datetime(local_wav_path, self.prefixes)
 
                     # Must have a start date to be valid and also must have a corresponding xml file
                     if (
-                        start_dt and (self.start-timedelta(days=1))  <= start_dt <= end_dt 
+                        start_dt and (self.start-timedelta(days=1)) <= start_dt <= end_dt
                     ):  # TODO : Saying that a str object can not have an .exists()
                         wav_files.append(
-                            SoundTrapWavFile(wav_path.as_posix(), start_dt)
+                            GenericWavFile(self.log, local_wav_path.as_posix(), start_dt)
                         )
             else:
                 # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
@@ -131,23 +125,13 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                         key = obj["Key"]
                         uri = f"s3://{bucket}/{key}"
                         key_dt = get_datetime(uri, self.prefixes)
-                        xml_path = xml_cache_path / key
-                        xml_path = xml_path.with_suffix(".xml")
-                        key_xml = key.replace(".wav", ".log.xml")
 
                         if key_dt is None:
                             continue
+
                         if start_dt <= key_dt <= end_dt and key.endswith(".wav"):
-                            # download the associated xml file to the wav file and create a SoundTrapWavFile object
-                            try:
-                                self.log.debug(f"Downloading {key_xml} ...")
-                                client.download_file(bucket, key_xml, xml_path)
-                                wav_files.append(SoundTrapWavFile(uri, key_dt))
-                            except Exception as ex:
-                                self.log.error(
-                                    f"Could not download {key_xml} - {str(ex)}"
-                                )
-                                continue
+                            self.log.info(f"Found {uri} with timestamp {key_dt}")
+                            wav_files.append(GenericWavFile(self.log, uri, key_dt))
 
             self.log.info(
                 f"Found {len(wav_files)} files to process that covers the expanded period {self.start-timedelta(days=1)} - {end_dt}"
