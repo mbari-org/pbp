@@ -13,7 +13,6 @@ import re
 import soundfile as sf
 import pandas as pd
 from datetime import datetime, timedelta
-import xml.etree.ElementTree as ET
 from pbp.meta_gen.utils import parse_s3_or_gcp_url
 
 
