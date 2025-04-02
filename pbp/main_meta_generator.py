@@ -22,15 +22,6 @@ from pbp.main_meta_generator_args import parse_arguments
 def run_main_meta_generator(opts: Namespace):
     log_dir = Path(opts.output_dir)
     json_dir = Path(opts.json_base_dir)
-    if opts.xml_dir is None:
-        if os.name == "nt":
-            xml_dir_str = str(opts.uri).replace("file:\\\\\\", "")
-        else:
-            xml_dir_str = str(opts.uri).replace("file:///", "")
-
-        xml_dir = Path(xml_dir_str)
-    else:
-        xml_dir = Path(opts.xml_dir)
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
     start = datetime.strptime(opts.start, "%Y%m%d")
