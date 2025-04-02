@@ -75,7 +75,6 @@ def run_main_meta_generator(opts: Namespace):
                 prefixes=opts.prefix,
                 start=start,
                 end=end,
-                xml_dir=xml_dir.as_posix(),
             )
             generator.run()
     except KeyboardInterrupt:

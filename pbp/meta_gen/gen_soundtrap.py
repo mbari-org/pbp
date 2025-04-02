@@ -215,7 +215,6 @@ if __name__ == "__main__":
         "s3://pacific-sound-ch01",
         json_dir.as_posix(),
         ["7000"],
-        xml_dir.as_posix(),
         start,
         end,
     )
