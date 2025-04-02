@@ -1,4 +1,3 @@
-import os
 from argparse import Namespace
 from datetime import datetime
 from pathlib import Path
