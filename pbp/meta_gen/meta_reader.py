@@ -75,46 +75,6 @@ class AudioFile:
         return self.fs / 2
 
 
-class SoundTrapWavFile(AudioFile):
-    def __init__(self, path_or_url: str, start: datetime):
-        """
-        SoundTrapWavFile uses the metadata from the xml files, not the wav file itself
-        :param path_or_url:
-            The path or uri of the wav file
-        :param xml_file:
-            The uri of the xml file that contains the metadata
-        :param path_or_url:
-
-        :param start:
-        """
-        super().__init__(path_or_url, start)
-        self.path_or_url = path_or_url
-        self.start = start
-        self.end = None
-        self.duration_secs = None
-        self.fs = None 
-        self.frames = None
-        self.channels = None
-        self.subtype = "SoundTrap"
-        self.exception = ""  # no exceptions for SoundTrap  files
-        try:
-            self._read_wav_metadata()
-        except ValueError as ex:        
-            raise ValueError(f"Error reading {self.path_or_url}. {ex}")
-        
-    def _read_wav_metadata(self):
-        # read the wav file to get the metadata
-        metadata = sf.info(self.path_or_url)
-        self.fs = metadata.samplerate
-        self.frames = metadata.frames
-        self.channels = metadata.channels
-        self.duration_secs = metadata.duration
-        self.end = self.start + timedelta(seconds=self.duration_secs)
-        
-        if not self.start or not self.end or not self.frames:
-            raise ValueError(f"Error reading {self.path_or_url}. Faulty wavfile")
-
-
 class GenericWavFile(AudioFile):
     """GenericWavFile uses the metadata from the wav file itself,
     but only grabs the needed metadata from the header in S3"""
@@ -131,9 +91,9 @@ class GenericWavFile(AudioFile):
         self.subtype = ""
         self.exception = ""
         self.path_or_url = path_or_url
-        bytes_per_sec = (
-            3 * 256e3
-        )  # 3 bytes per sample at 24-bit resolution and 256 kHz sampling rate
+        # bytes_per_sec = (
+        #     3 * 256e3
+        # )  # 3 bytes per sample at 24-bit resolution and 256 kHz sampling rate
 
         try:
             # if the in_file is a s3 url, then read the metadata from the s3 url
@@ -146,8 +106,10 @@ class GenericWavFile(AudioFile):
                 info = sf.info(io.BytesIO(urlopen(url).read(20_000)), verbose=True)
                 # get the duration from the extra_info data field which stores the duration in total bytes
                 fields = info.extra_info.split()
-                idx = fields.index("data")
-                self.duration_secs = float(fields[idx + 2]) / bytes_per_sec
+                idx_data = fields.index("data")
+                idx_bytes = fields.index("Bytes/sec")
+                bytes_per_sec = float(fields[idx_bytes + 2])
+                self.duration_secs = float(fields[idx_data + 2]) / bytes_per_sec
                 # get the size in bytes of the data+RIFF header
                 idx = fields.index("RIFF")
                 riff_size = int(fields[idx + 2]) + 8
