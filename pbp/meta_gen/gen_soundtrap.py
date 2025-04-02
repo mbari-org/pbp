@@ -62,9 +62,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
         :return:
         """
 
-        super().__init__(
-            log, uri, json_base_dir, prefixes, start, end, seconds_per_file
-        )
+        super().__init__(log, uri, json_base_dir, prefixes, start, end, seconds_per_file)
 
     def run(self):
         try:
@@ -99,7 +97,8 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
 
                     # Must have a start date to be valid and also must have a corresponding xml file
                     if (
-                        start_dt and (self.start-timedelta(days=1)) <= start_dt <= end_dt
+                        start_dt
+                        and (self.start - timedelta(days=1)) <= start_dt <= end_dt
                     ):  # TODO : Saying that a str object can not have an .exists()
                         wav_files.append(
                             GenericWavFile(self.log, local_wav_path.as_posix(), start_dt)
@@ -107,7 +106,9 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             else:
                 # if the audio_loc is a s3 url, then we need to list the files in buckets that cover the start and end
                 # dates
-                self.log.debug(f"Searching between {self.start-timedelta(days=1)} and {end_dt}")
+                self.log.debug(
+                    f"Searching between {self.start-timedelta(days=1)} and {end_dt}"
+                )
 
                 client = boto3.client("s3", config=Config(signature_version=UNSIGNED))
                 paginator = client.get_paginator("list_objects")
