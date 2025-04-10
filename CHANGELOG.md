@@ -2,6 +2,9 @@
 
 2025-04
 
+- 1.7.0: Bumped PyPAM to 0.3.2 from 0.3.0.
+  A needed adjustment was to set pvlib to "^0.11.0"
+
 - 1.6.4: 
   Get metadata from the wav headers instead of the xml files that are accompanied by soundtrap recordings
   ([PR #74](https://github.com/mbari-org/pbp/pull/74)).

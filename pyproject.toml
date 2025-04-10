@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "1.6.4"
+version = "1.7.0"
 description = "PyPAM based Processing"
 authors = [
     "Carlos Rueda <carueda@mbari.org>",
@@ -29,7 +29,7 @@ pbp-meta-gen = "pbp.main_meta_generator:main"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12.0"
-lifewatch-pypam = "0.3.0"
+lifewatch-pypam = "0.3.2"
 boto3 = "1.34.47"
 google-cloud-storage = "2.18.0"
 dataclasses-json = "0.6"
@@ -39,7 +39,7 @@ progressbar2 = "3.53.1"
 marshmallow = "3.20.2"
 soundfile = "0.12.1"
 h5netcdf = "1.3.0"
-pvlib = "0.10.3"
+pvlib = "^0.11.0"
 Pyarrow = "15.0.0"
 loguru = {extras = ["mypy"], version = "^0.7.2"}
 loguru-mypy = "^0.0.4"
