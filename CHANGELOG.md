@@ -1,5 +1,12 @@
 # PBP – PyPAM based processing
 
+2025-04
+
+- 1.6.4: 
+  Get metadata from the wav headers instead of the xml files that are accompanied by soundtrap recordings
+  ([PR #74](https://github.com/mbari-org/pbp/pull/74)).
+  Thanks to @cparcerisas, @bram-cuyx for the contribution!
+  
 2025-03
 
 - Resolve #37 "Add pre-commit"
