@@ -3060,14 +3060,14 @@ tests = ["black (>=24.3.0)", "matplotlib (>=3.3.4)", "mypy (>=1.9)", "numpydoc (
 
 [[package]]
 name = "scikit-maad"
-version = "1.5.0"
+version = "1.5.1"
 description = "Open-source and modular toolbox for quantitative soundscape analysis in Python"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "scikit_maad-1.5.0-py3-none-any.whl", hash = "sha256:6f895dd951627989306cd37e67b1609501d2f21f54c2657d60351e518b153c80"},
-    {file = "scikit_maad-1.5.0.tar.gz", hash = "sha256:49997671ba40e90ac65c3d8a0e6413e15b5011ebfd5a883e1ff9976840ff84e5"},
+    {file = "scikit_maad-1.5.1-py3-none-any.whl", hash = "sha256:e48d6ccb7fa75a16f99c51616e53dba9aec30dc921e16053aa50f2a41bf4fcbc"},
+    {file = "scikit_maad-1.5.1.tar.gz", hash = "sha256:d5c6441f5f0274652cfc9b1888a21705f28ffa5ae023f45c731510bb99a87c82"},
 ]
 
 [package.dependencies]
