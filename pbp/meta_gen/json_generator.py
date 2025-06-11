@@ -10,6 +10,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import json
+import loguru
 
 from pbp.meta_gen.utils import InstrumentType
 
@@ -17,7 +18,7 @@ from pbp.meta_gen.utils import InstrumentType
 class JsonGenerator:
     def __init__(
         self,
-        log,  # : loguru.Logger,
+        log: "loguru.Logger",
         raw_df: pd.DataFrame,
         json_path_out: str,
         day: datetime.datetime,

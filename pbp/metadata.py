@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional
 
 import xarray as xr
 import yaml
+import loguru
 
 
 def parse_attributes(contents: str, suffix: str) -> OrderedDict[str, Any]:
@@ -26,7 +27,7 @@ def parse_attributes(contents: str, suffix: str) -> OrderedDict[str, Any]:
 class MetadataHelper:
     def __init__(
         self,
-        log,  # : loguru.Logger,
+        log: "loguru.Logger",
         global_attributes: Optional[OrderedDict[str, Any]] = None,
         variable_attributes: Optional[OrderedDict[str, Any]] = None,
     ):

@@ -10,7 +10,7 @@ from typing import Optional, Tuple
 def create_logger(
     log_filename_and_level: Optional[Tuple[str, str]] = None,
     console_level: Optional[str] = None,
-):  # -> loguru.Logger:  # poetry complains about not recognizing this type :(
+) -> "loguru.Logger":
     """
     Create logger instance, typically to be used for a day of processing.
 
