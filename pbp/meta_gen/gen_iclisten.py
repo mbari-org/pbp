@@ -8,6 +8,7 @@ from typing import List
 import boto3
 from botocore import UNSIGNED
 from botocore.client import Config
+import loguru
 
 import pandas as pd
 from pathlib import Path
@@ -28,7 +29,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
 
     def __init__(
         self,
-        log,  # : loguru.Logger,
+        log: "loguru.Logger",
         uri: str,
         json_base_dir: str,
         start: datetime,

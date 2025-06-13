@@ -5,7 +5,7 @@ from math import ceil, floor
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
 
-# import loguru
+import loguru
 import numpy as np
 import soundfile as sf
 
@@ -29,7 +29,7 @@ class SoundStatus:
 
     def __init__(
         self,
-        log,  # : loguru.Logger,
+        log: "loguru.Logger",
         uri: str,
         audio_base_dir: Optional[str],
         audio_path_map_prefix: str,
@@ -122,7 +122,7 @@ class SoundStatus:
 
 
 def _download(
-    log,  # : loguru.Logger,
+    log: "loguru.Logger",
     parsed_uri: ParseResult,
     download_dir: str,
     assume_downloaded_files: bool = False,
@@ -187,7 +187,7 @@ class FileHelper:
 
     def __init__(
         self,
-        log,  # : loguru.Logger,
+        log: "loguru.Logger",
         json_base_dir: str,
         audio_base_dir: Optional[str] = None,
         audio_path_map_prefix: str = "",

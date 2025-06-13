@@ -1,4 +1,5 @@
 import json
+import loguru
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Generator, List
@@ -55,7 +56,7 @@ class JEntryIntersection:
 
 
 def get_intersecting_entries(
-    log,  # : loguru.Logger,
+    log: "loguru.Logger",
     json_entries: List[JEntry],
     year: int,
     month: int,

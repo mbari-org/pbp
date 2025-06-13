@@ -6,6 +6,7 @@ import re
 from datetime import timedelta, datetime
 import time
 from typing import List
+import loguru
 
 from google.cloud import storage
 
@@ -23,7 +24,7 @@ from pbp.meta_gen.utils import parse_s3_or_gcp_url, InstrumentType, plot_daily_c
 class NRSMetadataGenerator(MetadataGeneratorAbstract):
     def __init__(
         self,
-        log,  # : loguru.Logger,
+        log: "loguru.Logger",
         uri: str,
         json_base_dir: str,
         start: datetime,

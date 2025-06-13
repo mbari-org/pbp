@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import cast, List, Optional, Tuple
+import loguru
 
 import numpy as np
 import pypam.signal as sig
@@ -39,10 +40,7 @@ class PypamSupport:
     aggregated hybrid millidecade PSD product.
     """
 
-    def __init__(
-        self,
-        log,  #: loguru.Logger
-    ) -> None:
+    def __init__(self, log: "loguru.Logger") -> None:
         """
         Creates a helper to process audio segments for a given day,
         resulting in the aggregated hybrid millidecade PSD product.

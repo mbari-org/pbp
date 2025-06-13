@@ -3,6 +3,7 @@
 # Description:  Captures SoundTrap metadata either from a local directory of S3 bucket
 import urllib
 from typing import List
+import loguru
 
 import boto3
 from botocore import UNSIGNED
@@ -37,7 +38,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
 
     def __init__(
         self,
-        log,  # : loguru.Logger,
+        log: "loguru.Logger",
         uri: str,
         json_base_dir: str,
         prefixes: List[str],

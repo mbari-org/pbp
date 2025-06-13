@@ -1,5 +1,6 @@
 import pathlib
 import os
+import loguru
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
@@ -38,7 +39,7 @@ class ProcessDayResult:
 class ProcessHelper:
     def __init__(
         self,
-        log,  # : loguru.Logger,
+        log: "loguru.Logger",
         file_helper: FileHelper,
         output_dir: str,
         output_prefix: str,
@@ -325,7 +326,7 @@ class ProcessHelper:
 
 
 def save_dataset_to_netcdf(
-    log,  #: loguru.Logger,
+    log: "loguru.Logger",
     ds: xr.Dataset,
     filename: str,
     compress_netcdf: bool = True,

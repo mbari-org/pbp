@@ -3,6 +3,7 @@
 # Description:  Abstract class that captures sound wav metadata
 from datetime import datetime
 from typing import List
+import loguru
 
 import pandas as pd
 
@@ -12,7 +13,7 @@ from pbp.meta_gen.utils import check_start_end_args
 class MetadataGeneratorAbstract(object):
     def __init__(
         self,
-        log,  # : loguru.Logger,
+        log: "loguru.Logger",
         audio_loc: str,
         json_base_dir: str,
         prefixes: List[str],
@@ -66,7 +67,7 @@ class MetadataGeneratorAbstract(object):
 class SoundTrapMetadataGeneratorAbstract(object):
     def __init__(
         self,
-        log,  # : loguru.Logger,
+        log: "loguru.Logger",
         audio_loc: str,
         json_base_dir: str,
         prefixes: List[str],
