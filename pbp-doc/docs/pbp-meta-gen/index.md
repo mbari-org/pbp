@@ -19,6 +19,8 @@ Three types of audio recorders are supported: NRS, IcListen, and Soundtrap files
 | NRS       |  :material-check:                                                               | :material-close:                                                             |  :material-check:             |
 | IcListen  |  :material-close:                                                               | :material-check:                                                             | :material-check:             |
 | Soundtrap |  :material-close:                                                               | :material-check:                                                             | :material-check:             |
+| RESEA     |  :material-close:                                                               | :material-close:                                                             | :material-check:             |
+ 
 
 For audio that is stored in a cloud storage bucket, the URI that is required to access the audio files depends on the cloud storage provider.
 The data must be stored in a public cloud storage bucket; private buckets are not supported.
