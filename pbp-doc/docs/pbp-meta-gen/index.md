@@ -36,7 +36,7 @@ The data must be stored in a public cloud storage bucket; private buckets are no
     the prefix would be `ONMS_FK01_7412_` or `ONMS_FK01_7412`, `NRS11_20191024_022220.flac` would have a prefix of `NRS11_`, and 
     `MARS_20220902_000000.wav` would have a prefix of `MARS_` or `MARS`.
      
-    There is flexible handling of the timestamp in the file name, so any of following file names are all valid:
+    There is flexible handling of the timestamp in the file name, so any of following file names are valid:
 
     ```
         NRS11_20191024_022220.flac
@@ -139,7 +139,7 @@ pbp-meta-gen --recorder=SOUNDTRAP \
 ## JSON format
 
 !!! note "Why JSON?"
-    We choose JSON files to store the metadata because it is human-readable, easy to parse, and can be easily integrated as part of a 
+    We chose JSON files to store the metadata because it is human-readable, easy to parse, and can be easily integrated as part of a 
     larger data processing pipeline. 
 
 The JSON file schema is as follows:
