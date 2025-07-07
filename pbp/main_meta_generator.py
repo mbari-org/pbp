@@ -78,16 +78,6 @@ def run_main_meta_generator(opts: Namespace):
                 end=end,
             )
             generator.run()
-        if opts.recorder == "RESEA":
-            generator = ReseaMetadataGenerator(
-                log=log,
-                uri=opts.uri,
-                json_base_dir=json_dir.as_posix(),
-                prefixes=opts.prefix,
-                start=start,
-                end=end,
-            )
-            generator.run()
     except KeyboardInterrupt:
         log.info("INTERRUPTED")
 
