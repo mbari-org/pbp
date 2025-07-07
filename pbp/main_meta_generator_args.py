@@ -33,7 +33,12 @@ Examples:
 
     parser.add_argument(
         "--recorder",
-        choices=[InstrumentType.NRS, InstrumentType.ICLISTEN, InstrumentType.SOUNDTRAP],
+        choices=[
+            InstrumentType.NRS,
+            InstrumentType.ICLISTEN,
+            InstrumentType.SOUNDTRAP,
+            InstrumentType.RESEA,
+        ],
         required=True,
         help="Choose the audio instrument type",
     )

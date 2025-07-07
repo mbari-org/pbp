@@ -20,6 +20,7 @@ class InstrumentType:
     NRS = "NRS"
     ICLISTEN = "ICLISTEN"
     SOUNDTRAP = "SOUNDTRAP"
+    RESEA = "RESEA"
 
 
 def parse_s3_or_gcp_url(url) -> Tuple[str, str, str]:
@@ -50,6 +51,7 @@ def extract_timecode(filename: str, prefixes: List[str]):
     patterns = {
         "underscore_format1": r"{}[._]?(\d{{8}})_(\d{{6}})\.",
         "underscore_format2": r"{}[._]?(\d{{6}})_(\d{{6}})\.",
+        "underscore_format3": r"{}[._]?(\d{{4}})-(\d{{2}})-(\d{{2}})_(\d{{2}})-(\d{{2}})-(\d{{2}})\.",
         "dot_format": r"{}[._]?(\d{{12}})\.",
         "iso_format": r"{}[._]?(\d{{8}}T\d{{6}}Z)\.",
     }
@@ -87,6 +89,7 @@ def get_datetime(time_str: str, prefixes: List[str]):
         "%Y%m%d%H%M%S",
         "%Y%m%dT%H%M%SZ",
         "%Y%m%dT%H%M%S",
+        "%Y-%m-%d_%H-%M-%S",
     ]
     for fmt in possible_dt_formats:
         try:

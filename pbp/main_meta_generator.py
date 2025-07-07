@@ -10,6 +10,7 @@ from pbp.meta_gen.gen_abstract import (
 from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
 from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
 from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
+from pbp.meta_gen.gen_resea import ReseaMetadataGenerator
 from pbp.main_meta_generator_args import parse_arguments
 
 
@@ -59,6 +60,16 @@ def run_main_meta_generator(opts: Namespace):
             # TODO: add multiprocessing here for speed-up
         if opts.recorder == "SOUNDTRAP":
             generator = SoundTrapMetadataGenerator(
+                log=log,
+                uri=opts.uri,
+                json_base_dir=json_dir.as_posix(),
+                prefixes=opts.prefix,
+                start=start,
+                end=end,
+            )
+            generator.run()
+        if opts.recorder == "RESEA":
+            generator = ReseaMetadataGenerator(
                 log=log,
                 uri=opts.uri,
                 json_base_dir=json_dir.as_posix(),

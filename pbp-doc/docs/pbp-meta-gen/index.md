@@ -11,7 +11,7 @@ Once this is done, you can proceed to the main program [pbp-hmb-gen](../pbp-hmb-
 
 ## Overview
 
-Three types of audio recorders are supported: NRS, IcListen, and Soundtrap files. Here is the current supported matrix:
+Three types of audio recorders are supported: NRS, IcListen, Soundtrap and RTSys (RESEA) files. Here is the current supported matrix:
 
 ----------------
 | Recorder  | [Google Storage](https://cloud.google.com/storage/docs/buckets) | [AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html) | Local Storage |
@@ -19,6 +19,8 @@ Three types of audio recorders are supported: NRS, IcListen, and Soundtrap files
 | NRS       |  :material-check:                                                               | :material-close:                                                             |  :material-check:             |
 | IcListen  |  :material-close:                                                               | :material-check:                                                             | :material-check:             |
 | Soundtrap |  :material-close:                                                               | :material-check:                                                             | :material-check:             |
+| RESEA     |  :material-close:                                                               | :material-close:                                                             | :material-check:             |
+ 
 
 For audio that is stored in a cloud storage bucket, the URI that is required to access the audio files depends on the cloud storage provider.
 The data must be stored in a public cloud storage bucket; private buckets are not supported.
@@ -51,8 +53,22 @@ The data must be stored in a public cloud storage bucket; private buckets are no
     The start and end date should be a string date, not including hour, minutes nor seconds. 
     When using the API directly instead of running the `pbp-meta-gen` command-line program, start and end date should
     be a datetime.datetime object starting at 00:00:00. A datetime.date can also be passed, and it will be 
-    automatically converted. If these requirements are not met, pbp will raise an error. 
+    automatically converted. If these requirements are not met, pbp will raise an error.
+    An example, if your data is stored locally, for example in `\Users\dcline\Downloads`, and you're processing SoundTrap
+    data: 
+```python
+        import datetime 
+        from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
 
+        meta_gen = SoundTrapMetadataGenerator(
+            log='/Users/dcline/Downloads/log', # str pointing to the log file
+            uri='/Users/dcline/Downloads/wav', # str pointing to the sound file location
+            json_base_dir='/Users/dcline/Downloads/metadata', # str pointing to where to store the json metadata files
+            start=datetime.date(2025, 8, 18), # date object
+            end=datetime.date(2025, 9, 18),
+            prefixes=['6610.'], # list of all the prefixes to look for
+            seconds_per_file=500)
+```
 
 ## Generate JSONs with audio metadata from NRS flac files for a date range
 
