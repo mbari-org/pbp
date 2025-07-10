@@ -117,6 +117,8 @@ class HmbGen:
         """
         Set the voltage multiplier. By default, this is 1.0.
 
+        Do not call this method if you are indicating sensitivity.
+
         Args:
             voltage_multiplier (float): The voltage multiplier.
         """
@@ -124,7 +126,14 @@ class HmbGen:
 
     def set_sensitivity(self, sensitivity: float | str) -> None:
         """
-        Set Sensitivity flat value (a float), or URI of sensitivity file.
+        Set sensitivity for calibration of result.
+
+        The argument can be a flat value (a float), or URI of sensitivity file.
+
+        - For flat value, the value should be positive.
+        - For URI, the values should be negative.
+        - If using this setting, either do not also call `set_voltage_multiplier`,
+          or call it with a value of 1.0.
 
         Args:
             sensitivity (float | str): Sensitivity flat value (a float), or URI of sensitivity file.
