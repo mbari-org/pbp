@@ -23,6 +23,8 @@
 #     URI of JSON file with global attributes to be added to the NetCDF file.
 #  VARIABLE_ATTRS_URI: (Optional)
 #     URI of JSON file with attributes to associate to the variables in the NetCDF file.
+#  EXCLUDE_CALIBRATION_TONES: (Optional)
+#     See https://github.com/mbari-org/pbp/issues/82.
 #  VOLTAGE_MULTIPLIER: (Optional)
 #     Applied on the loaded signal.
 #  SENSITIVITY_NETCDF_URI: (Optional)
@@ -82,6 +84,12 @@ def main():
 
     # The bucket to write the output to
     output_bucket = os.getenv("S3_OUTPUT_BUCKET")
+
+    exclude_calibration_tones = (
+        float(os.getenv("EXCLUDE_CALIBRATION_TONES"))
+        if os.getenv("EXCLUDE_CALIBRATION_TONES") is not None
+        else None
+    )
 
     # Applied on the loaded signal
     voltage_multiplier = (
@@ -165,6 +173,7 @@ def main():
         output_prefix=output_prefix,
         global_attrs_uri=global_attrs_uri,
         variable_attrs_uri=variable_attrs_uri,
+        exclude_calibration_tones=exclude_calibration_tones,
         voltage_multiplier=voltage_multiplier,
         sensitivity_uri=sensitivity_uri,
         sensitivity_flat_value=sensitivity_flat_value,

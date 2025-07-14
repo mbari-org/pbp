@@ -95,6 +95,15 @@ Examples:
     )
 
     parser.add_argument(
+        "--exclude-calibration-tones",
+        type=int,
+        default=None,
+        metavar="seconds",
+        help="Set the number of seconds to exclude from each input audio file."
+        " See https://github.com/mbari-org/pbp/issues/82.",
+    )
+
+    parser.add_argument(
         "--voltage-multiplier",
         type=float,
         default=None,

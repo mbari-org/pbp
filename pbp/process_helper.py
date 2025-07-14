@@ -49,7 +49,7 @@ class ProcessHelper:
         global_attrs_uri: Optional[str] = None,
         set_global_attrs: Optional[list[list[str]]] = None,
         variable_attrs_uri: Optional[str] = None,
-        exclude_cal_tones: Optional[int] = None,
+        exclude_calibration_tones: Optional[int] = None,
         voltage_multiplier: Optional[float] = None,
         sensitivity_uri: Optional[str] = None,
         sensitivity_flat_value: Optional[float] = None,
@@ -69,7 +69,7 @@ class ProcessHelper:
             global_attrs_uri (str): URI of a JSON file with global attributes to be added to the NetCDF file.
             set_global_attrs (list[tuple[str, str]]): List of (key, value) pairs to be considered for the global attributes.
             variable_attrs_uri (str): URI of a JSON file with variable attributes to be added to the NetCDF file.
-            exclude_cal_tones (int): See https://github.com/mbari-org/pbp/issues/82
+            exclude_calibration_tones (int): See https://github.com/mbari-org/pbp/issues/82
             voltage_multiplier (float): Factor applied to the loaded signal.
             sensitivity_uri (str, optional): URI of a sensitivity NetCDF file for calibration of results.
                 Has precedence over `sensitivity_flat_value`.
@@ -90,8 +90,8 @@ class ProcessHelper:
             + f"\n    set_global_attrs:       {set_global_attrs}"
             + f"\n    variable_attrs_uri:     {variable_attrs_uri}"
             + (
-                f"\n    exclude_cal_tones:      {exclude_cal_tones}"
-                if exclude_cal_tones is not None
+                f"\n    exclude_calibration_tones: {exclude_calibration_tones}"
+                if exclude_calibration_tones is not None
                 else ""
             )
             + f"\n    voltage_multiplier:     {voltage_multiplier}"
