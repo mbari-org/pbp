@@ -33,6 +33,7 @@ Also, the following depending on the recorder:
       do not include the voltage conversion `--voltage-multiplier`.
     - For `--sensitivity-uri`, the values need to be provided as negative.
     - For `--sensitivity-flat-value`, the value needs to be provided as positive.
+    - If sensitivity input is given, make sure it does not include the voltage multiplier.
 
 !!! note
     Since PBP 1.6.0, the generated NetCDF files are compressed by default.

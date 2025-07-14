@@ -132,8 +132,7 @@ class HmbGen:
 
         - For flat value, the value should be positive.
         - For URI, the values should be negative.
-        - If using this setting, either do not also call `set_voltage_multiplier`,
-          or call it with a value of 1.0.
+        - Make sure that the given sensitivity (in any of the cases) does not include the voltage multiplier.
 
         Args:
             sensitivity (float | str): Sensitivity flat value (a float), or URI of sensitivity file.
