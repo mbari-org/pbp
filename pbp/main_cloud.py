@@ -86,7 +86,7 @@ def main():
     output_bucket = os.getenv("S3_OUTPUT_BUCKET")
 
     exclude_calibration_tones = (
-        float(os.getenv("EXCLUDE_CALIBRATION_TONES"))
+        int(os.getenv("EXCLUDE_CALIBRATION_TONES"))
         if os.getenv("EXCLUDE_CALIBRATION_TONES") is not None
         else None
     )

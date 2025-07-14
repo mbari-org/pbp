@@ -121,6 +121,7 @@ class ProcessHelper:
         self.max_segments = max_segments
         self.subset_to = subset_to
 
+        self.exclude_calibration_tones: Optional[int] = exclude_calibration_tones
         self.voltage_multiplier: Optional[float] = voltage_multiplier
 
         self.sensitivity_da: Optional[xr.DataArray] = None
