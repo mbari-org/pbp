@@ -2,7 +2,7 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/language-Python-blue.svg)](https://www.python.org/downloads/)
 [![Version (latest semver)](https://img.shields.io/docker/v/mbari/pbp?sort=semver)](https://hub.docker.com/r/mbari/pbp)
-[![Docker Pulls](https://img.shields.io/docker/pulls/mbari/sdcat)](https://hub.docker.com/r/mbari/pbp)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mbari/pbp)](https://hub.docker.com/r/mbari/pbp)
 
 # PyPAM based data processing
 
