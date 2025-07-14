@@ -49,6 +49,7 @@ class ProcessHelper:
         global_attrs_uri: Optional[str] = None,
         set_global_attrs: Optional[list[list[str]]] = None,
         variable_attrs_uri: Optional[str] = None,
+        ignore_first_seconds: Optional[float] = None,
         voltage_multiplier: Optional[float] = None,
         sensitivity_uri: Optional[str] = None,
         sensitivity_flat_value: Optional[float] = None,
@@ -68,6 +69,7 @@ class ProcessHelper:
             global_attrs_uri (str): URI of a JSON file with global attributes to be added to the NetCDF file.
             set_global_attrs (list[tuple[str, str]]): List of (key, value) pairs to be considered for the global attributes.
             variable_attrs_uri (str): URI of a JSON file with variable attributes to be added to the NetCDF file.
+            ignore_first_seconds (int): See https://github.com/mbari-org/pbp/issues/82
             voltage_multiplier (float): Factor applied to the loaded signal.
             sensitivity_uri (str, optional): URI of a sensitivity NetCDF file for calibration of results.
                 Has precedence over `sensitivity_flat_value`.
@@ -87,6 +89,7 @@ class ProcessHelper:
             + f"\n    global_attrs_uri:       {global_attrs_uri}"
             + f"\n    set_global_attrs:       {set_global_attrs}"
             + f"\n    variable_attrs_uri:     {variable_attrs_uri}"
+            + f"\n    ignore_first_seconds:    {ignore_first_seconds}"
             + f"\n    voltage_multiplier:     {voltage_multiplier}"
             + f"\n    sensitivity_uri:        {sensitivity_uri}"
             + f"\n    sensitivity_flat_value: {sensitivity_flat_value}"
