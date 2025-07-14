@@ -28,6 +28,14 @@ Also, the following depending on the recorder:
 | `--sensitivity-flat-value`| flat sensitivity value to be used for calibration |
 
 !!! note
+    - When sensitivity input is provided
+      (either `--sensitivity-uri` or `--sensitivity-flat-value`),
+      do not include the voltage conversion `--voltage-multiplier`.
+    - For `--sensitivity-uri`, the values need to be provided as negative.
+    - For `--sensitivity-flat-value`, the value needs to be provided as positive.
+    - If sensitivity input is given, make sure it does not include the voltage multiplier.
+
+!!! note
     Since PBP 1.6.0, the generated NetCDF files are compressed by default.
     The new `--no-netcdf-compression` option can be used to disable this feature.
 
