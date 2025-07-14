@@ -288,7 +288,8 @@ class ProcessHelper:
             self.pypam_support.add_missing_segment(dt)
             return
 
-        audio_info, audio_segment = extraction
+        audio_info = extraction.audio_info
+        audio_segment = extraction.segment
 
         if self.pypam_support.parameters_set:
             if self.pypam_support.fs != audio_info.samplerate:

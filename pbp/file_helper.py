@@ -24,6 +24,12 @@ class AudioInfo:
     subtype: str
 
 
+@dataclass
+class ExtractedAudioSegment:
+    audio_info: AudioInfo
+    segment: np.ndarray
+
+
 class SoundStatus:
     # TODO cleanup!  there's some repetition here wrt FileHelper!
 
@@ -374,7 +380,7 @@ class FileHelper:
 
     def extract_audio_segment(
         self, at_hour: int, at_minute: int
-    ) -> Optional[Tuple[AudioInfo, np.ndarray]]:
+    ) -> Optional[ExtractedAudioSegment]:
         """
         Extracts the audio segment at the given start time.
         For this it loads and aggregates the relevant audio segments.
@@ -384,7 +390,7 @@ class FileHelper:
             at_minute (int): The minute when the audio segment was extracted.
 
         Returns:
-            A tuple (audio_info, audio_segment) or None
+            ExtractedAudioSegment or None
         """
 
         assert self.json_entries is not None
@@ -455,7 +461,7 @@ class FileHelper:
 
         if aggregated_segment is not None:
             assert audio_info is not None
-            return audio_info, aggregated_segment
+            return ExtractedAudioSegment(audio_info, aggregated_segment)
         return None
 
     def _check_audio_info(self, ai1: AudioInfo, ai2: AudioInfo) -> bool:
