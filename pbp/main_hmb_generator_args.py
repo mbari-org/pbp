@@ -95,7 +95,7 @@ Examples:
     )
 
     parser.add_argument(
-        "--exclude-calibration-tones",
+        "--exclude-tone-calibration",
         type=int,
         default=None,
         metavar="seconds",

@@ -379,7 +379,10 @@ class FileHelper:
         return self._get_json_local(local_filename)
 
     def extract_audio_segment(
-        self, at_hour: int, at_minute: int
+        self,
+        at_hour: int,
+        at_minute: int,
+        exclude_tone_calibration_seconds: Optional[int],
     ) -> Optional[ExtractedAudioSegment]:
         """
         Extracts the audio segment at the given start time.
@@ -388,6 +391,9 @@ class FileHelper:
         Args:
             at_hour (int): The hour when the audio segment was extracted.
             at_minute (int): The minute when the audio segment was extracted.
+            exclude_tone_calibration_seconds (Optional[int]): If given and the
+            resulting segment would overlap with the beginning of associated file,
+            then such segment will not include the overlapping number of seconds.
 
         Returns:
             ExtractedAudioSegment or None
@@ -434,8 +440,33 @@ class FileHelper:
 
             audio_info = ss.audio_info
 
-            start_sample = floor(intersection.start_secs * audio_info.samplerate)
-            num_samples = ceil(intersection.duration_secs * audio_info.samplerate)
+            start_secs = intersection.start_secs
+            duration_secs = intersection.duration_secs
+
+            if (
+                exclude_tone_calibration_seconds is not None
+                and exclude_tone_calibration_seconds > 0
+            ):
+                if start_secs < exclude_tone_calibration_seconds:
+                    # Sanity check:
+                    if (
+                        exclude_tone_calibration_seconds
+                        >= intersection.entry.duration_secs
+                    ):
+                        self.log.warning(
+                            f"!!! {exclude_tone_calibration_seconds=} "
+                            f"exceeds {intersection.entry.duration_secs=}"
+                        )
+                        continue
+
+                    # `start_secs` is relative to the start of the file, so the
+                    # exclude_tone_calibration_seconds setting takes effect here:
+                    diff_seconds = exclude_tone_calibration_seconds - start_secs
+                    start_secs = exclude_tone_calibration_seconds
+                    duration_secs -= diff_seconds
+
+            start_sample = floor(start_secs * audio_info.samplerate)
+            num_samples = ceil(duration_secs * audio_info.samplerate)
 
             try:
                 new_pos = ss.sound_file.seek(start_sample)
