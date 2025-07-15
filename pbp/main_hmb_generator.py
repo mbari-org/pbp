@@ -71,6 +71,7 @@ def run_main_hmb_generator(opts: Namespace) -> None:
         global_attrs_uri=opts.global_attrs,
         set_global_attrs=opts.set_global_attrs,
         variable_attrs_uri=opts.variable_attrs,
+        exclude_tone_calibration_seconds=opts.exclude_tone_calibration,
         voltage_multiplier=opts.voltage_multiplier,
         sensitivity_uri=opts.sensitivity_uri,
         sensitivity_flat_value=opts.sensitivity_flat_value,

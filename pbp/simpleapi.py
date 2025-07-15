@@ -67,6 +67,7 @@ class HmbGen:
         self._json_base_dir: str = ""
         self._global_attrs_uri: str = ""
         self._variable_attrs_uri: str = ""
+        self._exclude_tone_calibration_seconds: Optional[int] = None
         self._voltage_multiplier: float = 1.0
         self._sensitivity: float | str = 1.0
         self._subset_to: Optional[tuple[int, int]] = None
@@ -112,6 +113,20 @@ class HmbGen:
             variable_attrs_uri (str): The URI for variable attributes.
         """
         self._variable_attrs_uri = variable_attrs_uri
+
+    def set_exclude_tone_calibration_seconds(
+        self, exclude_tone_calibration_seconds: int
+    ) -> None:
+        """
+        Set the number of seconds to exclude from each input audio file.
+        The resulting 'effort' data array is affected accordingly.
+
+        See https://github.com/mbari-org/pbp/issues/82
+
+        Args:
+            exclude_tone_calibration_seconds (int): The number of seconds to exclude from each input audio file.
+        """
+        self._exclude_tone_calibration_seconds = exclude_tone_calibration_seconds
 
     def set_voltage_multiplier(self, voltage_multiplier: float) -> None:
         """
@@ -305,6 +320,7 @@ class HmbGen:
             json_base_dir=self._json_base_dir,
             global_attrs_uri=self._global_attrs_uri,
             variable_attrs_uri=self._variable_attrs_uri,
+            exclude_tone_calibration_seconds=self._exclude_tone_calibration_seconds,
             voltage_multiplier=self._voltage_multiplier,
             sensitivity=self._sensitivity,
             subset_to=self._subset_to,
@@ -388,6 +404,7 @@ class _HmbGen:
         json_base_dir: str,
         global_attrs_uri: str,
         variable_attrs_uri: str,
+        exclude_tone_calibration_seconds: Optional[int],
         voltage_multiplier: float,
         sensitivity: float | str,
         subset_to: tuple[int, int],
@@ -405,6 +422,7 @@ class _HmbGen:
         self.json_base_dir = json_base_dir
         self.global_attrs_uri = global_attrs_uri
         self.variable_attrs_uri = variable_attrs_uri
+        self.exclude_tone_calibration_seconds = exclude_tone_calibration_seconds
         self.voltage_multiplier = voltage_multiplier
         self.subset_to = subset_to
 
@@ -467,6 +485,7 @@ class _HmbGen:
             add_quality_flag=self.add_quality_flag,
             global_attrs_uri=self.global_attrs_uri,
             variable_attrs_uri=self.variable_attrs_uri,
+            exclude_tone_calibration_seconds=self.exclude_tone_calibration_seconds,
             voltage_multiplier=self.voltage_multiplier,
             sensitivity_uri=self.sensitivity_uri,
             sensitivity_flat_value=self.sensitivity_flat_value,
