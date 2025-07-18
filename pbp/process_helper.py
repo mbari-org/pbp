@@ -49,6 +49,7 @@ class ProcessHelper:
         global_attrs_uri: Optional[str] = None,
         set_global_attrs: Optional[list[list[str]]] = None,
         variable_attrs_uri: Optional[str] = None,
+        exclude_tone_calibration_seconds: Optional[int] = None,
         voltage_multiplier: Optional[float] = None,
         sensitivity_uri: Optional[str] = None,
         sensitivity_flat_value: Optional[float] = None,
@@ -68,6 +69,7 @@ class ProcessHelper:
             global_attrs_uri (str): URI of a JSON file with global attributes to be added to the NetCDF file.
             set_global_attrs (list[tuple[str, str]]): List of (key, value) pairs to be considered for the global attributes.
             variable_attrs_uri (str): URI of a JSON file with variable attributes to be added to the NetCDF file.
+            exclude_tone_calibration_seconds (int): See https://github.com/mbari-org/pbp/issues/82
             voltage_multiplier (float): Factor applied to the loaded signal.
             sensitivity_uri (str, optional): URI of a sensitivity NetCDF file for calibration of results.
                 Has precedence over `sensitivity_flat_value`.
@@ -87,6 +89,11 @@ class ProcessHelper:
             + f"\n    global_attrs_uri:       {global_attrs_uri}"
             + f"\n    set_global_attrs:       {set_global_attrs}"
             + f"\n    variable_attrs_uri:     {variable_attrs_uri}"
+            + (
+                f"\n    exclude_tone_calibration_seconds: {exclude_tone_calibration_seconds}"
+                if exclude_tone_calibration_seconds is not None
+                else ""
+            )
             + f"\n    voltage_multiplier:     {voltage_multiplier}"
             + f"\n    sensitivity_uri:        {sensitivity_uri}"
             + f"\n    sensitivity_flat_value: {sensitivity_flat_value}"
@@ -114,6 +121,9 @@ class ProcessHelper:
         self.max_segments = max_segments
         self.subset_to = subset_to
 
+        self.exclude_tone_calibration_seconds: Optional[
+            int
+        ] = exclude_tone_calibration_seconds
         self.voltage_multiplier: Optional[float] = voltage_multiplier
 
         self.sensitivity_da: Optional[xr.DataArray] = None
@@ -274,13 +284,16 @@ class ProcessHelper:
             f"Segment at {at_hour:02}h:{at_minute:02}m ...\n"
             + f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:"
         )
-        extraction = file_helper.extract_audio_segment(at_hour, at_minute)
+        extraction = file_helper.extract_audio_segment(
+            at_hour, at_minute, self.exclude_tone_calibration_seconds
+        )
         if extraction is None:
             self.log.warning(f"cannot get audio segment at {at_hour:02}:{at_minute:02}")
             self.pypam_support.add_missing_segment(dt)
             return
 
-        audio_info, audio_segment = extraction
+        audio_info = extraction.audio_info
+        audio_segment = extraction.segment
 
         if self.pypam_support.parameters_set:
             if self.pypam_support.fs != audio_info.samplerate:

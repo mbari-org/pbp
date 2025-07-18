@@ -24,6 +24,12 @@ class AudioInfo:
     subtype: str
 
 
+@dataclass
+class ExtractedAudioSegment:
+    audio_info: AudioInfo
+    segment: np.ndarray
+
+
 class SoundStatus:
     # TODO cleanup!  there's some repetition here wrt FileHelper!
 
@@ -373,8 +379,11 @@ class FileHelper:
         return self._get_json_local(local_filename)
 
     def extract_audio_segment(
-        self, at_hour: int, at_minute: int
-    ) -> Optional[Tuple[AudioInfo, np.ndarray]]:
+        self,
+        at_hour: int,
+        at_minute: int,
+        exclude_tone_calibration_seconds: Optional[int],
+    ) -> Optional[ExtractedAudioSegment]:
         """
         Extracts the audio segment at the given start time.
         For this it loads and aggregates the relevant audio segments.
@@ -382,9 +391,12 @@ class FileHelper:
         Args:
             at_hour (int): The hour when the audio segment was extracted.
             at_minute (int): The minute when the audio segment was extracted.
+            exclude_tone_calibration_seconds (Optional[int]): If given and the
+            resulting segment would overlap with the beginning of associated file,
+            then such segment will not include the overlapping number of seconds.
 
         Returns:
-            A tuple (audio_info, audio_segment) or None
+            ExtractedAudioSegment or None
         """
 
         assert self.json_entries is not None
@@ -428,8 +440,33 @@ class FileHelper:
 
             audio_info = ss.audio_info
 
-            start_sample = floor(intersection.start_secs * audio_info.samplerate)
-            num_samples = ceil(intersection.duration_secs * audio_info.samplerate)
+            start_secs = intersection.start_secs
+            duration_secs = intersection.duration_secs
+
+            if (
+                exclude_tone_calibration_seconds is not None
+                and exclude_tone_calibration_seconds > 0
+            ):
+                if start_secs < exclude_tone_calibration_seconds:
+                    # Sanity check:
+                    if (
+                        exclude_tone_calibration_seconds
+                        >= intersection.entry.duration_secs
+                    ):
+                        self.log.warning(
+                            f"!!! {exclude_tone_calibration_seconds=} "
+                            f"exceeds {intersection.entry.duration_secs=}"
+                        )
+                        continue
+
+                    # `start_secs` is relative to the start of the file, so
+                    # exclude_tone_calibration_seconds takes effect here:
+                    diff_seconds = exclude_tone_calibration_seconds - start_secs
+                    start_secs = exclude_tone_calibration_seconds
+                    duration_secs -= diff_seconds
+
+            start_sample = floor(start_secs * audio_info.samplerate)
+            num_samples = ceil(duration_secs * audio_info.samplerate)
 
             try:
                 new_pos = ss.sound_file.seek(start_sample)
@@ -455,7 +492,7 @@ class FileHelper:
 
         if aggregated_segment is not None:
             assert audio_info is not None
-            return audio_info, aggregated_segment
+            return ExtractedAudioSegment(audio_info, aggregated_segment)
         return None
 
     def _check_audio_info(self, ai1: AudioInfo, ai2: AudioInfo) -> bool:
