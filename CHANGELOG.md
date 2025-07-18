@@ -1,5 +1,9 @@
 # PBP – PyPAM based processing
 
+2025-07
+
+- 1.7.3: with PyPAM 0.4.0, abd various additions/fixes.
+  
 2025-04
 
 - 1.7.1: Fixes [#55](https://github.com/mbari-org/pbp/issues/55).
