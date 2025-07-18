@@ -1,4 +1,7 @@
 [![MBARI](https://www.mbari.org/wp-content/uploads/2014/11/logo-mbari-3b.png)](http://www.mbari.org)
+
+[![main](https://github.com/mbari-org/pbp/actions/workflows/ci.yml/badge.svg)](https://github.com/mbari-org/pbp/actions/workflows/ci.yml)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/mbari-pbp)](https://pypi.org/project/mbari-pbp/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/language-Python-blue.svg)](https://www.python.org/downloads/)
 
