@@ -2,7 +2,9 @@
 
 2025-07
 
-- 1.7.3: with PyPAM 0.4.0, abd various additions/fixes.
+- 1.7.2: with PyPAM 0.4.0, and various additions/fixes.
+  However, issues with this version in Jupyter & gizo have been noted,
+  which will need to be addressed.
   
 2025-04
 
