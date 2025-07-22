@@ -2,6 +2,9 @@
 
 2025-07
 
+- 1.7.3: new version to revert to the following while the issues can be investigated: 
+  `python = ">=3.9,<3.12.0", lifewatch-pypam = "0.3.2"`, that is, as in 1.7.1.
+  but other changes since 1.7.1 are still enabled in 1.7.3. 
 - 1.7.2: with PyPAM 0.4.0, and various additions/fixes.
   However, issues with this version in Jupyter & gizo have been noted,
   which will need to be addressed.
