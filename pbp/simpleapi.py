@@ -87,36 +87,34 @@ class HmbGen:
 
         self._hmb_gen: Optional[_HmbGen] = None
 
-    def set_json_base_dir(self, json_base_dir: str) -> None:
+    def set_json_base_dir(self, directory: str) -> None:
         """
         Set the base directory where JSON files are located.
 
         Args:
-            json_base_dir (str): The base directory where JSON files are located.
+            directory (str): The base directory where JSON files are located.
         """
-        self._json_base_dir = json_base_dir
+        self._json_base_dir = directory
 
-    def set_global_attrs_uri(self, global_attrs_uri: str) -> None:
+    def set_global_attrs_uri(self, uri: str) -> None:
         """
         Set the URI for global attributes.
 
         Args:
-            global_attrs_uri (str): The URI for global attributes.
+            uri (str): The URI for global attributes.
         """
-        self._global_attrs_uri = global_attrs_uri
+        self._global_attrs_uri = uri
 
-    def set_variable_attrs_uri(self, variable_attrs_uri: str) -> None:
+    def set_variable_attrs_uri(self, uri: str) -> None:
         """
         Set the URI for variable attributes.
 
         Args:
-            variable_attrs_uri (str): The URI for variable attributes.
+            uri (str): The URI for variable attributes.
         """
-        self._variable_attrs_uri = variable_attrs_uri
+        self._variable_attrs_uri = uri
 
-    def set_exclude_tone_calibration_seconds(
-        self, exclude_tone_calibration_seconds: int
-    ) -> None:
+    def set_exclude_tone_calibration_seconds(self, seconds: int) -> None:
         """
         Set the number of seconds to exclude from each input audio file.
         The resulting 'effort' data array is affected accordingly.
@@ -124,9 +122,9 @@ class HmbGen:
         See https://github.com/mbari-org/pbp/issues/82
 
         Args:
-            exclude_tone_calibration_seconds (int): The number of seconds to exclude from each input audio file.
+            seconds (int): The number of seconds to exclude from each input audio file.
         """
-        self._exclude_tone_calibration_seconds = exclude_tone_calibration_seconds
+        self._exclude_tone_calibration_seconds = seconds
 
     def set_voltage_multiplier(self, voltage_multiplier: float) -> None:
         """
@@ -161,32 +159,32 @@ class HmbGen:
         """
         self._subset_to = subset_to
 
-    def set_download_dir(self, download_dir: str) -> None:
+    def set_download_dir(self, directory: str) -> None:
         """
         Set the download directory.
 
         Args:
-            download_dir (str): The download directory.
+            directory (str): The download directory.
         """
-        self._download_dir = download_dir
+        self._download_dir = directory
 
-    def set_output_dir(self, output_dir: str) -> None:
+    def set_output_dir(self, directory: str) -> None:
         """
         Set the output directory.
 
         Args:
-            output_dir (str): The output directory.
+            directory (str): The output directory.
         """
-        self._output_dir = output_dir
+        self._output_dir = directory
 
-    def set_output_prefix(self, output_prefix: str) -> None:
+    def set_output_prefix(self, prefix: str) -> None:
         """
         Set the output prefix.
 
         Args:
-            output_prefix (str): The output prefix.
+            prefix (str): The output prefix.
         """
-        self._output_prefix = output_prefix
+        self._output_prefix = prefix
 
     def set_compress_netcdf(self, compress_netcdf: bool) -> None:
         """
