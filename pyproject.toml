@@ -16,7 +16,7 @@ maintainers = [
     "Danelle Cline <dcline@mbari.org>",
 ]
 homepage = "https://docs.mbari.org/pbp/"
-license = "MIT"
+license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/mbari-org/pbp"
 packages = [{include = "pbp"}]
