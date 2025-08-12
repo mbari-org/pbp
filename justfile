@@ -13,23 +13,6 @@ list:
 json-gen *args="":
   poetry run python pbp/main_json_generator.py {{args}}
 
-# ssh to gizo
-ssh-gizo user="carueda" server="gizo.shore.mbari.org":
-    ssh {{user}}@{{server}}
-
-# Package and transfer complete code to gizo
-to-gizo user="carueda" server="gizo.shore.mbari.org": tgz
-    #!/usr/bin/env bash
-    HASH=$(git rev-parse --short HEAD)
-    echo "$HASH" > HASH
-    scp HASH pbp_${HASH}.tgz {{user}}@{{server}}:/PAM_Analysis/pypam-space/processing_our_data/
-
-# Package for subsequent code transfer to gizo
-tgz:
-    #!/usr/bin/env bash
-    HASH=$(git rev-parse --short HEAD)
-    git archive ${HASH} -o pbp_${HASH}.tgz --prefix=pbp/
-
 # Run main (on gizo)
 main-gizo date="20220902" output_dir="/PAM_Analysis/pypam-space/test_output/daily":
     PYTHONPATH=. poetry run python pbp/main_hmb_generator.py \
