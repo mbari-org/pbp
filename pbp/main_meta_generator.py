@@ -82,5 +82,9 @@ def run_main_meta_generator(opts: Namespace):
         log.info("INTERRUPTED")
 
 
-if __name__ == "__main__":
+def main():
     run_main_meta_generator(parse_arguments())
+
+
+if __name__ == "__main__":
+    main()

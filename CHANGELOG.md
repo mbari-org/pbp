@@ -1,5 +1,7 @@
-# PBP – PyPAM based processing
+2025-08
 
+- 1.7.4: Fixed regression that caused the main CLI programs to fail to run.
+  
 2025-07
 
 - 1.7.3: new version to revert to the following while the issues can be investigated: 

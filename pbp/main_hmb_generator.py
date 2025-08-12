@@ -84,5 +84,9 @@ def run_main_hmb_generator(opts: Namespace) -> None:
         log.info("INTERRUPTED")
 
 
-if __name__ == "__main__":
+def main():
     run_main_hmb_generator(parse_arguments())
+
+
+if __name__ == "__main__":
+    main()

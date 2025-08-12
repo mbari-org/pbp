@@ -114,5 +114,9 @@ def run_main_plot(opts: Namespace):
         )
 
 
-if __name__ == "__main__":
+def main():
     run_main_plot(parse_arguments())
+
+
+if __name__ == "__main__":
+    main()
