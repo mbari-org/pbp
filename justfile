@@ -241,16 +241,6 @@ hmb-plot *args:
     poetry run python pbp/main_plot.py {{args}}
 
 ##############
-# docker:
-
-dockerize-for-notebooks dockerfile='docker/Dockerfile-minimal':
-    docker build -f {{dockerfile}} -t mbari/pbp .
-
-run-docker-for-notebooks dir='notebooks':
-    docker run -it --rm -p 8899:8899 mbari/pbp:1
-
-
-##############
 # package build/publishing:
 
 # Build and publish package
