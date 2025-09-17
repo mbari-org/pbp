@@ -422,7 +422,7 @@ class FileHelper:
         prefix = f"({at_hour:02}h:{at_minute:02}m)"
         for i, intersection in enumerate(intersections):
             if intersection.duration_secs == 0:
-                self.log.warning(
+                self.log.trace(
                     f"{prefix}: No data from intersection {i} for {intersection.entry.uri}"
                 )
                 continue

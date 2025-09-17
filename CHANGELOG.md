@@ -1,3 +1,7 @@
+2025-09
+
+- Changed logging level of "No data from intersection ..." from warning to trace.
+  
 2025-08
 
 - 1.7.4: Fixed regression that caused the main CLI programs to fail to run.
