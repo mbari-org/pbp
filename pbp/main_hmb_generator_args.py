@@ -1,10 +1,12 @@
-from argparse import ArgumentParser, RawTextHelpFormatter
+from argparse import ArgumentParser, Namespace, RawTextHelpFormatter
 
 
 from pbp import get_pbp_version
+from pbp.misc_helper import print_given_args
+from os import getenv
 
 
-def parse_arguments():
+def parse_arguments() -> Namespace:
     description = "Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM."
     example = """
 Examples:
@@ -220,4 +222,8 @@ Examples:
         help="Subset the resulting PSD to [lower, upper), in terms of central frequency.",
     )
 
-    return parser.parse_args()
+    args = parser.parse_args()
+    if getenv("PRINT_GIVEN_ARGS") is not None:
+        print_given_args(parser, args)
+
+    return args
