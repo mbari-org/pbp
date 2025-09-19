@@ -55,3 +55,15 @@ main-gizo-multiple-days year month *days="":
              > "$out" 2>&1 &
     done
     wait
+
+# https://github.com/mbari-org/pbp/issues/89
+[no-cd]
+hmb_gen_for_direct_file:
+    PYTHONPATH=. poetry run python pbp/main_hmb_generator.py   \
+       --input-file         local/downloads/MARS_20250914_122000.wav \
+       --time-resolution    1                                  \
+       --voltage-multiplier 3                                  \
+       --sensitivity-uri    local/hmb_direct_file_tests/MARS_icListen6299_calibration_April2025.nc        \
+       --global-attrs       local/hmb_direct_file_tests/MARSrealtime_HMB_GlobalAttributes_April2025.yaml  \
+       --variable-attrs     local/hmb_direct_file_tests/MARSrealtime_HMB_VariableAttributes.yaml          \
+       --output-dir         local/hmb_direct_file_tests
