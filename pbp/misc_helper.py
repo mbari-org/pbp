@@ -1,4 +1,5 @@
 from typing import Any, Generator, Tuple, Union
+from argparse import ArgumentParser, Namespace
 
 import numpy as np
 
@@ -63,3 +64,25 @@ def brief_list(lst: Union[list, np.ndarray[Any, Any]], max_items: int = 6) -> st
         postfix = ", ".join(str(x) for x in lst[-rest:])
         return f"[{prefix}, ..., {postfix}]"
     return str(lst)
+
+
+def print_given_args(parser: ArgumentParser, args: Namespace):
+    """
+    Prints the arguments that differ from their default values.
+    """
+    args_to_print = []
+
+    for action in parser._actions:
+        if hasattr(action, "dest") and action.dest != "help":
+            actual_value = getattr(args, action.dest, None)
+            default_value = action.default
+            if actual_value != default_value and actual_value is not None:
+                arg_name = action.dest.replace("_", "-")
+                args_to_print.append((f"--{arg_name}", actual_value))
+
+    if args_to_print:
+        args_to_print.sort(key=lambda x: x[0])
+        max_width = max(len(arg_name) for arg_name, _ in args_to_print)
+        print(" Arguments differing from defaults:")
+        for arg_name, value in args_to_print:
+            print(f"    {arg_name:<{max_width}}  {value}")
