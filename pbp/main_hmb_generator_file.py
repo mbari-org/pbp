@@ -13,7 +13,7 @@ import pytz
 from pbp import get_pbp_version, get_pypam_version
 from pbp.logging_helper import create_logger
 from pbp.metadata import replace_snippets, MetadataHelper, parse_attributes
-from pbp.misc_helper import parse_timestamp
+from pbp.misc_helper import extract_datetime
 from pbp.process_helper import (
     ProcessDayResult,
     DEFAULT_QUALITY_FLAG_VALUE,
@@ -38,7 +38,7 @@ def main_hmb_generator_file(opts: Namespace) -> None:
     simple_name = input_path.stem
 
     if opts.timestamp_pattern is not None:
-        base_dt = parse_timestamp(simple_name, opts.timestamp_pattern)
+        base_dt = extract_datetime(simple_name, opts.timestamp_pattern)
         if base_dt is not None:
             print(f"Extracted timestamp from filename: {base_dt.isoformat()}")
         else:
