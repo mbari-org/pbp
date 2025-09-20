@@ -1,7 +1,27 @@
-from typing import Any, Generator, Tuple, Union
+from typing import Any, Generator, Optional, Tuple, Union
 from argparse import ArgumentParser, Namespace
 
+from datetime import datetime, timezone
 import numpy as np
+
+
+def parse_timestamp(string: str, pattern: str) -> Optional[datetime]:
+    """
+    Extracts a timestamp from a string given a strftime-based pattern.
+
+    Args:
+        string (str): The string to parse, e.g. "MARS_20250914_122000.wav"
+        pattern (str): A pattern with strftime codes, e.g. "MARS_%Y%m%d_%H%M%S.wav".
+                      Non-strftime parts are treated as literal text.
+    Returns:
+        Optional[datetime]: The extracted timestamp, or None if it could not be parsed.
+    """
+
+    try:
+        parsed = datetime.strptime(string, pattern)
+        return parsed.replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
 
 
 def parse_date(date: str) -> Tuple[int, int, int]:
