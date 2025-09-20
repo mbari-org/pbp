@@ -7,9 +7,10 @@ import soundfile as sf
 from math import ceil
 import numpy as np
 import xarray as xr
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from pbp.logging_helper import create_logger
+from pbp.misc_helper import parse_timestamp
 from pbp.process_helper import (
     ProcessDayResult,
     DEFAULT_QUALITY_FLAG_VALUE,
@@ -24,6 +25,21 @@ def main_hmb_generator_file(opts: Namespace) -> None:
         print(f"Input file '{opts.input_file}' does not exist.")
         exit(1)
 
+    simple_name = input_path.stem
+
+    if opts.timestamp_pattern is not None:
+        base_dt = parse_timestamp(simple_name, opts.timestamp_pattern)
+        if base_dt is not None:
+            print(f"Extracted timestamp from filename: {base_dt.isoformat()}")
+        else:
+            print(
+                f"Could not extract timestamp from '{simple_name}' with {opts.timestamp_pattern=}"
+            )
+            exit(1)
+    else:
+        base_dt = datetime(2000, 1, 1, tzinfo=timezone.utc)
+        print(f"WARNING: No timestamp pattern provided, using {base_dt}.")
+
     sensitivity_da: Optional[xr.DataArray] = None
     if opts.sensitivity_uri is not None:
         if not pathlib.Path(opts.sensitivity_uri).exists():
@@ -31,8 +47,6 @@ def main_hmb_generator_file(opts: Namespace) -> None:
             exit(1)
         sensitivity_da = xr.open_dataarray(opts.sensitivity_uri)
         print(f"Loaded sensitivity from '{opts.sensitivity_uri}'")
-
-    simple_name = input_path.stem
 
     sound_file = sf.SoundFile(opts.input_file)
     log_filename = f"{opts.output_dir}/{simple_name}.log"
@@ -53,6 +67,7 @@ def main_hmb_generator_file(opts: Namespace) -> None:
             opts,
             log,
             sound_file,
+            base_dt,
             sensitivity_da,
             output_filename,
         ).process()
@@ -68,12 +83,14 @@ class FileProcessor:
         opts: Namespace,
         log: "loguru.Logger",
         sound_file: sf.SoundFile,
+        base_dt: datetime,
         sensitivity_da: Optional[xr.DataArray],
         output_filename: str,
     ) -> None:
         self.opts = opts
         self.log = log
         self.sound_file = sound_file
+        self.base_dt = base_dt
         self.sensitivity_da = sensitivity_da
         self.output_filename = output_filename
 
@@ -84,11 +101,6 @@ class FileProcessor:
             self.opts.time_resolution * sound_file.samplerate
         )
         print(f"  num_samples_per_segment: {self.num_samples_per_segment}")
-
-        # TODO capture base_dt from filename or parameter
-        year, month, day, at_hour, at_minute = 2025, 9, 14, 12, 0
-        self.base_dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
-        self.log.info(f"  base datetime: {self.base_dt}")
 
     def process(self) -> Optional[ProcessDayResult]:
         """
@@ -114,9 +126,12 @@ class FileProcessor:
         segment_index = 0
         while audio_segment is not None:
             self.log.trace(f"{segment_index=} {audio_segment=}")
-            self.process_audio_segment(segment_index, audio_segment)
-            segment_index += 1
+            dt = self.base_dt + timedelta(
+                seconds=segment_index * self.opts.time_resolution
+            )
+            self.process_audio_segment(dt, audio_segment)
             audio_segment = self.extract_next_audio_segment()
+            segment_index += 1
 
         print(f"  Gathered {segment_index} segments.")
 
@@ -203,10 +218,6 @@ class FileProcessor:
 
         return audio_segment
 
-    def process_audio_segment(
-        self, segment_index: int, audio_segment: np.ndarray
-    ) -> None:
+    def process_audio_segment(self, dt: datetime, audio_segment: np.ndarray) -> None:
         audio_segment = self.pre_process_audio_segment(audio_segment)
-        # TODO capture dt from base_dt and segment index
-        dt = self.base_dt
         self.pypam_support.add_segment(dt, audio_segment)

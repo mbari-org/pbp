@@ -228,6 +228,12 @@ Examples:
         help="Input file",
     )
     parser.add_argument(
+        "--timestamp-pattern",
+        type=str,
+        metavar="file",
+        help="Pattern to extract timestamp from input file name",
+    )
+    parser.add_argument(
         "--time-resolution",
         type=int,
         metavar="secs",
