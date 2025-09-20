@@ -19,6 +19,9 @@ from pbp.pypam_support import ProcessResult, PypamSupport
 DEFAULT_QUALITY_FLAG_VALUE = 2
 
 
+# TODO: Rename this type to a more generic result name,
+#  like ProcessDatasetResult, as we are now also using it
+#  for direct file processing.
 @dataclass
 class ProcessDayResult:
     """
