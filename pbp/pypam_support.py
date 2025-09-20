@@ -145,6 +145,12 @@ class PypamSupport:
         self._num_actual_segments += 1
         self.log.debug(f"  captured segment: {dt}")
 
+    def num_captured_segments(self) -> int:
+        """
+        The number of segments captured so far.
+        """
+        return len(self._captured_segments)
+
     def process_captured_segments(
         self,
         sensitivity_da: Optional[xr.DataArray] = None,

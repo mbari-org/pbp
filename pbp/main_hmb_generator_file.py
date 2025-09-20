@@ -1,5 +1,5 @@
 from argparse import Namespace
-from typing import Optional
+from typing import Any, Optional, OrderedDict
 
 import loguru
 import pathlib
@@ -8,8 +8,11 @@ from math import ceil
 import numpy as np
 import xarray as xr
 from datetime import datetime, timezone, timedelta
+import pytz
 
+from pbp import get_pbp_version, get_pypam_version
 from pbp.logging_helper import create_logger
+from pbp.metadata import replace_snippets, MetadataHelper, parse_attributes
 from pbp.misc_helper import parse_timestamp
 from pbp.process_helper import (
     ProcessDayResult,
@@ -17,6 +20,13 @@ from pbp.process_helper import (
     save_dataset_to_netcdf,
 )
 from pbp.pypam_support import ProcessResult, PypamSupport
+
+
+##
+## TODO refactoring to extract common metadata support.
+##   For now, some duplication for convenience while
+##   putting together this new use case.
+##
 
 
 def main_hmb_generator_file(opts: Namespace) -> None:
@@ -102,9 +112,18 @@ class FileProcessor:
         )
         print(f"  num_samples_per_segment: {self.num_samples_per_segment}")
 
+        self.metadata_helper = MetadataHelper(
+            self.log,
+            self._load_attributes("global", self.opts.global_attrs),
+            self._load_attributes("variable", self.opts.variable_attrs),
+        )
+
     def process(self) -> Optional[ProcessDayResult]:
         """
         Generates NetCDF file with the result of processing all segments of the given audio file.
+
+        NOTE: "Reusing" the ProcessDayResult type even though it is not
+         necessarily for  "day" here.
 
         Returns:
             The result or None if no segments at all were processed.
@@ -173,21 +192,20 @@ class FileProcessor:
                 # attrs are assigned below.
             )
 
-        # TODO
-        # md_helper = self.metadata_helper
-        #
-        # md_helper.add_variable_attributes(psd_da["time"], "time")
-        # md_helper.add_variable_attributes(data_vars["effort"], "effort")
-        # md_helper.add_variable_attributes(psd_da["frequency"], "frequency")
-        # if "sensitivity" in data_vars:
-        #     md_helper.add_variable_attributes(data_vars["sensitivity"], "sensitivity")
-        # if "quality_flag" in data_vars:
-        #     md_helper.add_variable_attributes(data_vars["quality_flag"], "quality_flag")
-        # md_helper.add_variable_attributes(data_vars["psd"], "psd")
+        md_helper = self.metadata_helper
+
+        md_helper.add_variable_attributes(psd_da["time"], "time")
+        md_helper.add_variable_attributes(data_vars["effort"], "effort")
+        md_helper.add_variable_attributes(psd_da["frequency"], "frequency")
+        if "sensitivity" in data_vars:
+            md_helper.add_variable_attributes(data_vars["sensitivity"], "sensitivity")
+        if "quality_flag" in data_vars:
+            md_helper.add_variable_attributes(data_vars["quality_flag"], "quality_flag")
+        md_helper.add_variable_attributes(data_vars["psd"], "psd")
 
         ds_result = xr.Dataset(
             data_vars=data_vars,
-            # attrs=self._get_global_attributes(year, month, day),
+            attrs=self._get_global_attributes(),
         )
 
         save_dataset_to_netcdf(self.log, ds_result, self.output_filename)
@@ -221,3 +239,46 @@ class FileProcessor:
     def process_audio_segment(self, dt: datetime, audio_segment: np.ndarray) -> None:
         audio_segment = self.pre_process_audio_segment(audio_segment)
         self.pypam_support.add_segment(dt, audio_segment)
+
+    def _get_global_attributes(self) -> dict:
+        time_coverage_start = self.base_dt
+        time_coverage_end = self.base_dt + timedelta(
+            seconds=self.pypam_support.num_captured_segments() * self.opts.time_resolution
+        )
+        global_attrs = {
+            "time_coverage_start": time_coverage_start.isoformat(),
+            "time_coverage_end": time_coverage_end.isoformat(),
+            "date_created": datetime.now(pytz.utc).strftime("%Y-%m-%d"),
+        }
+        md_helper = self.metadata_helper
+        md_helper.set_some_global_attributes(global_attrs)
+        snippets = {
+            "{{PBP_version}}": get_pbp_version(),
+            "{{PyPAM_version}}": get_pypam_version(),
+        }
+        global_attrs = md_helper.get_global_attributes()
+        # for each, key, have the {{key}} snippet for replacement
+        # in case it is used in any values:
+        for k, v in global_attrs.items():
+            snippets["{{" + k + "}}"] = v
+        return replace_snippets(global_attrs, snippets)
+
+    def _load_attributes(
+        self,
+        what: str,
+        attrs_uri: Optional[str],
+        set_attrs: Optional[list[list[str]]] = None,
+    ) -> Optional[OrderedDict[str, Any]]:
+        if attrs_uri:
+            self.log.info(f"Loading {what} attributes from {attrs_uri=}")
+            # TODO handle attrs_uri in case of s3:// or others
+            #  as done elsewhere in the project. For now, assume local file.
+            filename = attrs_uri
+            with open(filename, "r", encoding="UTF-8") as f:
+                res = parse_attributes(f.read(), pathlib.Path(filename).suffix)
+                for k, v in set_attrs or []:
+                    res[k] = v
+                return res
+        else:
+            self.log.info(f"No '{what}' attributes URI given.")
+        return None
