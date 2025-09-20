@@ -1,4 +1,4 @@
-from pbp.misc_helper import gen_hour_minute_times, map_prefix, parse_timestamp
+from pbp.misc_helper import gen_hour_minute_times, map_prefix, extract_datetime
 from datetime import datetime, timezone
 
 
@@ -35,37 +35,59 @@ def test_map_prefix():
     )
 
 
-def test_parse_timestamp():
-    result = parse_timestamp("MARS_20250914_122000.wav", "MARS_%Y%m%d_%H%M%S.wav")
+def test_extract_datetime():
+    # Test flexible parsing - pattern found anywhere in string (last complete match is used)
+    result = extract_datetime("path/to/MARS_20250914_122000.wav", "%Y%m%d_%H%M%S")
     expected = datetime(2025, 9, 14, 12, 20, 0, tzinfo=timezone.utc)
     assert result == expected
 
-    result = parse_timestamp("data_20230105_080530.flac", "data_%Y%m%d_%H%M%S.flac")
+    # Test with different filename format
+    result = extract_datetime("data_20230105080530.flac", "%Y%m%d%H%M%S")
     expected = datetime(2023, 1, 5, 8, 5, 30, tzinfo=timezone.utc)
     assert result == expected
 
-    # Test with 2-digit year in filename
-    result = parse_timestamp("foo_250914_122000.wav", "foo_%y%m%d_%H%M%S.wav")
+    # Test with 2-digit year
+    result = extract_datetime("path/foo_250914_122000.wav", "%y%m%d_%H%M%S")
     expected = datetime(2025, 9, 14, 12, 20, 0, tzinfo=timezone.utc)
     assert result == expected
 
-    # Test with only date in filename
-    result = parse_timestamp("daily_20250914.wav", "daily_%Y%m%d.wav")
+    # Test with date-only pattern
+    result = extract_datetime("/path/daily_20250914.wav", "%Y%m%d")
     expected = datetime(2025, 9, 14, 0, 0, 0, tzinfo=timezone.utc)
     assert result == expected
 
-    # Test with pattern that doesn't match string
-    result = parse_timestamp("MARS_20250914_122000.wav", "HYDROPHONE_%Y%m%d_%H%M%S.wav")
-    assert result is None
+    # Test with ISO format timestamp
+    result = extract_datetime(
+        "path/recording-2025-09-14T12:20:00.wav", "%Y-%m-%dT%H:%M:%S"
+    )
+    expected = datetime(2025, 9, 14, 12, 20, 0, tzinfo=timezone.utc)
+    assert result == expected
 
-    # Test with wrong extension
-    result = parse_timestamp("MARS_20250914_122000.wav", "MARS_%Y%m%d_%H%M%S.flac")
+    # Test exact match (entire string is timestamp)
+    result = extract_datetime("20250914_122000", "%Y%m%d_%H%M%S")
+    expected = datetime(2025, 9, 14, 12, 20, 0, tzinfo=timezone.utc)
+    assert result == expected
+
+    # Test when pattern doesn't exist in string
+    result = extract_datetime("MARS_20250914_122000.wav", "%Y-%m-%d")
     assert result is None
 
     # Test with invalid date
-    result = parse_timestamp("MARS_20250230_122000.wav", "MARS_%Y%m%d_%H%M%S.wav")
+    result = extract_datetime("MARS_20250230_122000.wav", "%Y%m%d_%H%M%S")
     assert result is None
 
     # Test empty string
-    result = parse_timestamp("", "MARS_%Y%m%d_%H%M%S.wav")
+    result = extract_datetime("", "%Y%m%d_%H%M%S")
     assert result is None
+
+    # Test with multiple matches - returns last complete match
+    result = extract_datetime("old_20240101_new_20250914_122000.wav", "%Y%m%d_%H%M%S")
+    expected = datetime(2025, 9, 14, 12, 20, 0, tzinfo=timezone.utc)
+    assert result == expected
+
+    # Test with multiple complete matches - returns last one
+    result = extract_datetime(
+        "data_20240101_120000_backup_20250914_122000.wav", "%Y%m%d_%H%M%S"
+    )
+    expected = datetime(2025, 9, 14, 12, 20, 0, tzinfo=timezone.utc)
+    assert result == expected
