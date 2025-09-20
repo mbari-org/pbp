@@ -61,7 +61,7 @@ main-gizo-multiple-days year month *days="":
 hmb_gen_for_direct_file:
     PYTHONPATH=. poetry run python pbp/main_hmb_generator.py   \
        --input-file         local/downloads/MARS_20250914_122000.wav \
-       --timestamp-pattern  "MARS_%Y%m%d_%H%M%S"                 \
+       --timestamp-pattern  "%Y%m%d_%H%M%S"                   \
        --time-resolution    1                                  \
        --voltage-multiplier 3                                  \
        --sensitivity-uri    local/hmb_direct_file_tests/MARS_icListen6299_calibration_April2025.nc        \
