@@ -1,4 +1,5 @@
-from pbp.misc_helper import gen_hour_minute_times, map_prefix
+from pbp.misc_helper import gen_hour_minute_times, map_prefix, parse_timestamp
+from datetime import datetime, timezone
 
 
 def test_gen_hour_minute_times(snapshot):
@@ -32,3 +33,39 @@ def test_map_prefix():
         "s3://pacific-sound-256khz-2022/09/MARS_20220921_002442.wav",
         "file:///PAM_Archive/2022/09/MARS_20220921_002442.wav",
     )
+
+
+def test_parse_timestamp():
+    result = parse_timestamp("MARS_20250914_122000.wav", "MARS_%Y%m%d_%H%M%S.wav")
+    expected = datetime(2025, 9, 14, 12, 20, 0, tzinfo=timezone.utc)
+    assert result == expected
+
+    result = parse_timestamp("data_20230105_080530.flac", "data_%Y%m%d_%H%M%S.flac")
+    expected = datetime(2023, 1, 5, 8, 5, 30, tzinfo=timezone.utc)
+    assert result == expected
+
+    # Test with 2-digit year in filename
+    result = parse_timestamp("foo_250914_122000.wav", "foo_%y%m%d_%H%M%S.wav")
+    expected = datetime(2025, 9, 14, 12, 20, 0, tzinfo=timezone.utc)
+    assert result == expected
+
+    # Test with only date in filename
+    result = parse_timestamp("daily_20250914.wav", "daily_%Y%m%d.wav")
+    expected = datetime(2025, 9, 14, 0, 0, 0, tzinfo=timezone.utc)
+    assert result == expected
+
+    # Test with pattern that doesn't match string
+    result = parse_timestamp("MARS_20250914_122000.wav", "HYDROPHONE_%Y%m%d_%H%M%S.wav")
+    assert result is None
+
+    # Test with wrong extension
+    result = parse_timestamp("MARS_20250914_122000.wav", "MARS_%Y%m%d_%H%M%S.flac")
+    assert result is None
+
+    # Test with invalid date
+    result = parse_timestamp("MARS_20250230_122000.wav", "MARS_%Y%m%d_%H%M%S.wav")
+    assert result is None
+
+    # Test empty string
+    result = parse_timestamp("", "MARS_%Y%m%d_%H%M%S.wav")
+    assert result is None
