@@ -4,12 +4,24 @@ from typing import cast, List, Optional, Tuple
 import loguru
 
 import numpy as np
-import pypam.signal as sig
-
 import xarray as xr
-from pypam import utils
 
 from pbp.misc_helper import brief_list
+
+try:
+    from pypam.utils import get_hybrid_millidecade_limits, spectra_ds_to_bands
+    import pypam.signal as pypam_signal
+
+    PYPAM_AVAILABLE = True
+except ImportError:
+    # Fallback to our extracted functions if PyPAM is not available
+    from pbp.spectral_analysis import (
+        get_hybrid_millidecade_limits,
+        spectra_ds_to_bands,
+        compute_spectrum,
+    )
+
+    PYPAM_AVAILABLE = False
 
 
 @dataclass
@@ -103,7 +115,7 @@ class PypamSupport:
 
         self.log.debug(f"PypamSupport: {subset_to=} {band=}")
 
-        self._bands_limits, self._bands_c = utils.get_hybrid_millidecade_limits(
+        self._bands_limits, self._bands_c = get_hybrid_millidecade_limits(
             band=band, nfft=self._nfft
         )
 
@@ -263,7 +275,7 @@ class PypamSupport:
         print_array("       bands_c", bands_c)
         print_array("  bands_limits", bands_limits)
 
-        psd_da = utils.spectra_ds_to_bands(
+        psd_da = spectra_ds_to_bands(
             psd_da,
             bands_limits,
             bands_c,
@@ -294,9 +306,17 @@ class PypamSupport:
 
 
 def _get_spectrum(data: np.ndarray, fs: int, nfft: int) -> Tuple[np.ndarray, np.ndarray]:
-    signal = sig.Signal(data, fs=fs)
-    signal.set_band(None)
-    fbands, spectrum, _ = signal.spectrum(
-        scaling="density", nfft=nfft, db=False, overlap=0.5, force_calc=True
-    )
-    return fbands, spectrum
+    if PYPAM_AVAILABLE:
+        # Use PyPAM's implementation
+        pypam_sig = pypam_signal.Signal(data, fs=fs)
+        pypam_sig.set_band(None)
+        fbands, spectrum, _ = pypam_sig.spectrum(
+            scaling="density", nfft=nfft, db=False, overlap=0.5, force_calc=True
+        )
+        return fbands, spectrum
+    else:
+        # Fallback to our extracted implementation
+        fbands, spectrum = compute_spectrum(
+            data, fs=fs, nfft=nfft, scaling="density", db=False, overlap=0.5
+        )
+        return fbands, spectrum

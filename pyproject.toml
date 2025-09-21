@@ -29,7 +29,6 @@ pbp-meta-gen = "pbp.main_meta_generator:main"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12.0"
-lifewatch-pypam = "0.3.2"
 boto3 = "1.34.47"
 google-cloud-storage = "2.18.0"
 dataclasses-json = "0.6"
@@ -44,6 +43,7 @@ Pyarrow = "15.0.0"
 loguru = {extras = ["mypy"], version = "^0.7.2"}
 loguru-mypy = "^0.0.4"
 awscli = "^1.33.20"
+lifewatch-pypam = "0.3.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.8.0"
