@@ -2,26 +2,22 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import cast, List, Optional, Tuple
 import loguru
+import os
 
 import numpy as np
 import xarray as xr
 
 from pbp.misc_helper import brief_list
 
-try:
-    from pypam.utils import get_hybrid_millidecade_limits, spectra_ds_to_bands
-    import pypam.signal as pypam_signal
+from pypam.utils import get_hybrid_millidecade_limits as pypam_get_limits
+from pypam.utils import spectra_ds_to_bands as pypam_spectra_to_bands
+import pypam.signal as pypam_signal
 
-    PYPAM_AVAILABLE = True
-except ImportError:
-    # Fallback to our extracted functions if PyPAM is not available
-    from pbp.spectral_analysis import (
-        get_hybrid_millidecade_limits,
-        spectra_ds_to_bands,
-        compute_spectrum,
-    )
-
-    PYPAM_AVAILABLE = False
+from pbp.spectral_analysis import (
+    get_hybrid_millidecade_limits as extracted_get_limits,
+    spectra_ds_to_bands as extracted_spectra_to_bands,
+    compute_spectrum as extracted_compute_spectrum,
+)
 
 
 @dataclass
@@ -77,6 +73,9 @@ class PypamSupport:
             log: A logger instance.
         """
         self.log = log
+        self.use_own_functions = os.getenv("PBP_USE_SPECTRAL_FUNCTIONS") == "1"
+        if self.use_own_functions:
+            self.log.debug("PypamSupport: using own spectral functions.")
 
         # to capture reported segments (missing and otherwise):
         self._captured_segments: List[_CapturedSegment] = []
@@ -115,9 +114,14 @@ class PypamSupport:
 
         self.log.debug(f"PypamSupport: {subset_to=} {band=}")
 
-        self._bands_limits, self._bands_c = get_hybrid_millidecade_limits(
-            band=band, nfft=self._nfft
-        )
+        if self.use_own_functions:
+            self._bands_limits, self._bands_c = extracted_get_limits(
+                band=band, nfft=self._nfft
+            )
+        else:
+            self._bands_limits, self._bands_c = pypam_get_limits(
+                band=band, nfft=self._nfft
+            )
 
     @property
     def parameters_set(self) -> bool:
@@ -151,7 +155,7 @@ class PypamSupport:
         assert self.fs is not None
         assert self._nfft is not None
 
-        self._fbands, spectrum = _get_spectrum(data, self.fs, self._nfft)
+        self._fbands, spectrum = self._get_spectrum(data, self.fs, self._nfft)
         num_secs = len(data) / self.fs
         self._captured_segments.append(_CapturedSegment(dt, num_secs, spectrum))
         self._num_actual_segments += 1
@@ -275,13 +279,22 @@ class PypamSupport:
         print_array("       bands_c", bands_c)
         print_array("  bands_limits", bands_limits)
 
-        psd_da = spectra_ds_to_bands(
-            psd_da,
-            bands_limits,
-            bands_c,
-            fft_bin_width=self.fs / self._nfft,
-            db=False,
-        )
+        if self.use_own_functions:
+            psd_da = extracted_spectra_to_bands(
+                psd_da,
+                bands_limits,
+                bands_c,
+                fft_bin_width=self.fs / self._nfft,
+                db=False,
+            )
+        else:
+            psd_da = pypam_spectra_to_bands(
+                psd_da,
+                bands_limits,
+                bands_c,
+                fft_bin_width=self.fs / self._nfft,
+                db=False,
+            )
 
         psd_da = psd_da.drop_vars(["lower_frequency", "upper_frequency"])
         return psd_da
@@ -304,19 +317,18 @@ class PypamSupport:
 
         return bands_limits, bands_c
 
-
-def _get_spectrum(data: np.ndarray, fs: int, nfft: int) -> Tuple[np.ndarray, np.ndarray]:
-    if PYPAM_AVAILABLE:
-        # Use PyPAM's implementation
-        pypam_sig = pypam_signal.Signal(data, fs=fs)
-        pypam_sig.set_band(None)
-        fbands, spectrum, _ = pypam_sig.spectrum(
-            scaling="density", nfft=nfft, db=False, overlap=0.5, force_calc=True
-        )
-        return fbands, spectrum
-    else:
-        # Fallback to our extracted implementation
-        fbands, spectrum = compute_spectrum(
-            data, fs=fs, nfft=nfft, scaling="density", db=False, overlap=0.5
-        )
-        return fbands, spectrum
+    def _get_spectrum(
+        self, data: np.ndarray, fs: int, nfft: int
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        if self.use_own_functions:
+            fbands, spectrum = extracted_compute_spectrum(
+                data, fs=fs, nfft=nfft, scaling="density", db=False, overlap=0.5
+            )
+            return fbands, spectrum
+        else:
+            pypam_sig = pypam_signal.Signal(data, fs=fs)
+            pypam_sig.set_band(None)
+            fbands, spectrum, _ = pypam_sig.spectrum(
+                scaling="density", nfft=nfft, db=False, overlap=0.5, force_calc=True
+            )
+            return fbands, spectrum

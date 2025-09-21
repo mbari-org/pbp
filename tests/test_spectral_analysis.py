@@ -6,7 +6,6 @@ to the original PyPAM functions.
 """
 
 import numpy as np
-import pytest
 import xarray as xr
 
 # Import both our extracted functions and the original PyPAM functions
@@ -16,16 +15,11 @@ from pbp.spectral_analysis import (
     compute_spectrum as our_compute_spectrum,
 )
 
-try:
-    from pypam.utils import get_hybrid_millidecade_limits as pypam_get_limits
-    import pypam.signal as pypam_signal
-
-    PYPAM_AVAILABLE = True
-except ImportError:
-    PYPAM_AVAILABLE = False
+from pypam.utils import get_hybrid_millidecade_limits as pypam_get_limits
+from pypam.utils import spectra_ds_to_bands as pypam_spectra_to_bands
+import pypam.signal as pypam_signal
 
 
-@pytest.mark.skipif(not PYPAM_AVAILABLE, reason="PyPAM not available for comparison")
 class TestExtractedFunctions:
     """Test that extracted functions match PyPAM outputs."""
 
@@ -68,13 +62,23 @@ class TestExtractedFunctions:
         np.testing.assert_allclose(our_psd, pypam_psd, rtol=1e-10)
 
     def test_spectra_ds_to_bands(self):
-        """Test basic functionality of spectra_ds_to_bands (PyPAM comparison skipped after extraction)."""
-        # This test is now focused on verifying the function works rather than exact PyPAM matching
-        # since we've already verified the core algorithm matches in the other tests
+        """Test that our spectra_ds_to_bands matches PyPAM."""
+        # Use the same test parameters as the other successful comparison tests
+        band = [10, 1000]
+        nfft = 2048
+        fs = 2000
+        fft_bin_width = fs / nfft
 
-        # Create simple test data that should work with our implementation
-        frequencies = np.array([10, 20, 30, 40, 50, 60])
-        psd_data = np.ones((2, 6))  # 2 time steps, 6 frequencies
+        # Get bands from PyPAM (ensures consistency)
+        bands_limits, bands_c = pypam_get_limits(band, nfft, fs)
+
+        # Create test PSD data that covers the full frequency range
+        # Use the frequency grid that PyPAM would expect
+        max_freq_index = int(len(bands_c) * 2)  # Ensure we have enough frequency coverage
+        frequencies = np.arange(max_freq_index) * fft_bin_width
+
+        # Create simple, uniform PSD data to avoid numerical complexities
+        psd_data = np.ones((2, len(frequencies)))  # 2 time steps, uniform spectrum
 
         psd_da = xr.DataArray(
             data=psd_data,
@@ -82,21 +86,26 @@ class TestExtractedFunctions:
             dims=["time", "frequency"],
         )
 
-        # Define simple bands
-        bands_limits = [10, 25, 45, 60]
-        bands_c = [17.5, 35, 52.5]
-        fft_bin_width = 10.0
-
-        # Test our implementation
-        result = our_spectra_to_bands(
+        # Test both implementations
+        our_result = our_spectra_to_bands(
             psd_da, bands_limits, bands_c, fft_bin_width, db=False
         )
 
-        # Basic sanity checks
-        assert result.dims == ("time", "frequency_bins")
-        assert len(result.frequency_bins) == len(bands_c)
-        assert "lower_frequency" in result.coords
-        assert "upper_frequency" in result.coords
+        pypam_result = pypam_spectra_to_bands(
+            psd_da, bands_limits, bands_c, fft_bin_width, db=False
+        )
+
+        # Compare results - should be identical
+        np.testing.assert_allclose(our_result.values, pypam_result.values, rtol=1e-10)
+        np.testing.assert_allclose(
+            our_result.frequency_bins.values,
+            pypam_result.frequency_bins.values,
+            rtol=1e-10,
+        )
+
+        # Verify structure matches
+        assert our_result.dims == pypam_result.dims
+        assert set(our_result.coords.keys()) == set(pypam_result.coords.keys())
 
 
 class TestStandaloneFunctions:
