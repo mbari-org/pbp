@@ -21,144 +21,13 @@ import scipy.signal as sig
 import xarray as xr
 
 
-def get_center_freq(
-    base: float, bands_per_division: int, n: int, first_out_band_centre_freq: float
-) -> float:
-    """
-    Calculate center frequency for a given band number.
-
-    Parameters
-    ----------
-    base : float
-        Base for logarithmic spacing (typically 10)
-    bands_per_division : int
-        Number of bands per division (1000 for millidecade)
-    n : int
-        Band number
-    first_out_band_centre_freq : float
-        Center frequency of the first output band
-
-    Returns
-    -------
-    float
-        Center frequency for band n
-    """
-    if (bands_per_division == 10) or ((bands_per_division % 2) == 1):
-        center_freq = first_out_band_centre_freq * base ** ((n - 1) / bands_per_division)
-    else:
-        b = bands_per_division * 0.3
-        G = 10.0 ** (3.0 / 10.0)
-        center_freq = base * G ** ((2 * (n - 1) + 1) / (2 * b))
-
-    return center_freq
-
-
-def get_bands_limits(
-    band: List[float],
-    nfft: int,
-    base: float,
-    bands_per_division: int,
-    hybrid_mode: bool,
-    fs: Optional[float] = None,
-) -> Tuple[List[float], List[float]]:
-    """
-    Calculate frequency band limits for spectral analysis.
-
-    Parameters
-    ----------
-    band : list of float
-        [min_freq, max_freq] frequency range
-    nfft : int
-        Number of FFT points
-    base : float
-        Base for logarithmic spacing (typically 10)
-    bands_per_division : int
-        Number of bands per division (1000 for millidecade)
-    hybrid_mode : bool
-        Whether to use hybrid linear/logarithmic spacing
-    fs : float, optional
-        Sampling frequency. If None, assumed to be 2 * max_freq
-
-    Returns
-    -------
-    tuple
-        (bands_limits, bands_c) where bands_limits are the band edges and
-        bands_c are the band center frequencies
-    """
-    first_bin_centre = 0
-    low_side_multiplier = base ** (-1 / (2 * bands_per_division))
-    high_side_multiplier = base ** (1 / (2 * bands_per_division))
-
-    if fs is None:
-        fs = band[1] * 2
-    fft_bin_width = fs / nfft
-
-    # Start the frequencies list
-    bands_limits = []
-    bands_c = []
-
-    # count the number of bands:
-    band_count = 0
-    center_freq = 0.0
-    if hybrid_mode:
-        bin_width = 0.0
-        while bin_width < fft_bin_width:
-            band_count = band_count + 1
-            center_freq = get_center_freq(base, bands_per_division, band_count, band[0])
-            bin_width = (
-                high_side_multiplier * center_freq - low_side_multiplier * center_freq
-            )
-
-        # now keep counting until the difference between the log spaced
-        # center frequency and new frequency is greater than .025
-        center_freq = get_center_freq(base, bands_per_division, band_count, band[0])
-        linear_bin_count = round(center_freq / fft_bin_width - first_bin_centre)
-        dc = abs(linear_bin_count * fft_bin_width - center_freq) + 0.1
-        while abs(linear_bin_count * fft_bin_width - center_freq) < dc:
-            # Compute next one
-            dc = abs(linear_bin_count * fft_bin_width - center_freq)
-            band_count = band_count + 1
-            linear_bin_count = linear_bin_count + 1
-            center_freq = get_center_freq(base, bands_per_division, band_count, band[0])
-
-        linear_bin_count = linear_bin_count - 1
-        band_count = band_count - 1
-
-        if (fft_bin_width * linear_bin_count) > band[1]:
-            linear_bin_count = int(fs / 2 / fft_bin_width + 1)
-
-        for i in np.arange(linear_bin_count):
-            # Add the frequencies
-            fc = first_bin_centre + i * fft_bin_width
-            if fc >= band[0]:
-                bands_c.append(fc)
-                bands_limits.append(fc - fft_bin_width / 2)
-
-    # count the log space frequencies
-    ls_freq = center_freq * high_side_multiplier
-    while ls_freq < band[1]:
-        fc = get_center_freq(base, bands_per_division, band_count, band[0])
-        ls_freq = fc * high_side_multiplier
-        if fc >= band[0]:
-            bands_c.append(fc)
-            bands_limits.append(fc * low_side_multiplier)
-        band_count += 1
-    # Add the upper limit (bands_limits's length will be +1 compared to bands_c)
-    if ls_freq > band[1]:
-        ls_freq = band[1]
-        if fc > band[1]:
-            bands_c[-1] = band[1]
-    bands_limits.append(ls_freq)
-    return bands_limits, bands_c
-
-
 def get_hybrid_millidecade_limits(
     band: List[float], nfft: int, fs: Optional[float] = None
 ) -> Tuple[List[float], List[float]]:
     """
     Calculate frequency band limits for hybrid millidecade analysis.
 
-    This is a convenience function that calls get_bands_limits with parameters
+    This is a convenience function that calls _get_bands_limits with parameters
     specific to hybrid millidecade analysis (base=10, bands_per_division=1000).
 
     Parameters
@@ -178,34 +47,9 @@ def get_hybrid_millidecade_limits(
     """
     if fs is None:
         fs = band[1] * 2
-    return get_bands_limits(
+    return _get_bands_limits(
         band, nfft, base=10, bands_per_division=1000, hybrid_mode=True, fs=fs
     )
-
-
-def to_db(wave: np.ndarray, ref: float = 1.0, square: bool = False) -> np.ndarray:
-    """
-    Convert linear values to decibel scale.
-
-    Parameters
-    ----------
-    wave : np.ndarray
-        Signal values in linear scale
-    ref : float
-        Reference value for dB conversion
-    square : bool
-        Set to True if the signal should be squared before conversion
-
-    Returns
-    -------
-    np.ndarray
-        Signal values in dB scale
-    """
-    if square:
-        db = 10 * np.log10(wave**2 / ref**2)
-    else:
-        db = 10 * np.log10(wave / ref**2)
-    return db
 
 
 def compute_spectrum(
@@ -277,7 +121,7 @@ def compute_spectrum(
 
     # Convert to dB if requested
     if db:
-        psd = to_db(psd, ref=1.0, square=False)
+        psd = _to_db(psd, ref=1.0, square=False)
 
     return freq, psd
 
@@ -403,3 +247,159 @@ def spectra_ds_to_bands(
     # Preserve original attributes
     psd_bands.attrs.update(psd.attrs)
     return psd_bands
+
+
+def _get_center_freq(
+    base: float, bands_per_division: int, n: int, first_out_band_centre_freq: float
+) -> float:
+    """
+    Calculate center frequency for a given band number.
+
+    Parameters
+    ----------
+    base : float
+        Base for logarithmic spacing (typically 10)
+    bands_per_division : int
+        Number of bands per division (1000 for millidecade)
+    n : int
+        Band number
+    first_out_band_centre_freq : float
+        Center frequency of the first output band
+
+    Returns
+    -------
+    float
+        Center frequency for band n
+    """
+    if (bands_per_division == 10) or ((bands_per_division % 2) == 1):
+        center_freq = first_out_band_centre_freq * base ** ((n - 1) / bands_per_division)
+    else:
+        b = bands_per_division * 0.3
+        G = 10.0 ** (3.0 / 10.0)
+        center_freq = base * G ** ((2 * (n - 1) + 1) / (2 * b))
+
+    return center_freq
+
+
+def _get_bands_limits(
+    band: List[float],
+    nfft: int,
+    base: float,
+    bands_per_division: int,
+    hybrid_mode: bool,
+    fs: Optional[float] = None,
+) -> Tuple[List[float], List[float]]:
+    """
+    Calculate frequency band limits for spectral analysis.
+
+    Parameters
+    ----------
+    band : list of float
+        [min_freq, max_freq] frequency range
+    nfft : int
+        Number of FFT points
+    base : float
+        Base for logarithmic spacing (typically 10)
+    bands_per_division : int
+        Number of bands per division (1000 for millidecade)
+    hybrid_mode : bool
+        Whether to use hybrid linear/logarithmic spacing
+    fs : float, optional
+        Sampling frequency. If None, assumed to be 2 * max_freq
+
+    Returns
+    -------
+    tuple
+        (bands_limits, bands_c) where bands_limits are the band edges and
+        bands_c are the band center frequencies
+    """
+    first_bin_centre = 0
+    low_side_multiplier = base ** (-1 / (2 * bands_per_division))
+    high_side_multiplier = base ** (1 / (2 * bands_per_division))
+
+    if fs is None:
+        fs = band[1] * 2
+    fft_bin_width = fs / nfft
+
+    # Start the frequencies list
+    bands_limits = []
+    bands_c = []
+
+    # count the number of bands:
+    band_count = 0
+    center_freq = 0.0
+    if hybrid_mode:
+        bin_width = 0.0
+        while bin_width < fft_bin_width:
+            band_count = band_count + 1
+            center_freq = _get_center_freq(base, bands_per_division, band_count, band[0])
+            bin_width = (
+                high_side_multiplier * center_freq - low_side_multiplier * center_freq
+            )
+
+        # now keep counting until the difference between the log spaced
+        # center frequency and new frequency is greater than .025
+        center_freq = _get_center_freq(base, bands_per_division, band_count, band[0])
+        linear_bin_count = round(center_freq / fft_bin_width - first_bin_centre)
+        dc = abs(linear_bin_count * fft_bin_width - center_freq) + 0.1
+        while abs(linear_bin_count * fft_bin_width - center_freq) < dc:
+            # Compute next one
+            dc = abs(linear_bin_count * fft_bin_width - center_freq)
+            band_count = band_count + 1
+            linear_bin_count = linear_bin_count + 1
+            center_freq = _get_center_freq(base, bands_per_division, band_count, band[0])
+
+        linear_bin_count = linear_bin_count - 1
+        band_count = band_count - 1
+
+        if (fft_bin_width * linear_bin_count) > band[1]:
+            linear_bin_count = int(fs / 2 / fft_bin_width + 1)
+
+        for i in np.arange(linear_bin_count):
+            # Add the frequencies
+            fc = first_bin_centre + i * fft_bin_width
+            if fc >= band[0]:
+                bands_c.append(fc)
+                bands_limits.append(fc - fft_bin_width / 2)
+
+    # count the log space frequencies
+    ls_freq = center_freq * high_side_multiplier
+    while ls_freq < band[1]:
+        fc = _get_center_freq(base, bands_per_division, band_count, band[0])
+        ls_freq = fc * high_side_multiplier
+        if fc >= band[0]:
+            bands_c.append(fc)
+            bands_limits.append(fc * low_side_multiplier)
+        band_count += 1
+    # Add the upper limit (bands_limits's length will be +1 compared to bands_c)
+    if ls_freq > band[1]:
+        ls_freq = band[1]
+        if fc > band[1]:
+            bands_c[-1] = band[1]
+    bands_limits.append(ls_freq)
+    return bands_limits, bands_c
+
+
+def _to_db(wave: np.ndarray, ref: float = 1.0, square: bool = False) -> np.ndarray:
+    """
+    Convert linear values to decibel scale.
+
+    Parameters
+    ----------
+    wave : np.ndarray
+        Signal values in linear scale
+    ref : float
+        Reference value for dB conversion
+    square : bool
+        Set to True if the signal should be squared before conversion
+
+    Returns
+    -------
+    np.ndarray
+        Signal values in dB scale
+    """
+    if square:
+        db = 10 * np.log10(wave**2 / ref**2)
+    else:
+        db = 10 * np.log10(wave / ref**2)
+    return db
