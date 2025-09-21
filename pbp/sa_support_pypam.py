@@ -7,7 +7,7 @@ import numpy as np
 import xarray as xr
 
 from pbp.sa_support import SaSupport
-from pypam.utils import get_hybrid_millidecade_limits, spectra_ds_to_bands
+from pypam import utils
 import pypam.signal as pypam_signal
 
 
@@ -15,7 +15,7 @@ class SaSupportPyPamImpl(SaSupport):
     def get_hybrid_millidecade_limits(
         self, band: List[float]
     ) -> Tuple[List[float], List[float]]:
-        return get_hybrid_millidecade_limits(band, self.nfft, self.fs)
+        return utils.get_hybrid_millidecade_limits(band, self.nfft, self.fs)
 
     def compute_spectrum(
         self,
@@ -42,6 +42,6 @@ class SaSupportPyPamImpl(SaSupport):
         freq_coord: str = "frequency",
         db: bool = True,
     ) -> xr.DataArray:
-        return spectra_ds_to_bands(
+        return utils.spectra_ds_to_bands(
             psd, bands_limits, bands_c, fft_bin_width, freq_coord, db
         )
