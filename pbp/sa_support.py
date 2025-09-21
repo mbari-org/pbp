@@ -11,9 +11,20 @@ import os
 
 
 class SaSupport:
+    def __init__(self, fs: int, nfft: int):
+        """
+        Initialize SaSupport with sampling frequency and FFT parameters.
+
+        Args:
+            fs: Sampling frequency in Hz
+            nfft: Number of FFT points
+        """
+        self.fs = fs
+        self.nfft = nfft
+
     @abstractmethod
     def get_hybrid_millidecade_limits(
-        self, band: List[float], nfft: int, fs: Optional[float] = None
+        self, band: List[float]
     ) -> Tuple[List[float], List[float]]:
         """
         Calculate frequency band limits for hybrid millidecade analysis.
@@ -25,10 +36,6 @@ class SaSupport:
         ----------
         band : list of float
             [min_freq, max_freq] frequency range to analyze
-        nfft : int
-            Number of FFT points
-        fs : float, optional
-            Sampling frequency. If None, assumed to be 2 * max_freq
 
         Returns
         -------
@@ -41,8 +48,6 @@ class SaSupport:
     def compute_spectrum(
         self,
         signal: np.ndarray,
-        fs: int,
-        nfft: int = 512,
         scaling: str = "density",
         overlap: float = 0,
         window_name: str = "hann",
@@ -59,10 +64,6 @@ class SaSupport:
         ----------
         signal : np.ndarray
             Input audio signal
-        fs : float
-            Sampling frequency in Hz
-        nfft : int
-            Length of the FFT window in samples. Should be a power of 2.
         scaling : str
             Scaling type: 'density' for power spectral density or 'spectrum' for power spectrum
         overlap : float
@@ -120,9 +121,13 @@ class SaSupport:
         """
 
 
-def get_sa_support() -> SaSupport:
+def get_sa_support(fs: int, nfft: int) -> SaSupport:
     """
     Factory function to get an instance of SaSupport.
+
+    Args:
+        fs: Sampling frequency in Hz
+        nfft: Number of FFT points
 
     Returns
     -------
@@ -133,9 +138,9 @@ def get_sa_support() -> SaSupport:
     if use_own_functions:
         from pbp.sa_support_impl import SaSupportImpl
 
-        return SaSupportImpl()
+        return SaSupportImpl(fs, nfft)
 
     else:
         from pbp.sa_support_pypam import SaSupportPyPamImpl
 
-        return SaSupportPyPamImpl()
+        return SaSupportPyPamImpl(fs, nfft)

@@ -16,22 +16,22 @@ from pbp.spectral_analysis import (
 
 class SaSupportImpl(SaSupport):
     def get_hybrid_millidecade_limits(
-        self, band: List[float], nfft: int, fs: Optional[float] = None
+        self, band: List[float]
     ) -> Tuple[List[float], List[float]]:
-        return get_hybrid_millidecade_limits(band, nfft, fs)
+        return get_hybrid_millidecade_limits(band, self.nfft, self.fs)
 
     def compute_spectrum(
         self,
         signal: np.ndarray,
-        fs: int,
-        nfft: int = 512,
         scaling: str = "density",
         overlap: float = 0,
         window_name: str = "hann",
         db: bool = True,
         band: Optional[Tuple[float, float]] = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        return compute_spectrum(signal, fs, nfft, scaling, overlap, window_name, db, band)
+        return compute_spectrum(
+            signal, self.fs, self.nfft, scaling, overlap, window_name, db, band
+        )
 
     def spectra_ds_to_bands(
         self,

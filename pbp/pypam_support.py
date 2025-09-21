@@ -7,7 +7,7 @@ import numpy as np
 import xarray as xr
 
 from pbp.misc_helper import brief_list
-from pbp.sa_support import get_sa_support
+from pbp.sa_support import get_sa_support, SaSupport
 
 
 @dataclass
@@ -63,7 +63,6 @@ class PypamSupport:
             log: A logger instance.
         """
         self.log = log
-        self.sa = get_sa_support()
 
         # to capture reported segments (missing and otherwise):
         self._captured_segments: List[_CapturedSegment] = []
@@ -74,6 +73,7 @@ class PypamSupport:
 
         # The following determined when `set_parameters` is called:
 
+        self.sa: Optional[SaSupport] = None
         self.fs: Optional[int] = None
         self._nfft: Optional[int] = None
         self._subset_to: Optional[Tuple[int, int]] = None
@@ -102,8 +102,10 @@ class PypamSupport:
 
         self.log.debug(f"PypamSupport: {subset_to=} {band=}")
 
+        self.sa = get_sa_support(self.fs, self._nfft)
+
         self._bands_limits, self._bands_c = self.sa.get_hybrid_millidecade_limits(
-            band=band, nfft=self._nfft
+            band=band
         )
 
     @property
@@ -138,7 +140,7 @@ class PypamSupport:
         assert self.fs is not None
         assert self._nfft is not None
 
-        self._fbands, spectrum = self._get_spectrum(data, self.fs, self._nfft)
+        self._fbands, spectrum = self._get_spectrum(data)
         num_secs = len(data) / self.fs
         self._captured_segments.append(_CapturedSegment(dt, num_secs, spectrum))
         self._num_actual_segments += 1
@@ -249,6 +251,7 @@ class PypamSupport:
     def _spectra_to_bands(self, psd_da: xr.DataArray) -> xr.DataArray:
         assert self.fs is not None
         assert self._nfft is not None
+        assert self.sa is not None
 
         bands_limits, bands_c = self._bands_limits, self._bands_c
         if self._subset_to is not None:
@@ -292,9 +295,8 @@ class PypamSupport:
         return bands_limits, bands_c
 
     def _get_spectrum(
-        self, data: np.ndarray, fs: int, nfft: int
+        self,
+        data: np.ndarray,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """Get spectrum using the configured SaSupport implementation."""
-        return self.sa.compute_spectrum(
-            data, fs=fs, nfft=nfft, scaling="density", db=False, overlap=0.5
-        )
+        assert self.sa is not None
+        return self.sa.compute_spectrum(data, scaling="density", db=False, overlap=0.5)

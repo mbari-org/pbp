@@ -13,25 +13,23 @@ import pypam.signal as pypam_signal
 
 class SaSupportPyPamImpl(SaSupport):
     def get_hybrid_millidecade_limits(
-        self, band: List[float], nfft: int, fs: Optional[float] = None
+        self, band: List[float]
     ) -> Tuple[List[float], List[float]]:
-        return get_hybrid_millidecade_limits(band, nfft, fs)
+        return get_hybrid_millidecade_limits(band, self.nfft, self.fs)
 
     def compute_spectrum(
         self,
         signal: np.ndarray,
-        fs: int,
-        nfft: int = 512,
         scaling: str = "density",
         overlap: float = 0,
         window_name: str = "hann",
         db: bool = True,
         band: Optional[Tuple[float, float]] = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        pypam_sig = pypam_signal.Signal(signal, fs=fs)
+        pypam_sig = pypam_signal.Signal(signal, fs=self.fs)
         pypam_sig.set_band(None)
         fbands, spectrum, _ = pypam_sig.spectrum(
-            scaling=scaling, nfft=nfft, db=db, overlap=overlap, force_calc=True
+            scaling=scaling, nfft=self.nfft, db=db, overlap=overlap, force_calc=True
         )
         return fbands, spectrum
 
