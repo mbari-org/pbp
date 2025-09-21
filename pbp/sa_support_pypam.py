@@ -38,10 +38,9 @@ class SaSupportPyPamImpl(SaSupport):
         psd: xr.DataArray,
         bands_limits: List[float],
         bands_c: List[float],
-        fft_bin_width: float,
         freq_coord: str = "frequency",
         db: bool = False,
     ) -> xr.DataArray:
         return utils.spectra_ds_to_bands(
-            psd, bands_limits, bands_c, fft_bin_width, freq_coord, db
+            psd, bands_limits, bands_c, self.fft_bin_width, freq_coord, db
         )

@@ -104,9 +104,7 @@ class PypamSupport:
 
         self.sa = get_sa_support(self.fs, self._nfft)
 
-        self._bands_limits, self._bands_c = self.sa.get_hybrid_millidecade_limits(
-            band=band
-        )
+        self._bands_limits, self._bands_c = self.sa.get_hybrid_millidecade_limits(band)
 
     @property
     def parameters_set(self) -> bool:
@@ -266,12 +264,7 @@ class PypamSupport:
         print_array("       bands_c", bands_c)
         print_array("  bands_limits", bands_limits)
 
-        psd_da = self.sa.spectra_ds_to_bands(
-            psd_da,
-            bands_limits,
-            bands_c,
-            fft_bin_width=self.fs / self._nfft,
-        )
+        psd_da = self.sa.spectra_ds_to_bands(psd_da, bands_limits, bands_c)
 
         psd_da = psd_da.drop_vars(["lower_frequency", "upper_frequency"])
         return psd_da

@@ -21,6 +21,7 @@ class SaSupport:
         """
         self.fs = fs
         self.nfft = nfft
+        self.fft_bin_width = fs / nfft
 
     @abstractmethod
     def get_hybrid_millidecade_limits(
@@ -88,7 +89,6 @@ class SaSupport:
         psd: xr.DataArray,
         bands_limits: List[float],
         bands_c: List[float],
-        fft_bin_width: float,
         freq_coord: str = "frequency",
         db: bool = False,
     ) -> xr.DataArray:
@@ -107,8 +107,6 @@ class SaSupport:
             Frequency limits defining the band edges
         bands_c : list of float
             Center frequencies of the bands (used for output coordinate naming)
-        fft_bin_width : float
-            Width of each FFT frequency bin in Hz
         freq_coord : str
             Name of the frequency coordinate in the input DataArray
         db : bool
