@@ -49,9 +49,9 @@ class SaSupport:
         self,
         signal: np.ndarray,
         scaling: str = "density",
-        overlap: float = 0,
+        overlap: float = 0.5,
         window_name: str = "hann",
-        db: bool = True,
+        db: bool = False,
         band: Optional[Tuple[float, float]] = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -90,7 +90,7 @@ class SaSupport:
         bands_c: List[float],
         fft_bin_width: float,
         freq_coord: str = "frequency",
-        db: bool = True,
+        db: bool = False,
     ) -> xr.DataArray:
         """
         Group spectral data into frequency bands with proportional allocation.

@@ -139,8 +139,9 @@ class PypamSupport:
         assert self.parameters_set
         assert self.fs is not None
         assert self._nfft is not None
+        assert self.sa is not None
 
-        self._fbands, spectrum = self._get_spectrum(data)
+        self._fbands, spectrum = self.sa.compute_spectrum(data)
         num_secs = len(data) / self.fs
         self._captured_segments.append(_CapturedSegment(dt, num_secs, spectrum))
         self._num_actual_segments += 1
@@ -270,7 +271,6 @@ class PypamSupport:
             bands_limits,
             bands_c,
             fft_bin_width=self.fs / self._nfft,
-            db=False,
         )
 
         psd_da = psd_da.drop_vars(["lower_frequency", "upper_frequency"])
@@ -293,10 +293,3 @@ class PypamSupport:
         bands_limits = bands_limits[start_index : start_index + new_bands_c_len + 1]
 
         return bands_limits, bands_c
-
-    def _get_spectrum(
-        self,
-        data: np.ndarray,
-    ) -> Tuple[np.ndarray, np.ndarray]:
-        assert self.sa is not None
-        return self.sa.compute_spectrum(data, scaling="density", db=False, overlap=0.5)
