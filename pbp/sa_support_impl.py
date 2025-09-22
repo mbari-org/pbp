@@ -1,5 +1,6 @@
 """
-SaSupport direct implementation with embedded spectral analysis functions.
+SaSupport direct implementation by copying relevant logic from PyPAM.
+Note: Most of this with help from Claude Code.
 """
 
 from typing import Optional, Tuple, List
@@ -13,6 +14,10 @@ from pbp.sa_support import SaSupport
 
 
 class SaSupportImpl(SaSupport):
+    """
+    SaSupport implementation by directly copying relevant logic from PyPAM.
+    """
+
     def get_hybrid_millidecade_limits(
         self, band: List[float]
     ) -> Tuple[List[float], List[float]]:

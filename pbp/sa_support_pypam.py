@@ -12,6 +12,10 @@ import pypam.signal as pypam_signal
 
 
 class SaSupportPyPamImpl(SaSupport):
+    """
+    SaSupport implementation using PyPAM.
+    """
+
     def get_hybrid_millidecade_limits(
         self, band: List[float]
     ) -> Tuple[List[float], List[float]]:
