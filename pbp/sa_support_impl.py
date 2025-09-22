@@ -169,6 +169,7 @@ class SaSupportImpl(SaSupport):
         return psd_bands
 
 
+@nb.njit
 def _get_bands_limits(
     band: List[float],
     nfft: int,
