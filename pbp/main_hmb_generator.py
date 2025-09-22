@@ -84,8 +84,28 @@ def run_main_hmb_generator(opts: Namespace) -> None:
         log.info("INTERRUPTED")
 
 
+def run_main_hmb_generator_direct_file(opts: Namespace) -> None:
+    # pylint: disable=import-outside-toplevel
+    from pbp.main_hmb_generator_file import main_hmb_generator_file
+
+    main_hmb_generator_file(opts)
+
+
 def main():
-    run_main_hmb_generator(parse_arguments())
+    opts = parse_arguments()
+    if opts.input_file is not None:
+        if opts.json_base_dir is not None:
+            print("ERROR: --json-base-dir cannot be used with --input-file")
+            return
+        if opts.date is not None:
+            print("ERROR: --date cannot be used with --input-file")
+            return
+        # TODO other params that should also be disallowed.
+
+        run_main_hmb_generator_direct_file(opts)
+
+    else:
+        run_main_hmb_generator(opts)
 
 
 if __name__ == "__main__":

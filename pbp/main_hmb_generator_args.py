@@ -30,7 +30,6 @@ Examples:
         "--json-base-dir",
         type=str,
         metavar="dir",
-        required=True,
         help="JSON base directory",
     )
 
@@ -91,7 +90,6 @@ Examples:
     parser.add_argument(
         "--date",
         type=str,
-        required=True,
         metavar="YYYYMMDD",
         help="The date to be processed.",
     )
@@ -220,6 +218,26 @@ Examples:
         default=None,
         metavar=("lower", "upper"),
         help="Subset the resulting PSD to [lower, upper), in terms of central frequency.",
+    )
+
+    # https://github.com/mbari-org/pbp/issues/89
+    parser.add_argument(
+        "--input-file",
+        type=str,
+        metavar="file",
+        help="Input file",
+    )
+    parser.add_argument(
+        "--timestamp-pattern",
+        type=str,
+        metavar="file",
+        help="Pattern to extract timestamp from input file name",
+    )
+    parser.add_argument(
+        "--time-resolution",
+        type=int,
+        metavar="secs",
+        help="Time resolution in seconds",
     )
 
     args = parser.parse_args()
