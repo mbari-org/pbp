@@ -2,17 +2,17 @@ import os
 import pathlib
 from dataclasses import dataclass
 from math import ceil, floor
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 from urllib.parse import ParseResult, urlparse
 
 import loguru
 import numpy as np
 import soundfile as sf
 
-from botocore.client import BaseClient, ClientError
-from google.cloud.exceptions import NotFound as GsNotFound
+from botocore.client import BaseClient
 from google.cloud.storage import Client as GsClient
 
+from pbp.download_uri import download_uri
 from pbp.json_support import get_intersecting_entries, JEntry, parse_json_contents
 from pbp.misc_helper import brief_list, map_prefix
 
@@ -86,7 +86,7 @@ class SoundStatus:
     def _get_sound_filename(self) -> Optional[str]:
         self.log.debug(f"_get_sound_filename: {self.uri=}")
         if self.parsed_uri.scheme in ("s3", "gs"):
-            return _download(
+            return download_uri(
                 log=self.log,
                 parsed_uri=self.parsed_uri,
                 download_dir=self.download_dir,
@@ -125,65 +125,6 @@ class SoundStatus:
             self.log.debug(f"Removed cached file {self.sound_filename} for {self.uri=}")
         except OSError as e:
             self.log.error(f"Error removing file {self.sound_filename}: {e}")
-
-
-def _download(
-    log: "loguru.Logger",
-    parsed_uri: ParseResult,
-    download_dir: str,
-    assume_downloaded_files: bool = False,
-    print_downloading_lines: bool = False,
-    s3_client: Optional[BaseClient] = None,
-    gs_client: Optional[GsClient] = None,
-) -> Optional[str]:
-    """
-    Downloads the given URI to the given download directory.
-
-    NOTE: `assume_downloaded_files` can be set to True to skip downloading files
-    that already exist in the download directory.
-
-    One of `s3_client` or `gs_client` must be given.
-
-    :return: Downloaded filename or None if error
-    """
-
-    pathlib.Path(download_dir).mkdir(parents=True, exist_ok=True)
-
-    bucket, key, simple = get_bucket_key_simple(parsed_uri)
-    local_filename = f"{download_dir}/{simple}"
-
-    if os.path.isfile(local_filename) and assume_downloaded_files:
-        log.info(f"ASSUMING ALREADY DOWNLOADED: {bucket=} {key=} to {local_filename}")
-        if print_downloading_lines:
-            print(f"Assuming already downloaded {parsed_uri.geturl()}")
-        return local_filename
-
-    scheme = parsed_uri.scheme
-    log.info(f"Downloading {scheme=} {bucket=} {key=} to {local_filename}")
-    if print_downloading_lines:
-        print(f"downloading {parsed_uri.geturl()}")
-
-    if scheme == "s3":
-        assert s3_client is not None
-        try:
-            s3_client.download_file(bucket, key, local_filename)
-            return local_filename
-        except ClientError as e:
-            log.error(f"Error downloading {scheme=} {bucket}/{key}: {e}")
-            return None
-
-    if scheme == "gs":
-        assert gs_client is not None
-        gs_bucket = gs_client.bucket(bucket)
-        blob = gs_bucket.blob(key)
-        try:
-            blob.download_to_filename(local_filename)
-            return local_filename
-        except GsNotFound as e:
-            log.error(f"Error downloading {scheme=} {bucket}/{key}: {e}")
-            return None
-
-    return None
 
 
 class FileHelper:
@@ -312,7 +253,7 @@ class FileHelper:
         """
         parsed_uri = urlparse(uri)
         if parsed_uri.scheme in ("s3", "gs"):
-            return _download(
+            return download_uri(
                 log=self.log,
                 parsed_uri=parsed_uri,
                 download_dir=self.download_dir,
@@ -365,7 +306,7 @@ class FileHelper:
             return self._get_json_local(parsed_uri.path)
 
     def _get_json_s3(self, parsed_uri: ParseResult) -> Optional[str]:
-        local_filename = _download(
+        local_filename = download_uri(
             log=self.log,
             parsed_uri=parsed_uri,
             download_dir=self.download_dir,
@@ -583,11 +524,3 @@ class FileHelper:
         except IOError as e:
             self.log.error(f"Error reading {filename}: {e}")
             return None
-
-
-def get_bucket_key_simple(parsed_uri: ParseResult) -> Tuple[str, str, str]:
-    bucket = parsed_uri.netloc
-    key = parsed_uri.path.lstrip("/")
-    simple = key.split("/")[-1] if "/" in key else key
-    assert "/" not in simple, f"Unexpected simple_filename: '{simple}'"
-    return bucket, key, simple

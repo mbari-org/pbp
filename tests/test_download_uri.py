@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-from pbp.file_helper import get_bucket_key_simple
+from pbp.download_uri import get_bucket_key_simple
 
 
 def test_get_bucket_key_simple():
