@@ -1,5 +1,27 @@
 2025-09
 
+- 1.7.5: Implements [#89 Direct HMB generation for given file](
+  https://github.com/mbari-org/pbp/issues/89). 
+
+    New options for pbp-hmb-gen:
+    
+    - `--input-file` - Audio file to process
+    - `--timestamp-pattern` - Pattern to extract timestamp from input file name
+    - `--time-resolution` - Time resolution in seconds
+
+    Example:
+    ```shell
+    pbp-hmb-gen  \
+       --input-file         /mnt/PAM_Archive/2025/09/MARS_20250914_122000.wav   \
+       --timestamp-pattern  "%Y%m%d_%H%M%S"                                     \
+       --time-resolution    1                                                   \
+       --voltage-multiplier 3                                                   \
+       --sensitivity-uri    ./MARS_icListen6299_calibration_April2025.nc        \
+       --global-attrs       ./MARSrealtime_HMB_GlobalAttributes_April2025.yaml  \
+       --variable-attrs     ./MARSrealtime_HMB_VariableAttributes.yaml          \
+       --output-dir         output
+    ```
+
 - Changed logging level of "No data from intersection ..." from warning to trace.
   
 2025-08
