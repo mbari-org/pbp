@@ -1,5 +1,9 @@
 2025-09
 
+- Refactoring and cleanup of the codebase
+    - renamed MetadataHelper to HmbMetadataHelper
+      to avoid confusion with other metadata modules (meta-gen)
+
 - 1.7.5: Implements [#89 Direct HMB generation for given file](
   https://github.com/mbari-org/pbp/issues/89). 
 

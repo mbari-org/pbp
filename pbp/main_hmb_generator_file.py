@@ -12,7 +12,7 @@ import pytz
 
 from pbp import get_pbp_version, get_pypam_version
 from pbp.logging_helper import create_logger
-from pbp.metadata import replace_snippets, MetadataHelper, parse_attributes
+from pbp.hmb_metadata import replace_snippets, HmbMetadataHelper, parse_attributes
 from pbp.misc_helper import extract_datetime
 from pbp.process_helper import (
     ProcessDayResult,
@@ -112,7 +112,7 @@ class FileProcessor:
         )
         print(f"  num_samples_per_segment: {self.num_samples_per_segment}")
 
-        self.metadata_helper = MetadataHelper(
+        self.metadata_helper = HmbMetadataHelper(
             self.log,
             self._load_attributes("global", self.opts.global_attrs),
             self._load_attributes("variable", self.opts.variable_attrs),

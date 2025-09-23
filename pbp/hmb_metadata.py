@@ -24,7 +24,7 @@ def parse_attributes(contents: str, suffix: str) -> OrderedDict[str, Any]:
     raise ValueError(f"Unrecognized contents for format: {suffix}")
 
 
-class MetadataHelper:
+class HmbMetadataHelper:
     def __init__(
         self,
         log: "loguru.Logger",

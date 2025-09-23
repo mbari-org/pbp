@@ -11,7 +11,7 @@ import xarray as xr
 
 from pbp import get_pbp_version, get_pypam_version
 from pbp.file_helper import FileHelper
-from pbp.metadata import MetadataHelper, parse_attributes, replace_snippets
+from pbp.hmb_metadata import HmbMetadataHelper, parse_attributes, replace_snippets
 from pbp.misc_helper import gen_hour_minute_times, parse_date
 from pbp.pypam_support import ProcessResult, PypamSupport
 
@@ -115,7 +115,7 @@ class ProcessHelper:
         self.compress_netcdf = compress_netcdf
         self.add_quality_flag = add_quality_flag
 
-        self.metadata_helper = MetadataHelper(
+        self.metadata_helper = HmbMetadataHelper(
             self.log,
             self._load_attributes("global", global_attrs_uri, set_global_attrs),
             self._load_attributes("variable", variable_attrs_uri),
