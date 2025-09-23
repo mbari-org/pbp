@@ -4,10 +4,9 @@ from typing import cast, List, Optional, Tuple
 import loguru
 
 import numpy as np
-import pypam.signal as sig
-
 import xarray as xr
-from pypam import utils
+
+from pbp.hmso_pypam import HmsoPypam
 
 from pbp.misc_helper import brief_list
 
@@ -75,6 +74,7 @@ class PypamSupport:
 
         # The following determined when `set_parameters` is called:
 
+        self.hmso: Optional[HmsoPypam] = None
         self.fs: Optional[int] = None
         self._nfft: Optional[int] = None
         self._subset_to: Optional[Tuple[int, int]] = None
@@ -103,9 +103,9 @@ class PypamSupport:
 
         self.log.debug(f"PypamSupport: {subset_to=} {band=}")
 
-        self._bands_limits, self._bands_c = utils.get_hybrid_millidecade_limits(
-            band=band, nfft=self._nfft
-        )
+        self.hmso = HmsoPypam(self.fs, self._nfft)
+
+        self._bands_limits, self._bands_c = self.hmso.get_hybrid_millidecade_limits(band)
 
     @property
     def parameters_set(self) -> bool:
@@ -138,8 +138,9 @@ class PypamSupport:
         assert self.parameters_set
         assert self.fs is not None
         assert self._nfft is not None
+        assert self.hmso is not None
 
-        self._fbands, spectrum = _get_spectrum(data, self.fs, self._nfft)
+        self._fbands, spectrum = self.hmso.compute_spectrum(data)
         num_secs = len(data) / self.fs
         self._captured_segments.append(_CapturedSegment(dt, num_secs, spectrum))
         self._num_actual_segments += 1
@@ -256,6 +257,7 @@ class PypamSupport:
     def _spectra_to_bands(self, psd_da: xr.DataArray) -> xr.DataArray:
         assert self.fs is not None
         assert self._nfft is not None
+        assert self.hmso is not None
 
         bands_limits, bands_c = self._bands_limits, self._bands_c
         if self._subset_to is not None:
@@ -269,13 +271,7 @@ class PypamSupport:
         print_array("       bands_c", bands_c)
         print_array("  bands_limits", bands_limits)
 
-        psd_da = utils.spectra_ds_to_bands(
-            psd_da,
-            bands_limits,
-            bands_c,
-            fft_bin_width=self.fs / self._nfft,
-            db=False,
-        )
+        psd_da = self.hmso.spectra_ds_to_bands(psd_da, bands_limits, bands_c)
 
         psd_da = psd_da.drop_vars(["lower_frequency", "upper_frequency"])
         return psd_da
@@ -297,12 +293,3 @@ class PypamSupport:
         bands_limits = bands_limits[start_index : start_index + new_bands_c_len + 1]
 
         return bands_limits, bands_c
-
-
-def _get_spectrum(data: np.ndarray, fs: int, nfft: int) -> Tuple[np.ndarray, np.ndarray]:
-    signal = sig.Signal(data, fs=fs)
-    signal.set_band(None)
-    fbands, spectrum, _ = signal.spectrum(
-        scaling="density", nfft=nfft, db=False, overlap=0.5, force_calc=True
-    )
-    return fbands, spectrum
