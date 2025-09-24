@@ -11,7 +11,7 @@ from google.cloud.storage import Client as GsClient
 
 from pbp.json_support import get_intersecting_entries, JEntry, parse_json_contents
 from pbp.misc_helper import brief_list
-from pbp.uri_handler import UriHandler
+from pbp.util.uri_handler import UriHandler
 
 
 @dataclass

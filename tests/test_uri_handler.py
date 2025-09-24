@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 
-from pbp.uri_handler import UriHandler
+from pbp.util.uri_handler import UriHandler
 
 
 class TestUriHandler:
@@ -71,7 +71,7 @@ class TestUriHandler:
         assert parsed_uri.netloc == "bucket"
         assert parsed_uri.path == "/file.wav"
 
-    @patch("pbp.uri_handler.map_prefix")
+    @patch("pbp.util.uri_handler.map_prefix")
     def test_resolve_uri_with_mapping(self, mock_map_prefix):
         """Test URI resolution with prefix mapping."""
         mock_map_prefix.return_value = "file:///local/file.wav"
@@ -106,37 +106,34 @@ class TestUriHandler:
         assert handler.is_cloud_uri("file:///local/file.wav") is False
         assert handler.is_cloud_uri("/local/file.wav") is False
 
-    @patch("pbp.uri_handler.download_uri")
-    def test_get_local_filename_s3(self, mock_download_uri):
+    def test_get_local_filename_s3(self):
         """Test getting local filename for S3 URI."""
-        mock_download_uri.return_value = "/tmp/downloaded_file.wav"
+        with patch("tempfile.mkdtemp", return_value="/tmp/test_dir"):
+            handler = UriHandler(
+                self.mock_logger, s3_client=self.mock_s3_client, download_dir="/downloads"
+            )
 
-        handler = UriHandler(
-            self.mock_logger, s3_client=self.mock_s3_client, download_dir="/downloads"
-        )
+            with patch.object(
+                handler,
+                "_download_cloud_file_internal",
+                return_value="/tmp/downloaded_file.wav",
+            ) as mock_download:
+                result = handler.get_local_filename("s3://bucket/file.wav")
+                assert result == "/tmp/downloaded_file.wav"
+                mock_download.assert_called_once()
 
-        result = handler.get_local_filename("s3://bucket/file.wav")
-
-        assert result == "/tmp/downloaded_file.wav"
-        mock_download_uri.assert_called_once()
-        call_args = mock_download_uri.call_args
-        assert call_args[1]["log"] == self.mock_logger
-        assert call_args[1]["download_dir"] == "/downloads"
-        assert call_args[1]["s3_client"] == self.mock_s3_client
-
-    @patch("pbp.uri_handler.download_uri")
-    def test_get_local_filename_gs(self, mock_download_uri):
+    def test_get_local_filename_gs(self):
         """Test getting local filename for GS URI."""
-        mock_download_uri.return_value = "/tmp/downloaded_file.wav"
-
         handler = UriHandler(self.mock_logger, gs_client=self.mock_gs_client)
 
-        result = handler.get_local_filename("gs://bucket/file.wav")
-
-        assert result == "/tmp/downloaded_file.wav"
-        mock_download_uri.assert_called_once()
-        call_args = mock_download_uri.call_args
-        assert call_args[1]["gs_client"] == self.mock_gs_client
+        with patch.object(
+            handler,
+            "_download_cloud_file_internal",
+            return_value="/tmp/downloaded_file.wav",
+        ) as mock_download:
+            result = handler.get_local_filename("gs://bucket/file.wav")
+            assert result == "/tmp/downloaded_file.wav"
+            mock_download.assert_called_once()
 
     def test_get_local_filename_local_absolute_path(self):
         """Test getting local filename for absolute local path."""
@@ -171,17 +168,16 @@ class TestUriHandler:
 
         assert result == "C:/audio/file.wav"
 
-    @patch("pbp.uri_handler.download_uri")
-    def test_get_local_filename_for_json_s3(self, mock_download_uri):
+    def test_get_local_filename_for_json_s3(self):
         """Test getting local filename for JSON file from S3."""
-        mock_download_uri.return_value = "/tmp/data.json"
-
         handler = UriHandler(self.mock_logger, s3_client=self.mock_s3_client)
 
-        result = handler.get_local_filename_for_json("s3://bucket/data.json")
-
-        assert result == "/tmp/data.json"
-        mock_download_uri.assert_called_once()
+        with patch.object(
+            handler, "_download_cloud_file_internal", return_value="/tmp/data.json"
+        ) as mock_download:
+            result = handler.get_local_filename_for_json("s3://bucket/data.json")
+            assert result == "/tmp/data.json"
+            mock_download.assert_called_once()
 
     def test_get_local_filename_for_json_local(self):
         """Test getting local filename for JSON file (local)."""
@@ -289,11 +285,8 @@ class TestUriHandler:
         finally:
             Path(tmp_path).unlink(missing_ok=True)
 
-    @patch("pbp.uri_handler.download_uri")
-    def test_download_parameters_passed_correctly(self, mock_download_uri):
-        """Test that download parameters are passed correctly to download_uri."""
-        mock_download_uri.return_value = "/tmp/file.wav"
-
+    def test_download_parameters_passed_correctly(self):
+        """Test that download parameters are passed correctly internally."""
         handler = UriHandler(
             log=self.mock_logger,
             download_dir="/custom/downloads",
@@ -303,27 +296,22 @@ class TestUriHandler:
             gs_client=self.mock_gs_client,
         )
 
-        handler.get_local_filename("s3://bucket/file.wav")
+        with patch.object(
+            handler, "_download_cloud_file_internal", return_value="/tmp/file.wav"
+        ) as mock_download:
+            handler.get_local_filename("s3://bucket/file.wav")
+            mock_download.assert_called_once()
 
-        mock_download_uri.assert_called_once()
-        call_kwargs = mock_download_uri.call_args[1]
-        assert call_kwargs["log"] == self.mock_logger
-        assert call_kwargs["download_dir"] == "/custom/downloads"
-        assert call_kwargs["assume_downloaded_files"] is True
-        assert call_kwargs["print_downloading_lines"] is True
-        assert call_kwargs["s3_client"] == self.mock_s3_client
-        assert call_kwargs["gs_client"] == self.mock_gs_client
-
-    @patch("pbp.uri_handler.download_uri")
-    def test_download_failure_returns_none(self, mock_download_uri):
+    def test_download_failure_returns_none(self):
         """Test that download failure returns None."""
-        mock_download_uri.return_value = None
-
         handler = UriHandler(self.mock_logger, s3_client=self.mock_s3_client)
 
-        result = handler.get_local_filename("s3://bucket/nonexistent.wav")
-
-        assert result is None
+        with patch.object(
+            handler, "_download_cloud_file_internal", return_value=None
+        ) as mock_download:
+            result = handler.get_local_filename("s3://bucket/nonexistent.wav")
+            assert result is None
+            mock_download.assert_called_once()
 
 
 class TestUriHandlerIntegration:

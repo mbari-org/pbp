@@ -4,11 +4,12 @@ from typing import Optional
 from urllib.parse import ParseResult, urlparse
 
 import loguru
-from botocore.client import BaseClient
+from botocore.client import BaseClient, ClientError
+from google.cloud.exceptions import NotFound as GsNotFound
 from google.cloud.storage import Client as GsClient
 
-from pbp.download_uri import download_uri
 from pbp.misc_helper import map_prefix
+from pbp.util.bucket_key_simple import get_bucket_key_simple
 
 
 class UriHandler:
@@ -151,15 +152,7 @@ class UriHandler:
         Returns:
             Local filename of downloaded file or None if error.
         """
-        return download_uri(
-            log=self.log,
-            parsed_uri=parsed_uri,
-            download_dir=self.download_dir,
-            assume_downloaded_files=self.assume_downloaded_files,
-            print_downloading_lines=self.print_downloading_lines,
-            s3_client=self.s3_client,
-            gs_client=self.gs_client,
-        )
+        return self._download_cloud_file_internal(parsed_uri)
 
     def _resolve_local_path(self, parsed_uri: ParseResult) -> str:
         """
@@ -208,3 +201,53 @@ class UriHandler:
         """
         _, parsed_uri = self.resolve_uri(uri)
         return parsed_uri.scheme in ("s3", "gs")
+
+    def _download_cloud_file_internal(self, parsed_uri: ParseResult) -> Optional[str]:
+        """
+        Internal method to download a file from cloud storage (S3 or GS).
+
+        Args:
+            parsed_uri: Parsed URI for the cloud file.
+
+        Returns:
+            Local filename of downloaded file or None if error.
+        """
+        pathlib.Path(self.download_dir).mkdir(parents=True, exist_ok=True)
+
+        bucket, key, simple = get_bucket_key_simple(parsed_uri)
+        local_filename = f"{self.download_dir}/{simple}"
+
+        if os.path.isfile(local_filename) and self.assume_downloaded_files:
+            self.log.info(
+                f"ASSUMING ALREADY DOWNLOADED: {bucket=} {key=} to {local_filename}"
+            )
+            if self.print_downloading_lines:
+                print(f"Assuming already downloaded {parsed_uri.geturl()}")
+            return local_filename
+
+        scheme = parsed_uri.scheme
+        self.log.info(f"Downloading {scheme=} {bucket=} {key=} to {local_filename}")
+        if self.print_downloading_lines:
+            print(f"downloading {parsed_uri.geturl()}")
+
+        if scheme == "s3":
+            assert self.s3_client is not None
+            try:
+                self.s3_client.download_file(bucket, key, local_filename)
+                return local_filename
+            except ClientError as e:
+                self.log.error(f"Error downloading {scheme=} {bucket}/{key}: {e}")
+                return None
+
+        if scheme == "gs":
+            assert self.gs_client is not None
+            gs_bucket = self.gs_client.bucket(bucket)
+            blob = gs_bucket.blob(key)
+            try:
+                blob.download_to_filename(local_filename)
+                return local_filename
+            except GsNotFound as e:
+                self.log.error(f"Error downloading {scheme=} {bucket}/{key}: {e}")
+                return None
+
+        return None
