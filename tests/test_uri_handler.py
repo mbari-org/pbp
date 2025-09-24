@@ -5,13 +5,10 @@ These tests verify URI resolution, local path handling, cloud storage operations
 and file cleanup functionality.
 """
 
-import os
 import tempfile
 from pathlib import Path
 from unittest.mock import Mock, patch
-from urllib.parse import urlparse
 
-import pytest
 
 from pbp.uri_handler import UriHandler
 
@@ -342,7 +339,7 @@ class TestUriHandlerIntegration:
             handler = UriHandler(Mock(), audio_base_dir=temp_dir)
 
             # Test local file resolution
-            uri = f"file://test.wav"
+            uri = "file://test.wav"
             result = handler.get_local_filename(uri)
 
             assert result == f"{temp_dir}/test.wav"

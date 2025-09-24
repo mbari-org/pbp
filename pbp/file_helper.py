@@ -1,9 +1,6 @@
-import os
-import pathlib
 from dataclasses import dataclass
 from math import ceil, floor
 from typing import Dict, List, Optional
-from urllib.parse import ParseResult, urlparse
 
 import loguru
 import numpy as np
@@ -12,9 +9,9 @@ import soundfile as sf
 from botocore.client import BaseClient
 from google.cloud.storage import Client as GsClient
 
-from pbp.download_uri import download_uri
 from pbp.json_support import get_intersecting_entries, JEntry, parse_json_contents
-from pbp.misc_helper import brief_list, map_prefix
+from pbp.misc_helper import brief_list
+from pbp.uri_handler import UriHandler
 
 
 @dataclass
@@ -31,36 +28,19 @@ class ExtractedAudioSegment:
 
 
 class SoundStatus:
-    # TODO cleanup!  there's some repetition here wrt FileHelper!
-
     def __init__(
         self,
         log: "loguru.Logger",
         uri: str,
-        audio_base_dir: Optional[str],
-        audio_path_map_prefix: str,
-        audio_path_prefix: str,
-        download_dir: Optional[str],
-        assume_downloaded_files: bool,
-        print_downloading_lines: bool,
-        s3_client: Optional[BaseClient] = None,
-        gs_client: Optional[GsClient] = None,
+        uri_handler: UriHandler,
     ):
         self.log = log
-        self.uri = map_prefix(audio_path_map_prefix, uri)
-        self.parsed_uri = urlparse(self.uri)
-
-        self.audio_base_dir = audio_base_dir
-        self.audio_path_prefix = audio_path_prefix
-        self.s3_client = s3_client
-        self.gs_client = gs_client
-        self.download_dir: str = download_dir if download_dir else "."
-        self.assume_downloaded_files = assume_downloaded_files
-        self.print_downloading_lines = print_downloading_lines
+        self.original_uri = uri
+        self.uri_handler = uri_handler
 
         self.error = None
 
-        self.sound_filename = self._get_sound_filename()
+        self.sound_filename = self.uri_handler.get_local_filename(uri)
         if self.sound_filename is None:
             self.error = "error getting sound filename"
             return
@@ -83,48 +63,11 @@ class SoundStatus:
             self.log.error(f"{e}")
             return None
 
-    def _get_sound_filename(self) -> Optional[str]:
-        self.log.debug(f"_get_sound_filename: {self.uri=}")
-        if self.parsed_uri.scheme in ("s3", "gs"):
-            return download_uri(
-                log=self.log,
-                parsed_uri=self.parsed_uri,
-                download_dir=self.download_dir,
-                assume_downloaded_files=self.assume_downloaded_files,
-                print_downloading_lines=self.print_downloading_lines,
-                s3_client=self.s3_client,
-                gs_client=self.gs_client,
-            )
-
-        # otherwise assuming local file, so we only inspect the `path` attribute:
-        path = self.parsed_uri.path
-        if path.startswith("/"):
-            sound_filename = f"{self.audio_path_prefix}{path}"
-        elif self.audio_base_dir is not None:
-            sound_filename = f"{self.audio_base_dir}/{path}"
-        else:
-            sound_filename = path
-
-        if os.name == "nt":
-            return self.parsed_uri.netloc + self.parsed_uri.path
-        else:
-            return sound_filename
-
     def remove_downloaded_file(self):
-        if not pathlib.Path(self.sound_filename).exists():
-            return
-
-        if (
-            self.s3_client is None and self.gs_client is None
-        ) or self.parsed_uri.scheme not in ("s3", "gs"):
-            self.log.debug(f"No file download involved for {self.uri=}")
-            return
-
-        try:
-            os.remove(self.sound_filename)
-            self.log.debug(f"Removed cached file {self.sound_filename} for {self.uri=}")
-        except OSError as e:
-            self.log.error(f"Error removing file {self.sound_filename}: {e}")
+        if self.sound_filename is not None:
+            self.uri_handler.remove_downloaded_file(
+                self.sound_filename, self.original_uri
+            )
 
 
 class FileHelper:
@@ -205,6 +148,19 @@ class FileHelper:
         self.retain_downloaded_files = retain_downloaded_files
         self.print_downloading_lines = print_downloading_lines
 
+        # Create URI handler for file operations
+        self.uri_handler = UriHandler(
+            log=log,
+            audio_base_dir=audio_base_dir,
+            audio_path_map_prefix=audio_path_map_prefix,
+            audio_path_prefix=audio_path_prefix,
+            download_dir=download_dir,
+            assume_downloaded_files=assume_downloaded_files,
+            print_downloading_lines=print_downloading_lines,
+            s3_client=s3_client,
+            gs_client=gs_client,
+        )
+
         self.sound_cache: Dict[str, SoundStatus] = {}
 
         # the following set by select_day:
@@ -251,18 +207,10 @@ class FileHelper:
         Returns:
             The local filename or None if error or if the scheme is not `s3` or `gs`.
         """
-        parsed_uri = urlparse(uri)
-        if parsed_uri.scheme in ("s3", "gs"):
-            return download_uri(
-                log=self.log,
-                parsed_uri=parsed_uri,
-                download_dir=self.download_dir,
-                assume_downloaded_files=self.assume_downloaded_files,
-                print_downloading_lines=self.print_downloading_lines,
-                s3_client=self.s3_client,
-                gs_client=self.gs_client,
-            )
+        if self.uri_handler.is_cloud_uri(uri):
+            return self.uri_handler.get_local_filename(uri)
 
+        _, parsed_uri = self.uri_handler.resolve_uri(uri)
         return parsed_uri.path
 
     def day_completed(self):
@@ -296,25 +244,7 @@ class FileHelper:
         self.sound_cache = {}
 
     def _get_json(self, uri: str) -> Optional[str]:
-        parsed_uri = urlparse(uri)
-        if parsed_uri.scheme == "s3":
-            return self._get_json_s3(parsed_uri)
-        #  simply assume local file:
-        if os.name == "nt":
-            return self._get_json_local(uri)
-        else:
-            return self._get_json_local(parsed_uri.path)
-
-    def _get_json_s3(self, parsed_uri: ParseResult) -> Optional[str]:
-        local_filename = download_uri(
-            log=self.log,
-            parsed_uri=parsed_uri,
-            download_dir=self.download_dir,
-            assume_downloaded_files=self.assume_downloaded_files,
-            print_downloading_lines=self.print_downloading_lines,
-            s3_client=self.s3_client,
-            gs_client=self.gs_client,
-        )
+        local_filename = self.uri_handler.get_local_filename_for_json(uri)
         if local_filename is None:
             return None
         return self._get_json_local(local_filename)
@@ -482,14 +412,7 @@ class FileHelper:
             ss = SoundStatus(
                 log=self.log,
                 uri=uri,
-                audio_base_dir=self.audio_base_dir,
-                audio_path_map_prefix=self.audio_path_map_prefix,
-                audio_path_prefix=self.audio_path_prefix,
-                download_dir=self.download_dir,
-                assume_downloaded_files=self.assume_downloaded_files,
-                print_downloading_lines=self.print_downloading_lines,
-                s3_client=self.s3_client,
-                gs_client=self.gs_client,
+                uri_handler=self.uri_handler,
             )
             self.sound_cache[uri] = ss
         else:
