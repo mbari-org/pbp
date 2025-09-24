@@ -27,9 +27,9 @@ class TestUriHandler:
         handler = UriHandler(self.mock_logger)
 
         assert handler.log == self.mock_logger
-        assert handler.audio_base_dir is None
-        assert handler.audio_path_map_prefix == ""
-        assert handler.audio_path_prefix == ""
+        assert handler.base_dir is None
+        assert handler.path_map_prefix == ""
+        assert handler.path_prefix == ""
         assert handler.download_dir == "."
         assert handler.assume_downloaded_files is False
         assert handler.print_downloading_lines is False
@@ -40,9 +40,9 @@ class TestUriHandler:
         """Test UriHandler initialization with custom values."""
         handler = UriHandler(
             log=self.mock_logger,
-            audio_base_dir="/audio",
-            audio_path_map_prefix="s3://bucket~file:///local",
-            audio_path_prefix="/prefix",
+            base_dir="/audio",
+            path_map_prefix="s3://bucket~file:///local",
+            path_prefix="/prefix",
             download_dir="/downloads",
             assume_downloaded_files=True,
             print_downloading_lines=True,
@@ -50,9 +50,9 @@ class TestUriHandler:
             gs_client=self.mock_gs_client,
         )
 
-        assert handler.audio_base_dir == "/audio"
-        assert handler.audio_path_map_prefix == "s3://bucket~file:///local"
-        assert handler.audio_path_prefix == "/prefix"
+        assert handler.base_dir == "/audio"
+        assert handler.path_map_prefix == "s3://bucket~file:///local"
+        assert handler.path_prefix == "/prefix"
         assert handler.download_dir == "/downloads"
         assert handler.assume_downloaded_files is True
         assert handler.print_downloading_lines is True
@@ -77,7 +77,7 @@ class TestUriHandler:
         mock_map_prefix.return_value = "file:///local/file.wav"
 
         handler = UriHandler(
-            self.mock_logger, audio_path_map_prefix="s3://bucket~file:///local"
+            self.mock_logger, path_map_prefix="s3://bucket~file:///local"
         )
 
         uri = "s3://bucket/file.wav"
@@ -137,7 +137,7 @@ class TestUriHandler:
 
     def test_get_local_filename_local_absolute_path(self):
         """Test getting local filename for absolute local path."""
-        handler = UriHandler(self.mock_logger, audio_path_prefix="/prefix")
+        handler = UriHandler(self.mock_logger, path_prefix="/prefix")
 
         result = handler.get_local_filename("file:///audio/file.wav")
 
@@ -145,7 +145,7 @@ class TestUriHandler:
 
     def test_get_local_filename_local_with_base_dir(self):
         """Test getting local filename with base directory."""
-        handler = UriHandler(self.mock_logger, audio_base_dir="/base")
+        handler = UriHandler(self.mock_logger, base_dir="/base")
 
         result = handler.get_local_filename("file://relative/file.wav")
 
@@ -295,7 +295,7 @@ class TestUriHandlerIntegration:
             test_file = Path(temp_dir) / "test.wav"
             test_file.write_text("test content")
 
-            handler = UriHandler(Mock(), audio_base_dir=temp_dir)
+            handler = UriHandler(Mock(), base_dir=temp_dir)
 
             # Test local file resolution
             uri = "file://test.wav"
@@ -312,8 +312,8 @@ class TestUriHandlerIntegration:
             # Create handler with prefix mapping
             handler = UriHandler(
                 mock_logger,
-                audio_path_map_prefix=f"test://mapped~file://{temp_dir}",
-                audio_base_dir=temp_dir,
+                path_map_prefix=f"test://mapped~file://{temp_dir}",
+                base_dir=temp_dir,
             )
 
             # This should trigger prefix mapping via map_prefix

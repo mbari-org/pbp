@@ -16,20 +16,19 @@ class UriHandler:
     """
     Handles URI resolution and file operations for both local and cloud-based URIs.
 
-    This class factors out the common URI handling logic used by both FileHelper
-    and SoundStatus classes, providing consistent behavior for:
-    - URI prefix mapping
-    - Local file path resolution
+    Provides support for:
     - Cloud storage downloads (S3/GS)
     - Downloaded file cleanup
+    - Local file path resolution
+    - URI prefix mapping
     """
 
     def __init__(
         self,
         log: "loguru.Logger",
-        audio_base_dir: Optional[str] = None,
-        audio_path_map_prefix: str = "",
-        audio_path_prefix: str = "",
+        base_dir: Optional[str] = None,
+        path_map_prefix: str = "",
+        path_prefix: str = "",
         download_dir: Optional[str] = None,
         assume_downloaded_files: bool = False,
         print_downloading_lines: bool = False,
@@ -41,10 +40,10 @@ class UriHandler:
 
         Args:
             log: Logger instance.
-            audio_base_dir: Base directory for relative `path` attributes.
-            audio_path_map_prefix: Prefix mapping for resolving actual URIs.
-                Example: `"s3://bucket~file:///local/path"`.
-            audio_path_prefix: Ad hoc path prefix for sound file locations, e.g., `"/Volumes"`.
+            base_dir: Base directory for relative `path` attributes.
+            path_map_prefix: Prefix mapping for resolving actual URIs using tilde (~) as separator.
+                Example: `"s3://bucket~file:///local/path"` maps s3://bucket/* to file:///local/path/*.
+            path_prefix: Ad hoc path prefix for file locations, e.g., `"/Volumes"`.
             download_dir: Directory to save downloaded files. Defaults to current directory.
             assume_downloaded_files: If True, skips re-downloading files that already exist.
             print_downloading_lines: If True, prints `"downloading <uri>"` messages to console.
@@ -52,9 +51,9 @@ class UriHandler:
             gs_client: Google Cloud Storage client for handling `gs://` URIs.
         """
         self.log = log
-        self.audio_base_dir = audio_base_dir
-        self.audio_path_map_prefix = audio_path_map_prefix
-        self.audio_path_prefix = audio_path_prefix
+        self.base_dir = base_dir
+        self.path_map_prefix = path_map_prefix
+        self.path_prefix = path_prefix
         self.download_dir: str = download_dir if download_dir else "."
         self.assume_downloaded_files = assume_downloaded_files
         self.print_downloading_lines = print_downloading_lines
@@ -63,7 +62,7 @@ class UriHandler:
 
     def resolve_uri(self, uri: str) -> tuple[str, ParseResult]:
         """
-        Apply URI prefix mapping and return the resolved URI and its parsed components.
+        Return the resolved URI and its parsed components.
 
         Args:
             uri: The original URI to resolve.
@@ -71,7 +70,8 @@ class UriHandler:
         Returns:
             Tuple of (resolved_uri, parsed_uri).
         """
-        resolved_uri = map_prefix(self.audio_path_map_prefix, uri)
+        # Apply any path prefix mapping if configured:
+        resolved_uri = map_prefix(self.path_map_prefix, uri)
         parsed_uri = urlparse(resolved_uri)
         return resolved_uri, parsed_uri
 
@@ -190,21 +190,21 @@ class UriHandler:
         # vs absolute paths (like "file:///absolute/path")
         if parsed_uri.netloc:
             # URI like "file://relative/path" - netloc is "relative", path is "/path"
-            if self.audio_base_dir is not None:
-                sound_filename = f"{self.audio_base_dir}/{parsed_uri.netloc}{path}"
+            if self.base_dir is not None:
+                local_filename = f"{self.base_dir}/{parsed_uri.netloc}{path}"
             else:
-                sound_filename = f"{parsed_uri.netloc}{path}"
+                local_filename = f"{parsed_uri.netloc}{path}"
         elif path.startswith("/"):
             # URI like "file:///absolute/path" - absolute path
-            sound_filename = f"{self.audio_path_prefix}{path}"
-        elif self.audio_base_dir is not None:
+            local_filename = f"{self.path_prefix}{path}"
+        elif self.base_dir is not None:
             # Relative path with base directory
-            sound_filename = f"{self.audio_base_dir}/{path}"
+            local_filename = f"{self.base_dir}/{path}"
         else:
             # Just the path as-is
-            sound_filename = path
+            local_filename = path
 
-        return sound_filename
+        return local_filename
 
     def is_cloud_uri(self, uri: str) -> bool:
         """

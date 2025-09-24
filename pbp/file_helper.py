@@ -151,9 +151,9 @@ class FileHelper:
         # Create URI handler for file operations
         self.uri_handler = UriHandler(
             log=log,
-            audio_base_dir=audio_base_dir,
-            audio_path_map_prefix=audio_path_map_prefix,
-            audio_path_prefix=audio_path_prefix,
+            base_dir=audio_base_dir,
+            path_map_prefix=audio_path_map_prefix,
+            path_prefix=audio_path_prefix,
             download_dir=download_dir,
             assume_downloaded_files=assume_downloaded_files,
             print_downloading_lines=print_downloading_lines,
