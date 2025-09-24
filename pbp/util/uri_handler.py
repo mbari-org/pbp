@@ -96,27 +96,6 @@ class UriHandler:
 
         return self._resolve_local_path(parsed_uri)
 
-    def get_local_filename_for_json(self, uri: str) -> Optional[str]:
-        """
-        Get local filename for JSON files, with special handling for different schemes.
-
-        Args:
-            uri: The URI of the JSON file.
-
-        Returns:
-            Local filename or None if error.
-        """
-        parsed_uri = urlparse(uri)
-
-        if parsed_uri.scheme == "s3":
-            return self._download_cloud_file(parsed_uri)
-
-        # Assume local file
-        if os.name == "nt":
-            return uri
-        else:
-            return parsed_uri.path
-
     def remove_downloaded_file(self, filename: str, original_uri: str) -> None:
         """
         Remove a downloaded file if it was downloaded from cloud storage.

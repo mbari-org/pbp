@@ -244,7 +244,7 @@ class FileHelper:
         self.sound_cache = {}
 
     def _get_json(self, uri: str) -> Optional[str]:
-        local_filename = self.uri_handler.get_local_filename_for_json(uri)
+        local_filename = self.uri_handler.get_local_filename(uri)
         if local_filename is None:
             return None
         return self._get_json_local(local_filename)

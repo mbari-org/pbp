@@ -168,35 +168,6 @@ class TestUriHandler:
 
         assert result == "C:/audio/file.wav"
 
-    def test_get_local_filename_for_json_s3(self):
-        """Test getting local filename for JSON file from S3."""
-        handler = UriHandler(self.mock_logger, s3_client=self.mock_s3_client)
-
-        with patch.object(
-            handler, "_download_cloud_file", return_value="/tmp/data.json"
-        ) as mock_download:
-            result = handler.get_local_filename_for_json("s3://bucket/data.json")
-            assert result == "/tmp/data.json"
-            mock_download.assert_called_once()
-
-    def test_get_local_filename_for_json_local(self):
-        """Test getting local filename for JSON file (local)."""
-        handler = UriHandler(self.mock_logger)
-
-        result = handler.get_local_filename_for_json("/path/to/data.json")
-
-        assert result == "/path/to/data.json"
-
-    @patch("os.name", "nt")
-    def test_get_local_filename_for_json_windows(self):
-        """Test getting local filename for JSON file on Windows."""
-        handler = UriHandler(self.mock_logger)
-
-        uri = "C:\\path\\to\\data.json"
-        result = handler.get_local_filename_for_json(uri)
-
-        assert result == uri
-
     def test_remove_downloaded_file_not_exists(self):
         """Test removing downloaded file when file doesn't exist."""
         handler = UriHandler(self.mock_logger)
