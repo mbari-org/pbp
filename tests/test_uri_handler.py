@@ -115,7 +115,7 @@ class TestUriHandler:
 
             with patch.object(
                 handler,
-                "_download_cloud_file_internal",
+                "_download_cloud_file",
                 return_value="/tmp/downloaded_file.wav",
             ) as mock_download:
                 result = handler.get_local_filename("s3://bucket/file.wav")
@@ -128,7 +128,7 @@ class TestUriHandler:
 
         with patch.object(
             handler,
-            "_download_cloud_file_internal",
+            "_download_cloud_file",
             return_value="/tmp/downloaded_file.wav",
         ) as mock_download:
             result = handler.get_local_filename("gs://bucket/file.wav")
@@ -173,7 +173,7 @@ class TestUriHandler:
         handler = UriHandler(self.mock_logger, s3_client=self.mock_s3_client)
 
         with patch.object(
-            handler, "_download_cloud_file_internal", return_value="/tmp/data.json"
+            handler, "_download_cloud_file", return_value="/tmp/data.json"
         ) as mock_download:
             result = handler.get_local_filename_for_json("s3://bucket/data.json")
             assert result == "/tmp/data.json"
@@ -297,7 +297,7 @@ class TestUriHandler:
         )
 
         with patch.object(
-            handler, "_download_cloud_file_internal", return_value="/tmp/file.wav"
+            handler, "_download_cloud_file", return_value="/tmp/file.wav"
         ) as mock_download:
             handler.get_local_filename("s3://bucket/file.wav")
             mock_download.assert_called_once()
@@ -307,7 +307,7 @@ class TestUriHandler:
         handler = UriHandler(self.mock_logger, s3_client=self.mock_s3_client)
 
         with patch.object(
-            handler, "_download_cloud_file_internal", return_value=None
+            handler, "_download_cloud_file", return_value=None
         ) as mock_download:
             result = handler.get_local_filename("s3://bucket/nonexistent.wav")
             assert result is None
