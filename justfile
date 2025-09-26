@@ -181,6 +181,13 @@ hmb-plot *args:
 publish *args="":
     poetry publish --build {{args}}
 
+
+publish_to_test_pypi:
+    poetry build
+    poetry config repositories.testpypi https://test.pypi.org/legacy/
+    poetry config pypi-token.testpypi "$TEST_PYPI_TOKEN"
+    poetry publish -r testpypi
+
 ##############
 # development:
 
