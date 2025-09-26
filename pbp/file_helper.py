@@ -82,7 +82,7 @@ class FileHelper:
         audio_base_dir: Optional[str] = None,
         audio_path_map_prefix: str = "",
         audio_path_prefix: str = "",
-        segment_size_in_mins: int = 1,
+        segment_size_in_secs: int = 60,
         s3_client: Optional[BaseClient] = None,
         gs_client: Optional[GsClient] = None,
         download_dir: Optional[str] = None,
@@ -99,7 +99,7 @@ class FileHelper:
             audio_path_map_prefix (str, optional): Prefix mapping for resolving actual audio URIs.
                 Example: `"s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022"`.
             audio_path_prefix (str, optional): Ad hoc path prefix for sound file locations, e.g., `"/Volumes"`.
-            segment_size_in_mins (int, optional): The size of each extracted audio segment in minutes. Defaults to `1`.
+            segment_size_in_secs (int, optional): The size of each extracted audio segment in seconds. Defaults to `60`.
             s3_client (object, optional): S3 client for handling `s3://` URIs.
             gs_client (object, optional): Google Cloud Storage client for handling `gs://` URIs.
             download_dir (str, optional): Directory to save downloaded S3 files. Defaults to the current directory.
@@ -127,7 +127,7 @@ class FileHelper:
                 if audio_path_prefix
                 else ""
             )
-            + f"\n    segment_size_in_mins:    {segment_size_in_mins}"
+            + f"\n    segment_size_in_secs:    {segment_size_in_secs}"
             + f"\n    s3_client:               {'(given)' if s3_client else 'None'}"
             + f"\n    gs_client:               {'(given)' if gs_client else 'None'}"
             + f"\n    download_dir:            {download_dir}"
@@ -140,7 +140,7 @@ class FileHelper:
         self.audio_base_dir = audio_base_dir
         self.audio_path_map_prefix = audio_path_map_prefix
         self.audio_path_prefix = audio_path_prefix
-        self.segment_size_in_mins = segment_size_in_mins
+        self.segment_size_in_secs = segment_size_in_secs
         self.s3_client = s3_client
         self.gs_client = gs_client
         self.download_dir: str = download_dir if download_dir else "."
@@ -253,6 +253,7 @@ class FileHelper:
         self,
         at_hour: int,
         at_minute: int,
+        at_second: int,
         exclude_tone_calibration_seconds: Optional[int],
     ) -> Optional[ExtractedAudioSegment]:
         """
@@ -262,6 +263,7 @@ class FileHelper:
         Args:
             at_hour (int): The hour when the audio segment was extracted.
             at_minute (int): The minute when the audio segment was extracted.
+            at_second (int): The second when the audio segment was extracted.
             exclude_tone_calibration_seconds (Optional[int]): If given and the
             resulting segment would overlap with the beginning of associated file,
             then such segment will not include the overlapping number of seconds.
@@ -283,7 +285,8 @@ class FileHelper:
             self.day,
             at_hour,
             at_minute,
-            segment_size_in_mins=self.segment_size_in_mins,
+            at_second,
+            segment_size_in_secs=self.segment_size_in_secs,
         )
 
         audio_info: Optional[AudioInfo] = None
