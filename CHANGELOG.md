@@ -1,5 +1,7 @@
 2025-09
 
+- 1.7.6 released, with result of recent refactoring.
+
 - Refactoring and cleanup of the codebase
     - renamed MetadataHelper to HmbMetadataHelper
       to avoid confusion with other metadata modules (meta-gen)
