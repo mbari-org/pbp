@@ -75,11 +75,11 @@ def get_intersecting_entries(
     :param json_entries:
         JSON entries for the day
     :param year:
-        Year associated to the start minute
+        Year associated to the start time
     :param month:
-        Month associated to the start minute
+        Month associated to the start time
     :param day:
-        Day associated to the start minute
+        Day associated to the start time
     :param at_hour:
         Hour associated to the start time
     :param at_minute:
