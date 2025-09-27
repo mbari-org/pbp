@@ -1,3 +1,5 @@
+set dotenv-load := true
+
 #
 # Run these recipes using `just` - https://just.systems/.
 #
