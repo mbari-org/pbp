@@ -54,6 +54,7 @@ def run_main_hmb_generator(opts: Namespace) -> None:
         audio_base_dir=opts.audio_base_dir,
         audio_path_map_prefix=opts.audio_path_map_prefix,
         audio_path_prefix=opts.audio_path_prefix,
+        segment_size_in_secs=opts.time_resolution or 60,
         s3_client=s3_client,
         gs_client=gs_client,
         download_dir=opts.download_dir,

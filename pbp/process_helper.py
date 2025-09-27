@@ -12,7 +12,7 @@ import xarray as xr
 from pbp import get_pbp_version, get_pypam_version
 from pbp.file_helper import FileHelper
 from pbp.hmb_metadata import HmbMetadataHelper, parse_attributes, replace_snippets
-from pbp.misc_helper import gen_hour_minute_times, parse_date
+from pbp.misc_helper import gen_hour_minute_second_times, parse_date
 from pbp.pypam_support import ProcessResult, PypamSupport
 
 
@@ -190,15 +190,15 @@ class ProcessHelper:
         if not self.file_helper.select_day(year, month, day):
             return None
 
-        at_hour_and_minutes: List[Tuple[int, int]] = list(
-            gen_hour_minute_times(self.file_helper.segment_size_in_mins)
+        at_hour_minute_seconds: List[Tuple[int, int, int]] = list(
+            gen_hour_minute_second_times(self.file_helper.segment_size_in_secs)
         )
 
         if self.max_segments > 0:
-            at_hour_and_minutes = at_hour_and_minutes[: self.max_segments]
-            self.log.info(f"NOTE: Limiting to {len(at_hour_and_minutes)} segments ...")
+            at_hour_minute_seconds = at_hour_minute_seconds[: self.max_segments]
+            self.log.info(f"NOTE: Limiting to {len(at_hour_minute_seconds)} segments ...")
 
-        self.process_hours_minutes(at_hour_and_minutes)
+        self.process_hours_minutes_seconds(at_hour_minute_seconds)
 
         result: Optional[ProcessResult] = self.pypam_support.process_captured_segments(
             sensitivity_da=self.sensitivity_da,
@@ -271,27 +271,35 @@ class ProcessHelper:
 
         return ProcessDayResult(generated_filenames, ds_result)
 
-    def process_hours_minutes(self, hour_and_minutes: List[Tuple[int, int]]):
-        self.log.info(f"Processing {len(hour_and_minutes)} segments ...")
-        for at_hour, at_minute in hour_and_minutes:
-            self.process_segment_at_hour_minute(at_hour, at_minute)
+    def process_hours_minutes_seconds(
+        self, hour_minute_seconds: List[Tuple[int, int, int]]
+    ):
+        self.log.info(f"Processing {len(hour_minute_seconds)} segments ...")
+        for at_hour, at_minute, at_second in hour_minute_seconds:
+            self.process_segment_at_hour_minute_second(at_hour, at_minute, at_second)
 
-    def process_segment_at_hour_minute(self, at_hour: int, at_minute: int):
+    def process_segment_at_hour_minute_second(
+        self, at_hour: int, at_minute: int, at_second: int
+    ):
         file_helper = self.file_helper
         year, month, day = file_helper.year, file_helper.month, file_helper.day
         assert year is not None and month is not None and day is not None
 
-        dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
+        dt = datetime(
+            year, month, day, at_hour, at_minute, at_second, tzinfo=timezone.utc
+        )
 
         self.log.debug(
-            f"Segment at {at_hour:02}h:{at_minute:02}m ...\n"
-            + f"  - extracting {file_helper.segment_size_in_mins * 60}-sec segment:"
+            f"Segment at {at_hour:02}h:{at_minute:02}m:{at_second:02}s ...\n"
+            + f"  - extracting {file_helper.segment_size_in_secs}-sec segment:"
         )
         extraction = file_helper.extract_audio_segment(
-            at_hour, at_minute, self.exclude_tone_calibration_seconds
+            at_hour, at_minute, at_second, self.exclude_tone_calibration_seconds
         )
         if extraction is None:
-            self.log.warning(f"cannot get audio segment at {at_hour:02}:{at_minute:02}")
+            self.log.warning(
+                f"cannot get audio segment at {at_hour:02}:{at_minute:02}:{at_second:02}"
+            )
             self.pypam_support.add_missing_segment(dt)
             return
 

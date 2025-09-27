@@ -1,3 +1,5 @@
+set dotenv-load := true
+
 #
 # Run these recipes using `just` - https://just.systems/.
 #
@@ -180,6 +182,13 @@ hmb-plot *args:
 # Build and publish package
 publish *args="":
     poetry publish --build {{args}}
+
+
+publish_to_test_pypi:
+    poetry build
+    poetry config repositories.testpypi https://test.pypi.org/legacy/
+    poetry config pypi-token.testpypi "$TEST_PYPI_TOKEN"
+    poetry publish -r testpypi
 
 ##############
 # development:

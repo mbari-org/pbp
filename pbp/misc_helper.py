@@ -69,21 +69,23 @@ def parse_date(date: str) -> Tuple[int, int, int]:
     return year, month, day
 
 
-def gen_hour_minute_times(
-    segment_size_in_mins: int = 1,
-) -> Generator[Tuple[int, int], None, None]:
+def gen_hour_minute_second_times(
+    segment_size_in_secs: int = 60,
+) -> Generator[Tuple[int, int, int], None, None]:
     """
-    Generate a sequence of starting (hour, minute) tuples to cover a whole day.
-    For example, for segment_size_in_mins=1, the sequence is:
-    (0, 0), ..., (23, 58), (23, 59)
+    Generate a sequence of starting (hour, minute, second) tuples to cover a whole day.
+    For example, for segment_size_in_secs=10, the sequence is:
+    (0, 0, 0), (0, 0, 10), (0, 0, 20), ..., (23, 59, 50)
     """
-    day_minutes = 24 * 60
-    current_minute = 0
+    day_seconds = 24 * 60 * 60
+    current_second = 0
 
-    while current_minute < day_minutes:
-        at_hour, at_minute = divmod(current_minute, 60)
-        yield at_hour, at_minute
-        current_minute += segment_size_in_mins
+    while current_second < day_seconds:
+        hours = current_second // 3600
+        minutes = (current_second % 3600) // 60
+        seconds = current_second % 60
+        yield hours, minutes, seconds
+        current_second += segment_size_in_secs
 
 
 def map_prefix(prefix_map: str, s: str) -> str:

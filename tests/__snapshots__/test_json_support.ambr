@@ -1,26 +1,41 @@
 # serializer version: 1
-# name: test_get_intersecting_entries[size=01 h=00 m=00]
+# name: test_get_intersecting_entries[size=005 h=06 m=15 s=22]
+  list([
+    '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_061016.wav", "duration_secs": 600.0, "start": "2022-09-02T06:10:16.000Z"}, "start_secs": 306, "duration_secs": 5}',
+  ])
+# ---
+# name: test_get_intersecting_entries[size=010 h=00 m=00 s=30]
+  list([
+    '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_000016.wav", "duration_secs": 600.0, "start": "2022-09-02T00:00:16.000Z"}, "start_secs": 14, "duration_secs": 10}',
+  ])
+# ---
+# name: test_get_intersecting_entries[size=015 h=12 m=30 s=45]
+  list([
+    '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_123016.wav", "duration_secs": 600.0, "start": "2022-09-02T12:30:16.000Z"}, "start_secs": 29, "duration_secs": 15}',
+  ])
+# ---
+# name: test_get_intersecting_entries[size=060 h=00 m=00 s=00]
   list([
     '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220901_235016.wav", "duration_secs": 600.0, "start": "2022-09-01T23:50:16.000Z"}, "start_secs": 584, "duration_secs": 16}',
     '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_000016.wav", "duration_secs": 600.0, "start": "2022-09-02T00:00:16.000Z"}, "start_secs": 0, "duration_secs": 44}',
   ])
 # ---
-# name: test_get_intersecting_entries[size=01 h=23 m=59]
+# name: test_get_intersecting_entries[size=060 h=23 m=59 s=00]
   list([
     '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_235016.wav", "duration_secs": 600.0, "start": "2022-09-02T23:50:16.000Z"}, "start_secs": 524, "duration_secs": 60}',
   ])
 # ---
-# name: test_get_intersecting_entries[size=10 h=23 m=40]
-  list([
-    '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_233016.wav", "duration_secs": 600.0, "start": "2022-09-02T23:30:16.000Z"}, "start_secs": 584, "duration_secs": 16}',
-    '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_234016.wav", "duration_secs": 600.0, "start": "2022-09-02T23:40:16.000Z"}, "start_secs": 0, "duration_secs": 584}',
-  ])
-# ---
-# name: test_get_intersecting_entries[size=20 h=00 m=00]
+# name: test_get_intersecting_entries[size=1200 h=00 m=00 s=00]
   list([
     '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220901_235016.wav", "duration_secs": 600.0, "start": "2022-09-01T23:50:16.000Z"}, "start_secs": 584, "duration_secs": 16}',
     '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_000016.wav", "duration_secs": 600.0, "start": "2022-09-02T00:00:16.000Z"}, "start_secs": 0, "duration_secs": 600}',
     '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_001016.wav", "duration_secs": 600.0, "start": "2022-09-02T00:10:16.000Z"}, "start_secs": 0, "duration_secs": 584}',
+  ])
+# ---
+# name: test_get_intersecting_entries[size=600 h=23 m=40 s=00]
+  list([
+    '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_233016.wav", "duration_secs": 600.0, "start": "2022-09-02T23:30:16.000Z"}, "start_secs": 584, "duration_secs": 16}',
+    '{"entry": {"uri": "file:///PAM_Archive/2022/09/MARS_20220902_234016.wav", "duration_secs": 600.0, "start": "2022-09-02T23:40:16.000Z"}, "start_secs": 0, "duration_secs": 584}',
   ])
 # ---
 # name: test_json_parsing
