@@ -2,9 +2,11 @@ import pathlib
 import os
 import loguru
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from typing import Any, List, Optional, OrderedDict, Tuple
+import pytz
+from isodate import duration_isoformat
 
 import numpy as np
 import xarray as xr
@@ -333,8 +335,11 @@ class ProcessHelper:
         global_attrs = {
             "time_coverage_start": f"{coverage_date} 00:00:00Z",
             "time_coverage_end": f"{coverage_date} 23:59:00Z",
-            "time_coverage_resolution": f"P{self.file_helper.segment_size_in_secs}S",
-            "date_created": datetime.utcnow().strftime("%Y-%m-%d"),
+            "time_coverage_resolution": duration_isoformat(
+                timedelta(seconds=self.file_helper.segment_size_in_secs)
+            ),
+            "time_coverage_duration": "P1D",
+            "date_created": datetime.now(pytz.utc).strftime("%Y-%m-%d"),
         }
         md_helper = self.metadata_helper
         md_helper.set_some_global_attributes(global_attrs)

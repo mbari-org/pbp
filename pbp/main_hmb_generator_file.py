@@ -9,6 +9,7 @@ import numpy as np
 import xarray as xr
 from datetime import datetime, timezone, timedelta
 import pytz
+from isodate import duration_isoformat
 
 from pbp import get_pbp_version, get_pypam_version
 from pbp.logging_helper import create_logger
@@ -248,6 +249,12 @@ class FileProcessor:
         global_attrs = {
             "time_coverage_start": time_coverage_start.isoformat(),
             "time_coverage_end": time_coverage_end.isoformat(),
+            "time_coverage_resolution": duration_isoformat(
+                timedelta(seconds=self.opts.time_resolution)
+            ),
+            "time_coverage_duration": duration_isoformat(
+                time_coverage_end - time_coverage_start
+            ),
             "date_created": datetime.now(pytz.utc).strftime("%Y-%m-%d"),
         }
         md_helper = self.metadata_helper
