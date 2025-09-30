@@ -2,7 +2,7 @@ from argparse import ArgumentParser, Namespace, RawTextHelpFormatter
 
 
 from pbp import get_pbp_version
-from pbp.misc_helper import print_given_args
+from pbp.hmb_gen.misc_helper import print_given_args
 from os import getenv
 
 

@@ -8,7 +8,7 @@ import xarray as xr
 
 from pbp.hmb_gen.hmso_pypam import HmsoPypam
 
-from pbp.misc_helper import brief_list
+from pbp.hmb_gen.misc_helper import brief_list
 
 
 @dataclass

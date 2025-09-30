@@ -4,6 +4,9 @@ from argparse import ArgumentParser, Namespace
 import numpy as np
 
 
+# TODO some utilities here could be moved to pbp.util as they are generic, not hmb-gen specific.
+
+
 def parse_date(date: str) -> Tuple[int, int, int]:
     """
     Parses given string into a (year, month, day) integer tuple.

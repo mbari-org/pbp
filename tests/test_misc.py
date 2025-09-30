@@ -1,4 +1,4 @@
-from pbp.misc_helper import gen_hour_minute_second_times, map_prefix
+from pbp.hmb_gen.misc_helper import gen_hour_minute_second_times, map_prefix
 from pbp.util.datetime_helper import extract_datetime
 from datetime import datetime, timezone
 

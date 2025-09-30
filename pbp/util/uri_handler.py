@@ -8,7 +8,7 @@ from botocore.client import BaseClient, ClientError
 from google.cloud.exceptions import NotFound as GsNotFound
 from google.cloud.storage import Client as GsClient
 
-from pbp.misc_helper import map_prefix
+from pbp.hmb_gen.misc_helper import map_prefix
 from pbp.util.bucket_key_simple import get_bucket_key_simple
 
 
