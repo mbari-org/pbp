@@ -1,6 +1,8 @@
 2025-09
 
 - 1.8.2 release:
+    - Restores API compatibility with backward compatibility shims.
+      These include deprecation warnings to guide users to new import paths.
     - reverts a commit that removed a function (create_logger_info) used in notebooks out there!
 
 - 1.8.1 release with more refactoring and code cleanup.
