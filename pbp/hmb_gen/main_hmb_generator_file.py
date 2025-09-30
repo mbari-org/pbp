@@ -14,7 +14,7 @@ from isodate import duration_isoformat
 from pbp import get_pbp_version, get_pypam_version
 from pbp.logging_helper import create_logger
 from pbp.hmb_gen.hmb_metadata import replace_snippets, HmbMetadataHelper, parse_attributes
-from pbp.misc_helper import extract_datetime
+from pbp.util.datetime_helper import extract_datetime
 from pbp.hmb_gen.process_helper import (
     ProcessDayResult,
     DEFAULT_QUALITY_FLAG_VALUE,
