@@ -112,7 +112,7 @@ main-cloud-basic-test max_segments="1" date="20220902":
     export SENSITIVITY_NETCDF_URI=misc/icListen1689_sensitivity_hms256kHz.nc
     export MAX_SEGMENTS={{max_segments}}
     export PYTHONPATH=.
-    poetry run python pbp/main_cloud.py
+    poetry run python pbp/cloud/main_cloud.py
 
 # dev/test conveniences:
 #    export EXCLUDE_LOG_TIME=yes
@@ -132,7 +132,7 @@ main-cloud-mars-basic-test date="20210901":
     export CLOUD_TMP_DIR="with_pypam_0.2.0"
     export RETAIN_DOWNLOADED_FILES=yes
     export PYTHONPATH=.
-    poetry run python pbp/main_cloud.py
+    poetry run python pbp/cloud/main_cloud.py
 
 # Process multiple days for MARS data
 main-cloud-mars-multiple-days year="2022" month="9" *days="5 7 8 9":
@@ -163,7 +163,7 @@ main-cloud-chumash-basic-test date="20230108":
     export CLOUD_TMP_DIR="cloud_tmp_chumash"
     export RETAIN_DOWNLOADED_FILES=yes
     export PYTHONPATH=.
-    poetry run python pbp/main_cloud.py
+    poetry run python pbp/cloud/main_cloud.py
 
 # Run main
 main *args="":
