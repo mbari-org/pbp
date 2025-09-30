@@ -1,7 +1,7 @@
 ## PypamSupport
 
-::: pbp.pypam_support.PypamSupport
+::: pbp.hmb_gen.pypam_support.PypamSupport
 
 ## ProcessResult
 
-::: pbp.pypam_support.ProcessResult
+::: pbp.hmb_gen.pypam_support.ProcessResult
