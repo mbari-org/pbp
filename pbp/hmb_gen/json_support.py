@@ -63,44 +63,45 @@ def get_intersecting_entries(
     day: int,
     at_hour: int,
     at_minute: int,
-    segment_size_in_mins: int = 1,
+    at_second: int = 0,
+    segment_size_in_secs: int = 60,
 ) -> List[JEntryIntersection]:
     """
-    Gets the list of intersecting entries for the UTC "start minute"
-    given by (year, month, day, at_hour, at_minute).
+    Gets the list of intersecting entries for the UTC "start time"
+    given by (year, month, day, at_hour, at_minute, at_second).
 
     :param log:
         Logger
     :param json_entries:
         JSON entries for the day
     :param year:
-        Year associated to the start minute
+        Year associated to the start time
     :param month:
-        Month associated to the start minute
+        Month associated to the start time
     :param day:
-        Day associated to the start minute
+        Day associated to the start time
     :param at_hour:
-        Hour associated to the start minute
+        Hour associated to the start time
     :param at_minute:
-        Minute associated to the start minute
-    :param segment_size_in_mins:
-        The size of the segment in minutes, by default 1.
+        Minute associated to the start time
+    :param at_second:
+        Second associated to the start time
+    :param segment_size_in_secs:
+        The size of the segment in seconds, by default 60.
 
     :return:
         The list of intersecting entries
     """
     # for logging purposes:
-    time_spec = (
-        f"year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute}"
-    )
+    time_spec = f"year={year} month={month} day={day} at_hour={at_hour} at_minute={at_minute} at_second={at_second}"
     log.debug(f"get_intersecting_entries: {time_spec} {len(json_entries)=}")
 
-    # the requested start minute as datetime:
-    dt = datetime(year, month, day, at_hour, at_minute, tzinfo=timezone.utc)
-    # the start of the requested start minute in seconds:
-    minute_start_in_secs: int = int(dt.timestamp())
-    # the end of the requested start minute in seconds:
-    minute_end_in_secs: int = minute_start_in_secs + segment_size_in_mins * 60
+    # the requested start time as datetime:
+    dt = datetime(year, month, day, at_hour, at_minute, at_second, tzinfo=timezone.utc)
+    # the start of the requested segment in seconds:
+    segment_start_in_secs: int = int(dt.timestamp())
+    # the end of the requested segment in seconds:
+    segment_end_in_secs: int = segment_start_in_secs + segment_size_in_secs
 
     intersecting_entries: List[JEntryIntersection] = []
     tot_duration_secs = 0
@@ -108,13 +109,13 @@ def get_intersecting_entries(
         entry_start_in_secs: int = int(entry.start.timestamp())
         entry_end_in_secs: int = entry_start_in_secs + int(entry.duration_secs)
         if (
-            entry_start_in_secs <= minute_end_in_secs
-            and entry_end_in_secs >= minute_start_in_secs
+            entry_start_in_secs <= segment_end_in_secs
+            and entry_end_in_secs >= segment_start_in_secs
         ):
             start_secs = (
-                max(entry_start_in_secs, minute_start_in_secs) - entry_start_in_secs
+                max(entry_start_in_secs, segment_start_in_secs) - entry_start_in_secs
             )
-            end_secs = min(entry_end_in_secs, minute_end_in_secs) - entry_start_in_secs
+            end_secs = min(entry_end_in_secs, segment_end_in_secs) - entry_start_in_secs
             duration_secs = end_secs - start_secs
             intersecting_entries.append(
                 JEntryIntersection(entry, start_secs, duration_secs)

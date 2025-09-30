@@ -1,6 +1,6 @@
 from argparse import Namespace
 
-from pbp.main_hmb_generator_args import parse_arguments
+from pbp.hmb_gen.main_hmb_generator_args import parse_arguments
 
 # Some imports, in particular involving data processing, cause a delay that is
 # noticeable when just running the --help option. We get around this issue by
@@ -11,9 +11,9 @@ def run_main_hmb_generator(opts: Namespace) -> None:
     # pylint: disable=import-outside-toplevel
     import os
 
-    from pbp.file_helper import FileHelper
+    from pbp.hmb_gen.file_helper import FileHelper
     from pbp.logging_helper import create_logger
-    from pbp.process_helper import ProcessHelper
+    from pbp.hmb_gen.process_helper import ProcessHelper
 
     log = create_logger(
         log_filename_and_level=(
@@ -54,6 +54,7 @@ def run_main_hmb_generator(opts: Namespace) -> None:
         audio_base_dir=opts.audio_base_dir,
         audio_path_map_prefix=opts.audio_path_map_prefix,
         audio_path_prefix=opts.audio_path_prefix,
+        segment_size_in_secs=opts.time_resolution or 60,
         s3_client=s3_client,
         gs_client=gs_client,
         download_dir=opts.download_dir,
@@ -86,7 +87,7 @@ def run_main_hmb_generator(opts: Namespace) -> None:
 
 def run_main_hmb_generator_direct_file(opts: Namespace) -> None:
     # pylint: disable=import-outside-toplevel
-    from pbp.main_hmb_generator_file import main_hmb_generator_file
+    from pbp.hmb_gen.main_hmb_generator_file import main_hmb_generator_file
 
     main_hmb_generator_file(opts)
 

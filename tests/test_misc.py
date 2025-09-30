@@ -1,21 +1,23 @@
-from pbp.misc_helper import gen_hour_minute_times, map_prefix, extract_datetime
+from pbp.hmb_gen.misc_helper import gen_hour_minute_second_times, map_prefix
+from pbp.util.datetime_helper import extract_datetime
 from datetime import datetime, timezone
 
 
-def test_gen_hour_minute_times(snapshot):
-    def do_size(segment_size_in_mins: int):
-        hour_minute_times = [
-            f"{h:02} {m:02}" for (h, m) in gen_hour_minute_times(segment_size_in_mins)
+def test_gen_hour_minute_second_times(snapshot):
+    def do_size(segment_size_in_secs: int):
+        hour_minute_second_times = [
+            f"{h:02} {m:02} {s:02}"
+            for (h, m, s) in gen_hour_minute_second_times(segment_size_in_secs)
         ]
-        day_minutes = 24 * 60
-        assert len(hour_minute_times) == day_minutes // segment_size_in_mins
-        assert hour_minute_times == snapshot(
-            name=f"segment_size_in_mins={segment_size_in_mins:02}"
+        day_seconds = 24 * 60 * 60
+        assert len(hour_minute_second_times) == day_seconds // segment_size_in_secs
+        assert hour_minute_second_times == snapshot(
+            name=f"segment_size_in_secs={segment_size_in_secs:03}"
         )
 
-    do_size(1)
-    do_size(10)
-    do_size(60)
+    do_size(10)  # 10 second intervals
+    do_size(60)  # equivalent to 1 minute
+    do_size(600)  # equivalent to 10 minutes
 
 
 def test_map_prefix():

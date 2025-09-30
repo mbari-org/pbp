@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.ticker import NullLocator
 
-from pbp.plot_const import DEFAULT_DPI
+from pbp.hmb_plot.plot_const import DEFAULT_DPI
 
 
 class InstrumentType:

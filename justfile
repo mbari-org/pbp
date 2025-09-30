@@ -1,3 +1,5 @@
+set dotenv-load := true
+
 #
 # Run these recipes using `just` - https://just.systems/.
 #
@@ -21,7 +23,7 @@ main-mb05 *more_args="":
     mkdir -p NB_SPACE/OUTPUT
 
     PYTHONPATH=. EXCLUDE_LOG_TIME=yes \
-        poetry run python pbp/main_hmb_generator.py \
+        poetry run python pbp/hmb_gen/main_hmb_generator.py \
                  --date=20220812 \
                  --json-base-dir=NB_SPACE/JSON \
                  --voltage-multiplier=1 \
@@ -47,7 +49,7 @@ main-nrs11 date='20200101' *more_args='':
     mkdir -p $WS/DOWNLOADS
     mkdir -p $WS/OUTPUT
     PYTHONPATH=. EXCLUDE_LOG_TIME=yes \
-        poetry run python pbp/main_hmb_generator.py \
+        poetry run python pbp/hmb_gen/main_hmb_generator.py \
                  --date={{date}} \
                  --gs \
                  --json-base-dir=$WS/noaa-passive-bioacoustic_nrs_11_2019-2021 \
@@ -73,7 +75,7 @@ main-nrs11-multiple-days year month *days="":
     export PYTHONPATH=.
     for day in {{days}}; do
       date=$(printf "%04d%02d%02d" {{year}} {{month}} "$day")
-      poetry run python pbp/main_hmb_generator.py \
+      poetry run python pbp/hmb_gen/main_hmb_generator.py \
              --date="$date" \
              --gs \
              --json-base-dir=$WS/noaa-passive-bioacoustic_nrs_11_2019-2021 \
@@ -94,7 +96,7 @@ main-nrs11-multiple-days year month *days="":
 
 # Plot NRS11 datasets
 hmb-plot-nrs11 *netcdfs='NRS11/OUTPUT/NRS11_20200101.nc':
-    poetry run python pbp/main_plot.py \
+    poetry run python pbp/hmb_plot/main_plot.py \
       --ylim 10 2000 \
       --cmlim 64 108 \
       --latlon 37.88 -123.44 \
@@ -165,14 +167,14 @@ main-cloud-chumash-basic-test date="20230108":
 
 # Run main
 main *args="":
-    PYTHONPATH=. poetry run python pbp/main_hmb_generator.py {{args}}
+    PYTHONPATH=. poetry run python pbp/hmb_gen/main_hmb_generator.py {{args}}
 
 ##############
 # misc/utils:
 
 # Generate summary plots
 hmb-plot *args:
-    poetry run python pbp/main_plot.py {{args}}
+    poetry run python pbp/hmb_plot/main_plot.py {{args}}
 
 ##############
 # package build/publishing:
@@ -180,6 +182,13 @@ hmb-plot *args:
 # Build and publish package
 publish *args="":
     poetry publish --build {{args}}
+
+
+publish_to_test_pypi:
+    poetry build
+    poetry config repositories.testpypi https://test.pypi.org/legacy/
+    poetry config pypi-token.testpypi "$TEST_PYPI_TOKEN"
+    poetry publish -r testpypi
 
 ##############
 # development:

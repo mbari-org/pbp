@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "1.7.6"
+version = "1.8.0rc3"
 description = "PyPAM based Processing"
 authors = [
     "Carlos Rueda <carueda@mbari.org>",
@@ -22,9 +22,9 @@ repository = "https://github.com/mbari-org/pbp"
 packages = [{include = "pbp"}]
 
 [tool.poetry.scripts]
-pbp-hmb-gen = "pbp.main_hmb_generator:main"
+pbp-hmb-gen = "pbp.hmb_gen.main_hmb_generator:main"
 pbp-cloud = "pbp.main_cloud:main"
-pbp-hmb-plot = "pbp.main_plot:main"
+pbp-hmb-plot = "pbp.hmb_plot.main_plot:main"
 pbp-meta-gen = "pbp.main_meta_generator:main"
 
 [tool.poetry.dependencies]
@@ -44,6 +44,7 @@ Pyarrow = "15.0.0"
 loguru = {extras = ["mypy"], version = "^0.7.2"}
 loguru-mypy = "^0.0.4"
 awscli = "^1.33.20"
+isodate = "^0.7.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.8.0"
@@ -61,7 +62,7 @@ show_error_codes = true
 ignore_missing_imports = true
 exclude = [
     'examples/',
-    'pbp/plotting\.py'
+    'pbp/hmb_plot/plotting\.py'
 ]
 
 [tool.ruff]

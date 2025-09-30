@@ -1,6 +1,6 @@
 from argparse import ArgumentParser, RawTextHelpFormatter, Namespace
 
-from pbp.plot_const import (
+from pbp.hmb_plot.plot_const import (
     DEFAULT_DPI,
     DEFAULT_LAT_LON_FOR_SOLPOS,
     DEFAULT_TITLE,
@@ -95,7 +95,7 @@ def run_main_plot(opts: Namespace):
     # pylint: disable=import-outside-toplevel
     import xarray as xr
 
-    from pbp.plotting import plot_dataset_summary
+    from pbp.hmb_plot.plotting import plot_dataset_summary
 
     show = opts.show or opts.only_show
     for nc_filename in opts.netcdf:

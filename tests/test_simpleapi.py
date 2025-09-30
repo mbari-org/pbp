@@ -1,4 +1,4 @@
-from pbp.simpleapi import HmbGen
+from pbp.hmb_gen.simpleapi import HmbGen
 from google.cloud.storage import Client as GsClient
 
 

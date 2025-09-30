@@ -9,7 +9,7 @@ _list:
 
 # Run main (on gizo)
 main-gizo date="20220902" output_dir="/mnt/PAM_Analysis/pypam-space/test_output/daily":
-    PYTHONPATH=. poetry run python pbp/main_hmb_generator.py \
+    PYTHONPATH=. poetry run python pbp/hmb_gen/main_hmb_generator.py \
                  --json-base-dir=json \
                  --date={{date}} \
                  --voltage-multiplier=3 \
@@ -20,7 +20,7 @@ main-gizo date="20220902" output_dir="/mnt/PAM_Analysis/pypam-space/test_output/
 
 # Run main (on gizo) with some initial test jsons
 main-gizo-test *more_args="":
-    PYTHONPATH=. poetry run python pbp/main_hmb_generator.py \
+    PYTHONPATH=. poetry run python pbp/hmb_gen/main_hmb_generator.py \
                  --json-base-dir=tests/json \
                  --date=20220902 \
                  --voltage-multiplier=3 \
@@ -44,7 +44,7 @@ main-gizo-multiple-days year month *days="":
       base="$output_dir/milli_psd_$date"
       out="$base.out"
       echo "running: day=$day output_dir=$output_dir"
-      poetry run python pbp/main_hmb_generator.py \
+      poetry run python pbp/hmb_gen/main_hmb_generator.py \
              --json-base-dir=json \
              --date="$date" \
              --voltage-multiplier=3 \

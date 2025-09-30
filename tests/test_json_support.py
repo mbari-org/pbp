@@ -1,7 +1,7 @@
 from typing import Any, List
 
 import pytest
-from pbp.json_support import get_intersecting_entries, parse_json_file
+from pbp.hmb_gen.json_support import get_intersecting_entries, parse_json_file
 from pbp.logging_helper import create_logger
 
 
@@ -23,7 +23,9 @@ def test_get_intersecting_entries(json_entries, snapshot):
 
     log = create_logger()
 
-    def do_test(segment_size_in_mins: int, at_hour: int, at_minute: int):
+    def do_test(
+        segment_size_in_secs: int, at_hour: int, at_minute: int, at_second: int = 0
+    ):
         intersecting_entries = get_intersecting_entries(
             log,
             json_entries,
@@ -32,16 +34,20 @@ def test_get_intersecting_entries(json_entries, snapshot):
             day,
             at_hour,
             at_minute,
-            segment_size_in_mins=segment_size_in_mins,
+            at_second,
+            segment_size_in_secs=segment_size_in_secs,
         )
         assert _as_jsons(intersecting_entries) == snapshot(
-            name=f"size={segment_size_in_mins:02} h={at_hour:02} m={at_minute:02}"
+            name=f"size={segment_size_in_secs:03} h={at_hour:02} m={at_minute:02} s={at_second:02}"
         )
 
-    do_test(1, 0, 0)
-    do_test(1, 23, 59)
-    do_test(20, 0, 0)
-    do_test(10, 23, 40)
+    do_test(60, 0, 0)  # equivalent to 1 minute
+    do_test(60, 23, 59)  # equivalent to 1 minute
+    do_test(1200, 0, 0)  # equivalent to 20 minutes
+    do_test(600, 23, 40)  # equivalent to 10 minutes
+    do_test(10, 0, 0, 30)  # 10-second segment starting at 00:00:30
+    do_test(15, 12, 30, 45)  # 15-second segment starting at 12:30:45
+    do_test(5, 6, 15, 22)  # 5-second segment starting at 06:15:22
 
 
 @pytest.fixture
