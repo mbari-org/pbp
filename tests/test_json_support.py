@@ -1,7 +1,7 @@
 from typing import Any, List
 
 import pytest
-from pbp.json_support import get_intersecting_entries, parse_json_file
+from pbp.hmb_gen.json_support import get_intersecting_entries, parse_json_file
 from pbp.logging_helper import create_logger
 
 

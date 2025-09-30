@@ -9,7 +9,7 @@ import soundfile as sf
 from botocore.client import BaseClient
 from google.cloud.storage import Client as GsClient
 
-from pbp.json_support import get_intersecting_entries, JEntry, parse_json_contents
+from pbp.hmb_gen.json_support import get_intersecting_entries, JEntry, parse_json_contents
 from pbp.misc_helper import brief_list
 from pbp.util.uri_handler import UriHandler
 

@@ -12,10 +12,10 @@ import numpy as np
 import xarray as xr
 
 from pbp import get_pbp_version, get_pypam_version
-from pbp.file_helper import FileHelper
-from pbp.hmb_metadata import HmbMetadataHelper, parse_attributes, replace_snippets
+from pbp.hmb_gen.file_helper import FileHelper
+from pbp.hmb_gen.hmb_metadata import HmbMetadataHelper, parse_attributes, replace_snippets
 from pbp.misc_helper import gen_hour_minute_second_times, parse_date
-from pbp.pypam_support import ProcessResult, PypamSupport
+from pbp.hmb_gen.pypam_support import ProcessResult, PypamSupport
 
 
 DEFAULT_QUALITY_FLAG_VALUE = 2

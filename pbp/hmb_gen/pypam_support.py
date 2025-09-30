@@ -6,7 +6,7 @@ import loguru
 import numpy as np
 import xarray as xr
 
-from pbp.hmso_pypam import HmsoPypam
+from pbp.hmb_gen.hmso_pypam import HmsoPypam
 
 from pbp.misc_helper import brief_list
 

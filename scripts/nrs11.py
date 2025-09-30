@@ -1,7 +1,7 @@
 # As in the notebook: https://colab.research.google.com/drive/1RaFVZzdRt88gY1SR_J34XMdRLgBjEdI-
 
-from pbp.process_helper import ProcessHelper
-from pbp.file_helper import FileHelper
+from pbp.hmb_gen.process_helper import ProcessHelper
+from pbp.hmb_gen.file_helper import FileHelper
 from pbp.logging_helper import create_logger
 
 from google.cloud.storage import Client as GsClient
