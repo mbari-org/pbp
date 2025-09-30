@@ -3,7 +3,7 @@ from pbp.hmb_gen.file_helper import FileHelper
 from pbp.logging_helper import create_logger
 from typing import Optional
 from botocore.client import BaseClient
-from pbp.plotting import plot_dataset_summary
+from pbp.hmb_plot.plotting import plot_dataset_summary
 from pbp import get_pbp_version
 
 from google.cloud.storage import Client as GsClient

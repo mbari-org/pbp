@@ -8,7 +8,7 @@ import pvlib
 import xarray as xr
 from matplotlib import gridspec
 
-from pbp.plot_const import (
+from pbp.hmb_plot.plot_const import (
     DEFAULT_DPI,
     DEFAULT_LAT_LON_FOR_SOLPOS,
     DEFAULT_TITLE,
