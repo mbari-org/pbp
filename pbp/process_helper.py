@@ -333,6 +333,7 @@ class ProcessHelper:
         global_attrs = {
             "time_coverage_start": f"{coverage_date} 00:00:00Z",
             "time_coverage_end": f"{coverage_date} 23:59:00Z",
+            "time_coverage_resolution": f"P{self.file_helper.segment_size_in_secs}S",
             "date_created": datetime.utcnow().strftime("%Y-%m-%d"),
         }
         md_helper = self.metadata_helper

@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "1.8.0rc1"
+version = "1.8.0rc2"
 description = "PyPAM based Processing"
 authors = [
     "Carlos Rueda <carueda@mbari.org>",
