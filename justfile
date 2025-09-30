@@ -11,9 +11,9 @@ list:
 ####################
 # some conveniences:
 
-# Run pbp/main_meta_generator.py
+# Run pbp/meta_gen/main_meta_generator.py
 meta-gen *args="":
-  poetry run python pbp/main_meta_generator.py {{args}}
+  poetry run python pbp/meta_gen/main_meta_generator.py {{args}}
 
 # Replicate notebook
 main-mb05 *more_args="":

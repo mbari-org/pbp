@@ -11,7 +11,7 @@ from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
 from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
 from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
 from pbp.meta_gen.gen_resea import ReseaMetadataGenerator
-from pbp.main_meta_generator_args import parse_arguments
+from pbp.meta_gen.main_meta_generator_args import parse_arguments
 
 
 # Some imports, in particular involving data processing, cause a delay that is
