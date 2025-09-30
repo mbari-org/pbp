@@ -1,6 +1,6 @@
 2025-09
 
-- 1.8.3 release:
+- 1.8.0 release:
     - More auto-populated global attributes
     - Resolve #92 "Allow specifying time resolution also for the main daily HMB processing"
     - Internal code refactoring mainly related to the pbp-hmb-gen and pbp-hmb-plot CLI programs.
