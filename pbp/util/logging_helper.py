@@ -12,7 +12,9 @@ def create_logger(
     console_level: Optional[str] = None,
 ) -> "loguru.Logger":
     """
-    Create logger instance, typically to be used for a day of processing.
+    Create logger instance.
+    This utility was initially introduced for the HMB generation functionality,
+    but later on also used in other places.
 
     NOTE: The created object should be passed around to all relevant functions.
     Do not use `from loguru import logger` (or similar) to obtain the logger.

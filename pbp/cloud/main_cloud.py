@@ -64,7 +64,7 @@ import pathlib
 import boto3
 
 from pbp.hmb_gen.file_helper import FileHelper
-from pbp.logging_helper import create_logger
+from pbp.util.logging_helper import create_logger
 from pbp.hmb_gen.process_helper import ProcessHelper
 
 

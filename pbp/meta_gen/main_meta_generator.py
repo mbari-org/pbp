@@ -2,7 +2,7 @@ from argparse import Namespace
 from datetime import datetime
 from pathlib import Path
 
-from pbp.logging_helper import create_logger
+from pbp.util.logging_helper import create_logger
 from pbp.meta_gen.gen_abstract import (
     MetadataGeneratorAbstract,
     SoundTrapMetadataGeneratorAbstract,

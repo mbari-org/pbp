@@ -12,7 +12,7 @@ def run_main_hmb_generator(opts: Namespace) -> None:
     import os
 
     from pbp.hmb_gen.file_helper import FileHelper
-    from pbp.logging_helper import create_logger
+    from pbp.util.logging_helper import create_logger
     from pbp.hmb_gen.process_helper import ProcessHelper
 
     log = create_logger(

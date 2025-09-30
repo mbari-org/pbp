@@ -11,7 +11,7 @@ from datetime import datetime
 from pathlib import Path
 import json
 
-from pbp.logging_helper import create_logger
+from pbp.util.logging_helper import create_logger
 from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
 from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
 from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator

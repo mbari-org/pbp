@@ -2,7 +2,7 @@ from typing import Any, List
 
 import pytest
 from pbp.hmb_gen.json_support import get_intersecting_entries, parse_json_file
-from pbp.logging_helper import create_logger
+from pbp.util.logging_helper import create_logger
 
 
 def _as_jsons(the_list: List[Any]) -> List[str]:

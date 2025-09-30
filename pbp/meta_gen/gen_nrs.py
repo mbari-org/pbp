@@ -169,7 +169,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
 
 
 if __name__ == "__main__":
-    from pbp.logging_helper import create_logger
+    from pbp.util.logging_helper import create_logger
 
     log_dir = Path("tests/log")
     json_dir = Path("tests/json/nrs")
