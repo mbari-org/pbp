@@ -51,12 +51,12 @@ jobs:
 
     - name: Verify installation
       run: |
-        python -c "import mbari_pbp; print(f'Successfully imported mbari_pbp version: {mbari_pbp.__version__}')"
+        python -c "import pbp; print(f'Successfully imported pbp version: {pbp.get_pbp_version()}')"
 
     - name: Test basic functionality
       run: |
         python -c "
-        import mbari_pbp
+        import pbp
         import soundfile
         import pyarrow
         print('Installation and key dependencies verified!')
