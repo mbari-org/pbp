@@ -36,10 +36,9 @@ jobs:
         sudo apt-get install -y libhdf5-dev libnetcdf-dev libsndfile1
 
     - name: Install system dependencies (Windows)
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && matrix.python-version == '3.11'
       run: |
-        choco install hdf5 -y
-        # Note: libsndfile is typically included with Python soundfile wheel on Windows
+        echo "Relying on pre-compiled wheels for Windows dependencies"
 
     - name: Upgrade pip
       run: |
