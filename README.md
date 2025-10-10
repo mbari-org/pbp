@@ -33,21 +33,7 @@ Official documentation is available at
 
 ## Installation
 
-The only requirement is Python 3.9, 3.10, or 3.11 on your environment.[^1]
-You can run `python3 --version` to check the version of Python installed.
-
-[^1]: As currently [required by PyPAM](https://github.com/lifewatch/pypam/blob/29e82f0c5c6ce43b457d76963cb9d82392740654/pyproject.toml#L16).
-
-As a general practice, it is recommended to use a virtual environment for the installation.
-```shell
-python3.11 -m venv virtenv
-source virtenv/bin/activate
-```
-
-Install the package:
-```shell
-pip install mbari-pbp
-```
+Please see <https://docs.mbari.org/pbp/#installation>.
 
 ## Programs and API
 
