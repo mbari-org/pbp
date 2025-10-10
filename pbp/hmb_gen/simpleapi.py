@@ -76,6 +76,9 @@ class HmbGen:
         self._output_prefix: str = ""
         self._compress_netcdf: bool = True
         self._add_quality_flag: bool = False
+        
+        self._use_multiprocessing: bool = True
+        self._num_workers: Optional[int] = None
 
         self._assume_downloaded_files: bool = False
         self._retain_downloaded_files: bool = False
@@ -205,6 +208,26 @@ class HmbGen:
             add_quality_flag (bool): Whether to add quality flag variable.
         """
         self._add_quality_flag = add_quality_flag
+    
+    def set_use_multiprocessing(self, use_multiprocessing: bool) -> None:
+        """
+        Set whether to use multiprocessing for parallel spectra calculation.
+        This is enabled by default.
+
+        Args:
+            use_multiprocessing (bool): Whether to use multiprocessing.
+        """
+        self._use_multiprocessing = use_multiprocessing
+    
+    def set_num_workers(self, num_workers: int) -> None:
+        """
+        Set the number of worker processes for multiprocessing.
+        By default, this is set to the number of CPUs on the system.
+
+        Args:
+            num_workers (int): Number of worker processes.
+        """
+        self._num_workers = num_workers
 
     def set_assume_downloaded_files(self, value: bool) -> None:
         """
@@ -327,6 +350,8 @@ class HmbGen:
             output_prefix=self._output_prefix,
             compress_netcdf=self._compress_netcdf,
             add_quality_flag=self._add_quality_flag,
+            use_multiprocessing=self._use_multiprocessing,
+            num_workers=self._num_workers,
             assume_downloaded_files=self._assume_downloaded_files,
             retain_downloaded_files=self._retain_downloaded_files,
             print_downloading_lines=self._print_downloading_lines,
@@ -411,6 +436,8 @@ class _HmbGen:
         output_prefix: str,
         compress_netcdf: bool,
         add_quality_flag: bool,
+        use_multiprocessing: bool,
+        num_workers: Optional[int],
         assume_downloaded_files: bool,
         retain_downloaded_files: bool,
         print_downloading_lines: bool,
@@ -436,6 +463,8 @@ class _HmbGen:
         self.output_prefix = output_prefix
         self.compress_netcdf = compress_netcdf
         self.add_quality_flag = add_quality_flag
+        self.use_multiprocessing = use_multiprocessing
+        self.num_workers = num_workers
 
         self.assume_downloaded_files = assume_downloaded_files
         self.retain_downloaded_files = retain_downloaded_files
@@ -488,6 +517,8 @@ class _HmbGen:
             sensitivity_uri=self.sensitivity_uri,
             sensitivity_flat_value=self.sensitivity_flat_value,
             subset_to=self.subset_to,
+            use_multiprocessing=self.use_multiprocessing,
+            num_workers=self.num_workers,
         )
 
         # now, get the HMB result:
