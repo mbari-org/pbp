@@ -317,22 +317,35 @@ class ProcessHelper:
         
         # Step 1: Extract all audio segments sequentially (to avoid file I/O conflicts)
         segment_data_list: List[_SegmentData] = []
+        fs: Optional[int] = None
+        
         for at_hour, at_minute, at_second in hour_minute_seconds:
             segment_data = self._extract_segment_data(at_hour, at_minute, at_second)
+            
+            # Validate sample rate consistency
+            if segment_data.audio_segment is not None:
+                current_fs = int(len(segment_data.audio_segment) / segment_data.num_secs)
+                if fs is None:
+                    fs = current_fs
+                elif fs != current_fs:
+                    self.log.error(
+                        f"ERROR: samplerate changed from {fs} to {current_fs}. "
+                        "Skipping segment."
+                    )
+                    # Replace with missing segment
+                    segment_data = _SegmentData(segment_data.dt, None, 0.0)
+            
             segment_data_list.append(segment_data)
         
         # Step 2: Set parameters from first valid segment
-        first_valid = next((sd for sd in segment_data_list if sd.audio_segment is not None), None)
-        if first_valid is None:
+        if fs is None:
             self.log.warning("No valid audio segments found")
             for segment_data in segment_data_list:
                 self.pypam_support.add_missing_segment(segment_data.dt)
             return
         
-        # Determine audio parameters from first valid segment
+        # Set parameters if not already set
         if not self.pypam_support.parameters_set:
-            # Compute one spectrum to get the sample rate and set parameters
-            fs = int(len(first_valid.audio_segment) / first_valid.num_secs)
             self.log.info(f"Got audio parameters: fs={fs}")
             self.pypam_support.set_parameters(fs, subset_to=self.subset_to)
         
@@ -361,7 +374,7 @@ class ProcessHelper:
                     results.append(None)
             
             # Step 5: Gather results and add to pypam_support
-            for i, (segment_data, result) in enumerate(zip(segment_data_list, results)):
+            for segment_data, result in zip(segment_data_list, results):
                 if result is None:
                     self.pypam_support.add_missing_segment(segment_data.dt)
                 else:
@@ -374,6 +387,7 @@ class ProcessHelper:
                         spectrum
                     )
                     self.log.debug(f"  captured segment: {segment_data.dt}")
+
     
     def _extract_segment_data(
         self, at_hour: int, at_minute: int, at_second: int
