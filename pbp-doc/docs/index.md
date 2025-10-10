@@ -30,32 +30,65 @@ as well as a dependency in your own Python code.
 
 ## Installation
 
-On your environment the only requirement is Python 3.9, 3.10, or 3.11.[^1]
-Make sure your Python installation includes the `pip` and `venv` modules,
-or install them separately as needed.
+You will use a shell (terminal on macOS or Linux, PowerShell on Windows)
+to run audio data processing jobs using PBP.
 
-You can run `python3 --version` to check the version of Python installed.
+We recommend installing PBP using [Conda](https://docs.conda.io/en/latest/).
+If you already have Anaconda installed, you can use it.
+If not, download and install [Miniconda](https://www.anaconda.com/download/success) for your operating system.
+Miniconda is all that is needed, and it is about one tenth the size of a full Anaconda installation.
+After installation, on some systems, you can confirm that conda is available with:
 
-[^1]: As currently [required by PyPAM](https://github.com/lifewatch/pypam/blob/29e82f0c5c6ce43b457d76963cb9d82392740654/pyproject.toml#L16).
 
-As a general practice, it is recommended to use a virtual environment for the installation.
 ```shell
-python3.9 -m venv virtenv
-source virtenv/bin/activate
+which conda
 ```
 
-Install the package:
-```shell
-pip install mbari-pbp
+Create a directory where you will install the PBP software,
+for example: `/Users/YourUserName/pbp`.
+
+Create an `environment.yml` file in the `pbp` directory, with this content:
+```yaml
+name: pbp
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - hdf5
+  - netcdf4
+  - libsndfile
+  - pip
+  - pip:
+      - mbari-pbp
 ```
 
-!!! note ""
-    If you are upgrading from a previous version, you can use the following command:
-    ```shell
-    pip install --upgrade mbari-pbp
-    ```
+From within the terminal, while you are in your newly created pbp directory, issue this command:
+```shell
+conda env create
+```
 
-## Advanced Installation
+Activate your PBP processing environment with this command:
+```shell
+conda activate pbp
+```
+
+Notice that the prompt of the shell was augmented with `(pbp)` preceding the original prompt.
+
+You can check the PBP version:
+```shell
+pbp-hmb-gen --version
+```
+
+You are now ready to process passive acoustic monitoring data to
+[hybrid millidecade spectra](https://asa.scitation.org/doi/10.1121/10.0003324) using PBP.
+
+Typically, within this top level directory for processing, you will also have a metadata directory
+(calibration data for hydrophones, etc.), and scripts for processing (shell scripts or python scripts).
+PBP creates some directory structures as needed during initial operation
+(json directory for storing temporal metadata for processing jobs).
+
+
+### Advanced Installation
 
 If you want to install the package from source and have already installed with the `pip install mbari-pbp` command,
 you can install the package from source with the following command. This will get the latest version :construction: from the main branch.
