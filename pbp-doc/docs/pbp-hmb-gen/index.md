@@ -19,6 +19,20 @@ A typical use mainly involves the following:
 | `--output-prefix` | Output filename prefix                                                                   |
 | `--subset-to`     | Subset of the resulting PSD in terms of central frequency                                |
 
+### Performance Options
+
+| Option                | To indicate   |
+| --------------------- |--------------- |
+| `--no-multiprocessing`| Disable multiprocessing for spectra calculation. By default, multiprocessing is enabled to utilize multiple CPU cores. |
+| `--num-workers`       | Number of worker processes for multiprocessing. By default, uses the number of CPUs on the system. |
+
+!!! info "Multiprocessing"
+    Since version 1.8.3, PBP uses multiprocessing by default to compute spectra for audio segments in parallel.
+    This significantly speeds up processing on multi-core systems when processing a single day.
+    
+    - Use `--no-multiprocessing` to disable parallel processing and use sequential processing (original behavior)
+    - Use `--num-workers N` to limit the number of parallel workers (helpful on systems with limited memory)
+
 Also, the following depending on the recorder:
 
 | Option                   | To indicate   |
