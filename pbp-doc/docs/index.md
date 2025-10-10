@@ -35,7 +35,8 @@ to run audio data processing jobs using PBP.
 
 We recommend installing PBP using [Conda](https://docs.conda.io/en/latest/).
 If you already have Anaconda installed, you can use it.
-If not, download and install [Miniconda](https://www.anaconda.com/download/success) for your operating system.
+If not, download and install [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/)
+for your operating system.
 Miniconda is all that is needed, and it is about one tenth the size of a full Anaconda installation.
 After installation, on some systems, you can confirm that conda is available with:
 
