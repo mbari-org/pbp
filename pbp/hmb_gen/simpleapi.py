@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 
 class HmbGen:
     """
-    A high-level interface intended to simplify the usage of the package for common scenarios.
-    This uses other API elements that can also be used directly for more control on the
+    This is a high-level interface intended to simplify the usage of the package for common scenarios.
+    It uses other API elements that can also be used directly for more control on the
     settings or more advanced scenarios.
 
     Here is a basic, schematic example of how to use this class:
