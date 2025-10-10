@@ -78,6 +78,8 @@ def run_main_hmb_generator(opts: Namespace) -> None:
         sensitivity_flat_value=opts.sensitivity_flat_value,
         max_segments=opts.max_segments,
         subset_to=tuple(opts.subset_to) if opts.subset_to else None,
+        use_multiprocessing=not opts.no_multiprocessing,
+        num_workers=opts.num_workers,
     )
     try:
         process_helper.process_day(opts.date)

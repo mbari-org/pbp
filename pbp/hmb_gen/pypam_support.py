@@ -145,6 +145,27 @@ class PypamSupport:
         self._captured_segments.append(_CapturedSegment(dt, num_secs, spectrum))
         self._num_actual_segments += 1
         self.log.debug(f"  captured segment: {dt}")
+    
+    def _add_computed_segment(
+        self, dt: datetime, num_secs: float, fbands: np.ndarray, spectrum: np.ndarray
+    ):
+        """
+        Adds a pre-computed spectrum to the ongoing aggregation.
+        This is used for multiprocessing support where spectra are computed in parallel.
+
+        `set_parameters` must have been called first.
+
+        Args:
+            dt (datetime): The datetime of the start of the segment.
+            num_secs (float): Duration of the segment in seconds.
+            fbands (np.ndarray): Frequency bands.
+            spectrum (np.ndarray): Pre-computed spectrum.
+        """
+        assert self.parameters_set
+        self._fbands = fbands
+        self._captured_segments.append(_CapturedSegment(dt, num_secs, spectrum))
+        self._num_actual_segments += 1
+
 
     def num_captured_segments(self) -> int:
         """
