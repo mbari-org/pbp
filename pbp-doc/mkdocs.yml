@@ -5,6 +5,8 @@ edit_uri: "blob/main/pbp-doc/docs/"
 theme:
   name: 'material'
   logo: https://docs.mbari.org/imgs/mbari-logo.png
+  features:
+    - content.code.copy  # enable the copy button
   palette:
     - media: "(prefers-color-scheme)"
       toggle:
