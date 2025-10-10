@@ -89,13 +89,23 @@ PBP creates some directory structures as needed during initial operation
 (json directory for storing temporal metadata for processing jobs).
 
 
-### Advanced Installation
+### Updating PBP
+
+To update PBP to the latest version, while your `pbp` conda environment is activated, run this command:
+```shell
+pip install --upgrade mbari-pbp
+```
+
+If changes are needed to the conda environment (for example, new dependencies), after revising the `environment.yml` file,
+you can update the `pbp` conda environment with this command:
+```shell
+conda env update
+```
 
 If you want to install the package from source and have already installed with the `pip install mbari-pbp` command,
 you can install the package from source with the following command. This will get the latest version :construction: from the main branch.
-
 ```shell
-pip install --no-cache-dir --force-reinstall  git+https://github.com/mbari-org/pbp.git
+pip install --no-cache-dir --force-reinstall git+https://github.com/mbari-org/pbp.git
 ```
 
 ## Programs

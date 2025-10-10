@@ -26,6 +26,9 @@ process ocean audio data archives to daily analysis products of hybrid millideca
     - [x] Inputs can be downloaded from public GCS bucket
     - [ ] Outputs can be uploaded to GCS
 
+Example plot of a daily hybrid millidecade generated with the [`pbp-hmb-plot`](https://docs.mbari.org/pbp/pbp-hmb-plot/)  command:
+![](pbp-doc/docs/img/NRS11_20200101_sm.jpg)
+
 ## Documentation
 
 Official documentation is available at
@@ -69,4 +72,4 @@ API documentation is available at [docs.mbari.org/pbp/api](https://docs.mbari.or
 
 ## Development
 
-See [DEVELOPMENT.md](./DEVELOPMENT.md) for details.
+Interested in contributing? Please see [DEVELOPMENT.md](./DEVELOPMENT.md) for details.
