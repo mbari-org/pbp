@@ -191,6 +191,13 @@ publish_to_test_pypi:
     poetry publish -r testpypi
 
 ##############
+# Standalone
+
+# Build standalone distribution and create tarball
+build_standalone:
+    ./scripts/build_standalone.sh
+
+##############
 # development:
 
 # A convenient recipe for development
