@@ -1,3 +1,4 @@
+import sys
 from typing import Optional
 
 import matplotlib.dates as md
@@ -158,5 +159,11 @@ def plot_dataset_summary(
     if jpeg_filename is not None:
         plt.savefig(jpeg_filename, dpi=dpi)
     if show:
-        plt.show()
+        # Check if running as standalone/frozen executable
+        is_frozen = getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
+        if is_frozen:
+            print("Note: Interactive plot display is not available in standalone builds.")
+            print("      Use without --show or --only-show to save plots to files.")
+        else:
+            plt.show()
     plt.close(fig)
