@@ -5,21 +5,46 @@ This provides a single entry point with subcommands for all pbp tools.
 """
 import sys
 import argparse
+import multiprocessing
 from typing import List, Optional
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    """Main entry point with subcommands."""
+    """
+    Main entry point with subcommands.
+    """
+
+    # Detect if running as a PyInstaller frozen executable
+    # Reference: https://pyinstaller.org/en/stable/runtime-information.html
+    is_frozen = getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
+
+    if argv is None:
+        argv = sys.argv[1:]
+
+    # Special handling for PyInstaller frozen executables only
+    if is_frozen:
+        # Required for multiprocessing in frozen applications (especially on Windows)
+        multiprocessing.freeze_support()
+
+        # When frozen with PyInstaller, multiprocessing may re-invoke this script
+        # with internal commands like 'from multiprocessing.resource_tracker import main;main(10)'
+        # These must be executed directly and not parsed by argparse
+        if len(argv) > 0 and argv[0].startswith("from "):
+            # This is a multiprocessing internal command, execute it directly
+            code = " ".join(argv)
+            exec(code)
+            return 0
+
     parser = argparse.ArgumentParser(
         prog="pbp",
-        description="PyPAM Based Processing - Audio data analysis tools",
+        description="PyPAM Based Processing for ocean passive acoustic monitoring",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  pbp hmb-gen --help          Show help for hmb-gen command
-  pbp cloud --help            Show help for cloud command
-  pbp hmb-plot --help         Show help for hmb-plot command
   pbp meta-gen --help         Show help for meta-gen command
+  pbp hmb-gen --help          Show help for hmb-gen command
+  pbp hmb-plot --help         Show help for hmb-plot command
+  pbp cloud --help            Show help for cloud command
 
 For more information, visit: https://docs.mbari.org/pbp/
         """,
@@ -39,15 +64,16 @@ For more information, visit: https://docs.mbari.org/pbp/
     )
 
     # Register subcommands
+
     subparsers.add_parser(
-        "hmb-gen",
-        help="Main HMB generation program",
+        "meta-gen",
+        help="Generate JSON files with audio metadata",
         add_help=False,
     )
 
     subparsers.add_parser(
-        "cloud",
-        help="Program for cloud based processing",
+        "hmb-gen",
+        help="Main HMB generation program",
         add_help=False,
     )
 
@@ -58,8 +84,8 @@ For more information, visit: https://docs.mbari.org/pbp/
     )
 
     subparsers.add_parser(
-        "meta-gen",
-        help="Generate JSON files with audio metadata",
+        "cloud",
+        help="Program for cloud based processing",
         add_help=False,
     )
 

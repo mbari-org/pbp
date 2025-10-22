@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "1.8.2"
+version = "1.8.3"
 description = "PyPAM based Processing"
 authors = [
     "Carlos Rueda <carueda@mbari.org>",
@@ -67,7 +67,7 @@ exclude = [
     'pbp/hmb_plot/plotting\.py',
     'build/',
     'dist/',
-    'mbari-pbp-standalone/'
+    'mbari-pbp-standalone.*/'
 ]
 
 [tool.ruff]

@@ -1,3 +1,10 @@
+2025-10
+
+- 1.8.3 release:
+    - New `pbp` CLI program as main entry-point with sub-commands for the main functionalities.
+    - Incorporates multiprocessing compatibility in standalone/PyInstaller builds by handling
+      internal multiprocessing commands before argument parsing. 
+
 2025-09
 
 - 1.8.2 release:
