@@ -76,7 +76,10 @@ Quick Start:
    pbp meta-gen --help
 
 3. Example usage:
-   pbp hmb-gen --uri s3://mybucket/audio --date 2024-01-01
+   pbp hmb-gen --json-base-dir=tests/json \
+        --audio-base-dir=tests/wav \
+        --date=20220902 \
+        --output-dir=output
 
 For full documentation, visit:
 https://docs.mbari.org/pbp/
