@@ -8,6 +8,8 @@ import argparse
 import multiprocessing
 from typing import List, Optional
 
+from pbp import get_pbp_version
+
 
 def main(argv: Optional[List[str]] = None) -> int:
     """
@@ -53,7 +55,7 @@ For more information, visit: https://docs.mbari.org/pbp/
     parser.add_argument(
         "--version",
         action="version",
-        version="%(prog)s 1.8.2",
+        version=get_pbp_version(),
     )
 
     subparsers = parser.add_subparsers(
