@@ -59,7 +59,9 @@ def plot_dataset_summary(
     seg.iloc[d] = 1
     # dusk / dawn (gray range)
     d = np.squeeze(np.where(np.logical_and(se <= 0, se >= -12)))
-    seg.iloc[d] = 1 - abs(se.iloc[d] / max(abs(se.iloc[d])))
+    # Only compute grayscale if there are dusk/dawn periods (avoid empty sequence error)
+    if len(d) > 0:
+        seg.iloc[d] = 1 - abs(se.iloc[d] / max(abs(se.iloc[d])))
     # Get the indices of the min and max
     seg1 = pd.Series.to_numpy(solpos.elevation)
     minidx = np.squeeze(np.where(seg1 == min(seg1)))
