@@ -1,0 +1,186 @@
+name: Build Standalone Distributions
+
+on:
+  push:
+    tags:
+      - 'v*'
+  # Allow manual trigger for testing
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: macos-latest
+            platform: macos
+          - os: windows-latest
+            platform: windows
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install system dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y libsndfile1
+
+      - name: Install system dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install libsndfile
+
+      # Windows doesn't need libsndfile installed separately - soundfile includes it
+
+      - name: Install Poetry (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install Poetry (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+          echo "$env:APPDATA\Python\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      - name: Build standalone executable
+        run: |
+          poetry run pyinstaller pbp.spec
+
+      - name: Get version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(poetry version -s)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get architecture
+        id: arch
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            ARCH="x86_64"
+          else
+            ARCH=$(uname -m)
+          fi
+          echo "arch=$ARCH" >> $GITHUB_OUTPUT
+
+      - name: Prepare distribution (Unix)
+        if: matrix.os != 'windows-latest'
+        shell: bash
+        run: |
+          # Create distribution directory
+          rm -rf mbari-pbp-standalone
+          cp -r dist/pbp mbari-pbp-standalone
+          cp README.md mbari-pbp-standalone/
+
+          # Create quick start guide
+          cat > mbari-pbp-standalone/QUICKSTART.txt << 'EOF'
+          mbari-pbp Standalone Distribution
+          ==================================
+
+          Quick Start:
+          1. Add the 'mbari-pbp-standalone' directory to your PATH:
+
+             # For bash/zsh (add to ~/.bashrc or ~/.zshrc):
+             export PATH="$PATH:/path/to/mbari-pbp-standalone"
+
+             # Or use the full path:
+             /path/to/mbari-pbp-standalone/pbp --help
+
+          2. Run any command:
+             pbp --help
+             pbp hmb-gen --help
+             pbp cloud --help
+             pbp hmb-plot --help
+             pbp meta-gen --help
+
+          3. Example usage:
+             pbp hmb-gen --json-base-dir=tests/json \
+                  --audio-base-dir=tests/wav \
+                  --date=20220902 \
+                  --output-dir=output
+
+          For full documentation, visit:
+          https://docs.mbari.org/pbp/
+          EOF
+
+          # Create zip file
+          ZIPFILE="mbari-pbp-${{ steps.version.outputs.version }}-standalone-${{ matrix.platform }}-${{ steps.arch.outputs.arch }}.zip"
+          zip -r -q "$ZIPFILE" mbari-pbp-standalone/
+          echo "ZIPFILE=$ZIPFILE" >> $GITHUB_ENV
+
+      - name: Prepare distribution (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          # Create distribution directory
+          if (Test-Path mbari-pbp-standalone) { Remove-Item -Recurse -Force mbari-pbp-standalone }
+          Copy-Item -Recurse dist/pbp mbari-pbp-standalone
+          Copy-Item README.md mbari-pbp-standalone/
+
+          # Create quick start guide
+          @"
+          mbari-pbp Standalone Distribution
+          ==================================
+
+          Quick Start:
+          1. Add the 'mbari-pbp-standalone' directory to your PATH:
+
+             # Using PowerShell (add to your PowerShell profile):
+             `$env:Path += ";C:\path\to\mbari-pbp-standalone"
+
+             # Or use the full path:
+             C:\path\to\mbari-pbp-standalone\pbp.exe --help
+
+          2. Run any command:
+             pbp --help
+             pbp hmb-gen --help
+             pbp cloud --help
+             pbp hmb-plot --help
+             pbp meta-gen --help
+
+          3. Example usage:
+             pbp hmb-gen --json-base-dir=tests/json `
+                  --audio-base-dir=tests/wav `
+                  --date=20220902 `
+                  --output-dir=output
+
+          For full documentation, visit:
+          https://docs.mbari.org/pbp/
+          "@ | Out-File -FilePath mbari-pbp-standalone/QUICKSTART.txt -Encoding UTF8
+
+          # Create zip file
+          $ZIPFILE = "mbari-pbp-${{ steps.version.outputs.version }}-standalone-${{ matrix.platform }}-${{ steps.arch.outputs.arch }}.zip"
+          Compress-Archive -Path mbari-pbp-standalone -DestinationPath $ZIPFILE
+          echo "ZIPFILE=$ZIPFILE" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: standalone-${{ matrix.platform }}-${{ steps.arch.outputs.arch }}
+          path: ${{ env.ZIPFILE }}
+          retention-days: 7
+
+      - name: Upload to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIPFILE }}
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

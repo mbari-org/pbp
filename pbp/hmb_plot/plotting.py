@@ -1,3 +1,4 @@
+import sys
 from typing import Optional
 
 import matplotlib.dates as md
@@ -59,7 +60,9 @@ def plot_dataset_summary(
     seg.iloc[d] = 1
     # dusk / dawn (gray range)
     d = np.squeeze(np.where(np.logical_and(se <= 0, se >= -12)))
-    seg.iloc[d] = 1 - abs(se.iloc[d] / max(abs(se.iloc[d])))
+    # Only compute grayscale if there are dusk/dawn periods (avoid empty sequence error)
+    if len(d) > 0:
+        seg.iloc[d] = 1 - abs(se.iloc[d] / max(abs(se.iloc[d])))
     # Get the indices of the min and max
     seg1 = pd.Series.to_numpy(solpos.elevation)
     minidx = np.squeeze(np.where(seg1 == min(seg1)))
@@ -156,5 +159,11 @@ def plot_dataset_summary(
     if jpeg_filename is not None:
         plt.savefig(jpeg_filename, dpi=dpi)
     if show:
-        plt.show()
+        # Check if running as standalone/frozen executable
+        is_frozen = getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
+        if is_frozen:
+            print("Note: Interactive plot display is not available in standalone builds.")
+            print("      Use without --show or --only-show to save plots to files.")
+        else:
+            plt.show()
     plt.close(fig)

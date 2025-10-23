@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "1.8.2"
+version = "1.8.5"
 description = "PyPAM based Processing"
 authors = [
     "Carlos Rueda <carueda@mbari.org>",
@@ -22,6 +22,7 @@ repository = "https://github.com/mbari-org/pbp"
 packages = [{include = "pbp"}]
 
 [tool.poetry.scripts]
+pbp = "pbp.main_cli:main"
 pbp-hmb-gen = "pbp.hmb_gen.main_hmb_generator:main"
 pbp-cloud = "pbp.cloud.main_cloud:main"
 pbp-hmb-plot = "pbp.hmb_plot.main_plot:main"
@@ -56,19 +57,26 @@ types-PyYAML = "6.0.1"
 types-six = "^1.16.21.20240513"
 types-pytz = "^2024.1.0.20240417"
 pre_commit = "4.2.0"
+pyinstaller = "^6.11.0"
 
 [tool.mypy]
 show_error_codes = true
 ignore_missing_imports = true
 exclude = [
     'examples/',
-    'pbp/hmb_plot/plotting\.py'
+    'pbp/hmb_plot/plotting\.py',
+    'build/',
+    'dist/',
+    'mbari-pbp-standalone.*/'
 ]
 
 [tool.ruff]
 line-length = 90
 exclude = [
-  "virtenv/**"
+  "virtenv/**",
+  "build/",
+  "dist/",
+  "mbari-pbp-standalone/"
 ]
 
 [tool.pytest.ini_options]

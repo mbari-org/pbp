@@ -11,3 +11,10 @@ HASH
 *.tgz
 tests/json_generator_tmp/
 tests/wav/soundtrap/
+
+# PyInstaller build artifacts
+build/
+dist/
+*.spec.backup
+mbari-pbp-standalone*/
+mbari-pbp-*-standalone-*.zip

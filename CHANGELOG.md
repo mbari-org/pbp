@@ -1,3 +1,21 @@
+2025-10
+
+- 1.8.5 release:
+    - New unified `pbp` CLI program as main entry-point with subcommands:
+      `meta-gen`, `hmb-gen`, `hmb-plot`, and `cloud`. This provides a cleaner
+      interface and enables standalone executable distribution.
+    - Resolves #97 "Provide standalone distribution"
+        - Standalone executables for Linux, macOS, and Windows are now
+          automatically built and published via GitHub Actions for each release
+        - No Python installation required - users can download and run the
+          executable directly
+        - See [STANDALONE.md](STANDALONE.md) for details
+    - Multiprocessing compatibility fixes for PyInstaller frozen executables
+    - Fix in `hmb-plot`: handle datasets without dusk/dawn periods (avoids
+      empty sequence error for short time periods)
+    - User-friendly messages for standalone build limitations (e.g., interactive
+      plotting not available) 
+
 2025-09
 
 - 1.8.2 release:

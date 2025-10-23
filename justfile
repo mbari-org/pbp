@@ -11,9 +11,13 @@ list:
 ####################
 # some conveniences:
 
+# Run entry-point program
+pbp *args="":
+  poetry run pbp {{args}}
+
 # Run pbp/meta_gen/main_meta_generator.py
 meta-gen *args="":
-  poetry run python pbp/meta_gen/main_meta_generator.py {{args}}
+  poetry run pbp-meta-gen {{args}}
 
 # Replicate notebook
 main-mb05 *more_args="":
@@ -174,7 +178,7 @@ main *args="":
 
 # Generate summary plots
 hmb-plot *args:
-    poetry run python pbp/hmb_plot/main_plot.py {{args}}
+    poetry run pbp-hmb-plot {{args}}
 
 ##############
 # package build/publishing:
@@ -189,6 +193,13 @@ publish_to_test_pypi:
     poetry config repositories.testpypi https://test.pypi.org/legacy/
     poetry config pypi-token.testpypi "$TEST_PYPI_TOKEN"
     poetry publish -r testpypi
+
+##############
+# Standalone
+
+# Build standalone distribution and create tarball
+build_standalone:
+    ./scripts/build_standalone.sh
 
 ##############
 # development:
