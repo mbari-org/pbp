@@ -16,5 +16,5 @@ tests/wav/soundtrap/
 build/
 dist/
 *.spec.backup
-mbari-pbp-standalone/
+mbari-pbp-standalone*/
 mbari-pbp-*-standalone-*.zip
