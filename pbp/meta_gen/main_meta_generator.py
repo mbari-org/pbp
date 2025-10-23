@@ -2,24 +2,23 @@ from argparse import Namespace
 from datetime import datetime
 from pathlib import Path
 
-from pbp.util.logging_helper import create_logger
-from pbp.meta_gen.gen_abstract import (
-    MetadataGeneratorAbstract,
-    SoundTrapMetadataGeneratorAbstract,
-)
-from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
-from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
-from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
-from pbp.meta_gen.gen_resea import ReseaMetadataGenerator
 from pbp.meta_gen.main_meta_generator_args import parse_arguments
 
 
 # Some imports, in particular involving data processing, cause a delay that is
 # noticeable when just running the --help option. We get around this issue by
-# postponing the imports until actually needed. See the main() function.
+# postponing the imports until actually needed.
 
 
 def run_main_meta_generator(opts: Namespace):
+    # Lazy imports to avoid loading heavy dependencies at module import time
+    # pylint: disable=import-outside-toplevel
+    from pbp.util.logging_helper import create_logger
+    from pbp.meta_gen.gen_abstract import (
+        MetadataGeneratorAbstract,
+        SoundTrapMetadataGeneratorAbstract,
+    )
+
     log_dir = Path(opts.output_dir)
     json_dir = Path(opts.json_base_dir)
     log_dir.mkdir(exist_ok=True, parents=True)
@@ -38,6 +37,8 @@ def run_main_meta_generator(opts: Namespace):
     generator: MetadataGeneratorAbstract | SoundTrapMetadataGeneratorAbstract
     try:
         if opts.recorder == "NRS":
+            from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
+
             generator = NRSMetadataGenerator(
                 log=log,
                 uri=opts.uri,
@@ -48,6 +49,8 @@ def run_main_meta_generator(opts: Namespace):
             )
             generator.run()
         if opts.recorder == "ICLISTEN":
+            from pbp.meta_gen.gen_iclisten import IcListenMetadataGenerator
+
             generator = IcListenMetadataGenerator(
                 log=log,
                 uri=opts.uri,
@@ -59,6 +62,8 @@ def run_main_meta_generator(opts: Namespace):
             generator.run()
             # TODO: add multiprocessing here for speed-up
         if opts.recorder == "SOUNDTRAP":
+            from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
+
             generator = SoundTrapMetadataGenerator(
                 log=log,
                 uri=opts.uri,
@@ -69,6 +74,8 @@ def run_main_meta_generator(opts: Namespace):
             )
             generator.run()
         if opts.recorder == "RESEA":
+            from pbp.meta_gen.gen_resea import ReseaMetadataGenerator
+
             generator = ReseaMetadataGenerator(
                 log=log,
                 uri=opts.uri,

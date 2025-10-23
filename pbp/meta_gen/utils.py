@@ -2,18 +2,13 @@
 # Filename: meta_gen/utils.py
 # Description:  Utility functions for parsing S3, GS or local file urls and defining sound instrument types for metadata generation
 import re
-from typing import Tuple, List
+from typing import Tuple, List, TYPE_CHECKING
 from urllib.parse import urlparse
 import datetime
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib.ticker import NullLocator
-
-from pbp.hmb_plot.plot_const import DEFAULT_DPI
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 class InstrumentType:
@@ -102,7 +97,7 @@ def get_datetime(time_str: str, prefixes: List[str]):
 
 def plot_daily_coverage(
     instrument_type: InstrumentType,
-    df: pd.DataFrame,
+    df: "pd.DataFrame",
     base_dir: str,
     start: datetime.datetime,
     end: datetime.datetime,
@@ -116,6 +111,15 @@ def plot_daily_coverage(
     :param end: The end date of the recordings
     :return: The path to the plot file
     """
+    # Lazy imports to avoid loading heavy dependencies at module import time
+    # pylint: disable=import-outside-toplevel
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
+    from matplotlib.ticker import NullLocator
+    from pbp.hmb_plot.plot_const import DEFAULT_DPI
+
     # Create a plot of the dataframe with the x-axis as the month, and the y-axis as the daily recording coverage.
     # This is percent of the day covered by recordings
     plt.rcParams["text.usetex"] = False
