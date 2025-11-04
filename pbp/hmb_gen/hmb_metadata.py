@@ -71,6 +71,11 @@ def replace_snippets(
     for k, v in attributes.items():
         if isinstance(v, str):
             for snippet, replacement in snippets.items():
-                v = v.replace(snippet, replacement)
+                if isinstance(replacement, str):
+                    v = v.replace(snippet, replacement)
+                else:
+                    print(
+                        f"ERROR: Replacement for {snippet=} is not string: {replacement=}"
+                    )
         result[k] = v
     return result

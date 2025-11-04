@@ -1738,7 +1738,7 @@ version = "0.0.4"
 description = ""
 optional = false
 python-versions = ">=3.6.0"
-groups = ["main"]
+groups = ["dev"]
 files = [
     {file = "loguru-mypy-0.0.4.tar.gz", hash = "sha256:1f1767d7737f1825295ce147f7e751f91837f5759b3c2f41801adc65691aeed4"},
     {file = "loguru_mypy-0.0.4-py3-none-any.whl", hash = "sha256:98e044be509887a314e683a1e851813310b396be48388c1fe4de97a2eac99d4d"},
@@ -3974,4 +3974,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.12.0"
-content-hash = "fd1b98f890507f7aef422f1eae6723f1324f1007021c67581cd795b22b443393"
+content-hash = "5cecdf06047ab53b4511459b44a7c97075a61c25a49383f0e5406803a4171cdb"

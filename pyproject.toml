@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mbari-pbp"
-version = "1.8.5"
+version = "1.8.6"
 description = "PyPAM based Processing"
 authors = [
     "Carlos Rueda <carueda@mbari.org>",
@@ -43,12 +43,12 @@ h5netcdf = "1.3.0"
 pvlib = "^0.11.0"
 Pyarrow = "15.0.0"
 loguru = {extras = ["mypy"], version = "^0.7.2"}
-loguru-mypy = "^0.0.4"
 awscli = "^1.33.20"
 isodate = "^0.7.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.8.0"
+loguru-mypy = "^0.0.4"
 ruff = "0.2.2"
 pytest = "7.4.4"  # not upgraded due to conflict with pypam 0.3.0
 syrupy = "4.6.1"

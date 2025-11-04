@@ -1,3 +1,23 @@
+2025-11
+
+- 1.8.6:
+    - Check that replacement is string in replace_snippets, and print a warning otherwise
+      with the associated snippet key to facilitate diagnosing.
+      Reported stack trace was:
+      ```
+       File "/opt/miniconda3/envs/pbp/lib/python3.11/site-packages/pbp/hmb_gen/main_hmb_generator_file.py", line 209, in process
+         attrs=self._get_global_attributes(),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       File "/opt/miniconda3/envs/pbp/lib/python3.11/site-packages/pbp/hmb_gen/main_hmb_generator_file.py", line 271, in _get_global_attributes
+         return replace_snippets(global_attrs, snippets)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       File "/opt/miniconda3/envs/pbp/lib/python3.11/site-packages/pbp/hmb_gen/hmb_metadata.py", line 74, in replace_snippets
+         v = v.replace(snippet, replacement)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       TypeError: replace() argument 2 must be str, not None  
+       ```
+    - Moved loguru-mypy to development dependencies.
+ 
 2025-10
 
 - 1.8.5 release:
