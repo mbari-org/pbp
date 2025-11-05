@@ -112,12 +112,12 @@ pip install --no-cache-dir --force-reinstall git+https://github.com/mbari-org/pb
 
 The package includes the following CLI programs:
 
-| Program                         | Description                                    |
-|---------------------------------|------------------------------------------------|
-| [`pbp-meta-gen`](pbp-meta-gen/) | Generate JSON files with audio metadata.       |
-| [`pbp-hmb-gen`](pbp-hmb-gen/)   | Main HMB generation program.                   |
-| [`pbp-cloud`](pbp-cloud/)       | Program for cloud based processing.            |
-| [`pbp-hmb-plot`](pbp-hmb-plot/) | Utility program to plot resulting HMB product. |
+| Program                                 | Description                                    |
+|-----------------------------------------|------------------------------------------------|
+| [`pbp-meta-gen`](pbp-meta-gen/index.md) | Generate JSON files with audio metadata.       |
+| [`pbp-hmb-gen`](pbp-hmb-gen/index.md)   | Main HMB generation program.                   |
+| [`pbp-cloud`](pbp-cloud/index.md)       | Program for cloud based processing.            |
+| [`pbp-hmb-plot`](pbp-hmb-plot/index.md) | Utility program to plot resulting HMB product. |
 
  
 ## References

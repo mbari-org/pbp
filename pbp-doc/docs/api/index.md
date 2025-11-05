@@ -4,5 +4,5 @@
 
 # API
 
-- [Meta Generation](meta_gen/)
-- [HMB Generation](hmb_gen/)
+- [Meta Generation](meta_gen/index.md)
+- [HMB Generation](hmb_gen/index.md)

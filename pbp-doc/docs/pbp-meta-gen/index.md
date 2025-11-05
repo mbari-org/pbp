@@ -7,7 +7,7 @@ or to identify any issues with the data before processing.
 
 Instructions  below assume you have already installed the package,
 e.g. `pip install mbari-pbp`.
-Once this is done, you can proceed to the main program [pbp-hmb-gen](../pbp-hmb-gen).
+Once this is done, you can proceed to the main program [pbp-hmb-gen](../pbp-hmb-gen/index.md).
 
 ## Overview
 

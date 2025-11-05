@@ -265,8 +265,8 @@ class FileHelper:
             at_minute (int): The minute when the audio segment was extracted.
             at_second (int): The second when the audio segment was extracted.
             exclude_tone_calibration_seconds (Optional[int]): If given and the
-            resulting segment would overlap with the beginning of associated file,
-            then such segment will not include the overlapping number of seconds.
+                resulting segment would overlap with the beginning of associated file,
+                then such segment will not include the overlapping number of seconds.
 
         Returns:
             ExtractedAudioSegment or None
