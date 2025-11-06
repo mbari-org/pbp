@@ -8,6 +8,13 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+      - id: ruff-check
+        name: Lint code with Ruff
+        entry: 'poetry run ruff check --fix'
+        verbose: true
+        language: system
+        types: [python]
+        pass_filenames: false
       - id: mypy
         name: Run mypy
         entry: 'poetry run mypy .'
