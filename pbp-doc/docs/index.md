@@ -8,7 +8,7 @@ PBP allows to
 process ocean audio data archives to daily analysis products of hybrid millidecade spectra using
 [PyPAM](https://github.com/lifewatch/pypam/).
 
-You can use PBP by directly running the included CLI the programs,
+You can use PBP by directly running the included CLI programs,
 as well as a dependency in your own Python code.
 
 **Features**:
@@ -81,7 +81,7 @@ Notice that the prompt of the shell was augmented with `(pbp)` preceding the ori
 
 You can check the PBP version:
 ```shell
-pbp-hmb-gen --version
+pbp --version
 ```
 
 You are now ready to process passive acoustic monitoring data to
@@ -150,15 +150,23 @@ The existing `mbari-pbp-standalone` directory will be replaced with the new vers
 
 ## Programs
 
-PBP includes the following commands:
+The `pbp` CLI program includes the following commands:
 
-| Program                                 | Description                                     |
+| Invocation                              | Description                                     |
 |-----------------------------------------|-------------------------------------------------|
 | [`pbp meta-gen`](pbp-meta-gen/index.md) | Generate JSON files with audio metadata        |
 | [`pbp hmb-gen`](pbp-hmb-gen/index.md)   | Main HMB generation program                     |
 | [`pbp hmb-plot`](pbp-hmb-plot/index.md) | Plot resulting HMB products                     |
 | [`pbp cloud`](pbp-cloud/index.md)       | Cloud-based processing                          |
 
+!!! note
+    - Under a python based installation (that is, the Conda option described above),
+      there are also direct CLI programs for the commands above.
+      For example, `pbp-meta-gen` is a direct CLI program with the same effect as
+      invoking `pbp meta-gen`.
+    - While both styles may be used in this documentation site, 
+      please use the `pbp <cmd>` style
+      (which is actually required for the standalone installation option).
  
 ## References
 
