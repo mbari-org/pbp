@@ -1,10 +1,10 @@
-!!! note "WIP"
-    Thanks for your interest in PBP. This documentation is still a work in progress :construction:.
+!!! note "WIP :construction:"
+    Thanks for your interest in PBP. This documentation is still a work in progress.
     Please get in touch if you have any questions or suggestions.
 
 # MBARI PBP
 
-The [`mbari-pbp`](https://pypi.org/project/mbari-pbp/) package allows to
+PBP allows to
 process ocean audio data archives to daily analysis products of hybrid millidecade spectra using
 [PyPAM](https://github.com/lifewatch/pypam/).
 
@@ -30,16 +30,20 @@ as well as a dependency in your own Python code.
 
 ## Installation
 
-You will use a shell (terminal on macOS or Linux, PowerShell on Windows)
-to run audio data processing jobs using PBP.
+PBP provides two installation options:
 
-We recommend installing PBP using [Conda](https://docs.conda.io/en/latest/).
+1. **Conda installation** - For users familiar with Python who want more flexibility
+2. **Standalone releases**  - No Python or dependency management required
+
+All CLI programs are run through a shell (Terminal on macOS/Linux, PowerShell on Windows).
+
+### Conda
+
 If you already have Anaconda installed, you can use it.
 If not, download and install [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/)
 for your operating system.
 Miniconda is all that is needed, and it is about one tenth the size of a full Anaconda installation.
 After installation, on some systems, you can confirm that conda is available with:
-
 
 ```shell
 which conda
@@ -89,7 +93,7 @@ PBP creates some directory structures as needed during initial operation
 (json directory for storing temporal metadata for processing jobs).
 
 
-### Updating PBP
+#### Updating PBP
 
 To update PBP to the latest version, while your `pbp` conda environment is activated, run this command:
 ```shell
@@ -108,16 +112,52 @@ you can install the package from source with the following command. This will ge
 pip install --no-cache-dir --force-reinstall git+https://github.com/mbari-org/pbp.git
 ```
 
+### Standalone
+
+Since late 2025, we publish standalone PBP releases for macOS, Linux, and Windows.
+These are available at <https://github.com/mbari-org/pbp/releases>.
+No Python installation or dependency management is required.
+
+**Installation steps:**
+
+1. Download the zip archive for your platform from the releases page
+2. Extract the archive to a directory of your choice (this creates a `mbari-pbp-standalone` subdirectory)
+3. Add the standalone directory to your PATH for convenient access:
+
+     - **macOS/Linux (bash/zsh)** - Add to `~/.bashrc` or `~/.zshrc`:
+       ```shell
+       export PATH="$PATH:/path/to/mbari-pbp-standalone"
+       ```
+     - **Windows (PowerShell)** - Run as Administrator:
+       ```powershell
+       [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\path\to\mbari-pbp-standalone", "User")
+       ```
+4. Verify the installation:
+   ```shell
+   pbp --version
+   pbp --help
+   ```
+
+#### Updating PBP
+
+To update the standalone version:
+
+1. Download the latest release from <https://github.com/mbari-org/pbp/releases>
+2. Extract to the same location (overwriting the existing installation)
+
+The existing `mbari-pbp-standalone` directory will be replaced with the new version.
+
+
 ## Programs
 
-The package includes the following CLI programs:
+PBP includes the following commands:
 
-| Program                                 | Description                                    |
-|-----------------------------------------|------------------------------------------------|
-| [`pbp-meta-gen`](pbp-meta-gen/index.md) | Generate JSON files with audio metadata.       |
-| [`pbp-hmb-gen`](pbp-hmb-gen/index.md)   | Main HMB generation program.                   |
-| [`pbp-cloud`](pbp-cloud/index.md)       | Program for cloud based processing.            |
-| [`pbp-hmb-plot`](pbp-hmb-plot/index.md) | Utility program to plot resulting HMB product. |
+| Program                                 | Description                                     |
+|-----------------------------------------|-------------------------------------------------|
+| [`pbp meta-gen`](pbp-meta-gen/index.md) | Generate JSON files with audio metadata        |
+| [`pbp hmb-gen`](pbp-hmb-gen/index.md)   | Main HMB generation program                     |
+| [`pbp hmb-plot`](pbp-hmb-plot/index.md) | Plot resulting HMB products                     |
+| [`pbp cloud`](pbp-cloud/index.md)       | Cloud-based processing                          |
 
  
 ## References
