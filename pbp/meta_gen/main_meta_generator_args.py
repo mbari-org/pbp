@@ -1,3 +1,4 @@
+import sys
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 from pbp import get_pbp_version
@@ -5,13 +6,23 @@ from pbp.meta_gen.utils import InstrumentType
 
 
 def parse_arguments():
-    description = (
-        "Generate JSONs with audio metadata for NRS flac files, "
-        "IcListen wav files, and Soundtrap wav files from either a local directory or gs/s3 bucket."
-    )
+    version = get_pbp_version()
+
+    # Check if --version is in arguments to avoid showing header
+    is_version_request = "--version" in sys.argv
+
+    # Custom formatter to add version header before usage
+    class CustomHelpFormatter(RawTextHelpFormatter):
+        def format_help(self):
+            help_text = super().format_help()
+            # Only prepend version info if not showing version
+            if not is_version_request:
+                return f"mbari-pbp {version}\n\nmeta-gen: Generate JSONs with audio metadata for NRS flac files, IcListen wav files, and Soundtrap wav files from either a local directory or gs/s3 bucket.\n\n{help_text}"
+            return help_text
+
     example = """
 Examples:
-    pbp-meta-gen \\
+    pbp meta-gen \\
                  --json-base-dir=tests/json/soundtrap \\
                  --output-dir=output \\
                  --uri=s3://pacific-sound-ch01 \\
@@ -22,13 +33,16 @@ Examples:
     """
 
     parser = ArgumentParser(
-        description=description, epilog=example, formatter_class=RawTextHelpFormatter
+        description="",
+        epilog=example,
+        formatter_class=CustomHelpFormatter,
+        prog="pbp meta-gen",
     )
 
     parser.add_argument(
         "--version",
         action="version",
-        version=get_pbp_version(),
+        version=version,
     )
 
     parser.add_argument(

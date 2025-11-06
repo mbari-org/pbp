@@ -1,3 +1,4 @@
+import sys
 from argparse import ArgumentParser, RawTextHelpFormatter, Namespace
 
 from pbp.hmb_plot.plot_const import (
@@ -11,14 +12,28 @@ from pbp import get_pbp_version
 
 
 def parse_arguments():
-    description = "Generate summary plots for given netcdf files."
+    version = get_pbp_version()
 
-    parser = ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)
+    # Check if --version is in arguments to avoid showing header
+    is_version_request = "--version" in sys.argv
+
+    # Custom formatter to add version header before usage
+    class CustomHelpFormatter(RawTextHelpFormatter):
+        def format_help(self):
+            help_text = super().format_help()
+            # Only prepend version info if not showing version
+            if not is_version_request:
+                return f"mbari-pbp {version}\n\nhmb-plot: Generate summary plots for given netcdf files.\n\n{help_text}"
+            return help_text
+
+    parser = ArgumentParser(
+        description="", formatter_class=CustomHelpFormatter, prog="pbp hmb-plot"
+    )
 
     parser.add_argument(
         "--version",
         action="version",
-        version=get_pbp_version(),
+        version=version,
     )
 
     parser.add_argument(

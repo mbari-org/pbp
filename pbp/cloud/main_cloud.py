@@ -60,15 +60,71 @@
 
 import os
 import pathlib
+from argparse import ArgumentParser, RawTextHelpFormatter
+import sys
 
 import boto3
 
+from pbp import get_pbp_version
 from pbp.hmb_gen.file_helper import FileHelper
 from pbp.util.logging_helper import create_logger
 from pbp.hmb_gen.process_helper import ProcessHelper
 
 
+def parse_arguments():
+    version = get_pbp_version()
+
+    # Check if --version is in arguments to avoid showing header
+    is_version_request = "--version" in sys.argv
+
+    # Custom formatter to add version header before usage
+    class CustomHelpFormatter(RawTextHelpFormatter):
+        def format_help(self):
+            help_text = super().format_help()
+            # Only prepend version info if not showing version
+            if not is_version_request:
+                header = f"""mbari-pbp {version}
+
+cloud: Cloud-based processing using environment variables.
+
+Environment variables:
+  DATE (required)                    The date to process. Format: "YYYYMMDD"
+  S3_JSON_BUCKET_PREFIX (optional)   Bucket prefix to locate the YYYYMMDD.json file
+                                     Default: "s3://pacific-sound-metadata/256khz"
+  S3_OUTPUT_BUCKET (optional)        The bucket to write generated output to
+  OUTPUT_PREFIX (optional)           Output filename prefix. Default: "milli_psd_"
+  GLOBAL_ATTRS_URI (optional)        URI of JSON file with global attributes
+  VARIABLE_ATTRS_URI (optional)      URI of JSON file with variable attributes
+  EXCLUDE_TONE_CALIBRATION_SECONDS   Seconds to exclude for tone calibration
+  VOLTAGE_MULTIPLIER (optional)      Applied on the loaded signal
+  SENSITIVITY_NETCDF_URI (optional)  URI of sensitivity NetCDF file for calibration
+  SENSITIVITY_FLAT_VALUE (optional)  Flat sensitivity value for calibration
+  SUBSET_TO (required)               Format: "lower,upper". Subset PSD to [lower, upper)
+  CLOUD_TMP_DIR (optional)           Local workspace. Default: "cloud_tmp"
+  MAX_SEGMENTS (optional)            0 (default) means no restriction
+  ASSUME_DOWNLOADED_FILES (optional) If "yes", assume existing files are downloaded
+  RETAIN_DOWNLOADED_FILES (optional) If "yes", don't remove downloaded files
+"""
+                return f"{header}\n{help_text}"
+            return help_text
+
+    parser = ArgumentParser(
+        description="", formatter_class=CustomHelpFormatter, prog="pbp cloud"
+    )
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"mbari-pbp {version}",
+    )
+
+    return parser.parse_args()
+
+
 def main():
+    # Parse arguments to handle --help and --version
+    if "--help" in sys.argv or "-h" in sys.argv or "--version" in sys.argv:
+        parse_arguments()
     # --------------------------
     # Cloud preparations:
 

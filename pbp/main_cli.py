@@ -37,10 +37,24 @@ def main(argv: Optional[List[str]] = None) -> int:
             exec(code)
             return 0
 
+    version = get_pbp_version()
+
+    # Check if --version is in arguments to avoid showing header
+    is_version_request = "--version" in argv
+
+    # Custom formatter to add version header before usage
+    class CustomHelpFormatter(argparse.RawDescriptionHelpFormatter):
+        def format_help(self):
+            help_text = super().format_help()
+            # Only prepend version info if not showing version
+            if not is_version_request:
+                return f"mbari-pbp {version}\n\npbp: PyPAM Based Processing for ocean passive acoustic monitoring\n\n{help_text}"
+            return help_text
+
     parser = argparse.ArgumentParser(
         prog="pbp",
-        description="PyPAM Based Processing for ocean passive acoustic monitoring",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="",
+        formatter_class=CustomHelpFormatter,
         epilog="""
 Examples:
   pbp meta-gen --help         Show help for meta-gen command
@@ -55,7 +69,7 @@ For more information, visit: https://docs.mbari.org/pbp/
     parser.add_argument(
         "--version",
         action="version",
-        version=get_pbp_version(),
+        version=version,
     )
 
     subparsers = parser.add_subparsers(

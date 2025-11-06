@@ -1,3 +1,4 @@
+import sys
 from argparse import ArgumentParser, Namespace, RawTextHelpFormatter
 
 
@@ -7,23 +8,39 @@ from os import getenv
 
 
 def parse_arguments() -> Namespace:
-    description = "Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM."
+    version = get_pbp_version()
+
+    # Check if --version is in arguments to avoid showing header
+    is_version_request = "--version" in sys.argv
+
+    # Custom formatter to add version header before usage
+    class CustomHelpFormatter(RawTextHelpFormatter):
+        def format_help(self):
+            help_text = super().format_help()
+            # Only prepend version info if not showing version
+            if not is_version_request:
+                return f"mbari-pbp {version}\n\nhmb-gen: Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM.\n\n{help_text}"
+            return help_text
+
     example = """
 Examples:
-    pbp-hmb-gen --json-base-dir=tests/json \\
+    pbp hmb-gen --json-base-dir=tests/json \\
         --audio-base-dir=tests/wav \\
         --date=20220902 \\
         --output-dir=output
     """
 
     parser = ArgumentParser(
-        description=description, epilog=example, formatter_class=RawTextHelpFormatter
+        description="",
+        epilog=example,
+        formatter_class=CustomHelpFormatter,
+        prog="pbp hmb-gen",
     )
 
     parser.add_argument(
         "--version",
         action="version",
-        version=get_pbp_version(),
+        version=version,
     )
 
     parser.add_argument(
