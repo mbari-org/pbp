@@ -187,14 +187,15 @@ The JSON file schema is as follows:
 $ pbp-meta-gen --help
 ```
 ```text
-usage: pbp-meta-gen [-h] [--version] --recorder {NRS,ICLISTEN,SOUNDTRAP} --json-base-dir dir --output-dir dir --uri uri --start YYYYMMDD --end YYYYMMDD --prefix PREFIX [PREFIX ...]
+meta-gen: Generate JSONs with audio metadata for NRS flac files, IcListen wav files, and Soundtrap wav files from either a local directory or gs/s3 bucket.
 
-Generate JSONs with audio metadata for NRS flac files, IcListen wav files, and Soundtrap wav files from either a local directory or gs/s3 bucket.
+usage: pbp meta-gen [-h] [--version] --recorder {NRS,ICLISTEN,SOUNDTRAP,RESEA} --json-base-dir dir --output-dir dir --uri uri --start YYYYMMDD --end YYYYMMDD --prefix PREFIX [PREFIX ...]
+                    [--xml-dir dir]
 
 options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
-  --recorder {NRS,ICLISTEN,SOUNDTRAP}
+  --recorder {NRS,ICLISTEN,SOUNDTRAP,RESEA}
                         Choose the audio instrument type
   --json-base-dir dir   JSON base directory to store the metadata
   --output-dir dir      Output directory to store logs
@@ -202,16 +203,16 @@ options:
   --start YYYYMMDD      The starting date to be processed.
   --end YYYYMMDD        The ending date to be processed.
   --prefix PREFIX [PREFIX ...]
-                        Prefix for search to match the audio files. Assumption is the prefix is separated by an underscore, e.g. 'MARS_'.
+                        Prefix for search to match the audio files e.g. 'MARS_' for MARS_YYYYMMDD_HHMMSS.wav, '7000. ' for 7000.20220902.000000.wav
+  --xml-dir dir         Specifies the directory where the log.xml files are located. If not specified, the default is the same directory as the audio files.
 
 Examples:
-    pbp-meta-gen \
-                 --json-base-dir=tests/json/nrs \
+    pbp meta-gen \
+                 --json-base-dir=tests/json/soundtrap \
                  --output-dir=output \
                  --uri=s3://pacific-sound-ch01 \
-                 --start=20220902 \
-                 --end=20220902 \
-                 --prefix=MARS \
-                 --recorder=NRS
-
+                 --start=20230715 \
+                 --end=20230716 \
+                 --prefixes=7000 \
+                 --recorder=SOUNDTRAP
 ```

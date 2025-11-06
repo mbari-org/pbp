@@ -36,15 +36,14 @@ will generate `NRS11_20200101.jpg` with the following plot:
 pbp hmb-plot --help
 ```
 ```text
-usage: pbp-hmb-plot [-h] [--version] [--latlon lat lon] [--title string] [--ylim lower upper] [--cmlim vmin vmax] [--dpi value] [--show] [--only-show]
-               netcdf [netcdf ...]
+hmb-plot: Generate summary plots for given netcdf files.
 
-Generate summary plots for given netcdf files.
+usage: pbp hmb-plot [-h] [--version] [--latlon lat lon] [--title string] [--ylim lower upper] [--cmlim vmin vmax] [--dpi value] [--show] [--only-show] [--engine name] netcdf [netcdf ...]
 
 positional arguments:
   netcdf              netcdf file(s) to plot
 
-optional arguments:
+options:
   -h, --help          show this help message and exit
   --version           show program's version number and exit
   --latlon lat lon    Lat/Lon for solar position calculation . Default: (36.7128, -122.186)
@@ -54,5 +53,5 @@ optional arguments:
   --dpi value         DPI to use for the plot. Default: 200
   --show              Also show the plot
   --only-show         Only show the plot (do not generate .jpg files)
+  --engine name       Engine given to xarray.open_dataset. Default: h5netcdf
 ```
-

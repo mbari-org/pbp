@@ -43,11 +43,12 @@ Also, the following depending on the recorder:
 $ pbp hmb-gen --help
 ```
 ```text
-usage: main_hmb_generator.py [-h] [--version] --json-base-dir dir [--audio-base-dir dir] [--global-attrs uri] [--set-global-attr key value] [--variable-attrs uri] [--audio-path-map-prefix from~to] [--audio-path-prefix dir] --date YYYYMMDD [--voltage-multiplier value]
-                             [--sensitivity-uri file] [--sensitivity-flat-value value] --output-dir dir [--output-prefix prefix] [--no-netcdf-compression] [--add-quality-flag] [--s3] [--s3-unsigned] [--gs] [--download-dir dir] [--assume-downloaded-files]
-                             [--retain-downloaded-files] [--max-segments num] [--subset-to lower upper]
+hmb-gen: Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM.
 
-Process ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM.
+usage: pbp hmb-gen [-h] [--version] [--json-base-dir dir] [--audio-base-dir dir] [--global-attrs uri] [--set-global-attr key value] [--variable-attrs uri] [--audio-path-map-prefix from~to]
+                   [--audio-path-prefix dir] [--date YYYYMMDD] [--exclude-tone-calibration seconds] [--voltage-multiplier value] [--sensitivity-uri file] [--sensitivity-flat-value value]
+                   --output-dir dir [--output-prefix prefix] [--no-netcdf-compression] [--add-quality-flag] [--s3] [--s3-unsigned] [--gs] [--download-dir dir] [--assume-downloaded-files]
+                   [--retain-downloaded-files] [--max-segments num] [--subset-to lower upper] [--input-file file] [--timestamp-pattern file] [--time-resolution secs]
 
 options:
   -h, --help            show this help message and exit
@@ -63,6 +64,8 @@ options:
   --audio-path-prefix dir
                         Ad hoc path prefix for sound file location, for example, /Volumes. By default, no prefix applied.
   --date YYYYMMDD       The date to be processed.
+  --exclude-tone-calibration seconds
+                        Set the number of seconds to exclude from each input audio file. See https://github.com/mbari-org/pbp/issues/82.
   --voltage-multiplier value
                         Applied on the loaded signal.
   --sensitivity-uri file
@@ -86,9 +89,14 @@ options:
   --max-segments num    Test convenience: limit number of segments to process. By default, 0 (no limit).
   --subset-to lower upper
                         Subset the resulting PSD to [lower, upper), in terms of central frequency.
+  --input-file file     Input file
+  --timestamp-pattern file
+                        Pattern to extract timestamp from input file name
+  --time-resolution secs
+                        Time resolution in seconds
 
 Examples:
-    pbp-hmb-gen --json-base-dir=tests/json \
+    pbp hmb-gen --json-base-dir=tests/json \
         --audio-base-dir=tests/wav \
         --date=20220902 \
         --output-dir=output
