@@ -27,7 +27,7 @@ pbp-hmb-plot \
 ```
 will generate `NRS11_20200101.jpg` with the following plot:
 
-![](../img/NRS11_20200101.jpg){ width="80%" loading=lazy }
+![](../img/NRS11_20200101.jpg){ loading=lazy }
 
 
 ## Usage
