@@ -4,7 +4,7 @@
 
 # MBARI PBP
 
-PBP allows to
+PBP allows users (marine biologists, acoustic analysts, field researchers) to
 process ocean audio data archives to daily analysis products of hybrid millidecade spectra using
 [PyPAM](https://github.com/lifewatch/pypam/).
 
@@ -81,7 +81,7 @@ Notice that the prompt of the shell was augmented with `(pbp)` preceding the ori
 
 You can check the PBP version:
 ```shell
-pbp --version
+pbp --help
 ```
 
 You are now ready to process passive acoustic monitoring data to
@@ -107,14 +107,24 @@ conda env update
 ```
 
 If you want to install the package from source and have already installed with the `pip install mbari-pbp` command,
-you can install the package from source with the following command. This will get the latest version :construction: from the main branch.
+you can do so with the following command. This will get the latest version :construction: from the main branch.
 ```shell
 pip install --no-cache-dir --force-reinstall git+https://github.com/mbari-org/pbp.git
 ```
 
 ### Standalone
 
-Since late 2025, we publish standalone PBP releases for macOS, Linux, and Windows.
+Some users may prefer a version that just "works out of the box",
+perhaps because:
+
+1. they don't have Python installed or configured,
+2. aren't familiar with virtual environments, conda, or pip,
+3. may be working on field computers or systems where installing
+   Python dependencies is difficult, or
+4. want to avoid version conflicts with other Python tools they use.
+
+Therefore, since late 2025, we began to publish standalone PBP releases
+for macOS, Linux, and Windows.
 These are available at <https://github.com/mbari-org/pbp/releases>.
 No Python installation or dependency management is required.
 
@@ -134,7 +144,6 @@ No Python installation or dependency management is required.
        ```
 4. Verify the installation:
    ```shell
-   pbp --version
    pbp --help
    ```
 
