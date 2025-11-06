@@ -17,7 +17,7 @@ def test_cli_help_works():
     """Test that CLI entry point shows help without error."""
     result = _run_process(["pbp", "--help"])
     assert result.returncode == 0, f"--help failed with: {result.stderr}"
-    assert len(result.stdout) > 0, f"--help produced no output"
+    assert len(result.stdout) > 0, "--help produced no output"
 
 
 CLI_COMMANDS = [
