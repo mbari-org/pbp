@@ -42,6 +42,7 @@ plugins:
       arguments:
         theme: |
           ^(JSON.parse(__md_get("__palette").index == 1)) ? 'dark' : 'light'
+  - glightbox
 
 extra_javascript:
   - extra/refresh_on_toggle_dark_light.js
