@@ -115,9 +115,9 @@ pip install --no-cache-dir --force-reinstall git+https://github.com/mbari-org/pb
 ### Standalone
 
 Some users may prefer a version that just "works out of the box",
-perhaps because:
+perhaps because they:
 
-1. they don't have Python installed or configured,
+1. don't have Python installed or configured,
 2. aren't familiar with virtual environments, conda, or pip,
 3. may be working on field computers or systems where installing
    Python dependencies is difficult, or
