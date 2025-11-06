@@ -26,7 +26,8 @@ process ocean audio data archives to daily analysis products of hybrid millideca
     - [x] Inputs can be downloaded from public GCS bucket
     - [ ] Outputs can be uploaded to GCS
 
-Example plot of a daily hybrid millidecade generated with the [`pbp-hmb-plot`](https://docs.mbari.org/pbp/pbp-hmb-plot/)  command:
+Example plot of a daily hybrid millidecade generated with the
+[`pbp hmb-plot`](https://docs.mbari.org/pbp/pbp-hmb-plot/) command:
 ![](pbp-doc/docs/img/NRS11_20200101_sm.jpg)
 
 ## Documentation
@@ -45,14 +46,14 @@ and also provides APIs you can use in your Python scripts or notebooks.
 
 ### CLI Programs
 
-The package includes the following CLI programs:
+The `pbp` CLI program includes the following commands:
 
-| Program                                                    | Description                             |
+| Invocation                                                 | Description                             |
 |------------------------------------------------------------|-----------------------------------------|
-| [`pbp-meta-gen`](https://docs.mbari.org/pbp/pbp-meta-gen/) | Generate JSON files with audio metadata |
-| [`pbp-hmb-gen`](https://docs.mbari.org/pbp/pbp-hmb-gen/)   | Main HMB generation program             |
-| [`pbp-cloud`](https://docs.mbari.org/pbp/pbp-cloud/)       | Program for cloud based processing      |
-| [`pbp-hmb-plot`](https://docs.mbari.org/pbp/pbp-hmb-plot/) | Utility program to plot HMB product     |
+| [`pbp meta-gen`](https://docs.mbari.org/pbp/pbp-meta-gen/) | Generate JSON files with audio metadata |
+| [`pbp hmb-gen`](https://docs.mbari.org/pbp/pbp-hmb-gen/)   | Main HMB generation program             |
+| [`pbp cloud`](https://docs.mbari.org/pbp/pbp-cloud/)       | Program for cloud based processing      |
+| [`pbp hmb-plot`](https://docs.mbari.org/pbp/pbp-hmb-plot/) | Utility program to plot HMB product     |
 
 ### API
 

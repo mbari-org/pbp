@@ -1,4 +1,4 @@
-The `pbp-meta-gen` command-line program is used to generate JSON files with audio metadata. This is a necessary step 
+The `pbp meta-gen` command is used to generate JSON files with audio metadata. This is a necessary step 
 before running the main HMB generation program to extract and optionally correct the time data.   
 
 This also generates an overview of the recording coverage for the specified date range which
@@ -7,7 +7,7 @@ or to identify any issues with the data before processing.
 
 Instructions  below assume you have already installed the package,
 e.g. `pip install mbari-pbp`.
-Once this is done, you can proceed to the main program [pbp-hmb-gen](../pbp-hmb-gen/index.md).
+Once this is done, you can proceed to the main program [pbp hmb-gen](../pbp-hmb-gen/index.md).
 
 ## Overview
 
@@ -73,7 +73,7 @@ The data must be stored in a public cloud storage bucket; private buckets are no
 ## Generate JSONs with audio metadata from NRS flac files for a date range
 
 The following command generates JSON files  in the `json/nrs` directory only for files in  `gs://noaa-passive-bioacoustic/nrs/audio/11/nrs_11_2019-2021/audio` 
-that iclude the file string NRS11. Logs will be stored in the `output` directory, for the specified date range.
+that include the file string NRS11. Logs will be stored in the `output` directory, for the specified date range.
  
 
 ```shell

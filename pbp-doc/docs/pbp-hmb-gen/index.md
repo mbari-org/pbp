@@ -2,7 +2,7 @@
 
 # HMB Generation
 
-`pbp-hmb-gen` is the main program for generating the HMB product.
+`pbp hmb-gen` is the main command for generating the HMB product.
 It processes ocean audio data archives to daily analysis products of hybrid millidecade spectra using PyPAM.
 
 The program accepts several options.
@@ -40,7 +40,7 @@ Also, the following depending on the recorder:
 ## Usage
 
 ```shell
-$ pbp-hmb-gen --help
+$ pbp hmb-gen --help
 ```
 ```text
 usage: main_hmb_generator.py [-h] [--version] --json-base-dir dir [--audio-base-dir dir] [--global-attrs uri] [--set-global-attr key value] [--variable-attrs uri] [--audio-path-map-prefix from~to] [--audio-path-prefix dir] --date YYYYMMDD [--voltage-multiplier value]
