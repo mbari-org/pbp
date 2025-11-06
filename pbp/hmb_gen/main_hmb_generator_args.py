@@ -239,6 +239,21 @@ Examples:
         metavar="secs",
         help="Time resolution in seconds",
     )
+    
+    parser.add_argument(
+        "--no-multiprocessing",
+        action="store_true",
+        help="Disable multiprocessing for spectra calculation. "
+        "By default, multiprocessing is enabled.",
+    )
+    parser.add_argument(
+        "--num-workers",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Number of worker processes for multiprocessing. "
+        "By default, uses the number of CPUs on the system.",
+    )
 
     args = parser.parse_args()
     if getenv("PRINT_GIVEN_ARGS") is not None:
