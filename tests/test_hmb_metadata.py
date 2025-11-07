@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import pytest
 
 from pbp.hmb_gen.hmb_metadata import parse_attributes, replace_snippets
 
@@ -55,3 +56,34 @@ def test_replace_snippets():
             "a2": "ipsum amet.",
         }
     )
+
+
+def test_parse_attributes_invalid_json():
+    """Test that invalid JSON raises appropriate error"""
+    contents = """
+        {
+            "a1": "Lorem ipsum",
+            "a2": "ipsum amet."
+            INVALID
+        }
+    """
+    with pytest.raises(Exception):  # JSONDecodeError
+        parse_attributes(contents, ".json")
+
+
+def test_parse_attributes_invalid_yaml():
+    """Test that invalid YAML raises appropriate error"""
+    contents = """
+        title: >-
+          Invalid YAML
+        invalid: [unclosed
+    """
+    with pytest.raises(Exception):  # yaml.YAMLError
+        parse_attributes(contents, ".yaml")
+
+
+def test_parse_attributes_unsupported_format():
+    """Test that unsupported file format raises ValueError"""
+    contents = "some content"
+    with pytest.raises(ValueError, match="Unrecognized contents for format"):
+        parse_attributes(contents, ".txt")

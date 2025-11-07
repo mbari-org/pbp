@@ -167,13 +167,32 @@ class ProcessHelper:
             if os.name == "nt" and filename is not None:
                 filename = filename[3:]
             if filename is not None:
-                with open(filename, "r", encoding="UTF-8") as f:
-                    res = parse_attributes(f.read(), pathlib.Path(filename).suffix)
-                    for k, v in set_attrs or []:
-                        res[k] = v
-                    return res
+                try:
+                    with open(filename, "r", encoding="UTF-8") as f:
+                        res = parse_attributes(f.read(), pathlib.Path(filename).suffix)
+                        for k, v in set_attrs or []:
+                            res[k] = v
+                        return res
+                except FileNotFoundError:
+                    error_msg = f"ERROR: {what.capitalize()} attributes file not found: {filename}"
+                    self.log.error(error_msg)
+                    print(error_msg)
+                    exit(1)
+                except ValueError as e:
+                    error_msg = f"ERROR: Invalid {what} attributes file format: {filename}\n  {e}"
+                    self.log.error(error_msg)
+                    print(error_msg)
+                    exit(1)
+                except Exception as e:
+                    error_msg = f"ERROR: Failed to parse {what} attributes from {filename}: {e}"
+                    self.log.error(error_msg)
+                    print(error_msg)
+                    exit(1)
             else:
-                self.log.error(f"Unable to resolve '{attrs_uri=}'. Ignoring it.")
+                error_msg = f"ERROR: Unable to resolve {what} attributes URI: {attrs_uri}"
+                self.log.error(error_msg)
+                print(error_msg)
+                exit(1)
         else:
             self.log.info(f"No '{what}' attributes URI given.")
         return None
