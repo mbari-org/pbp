@@ -1,5 +1,10 @@
 2025-11
 
+- 1.8.7:
+
+   -  hmb-gen: Loading/completion of global attributes are now performed
+      with before the actual processing.
+
 - 1.8.6:
     - Check that replacement is string in replace_snippets, and print a warning otherwise
       with the associated snippet key to facilitate diagnosing.

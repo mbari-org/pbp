@@ -192,6 +192,9 @@ class ProcessHelper:
         if not self.file_helper.select_day(year, month, day):
             return None
 
+        # Resolve the global attributes before any actual processing:
+        global_attributes = self._get_global_attributes(year, month, day)
+
         at_hour_minute_seconds: List[Tuple[int, int, int]] = list(
             gen_hour_minute_second_times(self.file_helper.segment_size_in_secs)
         )
@@ -254,7 +257,7 @@ class ProcessHelper:
 
         ds_result = xr.Dataset(
             data_vars=data_vars,
-            attrs=self._get_global_attributes(year, month, day),
+            attrs=global_attributes,
         )
 
         generated_filenames = []
