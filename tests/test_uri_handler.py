@@ -164,8 +164,46 @@ class TestUriHandler:
         """Test getting local filename on Windows."""
         handler = UriHandler(self.mock_logger)
 
-        result = handler.get_local_filename("file://C:/audio/file.wav")
+        # Standard 3-slash format with drive letter (RFC 8089)
+        result = handler.get_local_filename("file:///C:/audio/file.wav")
+        assert result == "C:/audio/file.wav"
 
+        # Non-standard 2-slash format with drive letter
+        result = handler.get_local_filename("file://C:/audio/file.wav")
+        assert result == "C:/audio/file.wav"
+
+        # Backslashes
+        result = handler.get_local_filename("file://C:\\audio\\file.wav")
+        assert result == "C:\\audio\\file.wav"
+
+        # Drive-relative path
+        result = handler.get_local_filename("file://C:file.wav")
+        assert result == "C:file.wav"
+
+        # Plain filename (no scheme)
+        result = handler.get_local_filename("file.wav")
+        assert result == "file.wav"
+
+        # Different drive letters
+        result = handler.get_local_filename("file:///D:/data/test.json")
+        assert result == "D:/data/test.json"
+
+        result = handler.get_local_filename("file://E:/temp/file.txt")
+        assert result == "E:/temp/file.txt"
+
+        # URL-encoded characters (spaces)
+        result = handler.get_local_filename("file:///C:/my%20folder/file.wav")
+        assert result == "C:/my folder/file.wav"
+
+        result = handler.get_local_filename("file://C:/my%20folder/file.wav")
+        assert result == "C:/my folder/file.wav"
+
+        # Path without drive letter (relative to current drive root)
+        result = handler.get_local_filename("file:///audio/file.wav")
+        assert result == "/audio/file.wav"
+
+        # Plain absolute path without scheme
+        result = handler.get_local_filename("C:/audio/file.wav")
         assert result == "C:/audio/file.wav"
 
     def test_remove_downloaded_file_not_exists(self):
