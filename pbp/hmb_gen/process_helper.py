@@ -165,11 +165,17 @@ class ProcessHelper:
             self.log.info(f"Loading {what} attributes from {attrs_uri=}")
             filename = self.file_helper.get_local_filename(attrs_uri)
             if filename is not None:
-                with open(filename, "r", encoding="UTF-8") as f:
-                    res = parse_attributes(f.read(), pathlib.Path(filename).suffix)
-                    for k, v in set_attrs or []:
-                        res[k] = v
-                    return res
+                try:
+                    with open(filename, "r", encoding="UTF-8") as f:
+                        res = parse_attributes(f.read(), pathlib.Path(filename).suffix)
+                        for k, v in set_attrs or []:
+                            res[k] = v
+                        self.log.info(f"Loaded {what} attributes from {filename=}")
+                        return res
+                except Exception as e:  # pylint: disable=broad-exception-caught
+                    self.log.error(
+                        f"Unable to load {what} attributes from {filename=}", e
+                    )
             else:
                 self.log.error(f"Unable to resolve '{attrs_uri=}'. Ignoring it.")
         else:
