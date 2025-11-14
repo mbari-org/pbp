@@ -176,8 +176,8 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
                     self.json_base_dir,
                     day,
                     InstrumentType.RESEA,
-                    True,
                     self.seconds_per_file,
+                    True,
                 )
                 json_gen.run()
 

@@ -148,8 +148,8 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
                     self.json_base_dir,
                     day,
                     InstrumentType.NRS,
-                    False,
                     self.seconds_per_file,
+                    False,
                 )
                 json_gen.run()
 

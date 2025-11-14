@@ -189,8 +189,8 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                     self.json_base_dir,
                     day,
                     InstrumentType.ICLISTEN,
-                    True,
                     self.seconds_per_file,
+                    True,
                 )
                 json_gen.run()
 
