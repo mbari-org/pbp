@@ -46,6 +46,7 @@ def run_main_meta_generator(opts: Namespace):
                 prefixes=opts.prefix,
                 start=start,
                 end=end,
+                seconds_per_file=opts.seconds_per_file,
             )
             generator.run()
         if opts.recorder == "ICLISTEN":
@@ -58,6 +59,7 @@ def run_main_meta_generator(opts: Namespace):
                 prefixes=opts.prefix,
                 start=start,
                 end=end,
+                seconds_per_file=opts.seconds_per_file,
             )
             generator.run()
             # TODO: add multiprocessing here for speed-up
@@ -71,6 +73,7 @@ def run_main_meta_generator(opts: Namespace):
                 prefixes=opts.prefix,
                 start=start,
                 end=end,
+                seconds_per_file=opts.seconds_per_file,
             )
             generator.run()
         if opts.recorder == "RESEA":
@@ -83,6 +86,7 @@ def run_main_meta_generator(opts: Namespace):
                 prefixes=opts.prefix,
                 start=start,
                 end=end,
+                seconds_per_file=opts.seconds_per_file,
             )
             generator.run()
     except KeyboardInterrupt:

@@ -178,6 +178,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                     self.start + timedelta(days=day),
                     InstrumentType.SOUNDTRAP,
                     False,
+                    self.seconds_per_file,
                 )
                 json_gen.run()
 

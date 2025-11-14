@@ -116,4 +116,12 @@ Examples:
         help="Specifies the directory where the log.xml files are located. If not specified, the default is the same directory as the audio files.",
     )
 
+    parser.add_argument(
+        "--seconds-per-file",
+        type=int,
+        required=False,
+        default=None,
+        help="Specifies the number of seconds per file. If not specified, any checks on file length will be skipped.",
+    )
+
     return parser.parse_args()

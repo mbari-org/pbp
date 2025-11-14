@@ -113,7 +113,7 @@ output/
 ## Generate JSONs with audio metadata from IcListen wav files for a date range
 
 The following command generates JSON files in the `json/iclisten` directory only for files in `s3://pacific-sound-256khz` that include the file string MARS. 
-Logs will be stored in the `output` directory, for the specified date range. The MARS data is recorded in 10-minute intervals, so there are many files to process.  
+Logs will be stored in the `output` directory, for the specified date range. The MARS data is recorded in 10-minute intervals, so there are many files to process.
 
 This would be a good time to go get a cup of coffee :coffee:. This will take a while to process since
 the pacific sound archive has many files.
@@ -125,7 +125,8 @@ pbp-meta-gen --recorder=ICLISTEN \
              --uri=s3://pacific-sound-256khz \
              --start=20191023 \
              --end=20191024 \
-             --prefix=MARS
+             --prefix=MARS \
+             --seconds-per-file=600 # This will verify that the files are exactly 10 minutes long; remove if no check is needed
 ```
 
 You should see two JSON files in the `json/iclisten` directory; one for each day of the date range.
@@ -205,6 +206,8 @@ options:
   --prefix PREFIX [PREFIX ...]
                         Prefix for search to match the audio files e.g. 'MARS_' for MARS_YYYYMMDD_HHMMSS.wav, '7000. ' for 7000.20220902.000000.wav
   --xml-dir dir         Specifies the directory where the log.xml files are located. If not specified, the default is the same directory as the audio files.
+  --seconds-per-file SECONDS_PER_FILE
+                        Specifies the number of seconds per file. If not specified, any checks on file length will be skipped.
 
 Examples:
     pbp meta-gen \

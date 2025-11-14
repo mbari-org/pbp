@@ -23,8 +23,8 @@ class JsonGenerator:
         json_path_out: str,
         day: datetime.datetime,
         instrument_type: InstrumentType,
+        seconds_per_file: float,
         time_correct: bool = False,
-        seconds_per_file: float = -1,
     ):
         """
         Generate the metadata for a day and save to a json file
@@ -50,15 +50,17 @@ class JsonGenerator:
         self.time_correct = time_correct
         self.seconds_per_file = seconds_per_file
         self.files_per_day = None
-        # Must have seconds per file for ICLISTEN to correct for drift conditional check
-        if self.instrument_type == InstrumentType.ICLISTEN:
-            if self.seconds_per_file == -1:
-                self.log.exception("No seconds per file provided for ICLISTEN")
+        # May have seconds per file for ICLISTEN to correct for drift conditional check
+        if self.instrument_type == InstrumentType.ICLISTEN and self.seconds_per_file:
+            if self.seconds_per_file <= 0:
+                self.log.exception("Invalid seconds per file provided for ICLISTEN")
                 return
             self.files_per_day = int(86400 / self.seconds_per_file)
             self.log.debug(
-                f"Metadata corrector for {self.instrument_type} with {self.seconds_per_file} seconds per file"
+                f"Metadata corrector for {self.instrument_type} with check for {self.seconds_per_file} seconds per file"
             )
+        else:
+            self.log.debug(f"Metadata corrector for {self.instrument_type}")
 
     def run(self):
         """Run the corrector"""
@@ -93,7 +95,10 @@ class JsonGenerator:
 
             for index, row in day_df.iterrows():
                 self.log.debug(f'File {row["uri"]} duration {row["duration_secs"]} ')
-                if 0 < self.seconds_per_file != row["duration_secs"]:
+                if (
+                    self.seconds_per_file
+                    and 0 < self.seconds_per_file != row["duration_secs"]
+                ):
                     self.log.warning(
                         f'File {row["duration_secs"]}  != {self.seconds_per_file}. File is not complete'
                     )
@@ -103,8 +108,10 @@ class JsonGenerator:
             # This is only reliable for full days of data contained in complete files for IcListen data
             day_df["jitter_secs"] = 0
 
-            if self.instrument_type == InstrumentType.ICLISTEN and (
-                len(day_df) == self.files_per_day + 1
+            if (
+                self.instrument_type == InstrumentType.ICLISTEN
+                and self.seconds_per_file
+                and len(day_df) == self.files_per_day + 1
                 and len(day_df["duration_secs"].unique()) == 1
                 and day_df.iloc[0]["duration_secs"] == self.seconds_per_file
             ):
