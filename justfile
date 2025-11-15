@@ -12,6 +12,7 @@ list:
 # some conveniences:
 
 # Run entry-point program
+[no-cd]
 pbp *args="":
   poetry run pbp {{args}}
 
