@@ -1,5 +1,8 @@
 2025-11
 
+- 1.8.71:
+    - Added logging related to path handling on windows.
+
 - 1.8.7:
    - Fixed issue where relative paths were not handled properly on Windows.
    -  hmb-gen: Loading/completion of global attributes are now performed
