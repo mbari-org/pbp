@@ -18,9 +18,9 @@ def run_main_hmb_generator(opts: Namespace) -> None:
     log = create_logger(
         log_filename_and_level=(
             f"{opts.output_dir}/{opts.output_prefix}{opts.date}.log",
-            "INFO",
+            os.getenv("PBP_FILE_LOG_LEVEL", "INFO"),
         ),
-        console_level="WARNING",
+        console_level=os.getenv("PBP_CONSOLE_LOG_LEVEL", "WARNING"),
     )
 
     s3_client = None

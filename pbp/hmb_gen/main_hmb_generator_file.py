@@ -3,6 +3,7 @@ from typing import Any, Optional, OrderedDict
 
 import loguru
 import pathlib
+import os
 import soundfile as sf
 from math import ceil
 import numpy as np
@@ -69,8 +70,11 @@ def main_hmb_generator_file(opts: Namespace) -> None:
     print(f"  time_resolution: {opts.time_resolution}")
 
     log = create_logger(
-        log_filename_and_level=(log_filename, "INFO"),
-        console_level="WARNING",
+        log_filename_and_level=(
+            log_filename,
+            os.getenv("PBP_FILE_LOG_LEVEL", "INFO"),
+        ),
+        console_level=os.getenv("PBP_CONSOLE_LOG_LEVEL", "WARNING"),
     )
 
     try:

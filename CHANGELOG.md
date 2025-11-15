@@ -1,5 +1,9 @@
 2025-11
 
+- 1.8.72:
+    - Environment variables `PBP_FILE_LOG_LEVEL` and `PBP_CONSOLE_LOG_LEVEL`
+      can now be used to overwrite the file and console logging levels
+
 - 1.8.71:
     - Added logging related to path handling on windows.
 
