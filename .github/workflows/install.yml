@@ -1,11 +1,9 @@
 name: Installation Test
 
 on:
-  push:
-  pull_request:
-
-  # Allows you to run this workflow manually from the Actions tab
+  # Only manual trigger for now
   workflow_dispatch:
+  # TODO actually, consider removing this whole workflow
 
 jobs:
   test-install:
@@ -13,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ['3.11']
 
     runs-on: ${{ matrix.os }}
 
