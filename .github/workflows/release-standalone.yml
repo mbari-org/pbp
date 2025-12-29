@@ -174,7 +174,7 @@ jobs:
         with:
           name: standalone-${{ matrix.platform }}-${{ steps.arch.outputs.arch }}
           path: ${{ env.ZIPFILE }}
-          retention-days: 7
+          retention-days: 1
 
       - name: Upload to GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
@@ -184,3 +184,10 @@ jobs:
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete uploaded artifacts
+        if: always()
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: standalone-${{ matrix.platform }}-${{ steps.arch.outputs.arch }}
+          failOnError: false
