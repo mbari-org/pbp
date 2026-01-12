@@ -142,16 +142,14 @@ def main():
     output_bucket = os.getenv("S3_OUTPUT_BUCKET")
 
     exclude_tone_calibration_seconds = (
-        int(os.getenv("EXCLUDE_TONE_CALIBRATION_SECONDS"))
-        if os.getenv("EXCLUDE_TONE_CALIBRATION_SECONDS") is not None
+        int(val)
+        if (val := os.getenv("EXCLUDE_TONE_CALIBRATION_SECONDS")) is not None
         else None
     )
 
     # Applied on the loaded signal
     voltage_multiplier = (
-        float(os.getenv("VOLTAGE_MULTIPLIER"))
-        if os.getenv("VOLTAGE_MULTIPLIER") is not None
-        else None
+        float(val) if (val := os.getenv("VOLTAGE_MULTIPLIER")) is not None else None
     )
 
     global_attrs_uri = os.getenv("GLOBAL_ATTRS_URI")
@@ -162,9 +160,7 @@ def main():
 
     # Flat sensitivity value to be used for calibration
     sensitivity_flat_value = (
-        float(os.getenv("SENSITIVITY_FLAT_VALUE"))
-        if os.getenv("SENSITIVITY_FLAT_VALUE") is not None
-        else None
+        float(val) if (val := os.getenv("SENSITIVITY_FLAT_VALUE")) is not None else None
     )
 
     subset_to_string = os.environ["SUBSET_TO"]
@@ -215,6 +211,7 @@ def main():
     # Get working:
 
     file_helper = FileHelper(
+        log=log,
         json_base_dir=json_bucket_prefix,
         s3_client=s3_client,
         gs_client=None,  # TODO
@@ -224,6 +221,7 @@ def main():
     )
 
     process_helper = ProcessHelper(
+        log=log,
         file_helper=file_helper,
         output_dir=generated_dir,
         output_prefix=output_prefix,

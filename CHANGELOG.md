@@ -1,3 +1,9 @@
+2026-01
+
+- Some typing fixes detected with the help of `ty` (via `uvx ty check`),
+  which actually detects many other issues, but just doing some initiall fixes.
+  (idea is to advance a migration from mypy to `ty`)
+
 2025-11
 
 - 1.8.72:

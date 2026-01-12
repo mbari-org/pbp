@@ -339,6 +339,7 @@ class TestUriHandlerIntegration:
             uri = "file://test.wav"
             result = handler.get_local_filename(uri)
 
+            assert result is not None
             assert result == f"{temp_dir}/test.wav"
             assert Path(result).exists()
 
