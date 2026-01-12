@@ -230,6 +230,18 @@ update-deps:
     poetry update
     poetry install
 
+# (NOTE: for now this recipe allows to prepare for when actually
+# incoporating `ty` as proper develoment dependency.
+# Initially, it has some exclusions mainly to facilitate inspection
+# of the output and address issues incrementally.)
+# Do type checking using `ty`
+ty:
+    uvx ty check --python $(poetry env info --path)/bin/python \
+        --exclude 'pbp/meta_gen/*' \
+        --exclude 'pbp/hmb_plot/plotting.py' \
+        --exclude 'misc/*' \
+        --exclude 'notebooks/*'
+
 # Do static type checking (not very strict)
 mypy:
     poetry run mypy .
