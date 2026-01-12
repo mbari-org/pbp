@@ -5,7 +5,7 @@ def get_pbp_version() -> str:
         return importlib.metadata.version("mbari-pbp")
     except Exception:  # pylint: disable=broad-exception-caught
         try:
-            from poetry.core.factory import Factory
+            from poetry.core.factory import Factory  # type: ignore
 
             factory = Factory()
             poetry = factory.create_poetry()

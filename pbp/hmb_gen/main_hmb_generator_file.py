@@ -77,6 +77,8 @@ def main_hmb_generator_file(opts: Namespace) -> None:
         console_level=os.getenv("PBP_CONSOLE_LOG_LEVEL", "WARNING"),
     )
 
+    assert base_dt is not None
+
     try:
         res = FileProcessor(
             opts,

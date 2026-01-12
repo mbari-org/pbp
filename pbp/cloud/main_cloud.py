@@ -164,8 +164,13 @@ def main():
     )
 
     subset_to_string = os.environ["SUBSET_TO"]
-    subset_to = tuple(int(val.strip()) for val in subset_to_string.split(","))
-    assert len(subset_to) == 2
+    parts = subset_to_string.split(",")
+    if len(parts) != 2:
+        print(
+            f"Error: SUBSET_TO must have exactly 2 comma-separated values, got {len(parts)}"
+        )
+        exit(1)
+    subset_to = (int(parts[0].strip()), int(parts[1].strip()))
 
     # Convenience for testing (0 means no restriction)
     max_segments = int(os.getenv("MAX_SEGMENTS", "0"))
