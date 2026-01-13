@@ -206,7 +206,7 @@ build_standalone:
 # development:
 
 # A convenient recipe for development
-dev: format mypy test
+dev: format ty test
 
 # As the dev recipe plus lint; good to run before committing changes
 all: dev lint
@@ -215,7 +215,6 @@ all: dev lint
 setup: install-poetry
     poetry install
     poetry run pre-commit install
-    just install-types
 
 # Install poetry
 install-poetry:
@@ -230,23 +229,10 @@ update-deps:
     poetry update
     poetry install
 
-# (NOTE: for now this recipe allows to prepare for when actually
-# incoporating `ty` as proper develoment dependency.
-# Initially, it has some exclusions mainly to facilitate inspection
-# of the output and address issues incrementally.)
-# Do type checking using `ty`
+# (Note: exclude patterns configured in pyproject.toml [tool.ty.src])
+# Do type checking
 ty:
-    uvx ty check --python $(poetry env info --path)/bin/python \
-        --exclude 'pbp/meta_gen/*' \
-        --exclude 'notebooks/*'
-
-# Do static type checking (not very strict)
-mypy:
-    poetry run mypy .
-
-# Install std types for mypy
-install-types:
-    poetry run mypy --install-types
+    poetry run ty check
 
 # Do snapshot-update
 snapshot-update:

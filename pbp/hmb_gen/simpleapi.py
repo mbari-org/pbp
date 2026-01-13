@@ -311,7 +311,7 @@ class HmbGen:
         if len(errors) > 0:
             return "\n".join(errors)
 
-        # make mypy happy
+        # make type checker happy
         assert isinstance(self._subset_to, tuple)
 
         self._hmb_gen = _HmbGen(

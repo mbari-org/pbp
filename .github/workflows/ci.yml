@@ -30,4 +30,4 @@ jobs:
       - run: PYTHONPATH=. poetry run pytest
       - run: just format-check
       - run: just lint-check
-      - run: just mypy
+      - run: just ty
