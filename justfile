@@ -238,7 +238,6 @@ update-deps:
 ty:
     uvx ty check --python $(poetry env info --path)/bin/python \
         --exclude 'pbp/meta_gen/*' \
-        --exclude 'pbp/hmb_plot/plotting.py' \
         --exclude 'misc/*' \
         --exclude 'notebooks/*'
 

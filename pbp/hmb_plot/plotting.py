@@ -65,8 +65,8 @@ def plot_dataset_summary(
         seg.iloc[d] = 1 - abs(se.iloc[d] / max(abs(se.iloc[d])))
     # Get the indices of the min and max
     seg1 = pd.Series.to_numpy(solpos.elevation)
-    minidx = np.squeeze(np.where(seg1 == min(seg1)))
-    maxidx = np.squeeze(np.where(seg1 == max(seg1)))
+    minidx = int(np.squeeze(np.where(seg1 == min(seg1))))
+    maxidx = int(np.squeeze(np.where(seg1 == max(seg1))))
 
     seg3 = np.tile(seg, (50, 1))
 
@@ -137,13 +137,15 @@ def plot_dataset_summary(
 
     # colorbar for spectrogram
     r = np.concatenate(np.squeeze(ax0.get_position()))
-    cb_ax = fig.add_axes([r[0] + 0.09, r[1] - 0.025, r[2] - 0.25, 0.015])
+    cb_ax = fig.add_axes(
+        (float(r[0]) + 0.09, float(r[1]) - 0.025, float(r[2]) - 0.25, 0.015)
+    )
     q = fig.colorbar(sg, orientation="horizontal", cax=cb_ax)
     q.set_label(psdlabl)
 
     # time axes for the day/night panel
     # create a dummy time / zero range variable
-    timax = fig.add_axes(ax3.get_position(), frameon=False)
+    timax = fig.add_axes(ax3.get_position().bounds, frameon=False)
     timax.plot(solpos.elevation * 0, "k")
     timax.tick_params(top=True, labeltop=True, bottom=False, labelbottom=False)
     timax.set_ylim(0, 100)

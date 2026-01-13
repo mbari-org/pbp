@@ -64,7 +64,6 @@ show_error_codes = true
 ignore_missing_imports = true
 exclude = [
     'examples/',
-    'pbp/hmb_plot/plotting\.py',
     'build/',
     'dist/',
     'mbari-pbp-standalone.*/'
