@@ -22,5 +22,6 @@ diff = (
     - minute0_ds["__xarray_dataarray_variable__"][0]
 )
 
-diff.plot()
+diff.plot()  # type: ignore[missing-argument]
+# perhaps a future xarray version will have more complete type stubs
 plt.show()

@@ -238,7 +238,6 @@ update-deps:
 ty:
     uvx ty check --python $(poetry env info --path)/bin/python \
         --exclude 'pbp/meta_gen/*' \
-        --exclude 'misc/*' \
         --exclude 'notebooks/*'
 
 # Do static type checking (not very strict)
