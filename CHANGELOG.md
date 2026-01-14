@@ -1,5 +1,11 @@
 2026-01
 
+- Completed migration to using `ty` as type checker.
+  In general, "notebooks/*" are excluded for checking as they are mainly copies
+  of notebooks written elsewhere. 
+  Some pending type errors are for now "silenced" via exclude section in
+  `[tool.ty.src]` while they can be addressed.
+
 - Some typing fixes detected with the help of `ty` (via `uvx ty check`),
   which actually detects many other issues, but just doing some initiall fixes.
   (idea is to advance a migration from mypy to `ty`)

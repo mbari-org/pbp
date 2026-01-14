@@ -48,7 +48,7 @@ a = Analysis(
     excludes=[
         # Exclude test and development packages to reduce size
         'pytest',
-        'mypy',
+        'ty',
         'ruff',
         'IPython',
         'jupyter',
