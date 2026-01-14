@@ -71,6 +71,7 @@ nav:
   - HMB Plotting: pbp-hmb-plot/index.md
   - Cloud: pbp-cloud/index.md
   - Notebooks: notebooks/index.md
+  - Release Notes: release-notes.md
   - API:
     - Overview: api/index.md
     - Meta Generation:
