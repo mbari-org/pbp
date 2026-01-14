@@ -291,7 +291,9 @@ if not errors:
     hmb_gen.plot_date('20201008')
 ```
 
-This simplified interface makes it easier for users of all experience levels to get started.
+This high-level interface is intended to simplify the usage of the package for common scenarios.
+It uses other API elements that can also be used directly for more control on the
+settings or more advanced scenarios.
 
 ## 1.0.9 
 (July 2024)
