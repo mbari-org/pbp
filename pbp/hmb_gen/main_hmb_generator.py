@@ -8,7 +8,6 @@ from pbp.hmb_gen.main_hmb_generator_args import parse_arguments
 
 
 def run_main_hmb_generator(opts: Namespace) -> None:
-    # pylint: disable=import-outside-toplevel
     import os
 
     from pbp.hmb_gen.file_helper import FileHelper
@@ -25,7 +24,6 @@ def run_main_hmb_generator(opts: Namespace) -> None:
 
     s3_client = None
     if opts.s3 or opts.s3_unsigned:
-        # pylint: disable=import-outside-toplevel
         import boto3
         import botocore
         from botocore.config import Config
@@ -42,7 +40,6 @@ def run_main_hmb_generator(opts: Namespace) -> None:
 
     gs_client = None
     if opts.gs:
-        # pylint: disable=import-outside-toplevel
         from google.cloud.storage import Client as GsClient
 
         # TODO credentials; for now assuming only anonymous downloads
@@ -86,7 +83,6 @@ def run_main_hmb_generator(opts: Namespace) -> None:
 
 
 def run_main_hmb_generator_direct_file(opts: Namespace) -> None:
-    # pylint: disable=import-outside-toplevel
     from pbp.hmb_gen.main_hmb_generator_file import main_hmb_generator_file
 
     main_hmb_generator_file(opts)
