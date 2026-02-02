@@ -358,7 +358,7 @@ class FileHelper:
                         )
 
             except sf.LibsndfileError as e:
-                self.log.error(f"{e}")
+                self.log.exception(f"{e}")
                 return None
 
             if aggregated_segment is None:
@@ -448,5 +448,5 @@ class FileHelper:
             with open(filename, "r", encoding="UTF-8") as f:
                 return f.read()
         except IOError as e:
-            self.log.error(f"Error reading {filename}: {e}")
+            self.log.exception(f"Error reading {filename}: {e}")
             return None

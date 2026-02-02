@@ -1,3 +1,7 @@
+2026-02
+
+- Logging: use log.exception for better error diagnostics in a couple places.
+
 2026-01
 
 - Completed migration to using `ty` as type checker.

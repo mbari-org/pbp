@@ -172,8 +172,8 @@ class ProcessHelper:
                             res[k] = v
                         self.log.info(f"Loaded {what} attributes from {filename=}")
                         return res
-                except Exception as e:  # pylint: disable=broad-exception-caught
-                    self.log.error(
+                except Exception as e:
+                    self.log.exception(
                         f"Unable to load {what} attributes from {filename=}", e
                     )
             else:
@@ -399,8 +399,8 @@ def save_dataset_to_netcdf(
     try:
         ds.to_netcdf(filename, format="NETCDF4", engine="h5netcdf", encoding=encoding)
         return True
-    except Exception as e:  # pylint: disable=broad-exception-caught
+    except Exception as e:
         error = f"Unable to save {filename}: {e}"
-        log.error(error)
+        log.exception(error)
         print(error)
         return False
