@@ -4,7 +4,16 @@ This page highlights significant updates and new features in PBP releases.
 For detailed technical changes, see the [CHANGELOG.md](https://github.com/mbari-org/pbp/blob/main/CHANGELOG.md).
 Please get in touch if you have any questions.
 
-## 1.8.72 
+## 1.8.73
+(Feb 2026)
+
+**Improvements**
+
+- **Better Error Diagnostics**: Improved error logging to provide more detailed
+  context when issues occur, making troubleshooting easier
+- **Updated Dependencies**: Kept dependencies up to date for improved stability and security
+
+## 1.8.72
 (Nov 2025)
 
 **Improvements**
