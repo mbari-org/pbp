@@ -1,5 +1,9 @@
 2026-02
 
+1.8.74
+
+- Droped Python 3.9 support; Poetry 2.3+ requires Python 3.10+.
+  Noted: https://github.com/mbari-org/pbp/actions/runs/21927784666/job/63324719422
 - Logging: use log.exception for better error diagnostics in a couple places.
 
 2026-01

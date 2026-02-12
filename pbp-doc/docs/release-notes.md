@@ -4,7 +4,7 @@ This page highlights significant updates and new features in PBP releases.
 For detailed technical changes, see the [CHANGELOG.md](https://github.com/mbari-org/pbp/blob/main/CHANGELOG.md).
 Please get in touch if you have any questions.
 
-## 1.8.73
+## 1.8.74
 (Feb 2026)
 
 **Improvements**
