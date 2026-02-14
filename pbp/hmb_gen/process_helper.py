@@ -3,6 +3,7 @@ import os
 import loguru
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from multiprocessing import Pool, cpu_count
 
 from typing import Any, List, Optional, OrderedDict, Tuple
 import pytz
@@ -19,6 +20,16 @@ from pbp.hmb_gen.pypam_support import ProcessResult, PypamSupport
 
 
 DEFAULT_QUALITY_FLAG_VALUE = 2
+
+
+@dataclass
+class _SegmentData:
+    """
+    Data for a single segment to be processed.
+    """
+    dt: datetime
+    audio_segment: Optional[np.ndarray]
+    num_secs: float
 
 
 # TODO: Rename this type to a more generic result name,
@@ -60,6 +71,8 @@ class ProcessHelper:
         sensitivity_flat_value: Optional[float] = None,
         max_segments: int = 0,
         subset_to: Optional[Tuple[int, int]] = None,
+        use_multiprocessing: bool = True,
+        num_workers: Optional[int] = None,
     ):
         """
         Initializes the processor.
@@ -81,6 +94,8 @@ class ProcessHelper:
             sensitivity_flat_value (float, optional): Flat sensitivity value used for calibration.
             max_segments (int, optional): Maximum number of segments to process for each day. Defaults to 0 (no limit).
             subset_to (tuple[float, float], optional): Frequency limits for the PSD (lower inclusive, upper exclusive).
+            use_multiprocessing (bool): Whether to use multiprocessing for spectra calculation. Defaults to True.
+            num_workers (int, optional): Number of worker processes for multiprocessing. Defaults to cpu_count().
         """
         self.log = log
 
@@ -108,6 +123,8 @@ class ProcessHelper:
                 else ""
             )
             + f"\n    subset_to:              {subset_to}"
+            + f"\n    use_multiprocessing:    {use_multiprocessing}"
+            + f"\n    num_workers:            {num_workers if num_workers else cpu_count()}"
             + "\n"
         )
         self.file_helper = file_helper
@@ -125,6 +142,8 @@ class ProcessHelper:
 
         self.max_segments = max_segments
         self.subset_to = subset_to
+        self.use_multiprocessing = use_multiprocessing
+        self.num_workers = num_workers if num_workers else cpu_count()
 
         self.exclude_tone_calibration_seconds: Optional[
             int
@@ -284,8 +303,139 @@ class ProcessHelper:
         self, hour_minute_seconds: List[Tuple[int, int, int]]
     ):
         self.log.info(f"Processing {len(hour_minute_seconds)} segments ...")
+        
+        if self.use_multiprocessing and len(hour_minute_seconds) > 1:
+            self._process_hours_minutes_seconds_parallel(hour_minute_seconds)
+        else:
+            self._process_hours_minutes_seconds_sequential(hour_minute_seconds)
+    
+    def _process_hours_minutes_seconds_sequential(
+        self, hour_minute_seconds: List[Tuple[int, int, int]]
+    ):
+        """Process segments sequentially (original behavior)."""
         for at_hour, at_minute, at_second in hour_minute_seconds:
             self.process_segment_at_hour_minute_second(at_hour, at_minute, at_second)
+    
+    def _process_hours_minutes_seconds_parallel(
+        self, hour_minute_seconds: List[Tuple[int, int, int]]
+    ):
+        """Process segments in parallel using multiprocessing."""
+        self.log.info(f"Using multiprocessing with {self.num_workers} workers")
+        
+        # Step 1: Extract all audio segments sequentially (to avoid file I/O conflicts)
+        segment_data_list: List[_SegmentData] = []
+        fs: Optional[int] = None
+        
+        for at_hour, at_minute, at_second in hour_minute_seconds:
+            segment_data = self._extract_segment_data(at_hour, at_minute, at_second)
+            
+            # Validate sample rate consistency
+            if segment_data.audio_segment is not None:
+                current_fs = int(len(segment_data.audio_segment) / segment_data.num_secs)
+                if fs is None:
+                    fs = current_fs
+                elif fs != current_fs:
+                    self.log.error(
+                        f"ERROR: samplerate changed from {fs} to {current_fs}. "
+                        "Skipping segment."
+                    )
+                    # Replace with missing segment
+                    segment_data = _SegmentData(segment_data.dt, None, 0.0)
+            
+            segment_data_list.append(segment_data)
+        
+        # Step 2: Set parameters from first valid segment
+        if fs is None:
+            self.log.warning("No valid audio segments found")
+            for segment_data in segment_data_list:
+                self.pypam_support.add_missing_segment(segment_data.dt)
+            return
+        
+        # Set parameters if not already set
+        if not self.pypam_support.parameters_set:
+            self.log.info(f"Got audio parameters: fs={fs}")
+            self.pypam_support.set_parameters(fs, subset_to=self.subset_to)
+        
+        assert self.pypam_support.fs is not None
+        assert self.pypam_support._nfft is not None
+        
+        # Step 3: Prepare arguments for parallel spectrum computation
+        compute_args = []
+        for segment_data in segment_data_list:
+            if segment_data.audio_segment is not None:
+                compute_args.append((
+                    segment_data.audio_segment,
+                    self.pypam_support.fs,
+                    self.pypam_support._nfft
+                ))
+            else:
+                compute_args.append(None)
+        
+        # Step 4: Compute spectra in parallel
+        with Pool(processes=self.num_workers) as pool:
+            results = []
+            for args in compute_args:
+                if args is not None:
+                    results.append(pool.apply_async(_compute_spectrum_worker, (args,)))
+                else:
+                    results.append(None)
+            
+            # Step 5: Gather results and add to pypam_support
+            for segment_data, result in zip(segment_data_list, results):
+                if result is None:
+                    self.pypam_support.add_missing_segment(segment_data.dt)
+                else:
+                    fbands, spectrum = result.get()
+                    # Manually add the spectrum to pypam_support
+                    self.pypam_support._add_computed_segment(
+                        segment_data.dt, 
+                        segment_data.num_secs,
+                        fbands,
+                        spectrum
+                    )
+                    self.log.debug(f"  captured segment: {segment_data.dt}")
+
+    
+    def _extract_segment_data(
+        self, at_hour: int, at_minute: int, at_second: int
+    ) -> _SegmentData:
+        """Extract audio segment data without computing spectrum."""
+        file_helper = self.file_helper
+        year, month, day = file_helper.year, file_helper.month, file_helper.day
+        assert year is not None and month is not None and day is not None
+
+        dt = datetime(
+            year, month, day, at_hour, at_minute, at_second, tzinfo=timezone.utc
+        )
+
+        self.log.debug(
+            f"Segment at {at_hour:02}h:{at_minute:02}m:{at_second:02}s ...\n"
+            + f"  - extracting {file_helper.segment_size_in_secs}-sec segment:"
+        )
+        extraction = file_helper.extract_audio_segment(
+            at_hour, at_minute, at_second, self.exclude_tone_calibration_seconds
+        )
+        
+        if extraction is None:
+            self.log.warning(
+                f"cannot get audio segment at {at_hour:02}:{at_minute:02}:{at_second:02}"
+            )
+            return _SegmentData(dt, None, 0.0)
+
+        audio_info = extraction.audio_info
+        audio_segment = extraction.segment
+        
+        # Apply preprocessing
+        if self.voltage_multiplier is not None:
+            audio_segment *= self.voltage_multiplier
+
+        if self.sensitivity_flat_value is not None:
+            # convert signal to uPa
+            audio_segment = audio_segment * 10 ** (self.sensitivity_flat_value / 20)
+        
+        num_secs = len(audio_segment) / audio_info.samplerate
+        return _SegmentData(dt, audio_segment, num_secs)
+
 
     def process_segment_at_hour_minute_second(
         self, at_hour: int, at_minute: int, at_second: int
@@ -360,6 +510,25 @@ class ProcessHelper:
         for k, v in global_attrs.items():
             snippets["{{" + k + "}}"] = v
         return replace_snippets(global_attrs, snippets)
+
+
+def _compute_spectrum_worker(args: Tuple[np.ndarray, int, int]) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Worker function to compute spectrum for a single audio segment.
+    This function is called by multiprocessing workers.
+    
+    Args:
+        args: Tuple of (audio_segment, fs, nfft)
+    
+    Returns:
+        Tuple of (fbands, spectrum)
+    """
+    audio_segment, fs, nfft = args
+    from pbp.hmb_gen.hmso_pypam import HmsoPypam
+    
+    hmso = HmsoPypam(fs, nfft)
+    fbands, spectrum = hmso.compute_spectrum(audio_segment)
+    return fbands, spectrum
 
 
 def save_dataset_to_netcdf(

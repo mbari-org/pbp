@@ -70,6 +70,17 @@
 
 2025-09
 
+- 1.8.3 (unreleased):
+    - Added multiprocessing support for parallel spectra calculation.
+      This significantly improves performance on multi-core systems when processing a single day.
+      New CLI options:
+        - `--no-multiprocessing`: Disable parallel processing (use sequential mode)
+        - `--num-workers N`: Specify number of worker processes (default: number of CPUs)
+      New API methods in HmbGen:
+        - `set_use_multiprocessing(bool)`: Enable/disable multiprocessing
+        - `set_num_workers(int)`: Set number of worker processes
+      Multiprocessing is enabled by default and can be disabled if needed.
+
 - 1.8.2 release:
     - Restores API compatibility with backward compatibility shims.
       These include deprecation warnings to guide users to new import paths.
