@@ -17,5 +17,21 @@ def test_required_parameters_are_given():
     assert hmb_gen.check_parameters() is None
 
 
+def test_multiprocessing_parameters():
+    """Test that multiprocessing parameters can be set."""
+    hmb_gen = HmbGen()
+    
+    # Test default values
+    assert hmb_gen._use_multiprocessing is True
+    assert hmb_gen._num_workers is None
+    
+    # Test setting values
+    hmb_gen.set_use_multiprocessing(False)
+    assert hmb_gen._use_multiprocessing is False
+    
+    hmb_gen.set_num_workers(4)
+    assert hmb_gen._num_workers == 4
+
+
 def test_required_parameters_are_missing(snapshot):
     assert HmbGen().check_parameters() == snapshot
