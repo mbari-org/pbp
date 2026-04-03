@@ -150,7 +150,7 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
                         f"{self.log_prefix}  No files found to process that "
                         f"cover the period {start_dt} - {end_dt}"
                     )
-                    return
+                    continue
 
                 # sort the files by start times
                 wav_files.sort(key=lambda x: x.start, reverse=False)
@@ -183,6 +183,12 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
 
             except Exception as ex:
                 self.log.exception(str(ex))
+
+        if self.df is None:
+            self.log.info(
+                f"{self.log_prefix} No data found for the period {self.start} - {self.end}"
+            )
+            return
 
         # plot the daily coverage only on files that are greater than the start date
         # this is to avoid plotting any coverage on files only included for overlap
