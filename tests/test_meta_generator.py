@@ -189,8 +189,7 @@ def test_iclisten_generator():
 def test_iclisten_generator_gap_between_days():
     """
     Test that IcListenMetadataGenerator continues processing after a day with no data (gap).
-    Regression test for https://github.com/mbari-org/pbp/issues/<issue> where pbp stopped
-    processing when source data had a gap between days.
+    Regression test for the bug where pbp stopped processing when source data had a gap between days.
     :return:
     """
     log = create_test_logger("test_iclisten_generator_gap")
