@@ -233,12 +233,12 @@ def test_iclisten_generator_gap_between_days():
 
     # Both day1 and day3 should have JSON output despite day2 being missing
     assert (json_dir / "2022" / "20220907.json").exists(), "Sep 7 JSON not generated"
-    assert (json_dir / "2022" / "20220909.json").exists(), (
-        "Sep 9 JSON not generated (gap bug regression)"
-    )
-    assert not (json_dir / "2022" / "20220908.json").exists(), (
-        "Sep 8 JSON should not exist"
-    )
+    assert (
+        json_dir / "2022" / "20220909.json"
+    ).exists(), "Sep 9 JSON not generated (gap bug regression)"
+    assert not (
+        json_dir / "2022" / "20220908.json"
+    ).exists(), "Sep 8 JSON should not exist"
 
 
 def test_nrs_generator():
