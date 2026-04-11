@@ -132,7 +132,7 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
                                         continue
                                     if start_dt <= wav_dt <= end_dt:
                                         self.log.info(
-                                            f'Found {f"s3://{bucket}/{key}"} with timestamp {wav_dt}'
+                                            f"Found {f's3://{bucket}/{key}'} with timestamp {wav_dt}"
                                         )
                                         wav_files.append(
                                             GenericWavFile(
