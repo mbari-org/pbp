@@ -11,6 +11,9 @@ from datetime import datetime
 from pathlib import Path
 import json
 
+import numpy as np
+import soundfile as sf
+
 from pbp.util.logging_helper import create_logger
 from pbp.meta_gen.gen_nrs import NRSMetadataGenerator
 from pbp.meta_gen.gen_soundtrap import SoundTrapMetadataGenerator
@@ -181,6 +184,61 @@ def test_iclisten_generator():
         json_dir / f"{InstrumentType.ICLISTEN.lower()}_coverage_20230718_20230718.jpg"
     )
     assert coverage_plot.exists()
+
+
+def test_iclisten_generator_gap_between_days():
+    """
+    Test that IcListenMetadataGenerator continues processing after a day with no data (gap).
+    Regression test for the bug where pbp stopped processing when source data had a gap between days.
+    :return:
+    """
+    log = create_test_logger("test_iclisten_generator_gap")
+    json_dir = create_json_dir("mars_gap")
+
+    # Create a temporary directory with local wav files simulating a gap:
+    # day1 has files, day2 (middle) has NO files, day3 has files
+    wav_dir = OUT_BASE_DIR / "wav" / "mars_gap"
+    if wav_dir.exists():
+        import shutil
+
+        shutil.rmtree(wav_dir)
+    wav_dir.mkdir(exist_ok=True, parents=True)
+
+    sample_rate = 48000
+    duration_s = 60
+    data = np.zeros(sample_rate * duration_s, dtype=np.float32)
+
+    # day1 = 2022-09-07, day2 = 2022-09-08 (missing), day3 = 2022-09-09
+    for fname in [
+        "MARS_20220907_120000.wav",
+        "MARS_20220907_121000.wav",
+        # 2022-09-08 is intentionally missing
+        "MARS_20220909_120000.wav",
+        "MARS_20220909_121000.wav",
+    ]:
+        sf.write(str(wav_dir / fname), data, sample_rate)
+
+    start = datetime(2022, 9, 7)
+    end = datetime(2022, 9, 9)
+    generator = IcListenMetadataGenerator(
+        log=log,
+        uri=f"file://{wav_dir.as_posix()}",
+        json_base_dir=json_dir.as_posix(),
+        prefixes=["MARS_"],
+        start=start,
+        end=end,
+        seconds_per_file=600,
+    )
+    generator.run()
+
+    # Both day1 and day3 should have JSON output despite day2 being missing
+    assert (json_dir / "2022" / "20220907.json").exists(), "Sep 7 JSON not generated"
+    assert (
+        json_dir / "2022" / "20220909.json"
+    ).exists(), "Sep 9 JSON not generated (gap bug regression)"
+    assert not (
+        json_dir / "2022" / "20220908.json"
+    ).exists(), "Sep 8 JSON should not exist"
 
 
 def test_nrs_generator():
