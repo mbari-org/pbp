@@ -1,3 +1,12 @@
+2026-10
+
+1.9.0 (in progress)
+
+- Added regression tests for the PyPAM-dependent HMB generation path
+  (`tests/test_hmb_regression.py`), with numeric golden files under `tests/golden/`
+  (regenerate with `just golden-update`), as a basis to verify the pypam update.
+  See https://github.com/mbari-org/pbp/issues/123
+
 2026-02
 
 1.8.74
