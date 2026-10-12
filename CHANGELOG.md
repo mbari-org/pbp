@@ -1,3 +1,35 @@
+2026-10
+
+1.9.0
+
+- Updated to lifewatch-pypam 1.0.0 (https://github.com/mbari-org/pbp/issues/123).
+  This brings pyhydrophone 0.4.0 and scipy 1.13.1 (from 1.10.0), among others.
+  The regression tests below show no changes in results: final float32 products
+  are bit-identical; float64 intermediates differ only at ~1e-14 relative.
+  Note: dask is no longer brought in (it is optional in pypam 1.0.0); it is now
+  a dev dependency, only used by `scripts/nrs11.py`.
+  Thanks, @cparcerisas!
+
+- Added regression tests for the PyPAM-dependent HMB generation path
+  (`tests/test_hmb_regression.py`), with numeric golden files under `tests/golden/`
+  (regenerate with `just golden-update`), as a basis to verify the pypam update.
+
+- meta-gen: Fixed icListen and RESEA metadata generation halting when the source
+  data has a gap between days; such days are now skipped and processing continues.
+  (https://github.com/mbari-org/pbp/pull/117)
+  Thanks to @gabethemyers for reporting it (https://github.com/mbari-org/pbp/issues/116)!
+
+- meta-gen: `extract_timecode` now supports hyphenated filenames,
+  e.g., `NRS11-210101-123456.wav`. (https://github.com/mbari-org/pbp/pull/127)
+  Thanks to @dmullin-noaa for the contribution!
+
+- Dependency updates (dependabot): pyarrow 15.0.0 -> 23.0.1, pillow -> 12.3.0,
+  urllib3 -> 2.7.0, requests -> 2.33.0, idna -> 3.15, msgpack -> 1.2.1,
+  awscli -> 1.44.38, marshmallow -> 3.26.2, pyasn1 -> 0.6.3.
+
+- Dev: pytest 7.4.4 -> 8.4.2, syrupy 4.6.1 -> 4.9.1.
+  pytest 8.x is the max allowed by syrupy 4.x, which pypam requires (`syrupy<5`).
+
 2026-02
 
 1.8.74

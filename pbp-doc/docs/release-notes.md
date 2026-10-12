@@ -4,6 +4,25 @@ This page highlights significant updates and new features in PBP releases.
 For detailed technical changes, see the [CHANGELOG.md](https://github.com/mbari-org/pbp/blob/main/CHANGELOG.md).
 Please get in touch if you have any questions.
 
+## 1.9.0
+(Oct 2026)
+
+**Improvements**
+
+- **PyPAM 1.0.0**: Updated to the latest PyPAM release, which includes dependency
+  security fixes. Verified with new regression tests: HMB results are unchanged.
+  Thanks to @cparcerisas for the new PyPAM release!
+- **Hyphenated Filenames**: `pbp meta-gen` now recognizes timestamps in hyphenated
+  filenames, e.g., `NRS11-210101-123456.wav`.
+  Thanks to @dmullin-noaa for this contribution!
+- **Updated Dependencies**: Kept dependencies up to date for improved stability and security
+
+**Bug Fixes**
+
+- **Gaps Between Days**: `pbp meta-gen` no longer stops for icListen and RESEA recorders
+  when the source data has a gap between days; days without data are skipped.
+  Thanks to @gabethemyers for reporting this issue!
+
 ## 1.8.74
 (Feb 2026)
 

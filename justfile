@@ -238,6 +238,10 @@ ty:
 snapshot-update:
     poetry run pytest --snapshot-update
 
+# Regenerate numeric golden files under tests/golden/ (only when changes are understood!)
+golden-update:
+    poetry run pytest tests/test_hmb_regression.py --golden-update
+
 # Run tests
 test *options="":
     poetry run pytest {{options}}
