@@ -6,7 +6,7 @@ import loguru
 import numpy as np
 import xarray as xr
 
-from pbp.hmb_gen.hmso_pypam import HmsoPypam
+from pbp.hmb_gen.hmso_pypam import HmsoPypam, SpectrumBander
 
 from pbp.hmb_gen.misc_helper import brief_list
 
@@ -30,7 +30,7 @@ class ProcessResult:
 class _CapturedSegment:
     dt: datetime
     num_secs: float
-    spectrum: Optional[np.ndarray]
+    bands: Optional[np.ndarray]
 
 
 class PypamSupport:
@@ -69,8 +69,8 @@ class PypamSupport:
         self._captured_segments: List[_CapturedSegment] = []
         self._num_actual_segments: int = 0
 
-        # Determined from any actual segment:
-        self._fbands: Optional[np.ndarray] = None
+        # Determined from the first actual segment:
+        self._bander: Optional[SpectrumBander] = None
 
         # The following determined when `set_parameters` is called:
 
@@ -105,7 +105,17 @@ class PypamSupport:
 
         self.hmso = HmsoPypam(self.fs, self._nfft)
 
-        self._bands_limits, self._bands_c = self.hmso.get_hybrid_millidecade_limits(band)
+        bands_limits, bands_c = self.hmso.get_hybrid_millidecade_limits(band)
+        if subset_to is not None:
+            bands_limits, bands_c = self._adjust_limits(bands_limits, bands_c, subset_to)
+
+        def print_array(name: str, arr: List[float]):
+            self.log.info(f"{name} ({len(arr)}) = {brief_list(arr)}")
+
+        print_array("       bands_c", bands_c)
+        print_array("  bands_limits", bands_limits)
+
+        self._bands_limits, self._bands_c = bands_limits, bands_c
 
     @property
     def parameters_set(self) -> bool:
@@ -140,9 +150,15 @@ class PypamSupport:
         assert self._nfft is not None
         assert self.hmso is not None
 
-        self._fbands, spectrum = self.hmso.compute_spectrum(data)
+        fbands, spectrum = self.hmso.compute_spectrum(data)
+        if self._bander is None:
+            self._bander = SpectrumBander(
+                fbands, self._bands_limits, self.hmso.fft_bin_width
+            )
+        # Only retain the (much smaller) band values for the segment:
+        bands = self._bander.apply(spectrum)
         num_secs = len(data) / self.fs
-        self._captured_segments.append(_CapturedSegment(dt, num_secs, spectrum))
+        self._captured_segments.append(_CapturedSegment(dt, num_secs, bands))
         self._num_actual_segments += 1
         self.log.debug(f"  captured segment: {dt}")
 
@@ -170,28 +186,24 @@ class PypamSupport:
         if self._num_actual_segments == 0:
             return None
 
-        # Use any actual segment to determine NaN spectrum for the missing segments:
-        actual = next(s for s in self._captured_segments if s.spectrum is not None)
-        assert actual is not None, "unexpected: no actual segment found"
-        assert actual.spectrum is not None, "unexpected: no actual.spectrum"
-        nan_spectrum = np.full(len(actual.spectrum), np.nan)
+        nan_bands = np.full(len(self._bands_c), np.nan)
 
         # gather resulting variables:
         times: List[np.int64] = []
         effort: List[np.float32] = []
-        spectra: List[np.ndarray] = []
+        bands_list: List[np.ndarray] = []
         for cs in self._captured_segments:
             times.append(np.int64(cs.dt.timestamp()))
             effort.append(np.float32(cs.num_secs))
 
-            spectrum = nan_spectrum if cs.spectrum is None else cs.spectrum
-            self.log.debug(f"  spectrum for: {cs.dt} (effort={cs.num_secs})")
-            spectra.append(spectrum)
+            bands = nan_bands if cs.bands is None else cs.bands
+            self.log.debug(f"  bands for: {cs.dt} (effort={cs.num_secs})")
+            bands_list.append(bands)
 
         self.log.info("Aggregating results ...")
         psd_da = self._get_aggregated_milli_psd(
             times=times,
-            spectra=spectra,
+            bands_list=bands_list,
             sensitivity_da=sensitivity_da,
         )
 
@@ -205,17 +217,14 @@ class PypamSupport:
     def _get_aggregated_milli_psd(
         self,
         times: List[np.int64],
-        spectra: List[np.ndarray],
+        bands_list: List[np.ndarray],
         sensitivity_da: Optional[xr.DataArray] = None,
     ) -> xr.DataArray:
-        # Convert the spectra to a DataArray
         psd_da = xr.DataArray(
-            data=spectra,
-            coords={"time": times, "frequency": self._fbands},
-            dims=["time", "frequency"],
+            data=np.stack(bands_list),
+            coords={"time": times, "frequency_bins": self._bands_c},
+            dims=["time", "frequency_bins"],
         )
-
-        psd_da = self._spectra_to_bands(psd_da)
         self.log.debug(f"  {psd_da.frequency_bins=}")
         psd_da = self._apply_sensitivity_if_given(psd_da, sensitivity_da)
 
@@ -252,28 +261,6 @@ class PypamSupport:
             )
             psd_da -= freq_subset.values
 
-        return psd_da
-
-    def _spectra_to_bands(self, psd_da: xr.DataArray) -> xr.DataArray:
-        assert self.fs is not None
-        assert self._nfft is not None
-        assert self.hmso is not None
-
-        bands_limits, bands_c = self._bands_limits, self._bands_c
-        if self._subset_to is not None:
-            bands_limits, bands_c = self._adjust_limits(
-                bands_limits, bands_c, self._subset_to
-            )
-
-        def print_array(name: str, arr: List[float]):
-            self.log.info(f"{name} ({len(arr)}) = {brief_list(arr)}")
-
-        print_array("       bands_c", bands_c)
-        print_array("  bands_limits", bands_limits)
-
-        psd_da = self.hmso.spectra_ds_to_bands(psd_da, bands_limits, bands_c)
-
-        psd_da = psd_da.drop_vars(["lower_frequency", "upper_frequency"])
         return psd_da
 
     def _adjust_limits(

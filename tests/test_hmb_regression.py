@@ -19,10 +19,11 @@ import numpy as np
 import pytest
 import soundfile as sf
 import xarray as xr
+from pypam import utils as pypam_utils
 
 from pbp import get_pbp_version, get_pypam_version
 from pbp.hmb_gen.file_helper import FileHelper
-from pbp.hmb_gen.hmso_pypam import HmsoPypam
+from pbp.hmb_gen.hmso_pypam import HmsoPypam, SpectrumBander
 from pbp.hmb_gen.main_hmb_generator_file import FileProcessor
 from pbp.hmb_gen.process_helper import ProcessHelper
 from pbp.hmb_gen.pypam_support import PypamSupport
@@ -101,6 +102,15 @@ def _structure(ds: xr.Dataset) -> dict[str, Any]:
     }
 
 
+def _pypam_spectra_ds_to_bands(
+    hmso: HmsoPypam, psd: xr.DataArray, bands_limits, bands_c
+) -> xr.DataArray:
+    """Reference banding, as previously used directly by pbp (linear units)."""
+    return pypam_utils.spectra_ds_to_bands(
+        psd, bands_limits, bands_c, hmso.fft_bin_width, db=False
+    )
+
+
 def _dataset_arrays(ds: xr.Dataset) -> dict[str, np.ndarray]:
     return {str(name): var.values for name, var in ds.variables.items()}
 
@@ -154,7 +164,7 @@ def test_spectra_ds_to_bands(golden):
         dims=["time", "frequency"],
     )
     bands_limits, bands_c = hmso.get_hybrid_millidecade_limits([0, fs / 2])
-    res = hmso.spectra_ds_to_bands(psd, bands_limits, bands_c)
+    res = _pypam_spectra_ds_to_bands(hmso, psd, bands_limits, bands_c)
     golden.check(
         "spectra_ds_to_bands",
         {
@@ -165,6 +175,40 @@ def test_spectra_ds_to_bands(golden):
         },
         rtol=RTOL_F64,
     )
+
+
+@pytest.mark.parametrize(
+    "fs,nfft,subset_to",
+    [
+        (8000, 8000, None),
+        (48000, 48000, None),
+        (48000, 48000, (10, 20000)),
+        (48000, 4096, None),
+        (48000, 4096, (10, 20000)),
+        (256000, 256000, None),
+        (256000, 256000, (100, 3000)),
+    ],
+)
+def test_spectrum_bander_matches_pypam(log, fs, nfft, subset_to):
+    # SpectrumBander (per-segment) must be equivalent to pypam's spectra_ds_to_bands.
+    hmso = HmsoPypam(fs, nfft)
+    fbands, _ = hmso.compute_spectrum(_synthetic_signal(fs, 2))
+    bands_limits, bands_c = hmso.get_hybrid_millidecade_limits([0, fs / 2])
+    if subset_to is not None:
+        bands_limits, bands_c = PypamSupport(log)._adjust_limits(
+            bands_limits, bands_c, subset_to
+        )
+    spectra = np.random.default_rng(42).random((3, len(fbands)))
+    psd = xr.DataArray(
+        data=spectra,
+        coords={"time": [0, 1, 2], "frequency": fbands},
+        dims=["time", "frequency"],
+    )
+    expected = _pypam_spectra_ds_to_bands(hmso, psd, bands_limits, bands_c).values
+
+    bander = SpectrumBander(fbands, bands_limits, hmso.fft_bin_width)
+    actual = np.stack([bander.apply(s) for s in spectra])
+    np.testing.assert_allclose(actual, expected, rtol=RTOL_F64)
 
 
 # --- PypamSupport (aggregation) ---

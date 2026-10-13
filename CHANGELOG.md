@@ -1,3 +1,11 @@
+Unreleased
+
+- HMB generation: hybrid millidecade bands are now computed on a per-segment basis,
+  retaining only the band values (instead of the full-resolution spectrum) for each
+  segment until the day/file is aggregated (https://github.com/mbari-org/pbp/issues/4).
+  For a full day at 256 kHz, this reduces peak memory from ~5.9 GB to ~1.5 GB.
+  Results are unchanged (regression goldens pass as is).
+
 2026-10
 
 1.9.0
