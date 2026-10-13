@@ -1,6 +1,5 @@
 from typing import Tuple, List
 import numpy as np
-import xarray as xr
 
 from pypam import utils
 import pypam.signal as pypam_signal
@@ -34,18 +33,6 @@ class HmsoPypam:
             scaling=scaling, nfft=self.nfft, db=db, overlap=overlap, force_calc=True
         )
         return fbands, spectrum
-
-    def spectra_ds_to_bands(
-        self,
-        psd: xr.DataArray,
-        bands_limits: List[float],
-        bands_c: List[float],
-        freq_coord: str = "frequency",
-        db: bool = False,
-    ) -> xr.DataArray:
-        return utils.spectra_ds_to_bands(
-            psd, bands_limits, bands_c, self.fft_bin_width, freq_coord, db
-        )
 
 
 class SpectrumBander:
