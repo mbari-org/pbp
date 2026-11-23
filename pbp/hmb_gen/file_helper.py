@@ -95,6 +95,7 @@ class FileHelper:
 
         Args:
             log: Logger instance.
+            json_base_dir (str, required): Base directory where JSON files are located.
             audio_base_dir (str, optional): Base directory for relative `path` attributes in JSON entries.
             audio_path_map_prefix (str, optional): Prefix mapping for resolving actual audio URIs.
                 Example: `"s3://pacific-sound-256khz-2022~file:///PAM_Archive/2022"`.
