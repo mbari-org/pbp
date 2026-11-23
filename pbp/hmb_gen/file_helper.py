@@ -341,6 +341,15 @@ class FileHelper:
                     diff_seconds = exclude_tone_calibration_seconds - start_secs
                     start_secs = exclude_tone_calibration_seconds
                     duration_secs -= diff_seconds
+                    if duration_secs <= 0:
+                        # Intersection entirely within the excluded window.
+                        # (Note: a negative frame count would make soundfile
+                        # read to the end of the file.)
+                        self.log.trace(
+                            f"{prefix}: intersection {i} fully excluded by"
+                            f" {exclude_tone_calibration_seconds=}"
+                        )
+                        continue
 
             start_sample = floor(start_secs * audio_info.samplerate)
             num_samples = ceil(duration_secs * audio_info.samplerate)

@@ -150,6 +150,16 @@ class PypamSupport:
         assert self._nfft is not None
         assert self.hmso is not None
 
+        if len(data) < self._nfft:
+            # Not enough samples for a spectrum (and pypam would zero-pad such
+            # a signal into an all-zero spectrum, i.e., -inf after log10).
+            self.log.warning(
+                f"  segment at {dt} has {len(data)} samples < {self._nfft=};"
+                " marked as missing"
+            )
+            self.add_missing_segment(dt)
+            return
+
         fbands, spectrum = self.hmso.compute_spectrum(data)
         if self._bander is None:
             self._bander = SpectrumBander(

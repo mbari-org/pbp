@@ -317,9 +317,11 @@ class ProcessHelper:
 
         if self.pypam_support.parameters_set:
             if self.pypam_support.fs != audio_info.samplerate:
-                self.log.info(
-                    f"ERROR: samplerate changed from {self.pypam_support.fs} to {audio_info.samplerate}"
+                self.log.error(
+                    f"samplerate changed from {self.pypam_support.fs} to {audio_info.samplerate}"
+                    f" at {at_hour:02}:{at_minute:02}:{at_second:02}; segment marked as missing"
                 )
+                self.pypam_support.add_missing_segment(dt)
                 return
         else:
             self.log.info("Got audio parameters")
