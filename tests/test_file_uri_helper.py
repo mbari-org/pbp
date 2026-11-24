@@ -1,6 +1,25 @@
 import pytest
 
-from pbp.util.file_uri_helper import file_uri_to_path
+from pbp.util.file_uri_helper import file_uri_to_path, is_local_scheme
+
+
+@pytest.mark.parametrize(
+    "scheme,windows,expected",
+    [
+        ("", False, True),
+        ("file", False, True),
+        ("c", False, False),
+        ("", True, True),
+        ("file", True, True),
+        ("c", True, True),  # drive letter
+        ("s3", True, False),
+        ("s3", False, False),
+        ("gs", False, False),
+        ("https", True, False),
+    ],
+)
+def test_is_local_scheme(scheme: str, windows: bool, expected: bool):
+    assert is_local_scheme(scheme, windows=windows) == expected
 
 
 @pytest.mark.parametrize(

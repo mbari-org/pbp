@@ -3,6 +3,24 @@ from typing import Optional, Union
 from urllib.parse import ParseResult, unquote, urlparse
 
 
+def is_local_scheme(scheme: str, windows: Optional[bool] = None) -> bool:
+    """
+    Tells whether a scheme, as given by `urlparse`, denotes a local file.
+
+    Args:
+        scheme: The scheme: "" for a plain path, "file" for a `file://` URI.
+            On Windows, a one-letter scheme is a drive letter (e.g., "C:\\...").
+        windows: Whether to apply Windows conventions.
+            By default, determined from the running OS.
+
+    Returns:
+        True if local.
+    """
+    if windows is None:
+        windows = os.name == "nt"
+    return scheme in ("", "file") or (windows and len(scheme) == 1)
+
+
 def file_uri_to_path(uri: Union[str, ParseResult], windows: Optional[bool] = None) -> str:
     """
     Converts a `file://` URI (or a plain path) to a local filesystem path.

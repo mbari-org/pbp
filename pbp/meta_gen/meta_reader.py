@@ -13,6 +13,7 @@ import soundfile as sf
 import pandas as pd
 from datetime import datetime, timedelta
 from pbp.meta_gen.utils import parse_s3_or_gcp_url
+from pbp.util.file_uri_helper import file_uri_to_path, is_local_scheme
 from pbp.util.http_helper import read_url_head
 
 
@@ -191,8 +192,8 @@ class FlacFile(AudioFile):
                 self.subtype = "flac"
                 self.fs = sample_rate
                 self.frames = info.frames if info.frames else 0
-            if scheme == "file" or scheme == "":
-                info = sf.info(path_or_url)
+            elif is_local_scheme(scheme):
+                info = sf.info(file_uri_to_path(path_or_url))
                 length_microseconds = int(info.frames * 1e6 / info.samplerate)
                 self.duration_secs = int(length_microseconds / 1e6)
                 self.end = self.start + timedelta(microseconds=length_microseconds)
@@ -200,5 +201,8 @@ class FlacFile(AudioFile):
                 self.frames = info.frames
                 self.channels = info.channels
                 self.subtype = info.subtype if info.subtype else ""
+            else:
+                self.exception = f"Unsupported location for flac: {path_or_url}"
+                self.log.error(self.exception)
         except Exception as ex:
             self.log.exception(f"Corrupt file {path_or_url}. {ex}")
