@@ -28,7 +28,7 @@ def run_main_meta_generator(opts: Namespace):
 
     log = create_logger(
         log_filename_and_level=(
-            f"{opts.output_dir}/{opts.recorder}{start:%Y%m%d}_{end:%Y%m%d}.log",
+            str(log_dir / f"{opts.recorder}{start:%Y%m%d}_{end:%Y%m%d}.log"),
             "INFO",
         ),
         console_level="INFO",

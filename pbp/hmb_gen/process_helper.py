@@ -1,5 +1,4 @@
 import pathlib
-import os
 import loguru
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -265,11 +264,10 @@ class ProcessHelper:
         )
 
         generated_filenames = []
-        basename = f"{self.output_dir}/{self.output_prefix}{year:04}{month:02}{day:02}"
-        if os.name == "nt":
-            basename = (
-                f"{self.output_dir}\\{self.output_prefix}{year:04}{month:02}{day:02}"
-            )
+        basename = str(
+            pathlib.Path(self.output_dir)
+            / f"{self.output_prefix}{year:04}{month:02}{day:02}"
+        )
 
         if self.gen_netcdf:
             nc_filename = f"{basename}.nc"

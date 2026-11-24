@@ -188,13 +188,13 @@ def main():
     # workspace for downloads and generated files to be uploaded
     cloud_tmp_dir = os.getenv("CLOUD_TMP_DIR", "cloud_tmp")
 
-    download_dir = f"{cloud_tmp_dir}/downloads"
+    download_dir = str(pathlib.Path(cloud_tmp_dir) / "downloads")
     pathlib.Path(download_dir).mkdir(parents=True, exist_ok=True)
 
-    generated_dir = f"{cloud_tmp_dir}/generated"
+    generated_dir = str(pathlib.Path(cloud_tmp_dir) / "generated")
     pathlib.Path(generated_dir).mkdir(parents=True, exist_ok=True)
 
-    log_filename = f"{generated_dir}/{output_prefix}{date}.log"
+    log_filename = str(pathlib.Path(generated_dir) / f"{output_prefix}{date}.log")
     log = create_logger(
         log_filename_and_level=(log_filename, "INFO"),
         console_level="DEBUG",

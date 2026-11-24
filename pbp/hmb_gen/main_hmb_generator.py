@@ -11,13 +11,15 @@ from pbp.hmb_gen.main_hmb_generator_args import parse_arguments
 def run_main_hmb_generator(opts: Namespace) -> None:
     import os
 
+    from pathlib import Path
+
     from pbp.hmb_gen.file_helper import FileHelper
     from pbp.util.logging_helper import create_logger
     from pbp.hmb_gen.process_helper import ProcessHelper
 
     log = create_logger(
         log_filename_and_level=(
-            f"{opts.output_dir}/{opts.output_prefix}{opts.date}.log",
+            str(Path(opts.output_dir) / f"{opts.output_prefix}{opts.date}.log"),
             os.getenv("PBP_FILE_LOG_LEVEL", "INFO"),
         ),
         console_level=os.getenv("PBP_CONSOLE_LOG_LEVEL", "WARNING"),

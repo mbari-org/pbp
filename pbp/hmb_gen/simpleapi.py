@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pbp.hmb_gen.process_helper import ProcessHelper, ProcessDayResult
 from pbp.hmb_gen.file_helper import FileHelper
 from pbp.hmb_gen.param_checks import check_hmb_gen_params
@@ -462,7 +464,7 @@ class _HmbGen:
         pd.plotting.deregister_matplotlib_converters()
 
     def process_date(self, date: str) -> Optional[ProcessDayResult]:
-        nc_filename = f"{self.output_dir}/{self.output_prefix}{date}.nc"
+        nc_filename = str(Path(self.output_dir) / f"{self.output_prefix}{date}.nc")
 
         print(f"{_version()}: Processing {date} to generate {nc_filename}...")
 
@@ -515,7 +517,7 @@ class _HmbGen:
         dpi: int,
         show: bool = False,
     ) -> None:
-        nc_filename = f"{self.output_dir}/{self.output_prefix}{date}.nc"
+        nc_filename = str(Path(self.output_dir) / f"{self.output_prefix}{date}.nc")
         jpeg_filename = nc_filename.replace(".nc", ".jpg")
 
         ds = xr.open_dataset(nc_filename, engine="h5netcdf")

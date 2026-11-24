@@ -1,5 +1,9 @@
 Unreleased
 
+- Local output, log and download paths are now built with `pathlib`, so they are shown
+  with consistent separators on Windows (e.g., `H:\out\x.nc` instead of `H:\out/x.nc`)
+  (https://github.com/mbari-org/pbp/issues/39).
+
 - meta-gen: fixed local audio paths on Windows for NRS (https://github.com/mbari-org/pbp/issues/78).
   All generators (NRS, icListen, RESEA, SoundTrap), as well as the hmb-gen `UriHandler`,
   now use a common `pbp.util.file_uri_helper.file_uri_to_path` to convert `file://` URIs

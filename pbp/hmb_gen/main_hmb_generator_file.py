@@ -61,8 +61,8 @@ def main_hmb_generator_file(opts: Namespace) -> None:
         print(f"Loaded sensitivity from '{opts.sensitivity_uri}'")
 
     sound_file = sf.SoundFile(opts.input_file)
-    log_filename = f"{opts.output_dir}/{simple_name}.log"
-    output_filename = f"{opts.output_dir}/{simple_name}.nc"
+    log_filename = str(pathlib.Path(opts.output_dir) / f"{simple_name}.log")
+    output_filename = str(pathlib.Path(opts.output_dir) / f"{simple_name}.nc")
 
     print(f"  Input file:      {sound_file}")
     print(f"  log_filename:    {log_filename}")

@@ -135,7 +135,7 @@ class UriHandler:
         pathlib.Path(self.download_dir).mkdir(parents=True, exist_ok=True)
 
         bucket, key, simple = get_bucket_key_simple(parsed_uri)
-        local_filename = f"{self.download_dir}/{simple}"
+        local_filename = str(pathlib.Path(self.download_dir) / simple)
 
         if os.path.isfile(local_filename) and self.assume_downloaded_files:
             self.log.info(
