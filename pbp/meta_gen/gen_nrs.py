@@ -18,7 +18,7 @@ from pbp.meta_gen import utils
 from pbp.meta_gen.json_generator import JsonGenerator
 from pbp.meta_gen.meta_reader import FlacFile, GenericWavFile as WavFile
 from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
-from pbp.util.file_uri_helper import file_uri_to_path
+from pbp.util.file_uri_helper import file_uri_to_path, is_local_scheme
 from pbp.meta_gen.utils import parse_s3_or_gcp_url, InstrumentType, plot_daily_coverage
 
 
@@ -74,7 +74,7 @@ class NRSMetadataGenerator(MetadataGeneratorAbstract):
         start_dt = self.start - timedelta(minutes=minutes_window)
         end_dt = self.end + timedelta(days=1)
 
-        if scheme == "file" or scheme == "":
+        if is_local_scheme(scheme):
             sound_path = Path(file_uri_to_path(self.audio_loc))
             file_extensions = ["*.flac", "*.wav"]
             for ext in file_extensions:

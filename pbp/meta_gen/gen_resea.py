@@ -21,7 +21,7 @@ from pbp.meta_gen.utils import (
 from pbp.meta_gen.json_generator import JsonGenerator
 from pbp.meta_gen.meta_reader import GenericWavFile
 from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
-from pbp.util.file_uri_helper import file_uri_to_path
+from pbp.util.file_uri_helper import file_uri_to_path, is_local_scheme
 
 
 class ReseaMetadataGenerator(MetadataGeneratorAbstract):
@@ -84,7 +84,7 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
                 start_dt = day - timedelta(hours=1)
                 end_dt = day + timedelta(days=1)
 
-                if scheme == "file":
+                if is_local_scheme(scheme):
                     wav_path = Path(file_uri_to_path(self.audio_loc))
                     for filename in progressbar(
                         sorted(wav_path.rglob("*.wav")), prefix="Searching : "

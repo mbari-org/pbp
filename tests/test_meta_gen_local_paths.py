@@ -1,5 +1,6 @@
 """
-NRS metadata generation from local files (https://github.com/mbari-org/pbp/issues/78).
+NRS metadata generation from local files (https://github.com/mbari-org/pbp/issues/78),
+including plain absolute paths (e.g., "C:\\..." on Windows).
 """
 
 import json
@@ -25,12 +26,14 @@ def _make_nrs_files(audio_dir: Path) -> None:
         sf.write(audio_dir / f"NRS11_20191024_{t}.flac", sig, FS)
 
 
-@pytest.mark.parametrize("uri_kind", ["file_uri", "relative_path"])
+@pytest.mark.parametrize("uri_kind", ["file_uri", "absolute_path", "relative_path"])
 def test_nrs_generator_local(tmp_path, monkeypatch, uri_kind: str):
     audio_dir = tmp_path / "audio"
     _make_nrs_files(audio_dir)
     if uri_kind == "file_uri":
         uri = audio_dir.as_uri()  # file:///...
+    elif uri_kind == "absolute_path":
+        uri = str(audio_dir)  # e.g., C:\\... on Windows
     else:
         monkeypatch.chdir(tmp_path)
         uri = "audio"

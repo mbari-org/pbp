@@ -18,7 +18,7 @@ from progressbar import progressbar
 from pbp.meta_gen.gen_abstract import SoundTrapMetadataGeneratorAbstract
 from pbp.meta_gen.meta_reader import GenericWavFile
 from pbp.meta_gen.json_generator import JsonGenerator
-from pbp.util.file_uri_helper import file_uri_to_path
+from pbp.util.file_uri_helper import file_uri_to_path, is_local_scheme
 from pbp.meta_gen.utils import (
     parse_s3_or_gcp_url,
     InstrumentType,
@@ -81,7 +81,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             # Set the start and end dates to 1 day before and after the start and end dates
             start_dt = self.start - timedelta(days=1)
             end_dt = self.end + timedelta(days=1)
-            if scheme == "file":
+            if is_local_scheme(scheme):
                 wav_path = Path(file_uri_to_path(self.audio_loc))
 
                 for filename in progressbar(
