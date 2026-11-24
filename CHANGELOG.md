@@ -1,5 +1,9 @@
 Unreleased
 
+- HMB generation: no longer logs an `ERROR Unrecognized var_attribute_name=...` for each
+  variable when no `--variable-attrs` is given (it is optional). When given, a variable
+  without attributes is now reported as a warning.
+
 - HMB generation: hybrid millidecade bands are now computed on a per-segment basis,
   retaining only the band values (instead of the full-resolution spectrum) for each
   segment until the day/file is aggregated (https://github.com/mbari-org/pbp/issues/4).
@@ -28,6 +32,13 @@ Unreleased
   before any processing, used by `pbp-hmb-gen`, the cloud entry point, and `simpleapi`.
   `pbp-hmb-gen` now also rejects `--exclude-tone-calibration` and `--max-segments`
   with `--input-file`, and requires `--json-base-dir` otherwise.
+
+- meta-gen: faster metadata generation for remote audio files (as currently supported:
+  wav on S3, flac on GCS): file headers are now read with a single ranged GET request
+  (`Range: bytes=0-19999`), instead of full GET requests (two per file for wav on S3). 
+  New utility `pbp.util.http_helper.read_url_head`.
+  Generated JSON is unchanged. As this saves a request per remote file, the time saved grows
+  with the number of files processed (e.g., ~30% faster for a day of 10-minute MARS files).
 
 2026-10
 
