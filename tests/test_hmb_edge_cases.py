@@ -1,6 +1,7 @@
 """
 Tests for edge cases in HMB generation reported in
-https://github.com/mbari-org/pbp/issues/130.
+https://github.com/mbari-org/pbp/issues/130 and
+https://github.com/mbari-org/pbp/issues/131.
 """
 
 import json
@@ -15,7 +16,7 @@ import xarray as xr
 
 from pbp.hmb_gen.file_helper import FileHelper
 from pbp.hmb_gen.main_hmb_generator_file import FileProcessor
-from pbp.hmb_gen.process_helper import ProcessHelper
+from pbp.hmb_gen.process_helper import ProcessHelper, save_dataset_to_netcdf
 from pbp.util.logging_helper import create_logger
 
 FS = 8000
@@ -146,3 +147,51 @@ def test_samplerate_change_segments_are_missing(log, tmp_path):
     assert ds.sizes["time"] == 6
     np.testing.assert_array_equal(ds.effort.values, [60, 60, 0, 0, 0, 0])
     _assert_missing_rows(ds, [2, 3, 4, 5])
+
+
+# --- #131 ---
+
+
+def _assert_saved(result, output_filename: pathlib.Path, num_times: int) -> None:
+    assert result is not None
+    assert result.generated_filenames == [str(output_filename)]
+    with xr.open_dataset(output_filename) as nc:
+        assert "psd" in nc.data_vars
+        assert nc.sizes["time"] == num_times
+
+
+def test_save_without_sensitivity(log, tmp_path):
+    wav = tmp_path / "a.wav"
+    _make_wav(wav, 120)
+    output_filename = tmp_path / "a.nc"
+    result = _process_file(log, wav, output_filename)
+    assert "sensitivity" not in result.dataset.variables
+    _assert_saved(result, output_filename, num_times=2)
+
+
+def test_save_single_segment(log, tmp_path):
+    wav = tmp_path / "a.wav"
+    _make_wav(wav, 30)
+    output_filename = tmp_path / "a.nc"
+    result = _process_file(log, wav, output_filename, sensitivity_flat_value=-170.0)
+    _assert_saved(result, output_filename, num_times=1)
+
+
+def test_failed_save_leaves_no_file(log, tmp_path, monkeypatch):
+    def failing_to_netcdf(self, path, *args, **kwargs):
+        pathlib.Path(path).touch()  # as h5netcdf creates the file before failing
+        raise RuntimeError("simulated failure")
+
+    monkeypatch.setattr(xr.Dataset, "to_netcdf", failing_to_netcdf)
+
+    output_filename = tmp_path / "a.nc"
+    ds = xr.Dataset({"effort": ("time", [60.0])})
+    assert not save_dataset_to_netcdf(log, ds, str(output_filename))
+    assert not output_filename.exists()
+
+    wav = tmp_path / "a.wav"
+    _make_wav(wav, 120)
+    result = _process_file(log, wav, output_filename)
+    assert result is not None
+    assert result.generated_filenames == []
+    assert not output_filename.exists()

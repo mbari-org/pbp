@@ -215,8 +215,9 @@ class FileProcessor:
             attrs=self._get_global_attributes(),
         )
 
-        save_dataset_to_netcdf(self.log, ds_result, self.output_filename)
-        generated_filenames = [self.output_filename]
+        generated_filenames = []
+        if save_dataset_to_netcdf(self.log, ds_result, self.output_filename):
+            generated_filenames.append(self.output_filename)
 
         return ProcessDayResult(generated_filenames, ds_result)
 

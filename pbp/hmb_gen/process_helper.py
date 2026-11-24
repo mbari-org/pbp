@@ -273,8 +273,8 @@ class ProcessHelper:
 
         if self.gen_netcdf:
             nc_filename = f"{basename}.nc"
-            save_dataset_to_netcdf(self.log, ds_result, nc_filename)
-            generated_filenames.append(nc_filename)
+            if save_dataset_to_netcdf(self.log, ds_result, nc_filename):
+                generated_filenames.append(nc_filename)
 
         self.file_helper.day_completed()
 
@@ -384,9 +384,10 @@ def save_dataset_to_netcdf(
     """
     log.info(f"  - saving dataset to: {filename}  (compressed: {compress_netcdf})")
     encoding: dict[Any, dict[str, Any]] = {
-        "effort": {"_FillValue": None},
-        "frequency": {"_FillValue": None},
-        "sensitivity": {"_FillValue": None},
+        k: {"_FillValue": None}
+        for k in ("effort", "frequency", "sensitivity")
+        # (sensitivity, in particular, is optional)
+        if k in ds.variables
     }
     if compress_netcdf:
         for k in ds.data_vars:
@@ -396,7 +397,7 @@ def save_dataset_to_netcdf(
                 "zlib": True,
                 "complevel": 3,
                 "fletcher32": True,
-                "chunksizes": tuple(map(lambda x: x // 2, ds[k].shape)),
+                "chunksizes": tuple(map(lambda x: max(1, x // 2), ds[k].shape)),
             }
     try:
         ds.to_netcdf(filename, format="NETCDF4", engine="h5netcdf", encoding=encoding)
@@ -405,4 +406,6 @@ def save_dataset_to_netcdf(
         error = f"Unable to save {filename}: {e}"
         log.exception(error)
         print(error)
+        # Do not leave behind a partially created file:
+        pathlib.Path(filename).unlink(missing_ok=True)
         return False
