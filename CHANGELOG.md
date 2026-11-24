@@ -4,6 +4,9 @@ Unreleased
   with consistent separators on Windows (e.g., `H:\out\x.nc` instead of `H:\out/x.nc`)
   (https://github.com/mbari-org/pbp/issues/39).
 
+- HMB generation on Windows: `UriHandler` now also applies `base_dir` (e.g., `--audio-base-dir`)
+  to relative local locations, and `path_prefix` to rooted ones, as on other systems.
+
 - meta-gen: fixed local audio paths on Windows for NRS (https://github.com/mbari-org/pbp/issues/78).
   All generators (NRS, icListen, RESEA, SoundTrap), as well as the hmb-gen `UriHandler`,
   now use a common `pbp.util.file_uri_helper.file_uri_to_path` to convert `file://` URIs

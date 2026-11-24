@@ -5,10 +5,12 @@ These tests verify URI resolution, local path handling, cloud storage operations
 and file cleanup functionality.
 """
 
+import os
 import tempfile
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+import pytest
 
 from pbp.util.uri_handler import UriHandler
 
@@ -135,6 +137,7 @@ class TestUriHandler:
             assert result == "/tmp/downloaded_file.wav"
             mock_download.assert_called_once()
 
+    @pytest.mark.skipif(os.name == "nt", reason="POSIX path expectations")
     def test_get_local_filename_local_absolute_path(self):
         """Test getting local filename for absolute local path."""
         handler = UriHandler(self.mock_logger, path_prefix="/prefix")
@@ -143,6 +146,7 @@ class TestUriHandler:
 
         assert result == "/prefix/audio/file.wav"
 
+    @pytest.mark.skipif(os.name == "nt", reason="POSIX path expectations")
     def test_get_local_filename_local_with_base_dir(self):
         """Test getting local filename with base directory."""
         handler = UriHandler(self.mock_logger, base_dir="/base")
@@ -151,6 +155,7 @@ class TestUriHandler:
 
         assert result == "/base/relative/file.wav"
 
+    @pytest.mark.skipif(os.name == "nt", reason="POSIX path expectations")
     def test_get_local_filename_local_relative_no_base(self):
         """Test getting local filename for relative path without base directory."""
         handler = UriHandler(self.mock_logger)
@@ -205,6 +210,23 @@ class TestUriHandler:
         # Plain absolute path without scheme
         result = handler.get_local_filename("C:/audio/file.wav")
         assert result == "C:/audio/file.wav"
+
+    @patch("os.name", "nt")
+    def test_get_local_filename_windows_base_dir_and_path_prefix(self):
+        """Test base_dir and path_prefix are also applied on Windows."""
+        handler = UriHandler(self.mock_logger, base_dir="C:/base", path_prefix="D:")
+
+        # relative: joined to base_dir
+        result = handler.get_local_filename("file://relative/file.wav")
+        assert result == "C:\\base\\relative\\file.wav"
+
+        # rooted (relative to the current drive root): path_prefix applied
+        result = handler.get_local_filename("file:///audio/file.wav")
+        assert result == "D:/audio/file.wav"
+
+        # with drive: used as is
+        result = handler.get_local_filename("file:///E:/audio/file.wav")
+        assert result == "E:/audio/file.wav"
 
     def test_remove_downloaded_file_not_exists(self):
         """Test removing downloaded file when file doesn't exist."""
@@ -340,7 +362,7 @@ class TestUriHandlerIntegration:
             result = handler.get_local_filename(uri)
 
             assert result is not None
-            assert result == f"{temp_dir}/test.wav"
+            assert Path(result) == Path(temp_dir) / "test.wav"
             assert Path(result).exists()
 
     def test_prefix_mapping_integration(self):

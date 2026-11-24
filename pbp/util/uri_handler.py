@@ -185,7 +185,7 @@ class UriHandler:
         path = parsed_uri.path
 
         if os.name == "nt":
-            return file_uri_to_path(parsed_uri, windows=True)
+            return self._resolve_local_path_windows(parsed_uri)
 
         # For file:// URIs, check if we have a netloc (like "file://relative/path")
         # vs absolute paths (like "file:///absolute/path")
@@ -206,6 +206,23 @@ class UriHandler:
             local_filename = path
 
         return local_filename
+
+    def _resolve_local_path_windows(self, parsed_uri: ParseResult) -> str:
+        """
+        Windows counterpart of the above, with the same use of `base_dir` and `path_prefix`.
+        """
+        local_path = file_uri_to_path(parsed_uri, windows=True)
+        windows_path = pathlib.PureWindowsPath(local_path)
+        if windows_path.drive:
+            # e.g., "C:/path": used as is.
+            return local_path
+        if windows_path.root:
+            # e.g., "/path" (relative to the current drive root).
+            return f"{self.path_prefix}{local_path}"
+        if self.base_dir is not None:
+            # e.g., from "file://relative/path".
+            return str(pathlib.PureWindowsPath(self.base_dir) / windows_path)
+        return local_path
 
     def is_cloud_uri(self, uri: str) -> bool:
         """
