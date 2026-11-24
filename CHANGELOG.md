@@ -10,6 +10,9 @@ Unreleased
 - meta-gen: the audio location can now also be given as a plain path for all recorders,
   including `C:\...` on Windows (previously only `file://` URIs were reliably accepted).
 
+- HMB generation: `--audio-path-map-prefix` ("old~new") now splits only on the first `~`,
+  so the target can contain `~`, e.g., a Windows short path like `C:\Users\RUNNER~1\...`.
+
 - meta-gen: fixed local audio paths on Windows for NRS (https://github.com/mbari-org/pbp/issues/78).
   All generators (NRS, icListen, RESEA, SoundTrap), as well as the hmb-gen `UriHandler`,
   now use a common `pbp.util.file_uri_helper.file_uri_to_path` to convert `file://` URIs

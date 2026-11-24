@@ -43,12 +43,14 @@ def map_prefix(prefix_map: str, s: str) -> str:
     """
     Helper to replace a prefix to another prefix in given string
     according to prefix_map.
-    :param prefix_map:  Like "old~new".
+    :param prefix_map:  Like "old~new". Only the first "~" is the separator,
+        so "new" can itself contain "~", e.g., a Windows short path like
+        "file:///C:/Users/RUNNER~1/data".
     :param s:  The string to replace the prefix in.
     :return:  Resulting string, possibly unchanged.
     """
     if "~" in prefix_map:
-        old, new = prefix_map.split("~", 2)
+        old, new = prefix_map.split("~", 1)
         if s.startswith(old):
             return new + s[len(old) :]
     return s

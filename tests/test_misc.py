@@ -37,6 +37,15 @@ def test_map_prefix():
     )
 
 
+def test_map_prefix_with_tilde_in_target():
+    # e.g., a Windows short path ("8.3" name) in the target
+    prefix_map = "s3://bucket~file:///C:/Users/RUNNER~1/data"
+    assert (
+        map_prefix(prefix_map, "s3://bucket/09/x.wav")
+        == "file:///C:/Users/RUNNER~1/data/09/x.wav"
+    )
+
+
 def test_extract_datetime():
     # Test flexible parsing - pattern found anywhere in string (last complete match is used)
     result = extract_datetime("path/to/MARS_20250914_122000.wav", "%Y%m%d_%H%M%S")

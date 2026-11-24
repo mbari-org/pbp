@@ -54,3 +54,4 @@ jobs:
           tests/test_file_uri_helper.py
           tests/test_meta_gen_local_paths.py
           tests/test_uri_handler.py
+          tests/test_misc.py
