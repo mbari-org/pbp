@@ -1,3 +1,4 @@
+import sys
 from argparse import Namespace
 
 from pbp.hmb_gen.main_hmb_generator_args import parse_arguments
@@ -88,17 +89,48 @@ def run_main_hmb_generator_direct_file(opts: Namespace) -> None:
     main_hmb_generator_file(opts)
 
 
-def main():
-    opts = parse_arguments()
+def check_options(opts: Namespace) -> list[str]:
+    """
+    Checks the given options before any processing.
+
+    Returns:
+        List of error messages, empty if no errors.
+    """
+    from pbp.hmb_gen.param_checks import check_date, check_hmb_gen_params
+
+    errors = check_hmb_gen_params(
+        time_resolution=opts.time_resolution,
+        exclude_tone_calibration_seconds=opts.exclude_tone_calibration,
+        max_segments=opts.max_segments,
+        subset_to=tuple(opts.subset_to) if opts.subset_to else None,
+    )
     if opts.input_file is not None:
         if opts.json_base_dir is not None:
-            print("ERROR: --json-base-dir cannot be used with --input-file")
-            return
+            errors.append("- --json-base-dir cannot be used with --input-file")
         if opts.date is not None:
-            print("ERROR: --date cannot be used with --input-file")
-            return
+            errors.append("- --date cannot be used with --input-file")
+        if opts.exclude_tone_calibration is not None:
+            errors.append("- --exclude-tone-calibration cannot be used with --input-file")
+        if opts.max_segments:
+            errors.append("- --max-segments cannot be used with --input-file")
         # TODO other params that should also be disallowed.
+    else:
+        if opts.json_base_dir is None:
+            errors.append("- --json-base-dir is required (unless --input-file is given)")
+        errors.extend(check_date(opts.date))
+    return errors
 
+
+def main():
+    opts = parse_arguments()
+    errors = check_options(opts)
+    if errors:
+        print("ERROR: invalid options:\n" + "\n".join(errors))
+        sys.exit(1)
+
+    if opts.input_file is not None:
+        if opts.time_resolution is None:
+            opts.time_resolution = 60  # same default as for the day case
         run_main_hmb_generator_direct_file(opts)
 
     else:

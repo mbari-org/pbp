@@ -1,13 +1,16 @@
 """
 Tests for edge cases in HMB generation reported in
 https://github.com/mbari-org/pbp/issues/130 and
-https://github.com/mbari-org/pbp/issues/131.
+https://github.com/mbari-org/pbp/issues/131,
+as well as the related startup parameter checks.
 """
 
 import json
 import pathlib
+import sys
 from argparse import Namespace
 from datetime import datetime, timezone
+from typing import Optional
 
 import numpy as np
 import pytest
@@ -15,7 +18,10 @@ import soundfile as sf
 import xarray as xr
 
 from pbp.hmb_gen.file_helper import FileHelper
+from pbp.hmb_gen.main_hmb_generator import check_options
+from pbp.hmb_gen.main_hmb_generator_args import parse_arguments
 from pbp.hmb_gen.main_hmb_generator_file import FileProcessor
+from pbp.hmb_gen.param_checks import check_date, check_hmb_gen_params
 from pbp.hmb_gen.process_helper import ProcessHelper, save_dataset_to_netcdf
 from pbp.util.logging_helper import create_logger
 
@@ -195,3 +201,51 @@ def test_failed_save_leaves_no_file(log, tmp_path, monkeypatch):
     assert result is not None
     assert result.generated_filenames == []
     assert not output_filename.exists()
+
+
+# --- Startup parameter checks ---
+
+
+@pytest.mark.parametrize(
+    "date,ok",
+    [("20240229", True), ("20230229", False), ("2024-01-01", False), (None, False)],
+)
+def test_check_date(date: Optional[str], ok: bool):
+    assert (check_date(date) == []) == ok
+
+
+@pytest.mark.parametrize(
+    "kwargs,ok",
+    [
+        ({}, True),
+        (dict(time_resolution=1), True),
+        (dict(time_resolution=0), False),
+        (dict(exclude_tone_calibration_seconds=0), True),
+        (dict(exclude_tone_calibration_seconds=-1), False),
+        (dict(max_segments=-1), False),
+        (dict(subset_to=(10, 20000)), True),
+        (dict(subset_to=(20000, 10)), False),
+        (dict(subset_to=(-1, 10)), False),
+    ],
+)
+def test_check_hmb_gen_params(kwargs: dict, ok: bool):
+    assert (check_hmb_gen_params(**kwargs) == []) == ok
+
+
+def _cli_errors(monkeypatch, *args: str) -> list[str]:
+    monkeypatch.setattr(sys, "argv", ["pbp-hmb-gen", "--output-dir=out", *args])
+    return check_options(parse_arguments())
+
+
+def test_check_options(monkeypatch):
+    day = ["--json-base-dir=json", "--date=20240101"]
+    assert _cli_errors(monkeypatch, *day) == []
+    assert _cli_errors(monkeypatch, *day, "--time-resolution=0") != []
+    assert _cli_errors(monkeypatch, "--date=20240101") != []
+    assert _cli_errors(monkeypatch, "--json-base-dir=json") != []
+
+    file = ["--input-file=a.wav"]
+    assert _cli_errors(monkeypatch, *file) == []
+    assert _cli_errors(monkeypatch, *file, "--date=20240101") != []
+    assert _cli_errors(monkeypatch, *file, "--exclude-tone-calibration=3") != []
+    assert _cli_errors(monkeypatch, *file, "--max-segments=2") != []

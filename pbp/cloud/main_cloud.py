@@ -67,6 +67,7 @@ import boto3
 
 from pbp import get_pbp_version
 from pbp.hmb_gen.file_helper import FileHelper
+from pbp.hmb_gen.param_checks import check_date, check_hmb_gen_params
 from pbp.util.logging_helper import create_logger
 from pbp.hmb_gen.process_helper import ProcessHelper
 
@@ -174,6 +175,15 @@ def main():
 
     # Convenience for testing (0 means no restriction)
     max_segments = int(os.getenv("MAX_SEGMENTS", "0"))
+
+    errors = check_date(date) + check_hmb_gen_params(
+        exclude_tone_calibration_seconds=exclude_tone_calibration_seconds,
+        max_segments=max_segments,
+        subset_to=subset_to,
+    )
+    if errors:
+        print("Error: invalid parameters:\n" + "\n".join(errors))
+        exit(1)
 
     # workspace for downloads and generated files to be uploaded
     cloud_tmp_dir = os.getenv("CLOUD_TMP_DIR", "cloud_tmp")

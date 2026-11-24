@@ -1,5 +1,6 @@
 from pbp.hmb_gen.process_helper import ProcessHelper, ProcessDayResult
 from pbp.hmb_gen.file_helper import FileHelper
+from pbp.hmb_gen.param_checks import check_hmb_gen_params
 from pbp.util.logging_helper import create_logger
 from typing import Optional
 from botocore.client import BaseClient
@@ -307,6 +308,14 @@ class HmbGen:
 
         if not self._s3_client and not self._gs_client:
             errors.append("- No S3 or GS client has been set")
+
+        if not errors:
+            errors.extend(
+                check_hmb_gen_params(
+                    exclude_tone_calibration_seconds=self._exclude_tone_calibration_seconds,
+                    subset_to=self._subset_to,
+                )
+            )
 
         if len(errors) > 0:
             return "\n".join(errors)
