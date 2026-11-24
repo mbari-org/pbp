@@ -4,6 +4,29 @@ This page highlights significant updates and new features in PBP releases.
 For detailed technical changes, see the [CHANGELOG.md](https://github.com/mbari-org/pbp/blob/main/CHANGELOG.md).
 Please get in touch if you have any questions.
 
+## Unreleased
+
+**Improvements**
+
+- **Lower Memory Use**: HMB generation now computes the hybrid millidecade bands
+  per segment, reducing peak memory for a full day at 256 kHz from ~5.9 GB to ~1.5 GB.
+  Results are unchanged.
+- **Early Parameter Checks**: `pbp hmb-gen` (CLI, cloud, and Python API) now validates
+  its parameters before any processing begins, reporting all problems at once.
+
+**Bug Fixes**
+
+- **Tone Calibration Exclusion**: With `--exclude-tone-calibration`, a file starting
+  mid-segment could have the rest of the file read into a single segment;
+  the excluded portion is now handled correctly.
+- **Short Segments**: Segments shorter than one FFT window (e.g., a sub-second tail
+  of a file) are now reported as missing (NaN) instead of as `-inf` values.
+- **Sample Rate Changes**: Segments with a different sample rate are now reported as
+  missing (NaN) instead of being dropped from the time axis.
+- **NetCDF Saving**: Saving no longer fails when no sensitivity is configured or when
+  there is a single segment, and a failed save no longer leaves an empty `.nc` file.
+  Thanks to @wilmund for reporting these issues!
+
 ## 1.9.0
 (Oct 2026)
 

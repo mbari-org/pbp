@@ -6,6 +6,29 @@ Unreleased
   For a full day at 256 kHz, this reduces peak memory from ~5.9 GB to ~1.5 GB.
   Results are unchanged (regression goldens pass as is).
 
+- HMB generation: fixed silently wrong output in edge cases (https://github.com/mbari-org/pbp/issues/130):
+  - `exclude_tone_calibration_seconds`: an intersection fully within the excluded
+    window resulted in a negative frame count, making soundfile read to the end
+    of the file into a single segment. Such intersections are now skipped.
+  - A segment shorter than `nfft` samples is now marked as missing (NaN row)
+    instead of producing an all `-inf` PSD row.
+  - A segment with a changed samplerate is now marked as missing (NaN row)
+    instead of being dropped from the time axis.
+
+- HMB generation: fixed NetCDF save failures (https://github.com/mbari-org/pbp/issues/131):
+  - `KeyError: 'sensitivity'` when no sensitivity is configured.
+  - Zero chunk size for single-segment datasets.
+  - A failed save now removes the partially created file, which is also no longer
+    reported as generated.
+
+  Thanks to @wilmund for reporting #130 and #131!
+
+- HMB generation: new `param_checks` module to validate parameters (date,
+  `time_resolution`, `exclude_tone_calibration_seconds`, `max_segments`, `subset_to`)
+  before any processing, used by `pbp-hmb-gen`, the cloud entry point, and `simpleapi`.
+  `pbp-hmb-gen` now also rejects `--exclude-tone-calibration` and `--max-segments`
+  with `--input-file`, and requires `--json-base-dir` otherwise.
+
 2026-10
 
 1.9.0
