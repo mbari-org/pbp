@@ -30,3 +30,26 @@ jobs:
       - run: just format-check
       - run: just lint-check
       - run: just ty
+
+  # Windows-specific path handling (e.g., https://github.com/mbari-org/pbp/issues/78).
+  # Only a subset of tests, which do not require network access.
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # (soundfile wheels include libsndfile on Windows)
+      - name: Install Poetry
+        shell: pwsh
+        run: |
+          (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+          echo "$env:APPDATA\Python\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - run: poetry install
+
+      - run: >-
+          poetry run pytest -v
+          tests/test_file_uri_helper.py
+          tests/test_meta_gen_local_paths.py
