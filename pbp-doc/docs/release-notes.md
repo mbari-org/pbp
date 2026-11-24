@@ -4,7 +4,8 @@ This page highlights significant updates and new features in PBP releases.
 For detailed technical changes, see the [CHANGELOG.md](https://github.com/mbari-org/pbp/blob/main/CHANGELOG.md).
 Please get in touch if you have any questions.
 
-## Unreleased
+## 1.10.0
+(Nov 2026)
 
 **Improvements**
 
@@ -13,16 +14,29 @@ Please get in touch if you have any questions.
   Results are unchanged.
 - **Early Parameter Checks**: `pbp hmb-gen` (CLI, cloud, and Python API) now validates
   its parameters before any processing begins, reporting all problems at once.
+- **Faster Metadata Generation**: `pbp meta-gen` reads the headers of remote audio files
+  with a single request per file (about 30% faster for a day of MARS data).
+- **Better Windows Support**: Local audio locations now work consistently on Windows for
+  all recorders in `pbp meta-gen` (as `file://` URIs or plain paths such as `C:\data`),
+  `--audio-base-dir` is applied on Windows as on other systems, and file paths are shown
+  with consistent separators in logs.
+  Thanks to @spacetimeengineer for reporting the logging issue!
+- **Quieter Logs**: No more spurious `ERROR` lines about variable attributes when
+  `--variable-attrs` is not given.
 
 **Bug Fixes**
 
+- **Time Resolution Default**: `pbp hmb-gen --input-file` without `--time-resolution`
+  no longer fails; it now defaults to 60 seconds.
+- **NRS Local Files on Windows**: `pbp meta-gen` now finds local NRS files on Windows.
+  Thanks to @xaviermouy for reporting this issue!
+- **Path Map Prefix**: `--audio-path-map-prefix` now works when the target path contains `~`
+  (e.g., Windows short paths).
 - **Tone Calibration Exclusion**: With `--exclude-tone-calibration`, a file starting
   mid-segment could have the rest of the file read into a single segment;
   the excluded portion is now handled correctly.
 - **Short Segments**: Segments shorter than one FFT window (e.g., a sub-second tail
   of a file) are now reported as missing (NaN) instead of as `-inf` values.
-- **Sample Rate Changes**: Segments with a different sample rate are now reported as
-  missing (NaN) instead of being dropped from the time axis.
 - **NetCDF Saving**: Saving no longer fails when no sensitivity is configured or when
   there is a single segment, and a failed save no longer leaves an empty `.nc` file.
   Thanks to @wilmund for reporting these issues!

@@ -1,4 +1,6 @@
-Unreleased
+2026-11
+
+1.10.0
 
 - Local output, log and download paths are now built with `pathlib`, so they are shown
   with consistent separators on Windows (e.g., `H:\out\x.nc` instead of `H:\out/x.nc`)
@@ -44,13 +46,13 @@ Unreleased
   - A failed save now removes the partially created file, which is also no longer
     reported as generated.
 
-  Thanks to @wilmund for reporting #130 and #131!
-
 - HMB generation: new `param_checks` module to validate parameters (date,
   `time_resolution`, `exclude_tone_calibration_seconds`, `max_segments`, `subset_to`)
   before any processing, used by `pbp-hmb-gen`, the cloud entry point, and `simpleapi`.
   `pbp-hmb-gen` now also rejects `--exclude-tone-calibration` and `--max-segments`
   with `--input-file`, and requires `--json-base-dir` otherwise.
+  Also, with `--input-file`, `--time-resolution` now defaults to 60 (as for the day case);
+  previously, omitting it failed with `TypeError` on `None`.
 
 - meta-gen: faster metadata generation for remote audio files (as currently supported:
   wav on S3, flac on GCS): file headers are now read with a single ranged GET request
