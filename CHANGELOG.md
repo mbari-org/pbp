@@ -1,5 +1,9 @@
 Unreleased
 
+- HMB generation: no longer logs an `ERROR Unrecognized var_attribute_name=...` for each
+  variable when no `--variable-attrs` is given (it is optional). When given, a variable
+  without attributes is now reported as a warning.
+
 - HMB generation: hybrid millidecade bands are now computed on a per-segment basis,
   retaining only the band values (instead of the full-resolution spectrum) for each
   segment until the day/file is aggregated (https://github.com/mbari-org/pbp/issues/4).

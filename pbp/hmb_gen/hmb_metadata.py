@@ -51,8 +51,10 @@ class HmbMetadataHelper:
             self.log.debug(
                 f"For variable '{var_attribute_name}', added attributes: {keys}"
             )
-        else:
-            self.log.error(f"Unrecognized {var_attribute_name=}")
+        elif self._var_attrs:
+            # (no warning if no variable attributes were given at all,
+            # as they are optional)
+            self.log.warning(f"No attributes given for variable '{var_attribute_name}'")
 
 
 def replace_snippets(
