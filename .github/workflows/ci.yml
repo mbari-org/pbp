@@ -35,6 +35,9 @@ jobs:
   # Only a subset of tests, which do not require network access.
   test-windows:
     runs-on: windows-latest
+    env:
+      # non-GUI matplotlib backend (Tk on the runner is not always usable)
+      MPLBACKEND: Agg
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
