@@ -22,6 +22,7 @@ from pbp.meta_gen.utils import (
 from pbp.meta_gen.json_generator import JsonGenerator
 from pbp.meta_gen.meta_reader import GenericWavFile, FlacFile
 from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
+from pbp.util.file_uri_helper import file_uri_to_path
 
 
 class IcListenMetadataGenerator(MetadataGeneratorAbstract):
@@ -87,7 +88,7 @@ class IcListenMetadataGenerator(MetadataGeneratorAbstract):
                 end_dt = day + timedelta(days=1)
 
                 if scheme == "file":
-                    sound_path = Path(self.audio_loc.split("file://")[-1])
+                    sound_path = Path(file_uri_to_path(self.audio_loc))
                     file_extensions = ["*.flac", "*.wav"]
                     for ext in file_extensions:
                         for filename in progressbar(

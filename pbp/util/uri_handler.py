@@ -1,7 +1,7 @@
 import os
 import pathlib
 from typing import Optional
-from urllib.parse import ParseResult, unquote, urlparse
+from urllib.parse import ParseResult, urlparse
 
 import loguru
 from botocore.client import BaseClient, ClientError
@@ -10,6 +10,7 @@ from google.cloud.storage import Client as GsClient
 
 from pbp.hmb_gen.misc_helper import map_prefix
 from pbp.util.bucket_key_simple import get_bucket_key_simple
+from pbp.util.file_uri_helper import file_uri_to_path
 
 
 class UriHandler:
@@ -184,30 +185,7 @@ class UriHandler:
         path = parsed_uri.path
 
         if os.name == "nt":
-            # Windows file URI handling:
-            # file:///C:/path -> scheme="file", path="/C:/path", netloc=""
-            # file://C:/path -> scheme="file", path="/path", netloc="C:"
-            # C:/path (plain) -> scheme="c", path="/path", netloc="" (urlparse treats C as scheme!)
-
-            # Check if this is a plain Windows path misinterpreted as a scheme
-            if (
-                len(parsed_uri.scheme) == 1
-                and parsed_uri.scheme.isalpha()
-                and parsed_uri.netloc == ""
-            ):
-                # This is a plain Windows path like "C:/path"
-                # Reconstruct it: scheme (uppercased) + ":" + path
-                # Note: urlparse lowercases the scheme, so we uppercase it back
-                return unquote(parsed_uri.scheme.upper() + ":" + parsed_uri.path)
-
-            # Handle file:// URIs
-            full_path = parsed_uri.netloc + parsed_uri.path
-            # Decode percent-encoded characters (e.g., %20 -> space)
-            full_path = unquote(full_path)
-            # Remove leading slash if we have a drive letter (e.g., "/C:/..." -> "C:/...")
-            if len(full_path) >= 3 and full_path[0] == "/" and full_path[2] == ":":
-                full_path = full_path[1:]
-            return full_path
+            return file_uri_to_path(parsed_uri, windows=True)
 
         # For file:// URIs, check if we have a netloc (like "file://relative/path")
         # vs absolute paths (like "file:///absolute/path")

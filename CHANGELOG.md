@@ -1,5 +1,11 @@
 Unreleased
 
+- meta-gen: fixed local audio paths on Windows for NRS (https://github.com/mbari-org/pbp/issues/78).
+  All generators (NRS, icListen, RESEA, SoundTrap), as well as the hmb-gen `UriHandler`,
+  now use a common `pbp.util.file_uri_helper.file_uri_to_path` to convert `file://` URIs
+  (or plain paths) to local paths. This also fixes NRS with a plain relative path
+  (on any OS), and `file://rel/path` URIs for RESEA and SoundTrap (other than on Windows).
+
 - HMB generation: no longer logs an `ERROR Unrecognized var_attribute_name=...` for each
   variable when no `--variable-attrs` is given (it is optional). When given, a variable
   without attributes is now reported as a warning.

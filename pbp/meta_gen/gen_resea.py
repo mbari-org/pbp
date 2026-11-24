@@ -4,7 +4,6 @@
 from datetime import timedelta
 from datetime import datetime
 from typing import List
-from urllib.parse import urlparse
 
 import boto3
 from botocore import UNSIGNED
@@ -22,6 +21,7 @@ from pbp.meta_gen.utils import (
 from pbp.meta_gen.json_generator import JsonGenerator
 from pbp.meta_gen.meta_reader import GenericWavFile
 from pbp.meta_gen.gen_abstract import MetadataGeneratorAbstract
+from pbp.util.file_uri_helper import file_uri_to_path
 
 
 class ReseaMetadataGenerator(MetadataGeneratorAbstract):
@@ -85,7 +85,7 @@ class ReseaMetadataGenerator(MetadataGeneratorAbstract):
                 end_dt = day + timedelta(days=1)
 
                 if scheme == "file":
-                    wav_path = Path(urlparse(self.audio_loc).path)
+                    wav_path = Path(file_uri_to_path(self.audio_loc))
                     for filename in progressbar(
                         sorted(wav_path.rglob("*.wav")), prefix="Searching : "
                     ):

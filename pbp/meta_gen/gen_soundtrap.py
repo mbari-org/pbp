@@ -1,7 +1,6 @@
 # pbp, Apache License 2.0
 # Filename: meta_gen/gen_soundtrap.py
 # Description:  Captures SoundTrap metadata either from a local directory of S3 bucket
-import urllib
 from typing import List
 import loguru
 
@@ -11,7 +10,6 @@ from botocore.client import Config
 import datetime
 import pandas as pd
 import pytz
-import os
 
 from datetime import timedelta
 from pathlib import Path
@@ -20,6 +18,7 @@ from progressbar import progressbar
 from pbp.meta_gen.gen_abstract import SoundTrapMetadataGeneratorAbstract
 from pbp.meta_gen.meta_reader import GenericWavFile
 from pbp.meta_gen.json_generator import JsonGenerator
+from pbp.util.file_uri_helper import file_uri_to_path
 from pbp.meta_gen.utils import (
     parse_s3_or_gcp_url,
     InstrumentType,
@@ -83,12 +82,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             start_dt = self.start - timedelta(days=1)
             end_dt = self.end + timedelta(days=1)
             if scheme == "file":
-                parsed_uri = urllib.parse.urlparse(self.audio_loc)
-
-                if os.name == "nt":
-                    wav_path = Path(parsed_uri.netloc).joinpath(parsed_uri.path)
-                else:
-                    wav_path = Path(parsed_uri.path)
+                wav_path = Path(file_uri_to_path(self.audio_loc))
 
                 for filename in progressbar(
                     sorted(wav_path.rglob("*.wav")), prefix="Searching : "
