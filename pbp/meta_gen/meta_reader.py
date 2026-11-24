@@ -7,13 +7,13 @@
 from pathlib import Path
 from typing import Optional
 
-from six.moves.urllib.request import urlopen
 import io
 import re
 import soundfile as sf
 import pandas as pd
 from datetime import datetime, timedelta
 from pbp.meta_gen.utils import parse_s3_or_gcp_url
+from pbp.util.http_helper import read_url_head
 
 
 class AudioFile:
@@ -102,7 +102,9 @@ class GenericWavFile(AudioFile):
                 url = f"http://{bucket}.s3.amazonaws.com/{key}"
 
                 # read the first 20,000 bytes of the file to get the metadata
-                info = sf.info(io.BytesIO(urlopen(url).read(20_000)), verbose=True)
+                # along with the total size of the file (content length)
+                head, content_length = read_url_head(url)
+                info = sf.info(io.BytesIO(head), verbose=True)
                 # get the duration from the extra_info data field which stores the duration in total bytes
                 fields = info.extra_info.split()
                 idx_data = fields.index("data")
@@ -112,8 +114,6 @@ class GenericWavFile(AudioFile):
                 # get the size in bytes of the data+RIFF header
                 idx = fields.index("RIFF")
                 riff_size = int(fields[idx + 2]) + 8
-                # get the content length from the http header
-                content_length = int(urlopen(url).info()["Content-Length"])
                 # if the content length is less than the size of the data+RIFF header, then the file is truncated but
                 # still may be usable
                 if content_length < riff_size:
@@ -160,7 +160,8 @@ class FlacFile(AudioFile):
             if scheme == "gs":
                 url = f"http://storage.googleapis.com/{bucket}/{prefix}"
 
-                info = sf.info(io.BytesIO(urlopen(url).read(20_000)), verbose=True)
+                head, _ = read_url_head(url)
+                info = sf.info(io.BytesIO(head), verbose=True)
 
                 # get the duration from the extra_info data field which stores the duration in total bytes
                 fields = info.extra_info.split(":")

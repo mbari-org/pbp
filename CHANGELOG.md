@@ -10,6 +10,13 @@ Unreleased
   For a full day at 256 kHz, this reduces peak memory from ~5.9 GB to ~1.5 GB.
   Results are unchanged (regression goldens pass as is).
 
+- meta-gen: faster metadata generation for remote audio files (as currently supported:
+  wav on S3, flac on GCS): file headers are now read with a single ranged GET request
+  (`Range: bytes=0-19999`), instead of full GET requests (two per file for wav on S3). 
+  New utility `pbp.util.http_helper.read_url_head`.
+  Generated JSON is unchanged. As this saves a request per remote file, the time saved grows
+  with the number of files processed (e.g., ~30% faster for a day of 10-minute MARS files).
+
 2026-10
 
 1.9.0
