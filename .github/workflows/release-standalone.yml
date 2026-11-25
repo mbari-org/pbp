@@ -61,6 +61,33 @@ jobs:
         run: |
           poetry run pyinstaller pbp.spec
 
+      # Exercise the built executable before packaging it. The hmb-gen timings show
+      # whether matplotlib's font cache persists across launches (if not, each run
+      # takes ~10 secs more).
+      - name: Smoke test standalone executable
+        shell: bash
+        run: |
+          PBP=dist/pbp/pbp
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then PBP=dist/pbp/pbp.exe; fi
+          "$PBP" --version
+          OUT=smoke-test-output
+          mkdir -p "$OUT"
+          for i in 1 2; do
+            start=$(date +%s)
+            if ! "$PBP" hmb-gen --input-file=tests/wav/test.wav --output-dir="$OUT" > "$OUT/hmb-gen-$i.txt" 2>&1; then
+              cat "$OUT/hmb-gen-$i.txt"
+              exit 1
+            fi
+            echo "hmb-gen run $i: $(( $(date +%s) - start )) secs"
+          done
+          if grep -q "building the font cache" "$OUT/hmb-gen-2.txt"; then
+            echo "::warning::matplotlib font cache was rebuilt on the second run"
+          fi
+          test -f "$OUT/test.nc"
+          "$PBP" hmb-plot "$OUT/test.nc"
+          test -f "$OUT/test.jpg"
+          rm -rf "$OUT"
+
       - name: Get version
         id: version
         shell: bash
