@@ -48,9 +48,9 @@ def parse_arguments():
     parser.add_argument(
         "--title",
         type=str,
-        default=f"'{DEFAULT_TITLE}'",
+        default=DEFAULT_TITLE,
         metavar="string",
-        help="Title for the plot. Default: %(default)s",
+        help="Title for the plot. Default: '%(default)s'",
     )
 
     parser.add_argument(
