@@ -11,6 +11,7 @@ from google.cloud.storage import Client as GsClient
 
 from pbp.hmb_gen.json_support import get_intersecting_entries, JEntry, parse_json_contents
 from pbp.hmb_gen.misc_helper import brief_list
+from pbp.util.file_uri_helper import file_uri_to_path
 from pbp.util.uri_handler import UriHandler
 
 
@@ -212,7 +213,9 @@ class FileHelper:
             return self.uri_handler.get_local_filename(uri)
 
         _, parsed_uri = self.uri_handler.resolve_uri(uri)
-        return parsed_uri.path
+        # (not just `parsed_uri.path`, which would drop the drive letter
+        # in a plain Windows path like `C:\dir\file.yaml`)
+        return file_uri_to_path(parsed_uri)
 
     def day_completed(self):
         """
