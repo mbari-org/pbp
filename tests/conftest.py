@@ -14,6 +14,21 @@ def pytest_addoption(parser):
         default=False,
         help="(Re)generate the numeric golden files under tests/golden/",
     )
+    parser.addoption(
+        "--skip-slow",
+        action="store_true",
+        default=False,
+        help="Skip the long running tests (those marked `slow`)",
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    if not config.getoption("--skip-slow"):
+        return
+    skip_slow = pytest.mark.skip(reason="slow test (--skip-slow)")
+    for item in items:
+        if "slow" in item.keywords:
+            item.add_marker(skip_slow)
 
 
 class Golden:

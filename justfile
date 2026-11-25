@@ -211,6 +211,9 @@ dev: format ty test
 # As the dev recipe plus lint; good to run before committing changes
 all: dev lint
 
+# As all, but with test-quick
+all-quick: format ty test-quick lint
+
 # Install dependencies
 setup: install-poetry
     poetry install
@@ -245,6 +248,10 @@ golden-update:
 # Run tests
 test *options="":
     poetry run pytest {{options}}
+
+# Run tests, skipping the long running ones (those marked `slow`)
+test-quick *options="":
+    poetry run pytest --skip-slow -rs {{options}}
 
 # Format source code
 format:

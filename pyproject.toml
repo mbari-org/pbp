@@ -73,3 +73,6 @@ exclude = [
 [tool.pytest.ini_options]
 testpaths = ["tests",]
 pythonpath = ["."]
+markers = [
+    "slow: long running tests (skipped with --skip-slow, as in `just test-quick`)",
+]

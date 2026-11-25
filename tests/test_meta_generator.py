@@ -12,6 +12,7 @@ from pathlib import Path
 import json
 
 import numpy as np
+import pytest
 import soundfile as sf
 
 from pbp.util.logging_helper import create_logger
@@ -87,6 +88,7 @@ def test_soundtrap_generator_s3():
     assert coverage_plot.exists()
 
 
+@pytest.mark.slow
 def test_soundtrap_generator_local():
     """
     Test fixture for SoundTrapMetadataGenerator.
@@ -143,6 +145,7 @@ def test_soundtrap_generator_local():
     assert coverage_plot.exists()
 
 
+@pytest.mark.slow
 def test_iclisten_generator():
     """
     Test fixture for IcListenMetadataGenerator.

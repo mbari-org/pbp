@@ -25,6 +25,11 @@ While working on the code, you want to keep all unit testing green:
 ```shell
 just test
 ```
+To skip the long running tests (those marked `@pytest.mark.slow`, currently
+the local SoundTrap and icListen meta-gen tests, ~1.5 min combined):
+```shell
+just test-quick
+```
 
 **NOTE**: Before committing/pushing any changes, make sure to run:
 ```shell
