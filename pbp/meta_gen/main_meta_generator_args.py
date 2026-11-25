@@ -1,5 +1,5 @@
 import sys
-from argparse import ArgumentParser, RawTextHelpFormatter
+from argparse import SUPPRESS, ArgumentParser, RawTextHelpFormatter
 
 from pbp import get_pbp_version
 from pbp.meta_gen.utils import InstrumentType
@@ -107,13 +107,16 @@ Examples:
         "7000.20220902.000000.wav",
     )
 
+    # Deprecated and ignored: SoundTrap metadata is taken from the wav headers
+    # (since 1.6.4), not from the log.xml files. Still accepted (but hidden)
+    # so existing invocations keep working.
     parser.add_argument(
         "--xml-dir",
         type=str,
         metavar="dir",
         required=False,
         default=None,
-        help="Specifies the directory where the log.xml files are located. If not specified, the default is the same directory as the audio files.",
+        help=SUPPRESS,
     )
 
     return parser.parse_args()
