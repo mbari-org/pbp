@@ -26,6 +26,12 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # Special handling for PyInstaller frozen executables only
     if is_frozen:
+        # Avoid matplotlib rebuilding its font cache (~10 secs) on every launch.
+        # (Before freeze_support, so it also applies to multiprocessing workers.)
+        from pbp.util.frozen_support import use_persistent_mpl_config_dir
+
+        use_persistent_mpl_config_dir()
+
         # Required for multiprocessing in frozen applications (especially on Windows)
         multiprocessing.freeze_support()
 
