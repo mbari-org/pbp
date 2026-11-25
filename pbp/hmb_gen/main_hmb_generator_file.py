@@ -12,8 +12,12 @@ from datetime import datetime, timezone, timedelta
 import pytz
 from isodate import duration_isoformat
 
+from botocore.client import BaseClient
+from google.cloud.storage import Client as GsClient
+
 from pbp import get_pbp_version, get_pypam_version
 from pbp.util.logging_helper import create_logger
+from pbp.util.uri_handler import UriHandler
 from pbp.hmb_gen.hmb_metadata import replace_snippets, HmbMetadataHelper, parse_attributes
 from pbp.util.datetime_helper import extract_datetime
 from pbp.hmb_gen.process_helper import (
@@ -31,7 +35,31 @@ from pbp.hmb_gen.pypam_support import ProcessResult, PypamSupport
 ##
 
 
-def main_hmb_generator_file(opts: Namespace) -> None:
+def _resolve_local_filename(uri_handler: UriHandler, uri: str) -> Optional[str]:
+    """
+    Resolves the given URI (local path, `file://`, `s3://`, `gs://`) to an
+    existing local file, downloading it if cloud based.
+    Prints the reason and returns None if not possible.
+    """
+    _, parsed_uri = uri_handler.resolve_uri(uri)
+    if parsed_uri.scheme == "s3" and uri_handler.s3_client is None:
+        print(f"'{uri}' requires --s3 or --s3-unsigned.")
+        return None
+    if parsed_uri.scheme == "gs" and uri_handler.gs_client is None:
+        print(f"'{uri}' requires --gs.")
+        return None
+    filename = uri_handler.get_local_filename(uri)
+    if filename is None or not pathlib.Path(filename).is_file():
+        print(f"'{uri}' does not exist or could not be retrieved.")
+        return None
+    return filename
+
+
+def main_hmb_generator_file(
+    opts: Namespace,
+    s3_client: Optional[BaseClient] = None,
+    gs_client: Optional[GsClient] = None,
+) -> None:
     input_path = pathlib.Path(opts.input_file)
     if not input_path.exists():
         print(f"Input file '{opts.input_file}' does not exist.")
@@ -52,22 +80,8 @@ def main_hmb_generator_file(opts: Namespace) -> None:
         base_dt = datetime(2000, 1, 1, tzinfo=timezone.utc)
         print(f"WARNING: No timestamp pattern provided, using {base_dt}.")
 
-    sensitivity_da: Optional[xr.DataArray] = None
-    if opts.sensitivity_uri is not None:
-        if not pathlib.Path(opts.sensitivity_uri).exists():
-            print(f"Sensitivity file '{opts.sensitivity_uri}' does not exist.")
-            exit(1)
-        sensitivity_da = xr.open_dataarray(opts.sensitivity_uri)
-        print(f"Loaded sensitivity from '{opts.sensitivity_uri}'")
-
-    sound_file = sf.SoundFile(opts.input_file)
     log_filename = str(pathlib.Path(opts.output_dir) / f"{simple_name}.log")
     output_filename = str(pathlib.Path(opts.output_dir) / f"{simple_name}.nc")
-
-    print(f"  Input file:      {sound_file}")
-    print(f"  log_filename:    {log_filename}")
-    print(f"  output_filename: {output_filename}")
-    print(f"  time_resolution: {opts.time_resolution}")
 
     log = create_logger(
         log_filename_and_level=(
@@ -76,6 +90,39 @@ def main_hmb_generator_file(opts: Namespace) -> None:
         ),
         console_level=os.getenv("PBP_CONSOLE_LOG_LEVEL", "WARNING"),
     )
+
+    # Resolve the URI options to local files (as in the day-based case):
+    uri_handler = UriHandler(
+        log,
+        download_dir=opts.download_dir,
+        assume_downloaded_files=opts.assume_downloaded_files,
+        print_downloading_lines=True,
+        s3_client=s3_client,
+        gs_client=gs_client,
+    )
+    local_filenames = {}
+    for option in ("sensitivity_uri", "global_attrs", "variable_attrs"):
+        uri = getattr(opts, option)
+        if uri is not None:
+            filename = _resolve_local_filename(uri_handler, uri)
+            if filename is None:
+                print(f"Error with --{option.replace('_', '-')}.")
+                exit(1)
+            local_filenames[option] = filename
+    # (FileProcessor then just sees local filenames)
+    opts = Namespace(**{**vars(opts), **local_filenames})
+
+    sensitivity_da: Optional[xr.DataArray] = None
+    if opts.sensitivity_uri is not None:
+        sensitivity_da = xr.open_dataarray(opts.sensitivity_uri)
+        print(f"Loaded sensitivity from '{opts.sensitivity_uri}'")
+
+    sound_file = sf.SoundFile(opts.input_file)
+
+    print(f"  Input file:      {sound_file}")
+    print(f"  log_filename:    {log_filename}")
+    print(f"  output_filename: {output_filename}")
+    print(f"  time_resolution: {opts.time_resolution}")
 
     assert base_dt is not None
 
@@ -284,9 +331,8 @@ class FileProcessor:
         set_attrs: Optional[list[list[str]]] = None,
     ) -> Optional[OrderedDict[str, Any]]:
         if attrs_uri:
+            # (already resolved to a local file by main_hmb_generator_file)
             self.log.info(f"Loading {what} attributes from {attrs_uri=}")
-            # TODO handle attrs_uri in case of s3:// or others
-            #  as done elsewhere in the project. For now, assume local file.
             filename = attrs_uri
             with open(filename, "r", encoding="UTF-8") as f:
                 res = parse_attributes(f.read(), pathlib.Path(filename).suffix)

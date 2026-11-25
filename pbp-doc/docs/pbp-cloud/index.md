@@ -32,9 +32,9 @@ All program parameters are to be passed via environment variables:
      Output filename prefix. By default, `milli_psd_`.
      The resulting file will be named as `<OUTPUT_PREFIX><DATE>.nc`.
 - `GLOBAL_ATTRS_URI`: (Optional)
-     URI of JSON file with global attributes to be added to the NetCDF file.
+     URI of JSON or YAML file with global attributes to be added to the NetCDF file.
 - `VARIABLE_ATTRS_URI`: (Optional)
-     URI of JSON file with attributes to associate with the variables in the NetCDF file.
+     URI of JSON or YAML file with attributes to associate with the variables in the NetCDF file.
 - `VOLTAGE_MULTIPLIER`: (Optional)
      Applied on the loaded signal.
 - `SENSITIVITY_NETCDF_URI`: (Optional)

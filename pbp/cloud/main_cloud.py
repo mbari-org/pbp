@@ -20,9 +20,9 @@
 #     Output filename prefix. By default, "milli_psd_".
 #     The resulting file will be named as <OUTPUT_PREFIX><DATE>.nc.
 #  GLOBAL_ATTRS_URI: (Optional)
-#     URI of JSON file with global attributes to be added to the NetCDF file.
+#     URI of JSON or YAML file with global attributes to be added to the NetCDF file.
 #  VARIABLE_ATTRS_URI: (Optional)
-#     URI of JSON file with attributes to associate to the variables in the NetCDF file.
+#     URI of JSON or YAML file with attributes to associate to the variables in the NetCDF file.
 #  EXCLUDE_TONE_CALIBRATION_SECONDS: (Optional)
 #     See https://github.com/mbari-org/pbp/issues/82.
 #  VOLTAGE_MULTIPLIER: (Optional)
@@ -94,8 +94,8 @@ Environment variables:
                                      Default: "s3://pacific-sound-metadata/256khz"
   S3_OUTPUT_BUCKET (optional)        The bucket to write generated output to
   OUTPUT_PREFIX (optional)           Output filename prefix. Default: "milli_psd_"
-  GLOBAL_ATTRS_URI (optional)        URI of JSON file with global attributes
-  VARIABLE_ATTRS_URI (optional)      URI of JSON file with variable attributes
+  GLOBAL_ATTRS_URI (optional)        URI of JSON or YAML file with global attributes
+  VARIABLE_ATTRS_URI (optional)      URI of JSON or YAML file with variable attributes
   EXCLUDE_TONE_CALIBRATION_SECONDS   Seconds to exclude for tone calibration
   VOLTAGE_MULTIPLIER (optional)      Applied on the loaded signal
   SENSITIVITY_NETCDF_URI (optional)  URI of sensitivity NetCDF file for calibration

@@ -1,5 +1,6 @@
 import sys
 from argparse import Namespace
+from typing import Any
 
 from pbp.hmb_gen.main_hmb_generator_args import parse_arguments
 
@@ -8,22 +9,14 @@ from pbp.hmb_gen.main_hmb_generator_args import parse_arguments
 # postponing the imports until actually needed.
 
 
-def run_main_hmb_generator(opts: Namespace) -> None:
+def create_cloud_clients(opts: Namespace) -> tuple[Any, Any]:
+    """
+    Creates the s3 and gs clients as indicated by the --s3, --s3-unsigned, and --gs options.
+
+    Returns:
+        (s3_client, gs_client), each None if not requested.
+    """
     import os
-
-    from pathlib import Path
-
-    from pbp.hmb_gen.file_helper import FileHelper
-    from pbp.util.logging_helper import create_logger
-    from pbp.hmb_gen.process_helper import ProcessHelper
-
-    log = create_logger(
-        log_filename_and_level=(
-            str(Path(opts.output_dir) / f"{opts.output_prefix}{opts.date}.log"),
-            os.getenv("PBP_FILE_LOG_LEVEL", "INFO"),
-        ),
-        console_level=os.getenv("PBP_CONSOLE_LOG_LEVEL", "WARNING"),
-    )
 
     s3_client = None
     if opts.s3 or opts.s3_unsigned:
@@ -47,6 +40,28 @@ def run_main_hmb_generator(opts: Namespace) -> None:
 
         # TODO credentials; for now assuming only anonymous downloads
         gs_client = GsClient.create_anonymous_client()
+
+    return s3_client, gs_client
+
+
+def run_main_hmb_generator(opts: Namespace) -> None:
+    import os
+
+    from pathlib import Path
+
+    from pbp.hmb_gen.file_helper import FileHelper
+    from pbp.util.logging_helper import create_logger
+    from pbp.hmb_gen.process_helper import ProcessHelper
+
+    log = create_logger(
+        log_filename_and_level=(
+            str(Path(opts.output_dir) / f"{opts.output_prefix}{opts.date}.log"),
+            os.getenv("PBP_FILE_LOG_LEVEL", "INFO"),
+        ),
+        console_level=os.getenv("PBP_CONSOLE_LOG_LEVEL", "WARNING"),
+    )
+
+    s3_client, gs_client = create_cloud_clients(opts)
 
     file_helper = FileHelper(
         log=log,
@@ -88,7 +103,8 @@ def run_main_hmb_generator(opts: Namespace) -> None:
 def run_main_hmb_generator_direct_file(opts: Namespace) -> None:
     from pbp.hmb_gen.main_hmb_generator_file import main_hmb_generator_file
 
-    main_hmb_generator_file(opts)
+    s3_client, gs_client = create_cloud_clients(opts)
+    main_hmb_generator_file(opts, s3_client=s3_client, gs_client=gs_client)
 
 
 def check_options(opts: Namespace) -> list[str]:

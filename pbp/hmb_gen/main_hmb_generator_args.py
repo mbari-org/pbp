@@ -63,7 +63,8 @@ Examples:
         type=str,
         metavar="uri",
         default=None,
-        help="URI of JSON file with global attributes to be added to the NetCDF file.",
+        help="URI of JSON or YAML file (per extension: .json, .yaml, .yml) with global attributes\n"
+        "to be added to the NetCDF file.",
     )
 
     parser.add_argument(
@@ -83,7 +84,8 @@ Examples:
         type=str,
         metavar="uri",
         default=None,
-        help="URI of JSON file with attributes to associate to the variables in the NetCDF file.",
+        help="URI of JSON or YAML file (per extension: .json, .yaml, .yml) with attributes\n"
+        "to associate to the variables in the NetCDF file.",
     )
 
     parser.add_argument(
@@ -132,7 +134,7 @@ Examples:
         "--sensitivity-uri",
         type=str,
         default=None,
-        metavar="file",
+        metavar="uri",
         help="URI of sensitivity NetCDF for calibration of result. "
         "Has precedence over --sensitivity-flat-value.",
     )

@@ -70,9 +70,9 @@ class ProcessHelper:
             gen_netcdf (bool): Whether to generate the netCDF file.
             compress_netcdf (bool): Whether to compress the generated NetCDF file.
             add_quality_flag (bool): Whether to add a quality flag variable (with value 2 - "Not evaluated") to the NetCDF file.
-            global_attrs_uri (str): URI of a JSON file with global attributes to be added to the NetCDF file.
+            global_attrs_uri (str): URI of a JSON or YAML file with global attributes to be added to the NetCDF file.
             set_global_attrs (list[tuple[str, str]]): List of (key, value) pairs to be considered for the global attributes.
-            variable_attrs_uri (str): URI of a JSON file with variable attributes to be added to the NetCDF file.
+            variable_attrs_uri (str): URI of a JSON or YAML file with variable attributes to be added to the NetCDF file.
             exclude_tone_calibration_seconds (int): See https://github.com/mbari-org/pbp/issues/82
             voltage_multiplier (float): Factor applied to the loaded signal.
             sensitivity_uri (str, optional): URI of a sensitivity NetCDF file for calibration of results.
