@@ -140,8 +140,10 @@ No Python installation or dependency management is required.
        ```
      - **Windows (PowerShell)** - Run as Administrator:
        ```powershell
-       [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\path\to\mbari-pbp-standalone", "User")
+       [Environment]::SetEnvironmentVariable("Path", ";C:\path\to\mbari-pbp-standalone;" + $env:Path, "User")
        ```
+     - **Windows (PowerShell)**: Open a new session for the Path setting above to have effect.
+
 4. Verify the installation:
    ```shell
    pbp --help
@@ -152,9 +154,12 @@ No Python installation or dependency management is required.
 To update the standalone version:
 
 1. Download the latest release from <https://github.com/mbari-org/pbp/releases>
-2. Extract to the same location (overwriting the existing installation)
+2. Extract to the same location (overwriting the existing installation).
+   The existing `mbari-pbp-standalone` directory will be replaced with the new version.
 
-The existing `mbari-pbp-standalone` directory will be replaced with the new version.
+    !!! note
+        You can of course extract to a different location.
+        In this case, make sure you also update the `PATH` setting accordingly.
 
 
 ## Programs
