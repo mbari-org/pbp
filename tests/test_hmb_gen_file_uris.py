@@ -111,3 +111,20 @@ def test_input_file_mode_with_missing_uri(tmp_path, option, capsys):
         main_hmb_generator_file(opts)
     out = capsys.readouterr().out
     assert f"ERROR: --{option.replace('_', '-')}: file not found: " in out
+
+
+def test_input_file_mode_with_set_global_attr(tmp_path):
+    global_attrs = tmp_path / "globalAttributes.yaml"
+    global_attrs.write_text(
+        "title: Test\nserial_number: TBD\nsummary: Recorder {{serial_number}}\n"
+    )
+    opts = _file_mode_opts(
+        tmp_path,
+        global_attrs=str(global_attrs),
+        set_global_attrs=[["serial_number", "7045"]],
+    )
+    main_hmb_generator_file(opts)
+
+    with xr.open_dataset(tmp_path / "SJW7045_20261022_235000.nc") as ds:
+        assert ds.attrs["serial_number"] == "7045"
+        assert ds.attrs["summary"] == "Recorder 7045"

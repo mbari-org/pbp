@@ -173,7 +173,11 @@ class FileProcessor:
 
         self.metadata_helper = HmbMetadataHelper(
             self.log,
-            self._load_attributes("global", self.opts.global_attrs),
+            self._load_attributes(
+                "global",
+                self.opts.global_attrs,
+                getattr(self.opts, "set_global_attrs", None),
+            ),
             self._load_attributes("variable", self.opts.variable_attrs),
         )
 
