@@ -134,32 +134,34 @@ No Python installation or dependency management is required.
 2. Extract the archive to a directory of your choice (this creates a `mbari-pbp-standalone` subdirectory)
 3. Add the standalone directory to your PATH for convenient access:
 
-     - **macOS/Linux (bash/zsh)** - Add to `~/.bashrc` or `~/.zshrc`:
-       ```shell
-       export PATH="$PATH:/path/to/mbari-pbp-standalone"
-       ```
-     - **Windows (PowerShell)** - Run as Administrator:
-       ```powershell
-       [Environment]::SetEnvironmentVariable("Path", ";C:\path\to\mbari-pbp-standalone;" + $env:Path, "User")
-       ```
-     - **Windows (PowerShell)**: Open a new session for the Path setting above to have effect.
+     - **macOS/Linux (bash/zsh)**:
+         - Add to `~/.bashrc` or `~/.zshrc`:
+           ```shell
+           export PATH="$PATH:/path/to/mbari-pbp-standalone"
+           ```
+         - Open a new terminal session for the PATH setting above to have effect.
+     - **Windows**:
+         - Open a PowerShell session to run as Administrator:
+           ```powershell
+           [Environment]::SetEnvironmentVariable("Path", "C:\path\to\mbari-pbp-standalone;" + $env:Path, "User")
+           ```
+         - Open a new terminal session (Command Prompt or PowerShell) for the PATH setting above to have effect.
 
 4. Verify the installation:
    ```shell
-   pbp --help
+   pbp --version  # or: pbp --help
    ```
 
 #### Updating PBP
 
-To update the standalone version:
+Basically, follow the same standalone installation procedure described above:
 
 1. Download the latest release from <https://github.com/mbari-org/pbp/releases>
-2. Extract to the same location (overwriting the existing installation).
-   The existing `mbari-pbp-standalone` directory will be replaced with the new version.
-
-    !!! note
-        You can of course extract to a different location.
-        In this case, make sure you also update the `PATH` setting accordingly.
+2. Extract the zip archive:
+    - If extracted to the same previous location, then the existing `mbari-pbp-standalone`
+      directory will be replaced.
+    - Otherwise, update the `PATH` setting accordingly.
+3. Open a new terminal session and run `pbp --version` to verify the new version is in place.
 
 
 ## Programs
