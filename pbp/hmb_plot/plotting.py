@@ -58,20 +58,14 @@ def plot_dataset_summary(
         ds.time, latitude=latitude, longitude=longitude
     )
     se = solpos.elevation  # isolate solar elevation
-    # map elevation to gray scale
-    seg = 0 * se  # 0 covers nighttime (black)
-    # day (white)
-    d = np.squeeze(np.where(se > 0))
-    seg.iloc[d] = 1
-    # dusk / dawn (gray range)
-    d = np.squeeze(np.where(np.logical_and(se <= 0, se >= -12)))
-    # Only compute grayscale if there are dusk/dawn periods (avoid empty sequence error)
-    if len(d) > 0:
-        seg.iloc[d] = 1 - abs(se.iloc[d] / max(abs(se.iloc[d])))
+    # map elevation to gray scale: day (> 0°) white, night (< -12°) black,
+    # and dusk/dawn linearly in between. (Using the fixed -12° boundary, so the
+    # shading does not depend on the extent of the data, e.g., short inputs.)
+    seg = np.clip(1 + se / 12, 0, 1)
     # Get the indices of the min and max
     seg1 = pd.Series.to_numpy(solpos.elevation)
-    minidx = int(np.squeeze(np.where(seg1 == min(seg1))))
-    maxidx = int(np.squeeze(np.where(seg1 == max(seg1))))
+    minidx = int(np.argmin(seg1))
+    maxidx = int(np.argmax(seg1))
 
     seg3 = np.tile(seg, (50, 1))
 
@@ -132,11 +126,27 @@ def plot_dataset_summary(
 
     # day night
     ax3 = fig.add_subplot(spec[0])
-    ax3.pcolormesh(seg3, shading="flat", cmap="gray")
-    ax3.annotate("Day", (maxidx, 25), weight="bold", ha="center", va="center")
-    ax3.annotate(
-        "Night", (minidx, 25), weight="bold", color="white", ha="center", va="center"
-    )
+    # vmin/vmax fixed so a constant bar (e.g., short all-day input) keeps its color:
+    ax3.pcolormesh(seg3, shading="flat", cmap="gray", vmin=0, vmax=1)
+
+    # Label each period only if present, keeping labels away from the edges.
+    def label_x(idx: int) -> float:
+        n = len(seg1)
+        return min(max(idx + 0.5, 0.05 * n), 0.95 * n)
+
+    if seg1.max() > 0:
+        ax3.annotate(
+            "Day", (label_x(maxidx), 25), weight="bold", ha="center", va="center"
+        )
+    if seg1.min() < -12:
+        ax3.annotate(
+            "Night",
+            (label_x(minidx), 25),
+            weight="bold",
+            color="white",
+            ha="center",
+            va="center",
+        )
     ax3.set_xticks([])
     ax3.set_yticks([])
 
