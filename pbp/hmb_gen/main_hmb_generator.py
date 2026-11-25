@@ -77,6 +77,21 @@ def run_main_hmb_generator(opts: Namespace) -> None:
         retain_downloaded_files=opts.retain_downloaded_files,
     )
 
+    # Check local files up front to report missing ones clearly
+    # (rather than with a stack trace, or having them silently ignored):
+    errors = []
+    for option in ("sensitivity_uri", "global_attrs", "variable_attrs"):
+        uri = getattr(opts, option)
+        if uri and not file_helper.uri_handler.is_cloud_uri(uri):
+            filename = file_helper.get_local_filename(uri)
+            if filename is None or not Path(filename).is_file():
+                errors.append(
+                    f"ERROR: --{option.replace('_', '-')}: file not found: {uri}"
+                )
+    if errors:
+        print("\n".join(errors))
+        sys.exit(1)
+
     process_helper = ProcessHelper(
         log=log,
         file_helper=file_helper,

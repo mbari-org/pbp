@@ -33,3 +33,28 @@ def test_cli_command_help_works(command):
     result = _run_process(["pbp", command, "--help"])
     assert result.returncode == 0, f"{command} --help failed with: {result.stderr}"
     assert len(result.stdout) > 0, f"{command} --help produced no output"
+
+
+def test_hmb_gen_day_mode_missing_local_files(tmp_path):
+    """Missing local files are reported clearly, without a stack trace."""
+    result = _run_process(
+        [
+            "pbp",
+            "hmb-gen",
+            "--json-base-dir=tests/json/2022",
+            "--date=20220902",
+            f"--output-dir={tmp_path}",
+            "--variable-attrs=missing_variableAttributes.yml",
+            "--global-attrs=missing_globalAttributes.yml",
+        ]
+    )
+    assert result.returncode == 1
+    assert "Traceback" not in result.stdout + result.stderr
+    assert (
+        "ERROR: --global-attrs: file not found: missing_globalAttributes.yml"
+        in result.stdout
+    )
+    assert (
+        "ERROR: --variable-attrs: file not found: missing_variableAttributes.yml"
+        in result.stdout
+    )
