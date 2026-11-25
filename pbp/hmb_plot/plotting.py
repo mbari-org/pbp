@@ -40,6 +40,11 @@ def plot_dataset_summary(
     :param jpeg_filename: If given, filename to save the plot to.
     :param show: Whether to show the plot.
     """
+    # Files generated without time units (e.g., by `hmb-gen --input-file` before
+    # those were set by default) have raw epoch seconds as time values.
+    if not np.issubdtype(ds.time.dtype, np.datetime64):
+        ds = ds.assign_coords(time=pd.to_datetime(ds.time.values, unit="s"))
+
     plt.rcParams["text.usetex"] = False
     plt.rcParams["axes.edgecolor"] = "black"
 

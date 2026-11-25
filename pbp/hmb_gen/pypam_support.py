@@ -246,6 +246,11 @@ class PypamSupport:
         milli_psd = psd_da
         milli_psd.name = "psd"
 
+        # Time values are epoch seconds. Set the units by default so the
+        # time coordinate is decodable even if no variable attributes are
+        # given (these may still override it).
+        milli_psd["time"].attrs["units"] = "seconds since 1970-01-01T00:00:00Z"
+
         self.log.info(f"Resulting milli_psd={milli_psd}")
 
         return milli_psd
