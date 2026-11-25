@@ -35,22 +35,26 @@ from pbp.hmb_gen.pypam_support import ProcessResult, PypamSupport
 ##
 
 
-def _resolve_local_filename(uri_handler: UriHandler, uri: str) -> Optional[str]:
+def _resolve_local_filename(
+    uri_handler: UriHandler, uri: str, option: str
+) -> Optional[str]:
     """
     Resolves the given URI (local path, `file://`, `s3://`, `gs://`) to an
     existing local file, downloading it if cloud based.
-    Prints the reason and returns None if not possible.
+    Prints the reason (mentioning the given option) and returns None if not possible.
     """
     _, parsed_uri = uri_handler.resolve_uri(uri)
+    is_cloud = parsed_uri.scheme in ("s3", "gs")
     if parsed_uri.scheme == "s3" and uri_handler.s3_client is None:
-        print(f"'{uri}' requires --s3 or --s3-unsigned.")
+        print(f"ERROR: {option}: '{uri}' requires --s3 or --s3-unsigned.")
         return None
     if parsed_uri.scheme == "gs" and uri_handler.gs_client is None:
-        print(f"'{uri}' requires --gs.")
+        print(f"ERROR: {option}: '{uri}' requires --gs.")
         return None
     filename = uri_handler.get_local_filename(uri)
     if filename is None or not pathlib.Path(filename).is_file():
-        print(f"'{uri}' does not exist or could not be retrieved.")
+        problem = "could not be retrieved" if is_cloud else "file not found"
+        print(f"ERROR: {option}: {problem}: {uri}")
         return None
     return filename
 
@@ -104,9 +108,10 @@ def main_hmb_generator_file(
     for option in ("sensitivity_uri", "global_attrs", "variable_attrs"):
         uri = getattr(opts, option)
         if uri is not None:
-            filename = _resolve_local_filename(uri_handler, uri)
+            filename = _resolve_local_filename(
+                uri_handler, uri, f"--{option.replace('_', '-')}"
+            )
             if filename is None:
-                print(f"Error with --{option.replace('_', '-')}.")
                 exit(1)
             local_filenames[option] = filename
     # (FileProcessor then just sees local filenames)

@@ -33,13 +33,13 @@ def test_resolve_local_filename(uri_handler, tmp_path, capsys):
     file = tmp_path / "attrs.yaml"
     file.write_text("{}")
 
-    assert _resolve_local_filename(uri_handler, str(file)) == str(file)
-    assert _resolve_local_filename(uri_handler, file.as_uri()) == str(file)
+    assert _resolve_local_filename(uri_handler, str(file), "--opt") == str(file)
+    assert _resolve_local_filename(uri_handler, file.as_uri(), "--opt") == str(file)
 
     missing = tmp_path / "missing.yaml"
-    assert _resolve_local_filename(uri_handler, str(missing)) is None
-    assert _resolve_local_filename(uri_handler, missing.as_uri()) is None
-    assert "does not exist" in capsys.readouterr().out
+    assert _resolve_local_filename(uri_handler, str(missing), "--opt") is None
+    assert _resolve_local_filename(uri_handler, missing.as_uri(), "--opt") is None
+    assert "ERROR: --opt: file not found: " in capsys.readouterr().out
 
 
 @pytest.mark.parametrize(
@@ -50,7 +50,7 @@ def test_resolve_local_filename(uri_handler, tmp_path, capsys):
     ],
 )
 def test_resolve_local_filename_cloud_without_client(uri_handler, uri, option, capsys):
-    assert _resolve_local_filename(uri_handler, uri) is None
+    assert _resolve_local_filename(uri_handler, uri, "--opt") is None
     assert option in capsys.readouterr().out
 
 
@@ -109,4 +109,5 @@ def test_input_file_mode_with_missing_uri(tmp_path, option, capsys):
     opts = _file_mode_opts(tmp_path, **{option: (tmp_path / "missing").as_uri()})
     with pytest.raises(SystemExit):
         main_hmb_generator_file(opts)
-    assert f"--{option.replace('_', '-')}" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert f"ERROR: --{option.replace('_', '-')}: file not found: " in out
