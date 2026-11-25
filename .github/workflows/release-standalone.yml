@@ -214,6 +214,10 @@ jobs:
 
       - name: Delete uploaded artifacts
         if: always()
+        # Just cleanup (artifacts expire after a day anyway). Right after the upload
+        # (as in manual runs, without the release upload in between), the artifact
+        # may not be found yet, which fails the step despite `failOnError: false`.
+        continue-on-error: true
         uses: geekyeggo/delete-artifact@v5
         with:
           name: standalone-${{ matrix.platform }}-${{ steps.arch.outputs.arch }}
