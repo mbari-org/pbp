@@ -1,5 +1,41 @@
 2026-11
 
+1.10.1
+
+- HMB generation: the time coordinate now gets units ("seconds since 1970-01-01T00:00:00Z")
+  by default, so it can be decoded when no `--variable-attrs` is given (as typical with
+  `--input-file`). Still overridable via the variable attributes.
+  hmb-plot also interprets non-datetime time values as epoch seconds, so files already
+  generated without time units can be plotted (they failed with
+  "TypeError: only size-1 arrays can be converted to Python scalars").
+
+- hmb-plot, short inputs (e.g., a single file):
+  - day/night panel: a constant bar is no longer rendered black, "Day"/"Night" labels
+    are shown only for periods present, and a single dusk/dawn time point no longer fails.
+  - "UTC" no longer overlaps the last time tick label.
+  - Also, the default `--title` no longer includes surrounding quotes.
+
+- HMB generation with `--input-file`:
+  - `--sensitivity-uri`, `--global-attrs` and `--variable-attrs` are now resolved as in
+    the day-based mode, so `file://`, `s3://` (with `--s3`/`--s3-unsigned`) and `gs://`
+    (with `--gs`) URIs work, not only plain local paths.
+  - `--set-global-attr` is now applied (it was silently ignored).
+
+- HMB generation: a missing local `--sensitivity-uri`, `--global-attrs` or `--variable-attrs`
+  file is now reported with a single line, e.g.,
+  `ERROR: --variable-attrs: file not found: variableAttributes.yml`, before any processing.
+  Previously, it caused a stack trace with `--input-file`; in the day-based mode, a missing
+  attributes file was reported with a stack trace and then ignored, and a missing
+  sensitivity file was just ignored (uncalibrated output).
+
+- HMB generation on Windows (day-based mode): a plain local path like `C:\Users\x\attrs.yaml`
+  for the attributes or sensitivity files no longer loses its drive letter.
+
+- Help/docs: the attribute files can be JSON or YAML (per extension).
+
+- Development: `just test-quick` and `just all-quick` skip the long-running tests
+  (marked `@pytest.mark.slow`), reporting them as skipped.
+
 1.10.0
 
 - Local output, log and download paths are now built with `pathlib`, so they are shown

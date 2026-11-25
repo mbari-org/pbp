@@ -4,6 +4,23 @@ This page highlights significant updates and new features in PBP releases.
 For detailed technical changes, see the [CHANGELOG.md](https://github.com/mbari-org/pbp/blob/main/CHANGELOG.md).
 Please get in touch if you have any questions.
 
+## 1.10.1
+(Nov 2026)
+
+**Bug Fixes**
+
+- **Single-File Processing**: `pbp hmb-gen --input-file` output now includes time units,
+  so it can be read and plotted properly (it previously made `pbp hmb-plot` fail).
+  Also with `--input-file`, the attribute and sensitivity options accept `file://`,
+  `s3://` and `gs://` URIs, and `--set-global-attr` is applied.
+- **Plots of Short Inputs**: `pbp hmb-plot` now renders the day/night panel and the
+  time axis correctly for short inputs such as a single file.
+- **Clear Error for Missing Files**: A missing attributes or sensitivity file is now
+  reported in one line, e.g., `ERROR: --variable-attrs: file not found: variableAttributes.yml`,
+  instead of a stack trace (or being silently ignored).
+- **Windows Paths**: Attribute and sensitivity files given as plain paths like `C:\...`
+  are now found regardless of the current drive.
+
 ## 1.10.0
 (Nov 2026)
 
