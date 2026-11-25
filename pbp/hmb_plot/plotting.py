@@ -161,7 +161,8 @@ def plot_dataset_summary(
     # time axes for the day/night panel
     # create a dummy time / zero range variable
     timax = fig.add_axes(ax3.get_position().bounds, frameon=False)
-    timax.plot(solpos.elevation * 0, "k")
+    # (invisible: only to set up the time axis)
+    timax.plot(solpos.elevation * 0, alpha=0)
     timax.tick_params(top=True, labeltop=True, bottom=False, labelbottom=False)
     timax.set_ylim(0, 100)
     timax.set_yticks([])
@@ -171,7 +172,17 @@ def plot_dataset_summary(
     )
 
     plt.gcf().text(0.5, 0.955, title, fontsize=14, horizontalalignment="center")
-    plt.gcf().text(0.65, 0.91, "UTC")
+    # Just right of the time axis, so it never overlaps the last tick label:
+    timax.annotate(
+        "UTC",
+        xy=(1, 1),
+        xycoords="axes fraction",
+        xytext=(6, 3.5 + plt.rcParams["xtick.major.size"]),
+        textcoords="offset points",
+        ha="left",
+        va="bottom",
+        fontsize=plt.rcParams["xtick.labelsize"],
+    )
 
     if jpeg_filename is not None:
         plt.savefig(jpeg_filename, dpi=dpi)
