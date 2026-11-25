@@ -53,8 +53,6 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
             The local directory to write the json files to
         :param prefixes:
             The search pattern to match the wav files, e.g. 'MARS'
-        :param xml_dir
-            The local directory that contains the log.xml files, defaults to audio_loc if none is specified.
         :param start:
             The start date to search for wav files
         :param end:
@@ -90,7 +88,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                     local_wav_path = filename.parent / f"{filename.stem}.wav"
                     start_dt = get_datetime(local_wav_path, self.prefixes)
 
-                    # Must have a start date to be valid and also must have a corresponding xml file
+                    # Must have a start date to be valid
                     if (
                         start_dt
                         and (self.start - timedelta(days=1)) <= start_dt <= end_dt
@@ -111,7 +109,7 @@ class SoundTrapMetadataGenerator(SoundTrapMetadataGeneratorAbstract):
                 operation_parameters = {"Bucket": bucket}
                 page_iterator = paginator.paginate(**operation_parameters)
                 self.log.info(
-                    f"Searching in bucket: {bucket} for .wav and .xml files between {self.start - timedelta(days=1)} and {end_dt}"
+                    f"Searching in bucket: {bucket} for .wav files between {self.start - timedelta(days=1)} and {end_dt}"
                 )
 
                 # list the objects in the bucket
@@ -193,7 +191,6 @@ if __name__ == "__main__":
     json_dir = Path("tests/json/soundtrap")
     log_dir.mkdir(exist_ok=True, parents=True)
     json_dir.mkdir(exist_ok=True, parents=True)
-    xml_dir = Path("s3://pacific-sound-ch01")
 
     log = create_logger(
         log_filename_and_level=(

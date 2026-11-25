@@ -90,7 +90,14 @@ def run_main_meta_generator(opts: Namespace):
 
 
 def main():
-    run_main_meta_generator(parse_arguments())
+    opts = parse_arguments()
+    if opts.xml_dir is not None:
+        print(
+            "WARNING: --xml-dir is deprecated and ignored "
+            "(metadata is taken from the audio file headers).",
+            flush=True,
+        )
+    run_main_meta_generator(opts)
 
 
 if __name__ == "__main__":

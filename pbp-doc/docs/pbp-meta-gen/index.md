@@ -191,7 +191,6 @@ $ pbp-meta-gen --help
 meta-gen: Generate JSONs with audio metadata for NRS flac files, IcListen wav files, and Soundtrap wav files from either a local directory or gs/s3 bucket.
 
 usage: pbp meta-gen [-h] [--version] --recorder {NRS,ICLISTEN,SOUNDTRAP,RESEA} --json-base-dir dir --output-dir dir --uri uri --start YYYYMMDD --end YYYYMMDD --prefix PREFIX [PREFIX ...]
-                    [--xml-dir dir]
 
 options:
   -h, --help            show this help message and exit
@@ -205,7 +204,6 @@ options:
   --end YYYYMMDD        The ending date to be processed.
   --prefix PREFIX [PREFIX ...]
                         Prefix for search to match the audio files e.g. 'MARS_' for MARS_YYYYMMDD_HHMMSS.wav, '7000. ' for 7000.20220902.000000.wav
-  --xml-dir dir         Specifies the directory where the log.xml files are located. If not specified, the default is the same directory as the audio files.
 
 Examples:
     pbp meta-gen \
